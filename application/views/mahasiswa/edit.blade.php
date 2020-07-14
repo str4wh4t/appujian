@@ -1,0 +1,281 @@
+@extends('template.main')
+
+@push('page_level_css')
+<!-- BEGIN PAGE LEVEL JS-->
+{{--<link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/vendors/css/tables/datatable/datatables.min.css') }}">--}}
+{{--<link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/vendors/css/tables/datatable/dataTables.bootstrap4.min.css') }}">--}}
+{{--<link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/vendors/css/tables/extensions/rowReorder.dataTables.min.css') }}">--}}
+{{--<link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/vendors/css/tables/extensions/responsive.dataTables.min.css') }}">--}}
+<link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/vendors/css/forms/selects/select2.min.css') }}">
+<link rel="stylesheet" type="text/css" href="{{ asset('assets/bower_components/bootstrap4-datetimepicker/build/css/bootstrap-datetimepicker.css') }}">
+<link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/vendors/css/forms/toggle/bootstrap-switch.min.css') }}">
+<!-- END PAGE LEVEL JS-->
+@endpush
+
+@push('page_vendor_level_js')
+<!-- BEGIN PAGE VENDOR JS-->
+{{--<script src="{{ asset('assets/template/robust/app-assets/vendors/js/tables/datatable/datatables.min.js') }}"></script>--}}
+{{--<script src="//cdn.datatables.net/plug-ins/1.10.21/api/fnPagingInfo.js"></script>--}}
+{{--<script src="{{ asset('assets/template/robust/app-assets/vendors/js/tables/jquery.dataTables.min.js') }}"></script>--}}
+{{--<script src="{{ asset('assets/template/robust/app-assets/vendors/js/tables/datatable/dataTables.bootstrap4.min.js') }}"></script>--}}
+{{--<script src="{{ asset('assets/template/robust/app-assets/vendors/js/tables/datatable/dataTables.responsive.min.js') }}"></script>--}}
+{{--<script src="{{ asset('assets/template/robust/app-assets/vendors/js/tables/datatable/dataTables.rowReorder.min.js') }}"></script>--}}
+<script src="{{ asset('assets/template/robust/app-assets/vendors/js/forms/select/select2.full.min.js') }}"></script>
+<script src="{{ asset('assets/bower_components/moment/min/moment.min.js') }}"></script>
+<script src="{{ asset('assets/bower_components/bootstrap4-datetimepicker/build/js/bootstrap-datetimepicker.min.js') }}"></script>
+<script src="{{ asset('assets/template/robust/app-assets/vendors/js/forms/toggle/bootstrap-switch.min.js') }}"></script>
+<!-- END PAGE VENDOR -->
+@endpush
+
+@push('page_level_js')
+<!-- BEGIN PAGE LEVEL JS-->
+<script type="text/javascript">
+
+function init_page_level(){
+    $('#jenis_kelamin').select2();
+    $('#matkul').select2({placeholder: "Pilih Materi Ujian"});
+    let selected = [];
+    @foreach($mhs->matkul as $mhs_matkul)
+    selected.push('{{ $mhs_matkul->id_matkul }}');
+    @endforeach
+    $('#matkul').val(selected).trigger('change');
+    $('.datetimepicker').datetimepicker({
+        format: 'YYYY-MM-DD',
+        // Your Icons
+        // as Bootstrap 4 is not using Glyphicons anymore
+        icons: {
+            time: 'fa fa-clock-o',
+            date: 'fa fa-calendar',
+            up: 'fa fa-chevron-up',
+            down: 'fa fa-chevron-down',
+            previous: 'fa fa-chevron-left',
+            next: 'fa fa-chevron-right',
+            today: 'fa fa-check',
+            clear: 'fa fa-trash',
+            close: 'fa fa-times'
+        }
+    });
+}
+
+let fileTypes = ['jpg'];
+function readURL(input) {
+    if (input.files && input.files[0]) {
+        let extension = input.files[0].name.split('.').pop().toLowerCase();
+        let allow = fileTypes.indexOf(extension) > -1;
+
+        if(allow){
+            let reader = new FileReader();
+            reader.onload = function (e) {
+                //Initiate the JavaScript Image object.
+                let image = new Image();
+                //Set the Base64 string return from FileReader as source.
+                image.src = e.target.result;
+                //Validate the File Height and Width.
+                image.onload = function () {
+                    let height = this.height;
+                    let width = this.width;
+                    // console.log('height',height);
+                    // console.log('width',width);
+                    // console.log('this.src',this.src);
+                    if (height == 420 && width == 320) {
+                        $('#img_profile').attr('src', this.src);
+                        reader.readAsDataURL(input.files[0]);
+                        return true;
+                    }else{
+                        console.log('err');
+                        return false;
+                    }
+                };
+            };
+        }else{
+            return false;
+        }
+    }
+}
+
+$("#imgInp").change(function(e) {
+  let ok = readURL(this);
+  if(!ok){
+      swal({
+           title: "Perhatian",
+           text: "File foto tidak didukung",
+           type: "warning"
+        });
+      $(this).val('');
+  }
+});
+
+$(document).on('click','#btnUpload',function(){
+    $("#imgInp").trigger('click');
+});
+
+function checkImage(imageSrc, good, bad) {
+    let img = new Image();
+    img.onload = good;
+    img.onerror = bad;
+    img.src = imageSrc;
+}
+
+$(document).on('keyup','input[name="foto"]',function(){
+    let src_img = $(this).val();
+    checkImage(src_img, function(){
+            console.log('good');
+            $('#img_profile').attr('src',src_img);
+        }, function(){
+            console.log('bad');
+            $('#img_profile').attr('src','{{ $mahasiswa->foto }}');
+        }
+    );
+});
+
+
+</script>
+<script src="{{ asset('assets/dist/js/app/master/mahasiswa/edit.js') }}"></script>
+<!-- END PAGE LEVEL JS-->
+@endpush
+
+@section('content')
+<section class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+            	<h4 class="card-title"><?=$subjudul?></h4>
+            	<a class="heading-elements-toggle"><i class="ft-ellipsis-h font-medium-3"></i></a>
+            </div>
+            <div class="card-content">
+                <div class="card-body">
+
+
+<!---- --->
+<?=form_open('mahasiswa/ajax/save', array('id'=>'mahasiswa'), array('method'=>'edit', 'id_mahasiswa'=>$mahasiswa->id_mahasiswa))?>
+<div class="row">
+    <div class="col-md-6">
+        <div class="form-body">
+            <h4 class="form-section"><i class="ft-user"></i> Personal Info</h4>
+            <div class="row">
+                <div class="col-md-12">
+        <div class="form-group">
+            <label for="nim">No Peserta</label>
+            <input value="<?=$mahasiswa->nim?>" {{ $user_is_exist ? 'readonly="readonly"' : '' }} placeholder="No Peserta" type="text" name="nim" class="form-control">
+            <small class="help-block"></small>
+        </div>
+        <div class="form-group">
+            <label for="nama">Nama</label>
+            <input value="<?=$mahasiswa->nama?>" autofocus="autofocus" onfocus="this.select()" placeholder="Nama" type="text" name="nama" class="form-control">
+            <small class="help-block"></small>
+        </div>
+        <div class="form-group">
+            <label for="nim">NIK</label>
+            <input value="<?=$mahasiswa->nik?>" placeholder="NIK" type="text" name="nik" class="form-control">
+            <small class="help-block"></small>
+        </div>
+        <div class="form-group">
+            <label for="nama">Tmp Lahir</label>
+            <input value="<?=$mahasiswa->tmp_lahir?>" placeholder="Tmp Lahir" type="text" name="tmp_lahir" class="form-control">
+            <small class="help-block"></small>
+        </div>
+        <div class="form-group">
+            <label for="nama">Tgl Lahir</label>
+            <input value="<?=$mahasiswa->tgl_lahir?>" placeholder="Tgl Lahir" type="text" name="tgl_lahir" class="datetimepicker form-control">
+            <small class="help-block"></small>
+        </div>
+        <div class="form-group">
+            <label for="email">Email</label>
+            <input value="<?=$mahasiswa->email?>" placeholder="Email" type="text" name="email" class="form-control">
+            <small class="help-block"></small>
+        </div>
+        <div class="form-group">
+            <label for="jenis_kelamin">Jenis Kelamin</label>
+            <select name="jenis_kelamin" id="jenis_kelamin" class="form-control select2">
+                <option value="">-- Pilih --</option>
+                <option <?=$mahasiswa->jenis_kelamin === "L" ? "selected" : "" ?> value="L">Laki-laki</option>
+                <option <?=$mahasiswa->jenis_kelamin === "P" ? "selected" : "" ?> value="P">Perempuan</option>
+            </select>
+            <small class="help-block"></small>
+        </div>
+        <div class="form-group">
+            <label for="matkul">Materi Ujian</label>
+            <select name="matkul[]" id="matkul" class="form-control select2" style="width: 100%!important" multiple="multiple">
+{{--                        <option value="" disabled selected>Pilih Mata Kuliah</option>--}}
+                <?php foreach ($matkul as $row) : ?>
+                    <option value="<?=$row->id_matkul?>"><?=$row->nama_matkul?></option>
+                <?php endforeach; ?>
+            </select>
+            <small class="help-block"></small>
+        </div>
+{{--        <div class="form-group">--}}
+{{--            <label for="jurusan">Jurusan</label>--}}
+{{--            <select id="jurusan" name="jurusan" class="form-control select2">--}}
+{{--                <option value="" disabled selected>-- Pilih --</option>--}}
+{{--                <?php foreach ($jurusan as $j) : ?>--}}
+{{--                <option <?=$mahasiswa->id_jurusan === $j->id_jurusan ? "selected" : "" ?> value="<?=$j->id_jurusan?>">--}}
+{{--                    <?=$j->nama_jurusan?>--}}
+{{--                </option>--}}
+{{--                <?php endforeach ?>--}}
+{{--            </select>--}}
+{{--            <small class="help-block"></small>--}}
+{{--        </div>--}}
+{{--        <div class="form-group">--}}
+{{--            <label for="kelas">Kelas</label>--}}
+{{--            <select id="kelas" name="kelas" class="form-control select2">--}}
+{{--                <option value="" disabled selected>-- Pilih --</option>--}}
+{{--                <?php foreach ($kelas as $k) : ?>--}}
+{{--                <option <?=$mahasiswa->id_kelas === $k->id_kelas ? "selected" : "" ?> value="<?=$k->id_kelas?>">--}}
+{{--                    <?=$k->nama_kelas?>--}}
+{{--                </option>--}}
+{{--                <?php endforeach ?>--}}
+{{--            </select>--}}
+{{--            <small class="help-block"></small>--}}
+{{--        </div>--}}
+        <div class="form-group pull-right">
+            <a href="{{ site_url('mahasiswa') }}" class="btn btn-flat btn-warning">
+                <i class="fa fa-arrow-left"></i> Kembali
+            </a>
+            <button type="submit" id="submit" class="btn btn-flat btn-outline-primary"><i class="fa fa-save"></i> Simpan</button>
+        </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <div class="col-md-6">
+            <!--
+            <div class="alert bg-info">
+                <strong>Perhatian : </strong>
+                <ol>
+                    <li>Foto yg diupload maks. 500 KB</li>
+                    <li>Ukuran foto 320 x 420 pixel</li>
+                    <li>Ekstensi file foto .jpg</li>
+                </ol>
+            </div>
+            <div class="form-group" style="text-align: center">
+                <input type='file' id="imgInp"  style="display: none" />
+                <button class="btn btn-success" id="btnUpload" type="button"><i class="icon-cloud-upload"></i> Upload foto</button>
+            </div>
+            -->
+            <div class="alert bg-info">
+                <strong>Perhatian : </strong>
+                <ol>
+                    <li>Silahkan isikan url foto peserta ujian</li>
+                    <li>Apabila link path foto benar, maka gambar akan terupdate</li>
+                </ol>
+            </div>
+            <div class="form-group">
+                <label for="nama">Foto</label>
+                <input value="<?=$mahasiswa->foto?>" placeholder="Foto" type="text" name="foto" class="form-control">
+                <small class="help-block"></small>
+            </div>
+            <div style="text-align: center">
+                <img id="img_profile" src="{{ $mahasiswa->foto }}" />
+            </div>
+    </div>
+</div>
+<?=form_close()?>
+<!---- --->
+
+				</div>
+            </div>
+        </div>
+    </div>
+</section>
+@endsection

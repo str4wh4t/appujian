@@ -26,7 +26,7 @@
 <script type="text/javascript">
 
 </script>
-<script src="{{ asset('assets/dist/js/app/master/matkul/index.js') }}"></script>
+<script src="{{ asset('assets/dist/js/app/master/matkul/index.js?u=') . mt_rand() }}"></script>
 <!-- END PAGE LEVEL JS-->
 @endpush
 
@@ -58,20 +58,22 @@
 		<table id="matkul" class="table table-striped table-bordered table-hover pb-3">
 			<thead>
 				<tr>
-					<th>No.</th>
-					<th>Materi Ujian</th>
 					<th class="text-center">
 						<input type="checkbox" class="select_all">
 					</th>
+					<th>No.</th>
+					<th>Materi Ujian</th>
+					<th>Aksi</th>
 				</tr>
 			</thead>
 			<tfoot>
 				<tr>
-					<th>No.</th>
-					<th>Materi Ujian</th>
 					<th class="text-center">
 						<input type="checkbox" class="select_all">
 					</th>
+					<th>No.</th>
+					<th>Materi Ujian</th>
+					<th>Aksi</th>
 				</tr>
 			</tfoot>
 		</table>

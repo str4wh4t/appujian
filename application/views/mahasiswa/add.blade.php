@@ -199,7 +199,7 @@ $(document).on('keyup','input[name="foto"]',function(){
                 <small class="help-block"></small>
             </div>
             <div style="text-align: center">
-                <img id="img_profile" src="{{ asset('assets/imgs/no_profile.jpg') }}" />
+                <img id="img_profile" style="width: 320px" src="{{ asset('assets/imgs/no_profile.jpg') }}" />
             </div>
     </div>
 </div>

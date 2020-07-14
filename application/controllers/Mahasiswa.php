@@ -345,13 +345,16 @@ class Mahasiswa extends MY_Controller
 		$full_name = $data->nama;
 
 		$username = $data->nim;
-		$password = $data->nim;
+		$password = date("dmY", strtotime($data->tgl_lahir));
 		$email = $data->email;
+		$tgl_lahir = date("dmY", strtotime($data->tgl_lahir));
 		$additional_data = [
 			'first_name'	=> $first_name,
 			'last_name'		=> $last_name,
 			'full_name'     => $full_name,
+			'tgl_lahir'  => $tgl_lahir,
 		];
+		
 		$group = [ MHS_GROUP_ID ]; // Sets user to mhs.
 
 		if ($this->ion_auth->username_check($username)) {
@@ -359,16 +362,18 @@ class Mahasiswa extends MY_Controller
 				'status' => false,
 				'msg'	 => 'Username tidak tersedia (sudah digunakan).'
 			];
-		} else if ($this->ion_auth->email_check($email)) {
-			$data = [
-				'status' => false,
-				'msg'	 => 'Email tidak tersedia (sudah digunakan).'
-			];
-		} else {
+		}
+//		else if ($this->ion_auth->email_check($email)) {
+//			$data = [
+//				'status' => false,
+//				'msg'	 => 'Email tidak tersedia (sudah digunakan).'
+//			];
+//		}
+		else {
 			$this->ion_auth->register($username, $password, $email, $additional_data, $group);
 			$data = [
 				'status'	=> true,
-				'msg'	 => 'User berhasil dibuat. NIM digunakan sebagai password pada saat login.'
+				'msg'	 => 'User berhasil dibuat. No Peserta digunakan sebagai password pada saat login.'
 			];
 		}
 		$this->_json($data);
@@ -887,6 +892,55 @@ class Mahasiswa extends MY_Controller
 			commit_db_trx();
 	        $this->_json(['status' => true]);
 		}
+		
+	}
+	
+	protected function _set_matkul(){
+		$mhs_id = $this->input->post('mhs_id');
+		Mhs_orm::findOrFail($mhs_id);
+		$mhs_matkul = Mhs_matkul_orm::where('mahasiswa_id', $mhs_id)->get();
+		$mhs_matkul_ids_before = [];
+		if(!empty($mhs_matkul)){
+			foreach($mhs_matkul as $mm){
+				$mhs_matkul_ids_before[] = $mm->matkul_id;
+			}
+		}
+		$matkul_ids = $this->input->post('matkul');
+		$matkul_ids = json_decode($matkul_ids);
+		foreach($matkul_ids as $matkul_id){
+			Matkul_orm::findOrFail($matkul_id);
+		}
+		
+		$matkul_ids_insert = array_diff($matkul_ids, $mhs_matkul_ids_before);
+		$matkul_ids_delete = array_diff($mhs_matkul_ids_before, $matkul_ids);
+		try {
+			begin_db_trx();
+			if(!empty($matkul_ids_delete)) {
+				foreach ($matkul_ids_delete as $matkul_id) {
+					$mhs_matkul = Mhs_matkul_orm::where([
+						'mahasiswa_id' => $mhs_id,
+						'matkul_id'    => $matkul_id
+					])->firstOrFail();
+					
+					$mhs_matkul->delete();
+				}
+			}
+			
+			if(!empty($matkul_ids_insert)) {
+				foreach ($matkul_ids_insert as $matkul_id) {
+					$mhs_matkul_orm = new Mhs_matkul_orm();
+					$mhs_matkul_orm->mahasiswa_id = $mhs_id;
+					$mhs_matkul_orm->matkul_id = $matkul_id;
+					$mhs_matkul_orm->save();
+				}
+			}
+			commit_db_trx();
+			$this->_json(['status' => true]);
+			
+		} catch(\Illuminate\Database\QueryException $e){
+			rollback_db_trx();
+			show_error('Data masih digunakan', 500, 'Perhatian');
+	    }
 		
 	}
 }

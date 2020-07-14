@@ -79,25 +79,37 @@ $(document).ready(function() {
         data: "id_matkul",
         orderable: false,
       },
+      {
+        data: "id_matkul",
+        orderable: false,
+      },
       { data: "nama_matkul" }
     ],
     columnDefs: [
       {
         searchable: false,
         targets: 0,
-      },
-      {
-        searchable: false,
-        targets: 2,
         data: "id_matkul",
         render: function(data, type, row, meta) {
           return `<div class="text-center">
 									<input name="checked[]" class="check" value="${data}" type="checkbox">
 								</div>`;
         }
+      },
+      {
+        searchable: false,
+        targets: 1,
+      },
+      {
+        searchable: false,
+        targets: 3,
+        data: "id_matkul",
+        render: function(data, type, row, meta) {
+          return `<a class="btn btn-sm btn-info" href="${base_url}matkul/peserta/${data}">Peserta</a>`;
+        }
       }
     ],
-    order: [[1, "asc"]],
+    order: [[2, "asc"]],
     rowId: function(a) {
       return a;
     },
@@ -106,7 +118,7 @@ $(document).ready(function() {
       var page = info.iPage;
       var length = info.iLength;
       var index = page * length + (iDisplayIndex + 1);
-      $("td:eq(0)", row).html(index);
+      $("td:eq(1)", row).html(index);
     }
   });
 

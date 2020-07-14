@@ -9,7 +9,7 @@ class MY_Security extends CI_Security {
 
     public function csrf_show_error()
     {
-        header("Location: //{$_SERVER['HTTP_HOST']}/oltest/expired_page",TRUE,301);
+        header("Location: //{$_SERVER['HTTP_HOST']}/expired_page",TRUE,301);
         die;
     }
 }

@@ -26,7 +26,7 @@
 <script type="text/javascript">
 
 </script>
-<script src="{{ asset('assets/dist/js/app/master/mahasiswa/index.js') }}"></script>
+<script src="{{ asset('assets/dist/js/app/master/mahasiswa/index.js?u=') . mt_rand() }}"></script>
 <!-- END PAGE LEVEL JS-->
 @endpush
 
@@ -45,6 +45,7 @@
 <!---- --->
 <div class="box">
     <div class="box-body">
+        <!--
 		<div class="mb-4">
             <a href="{{ site_url('mahasiswa/add') }}" class="btn btn-sm btn-flat btn-outline-primary"><i class="fa fa-plus"></i> Tambah</a>
             <a href="{{ site_url('mahasiswa/import') }}" class="btn btn-sm btn-flat btn-success"><i class="fa fa-upload"></i> Import</a>
@@ -53,9 +54,12 @@
                 <button onclick="bulk_delete()" class="btn btn-sm btn-flat btn-danger" type="button"><i class="fa fa-trash"></i> Delete</button>
             </div>
 		</div>
+		-->
         <?= form_open('', array('id' => 'bulk')); ?>
-        <div class="table-responsive">
-            <table id="mahasiswa" class="table table-striped table-bordered table-hover pb-3">
+{{--        <div class="table-responsive">--}}
+{{--            <table id="mahasiswa" class="table table-striped table-bordered table-hover pb-3">--}}
+        <div class="table-responsive pb-3" style="border: 0">
+		    <table id="mahasiswa" class="table table-striped table-bordered table-hover">
                 <thead>
                     <tr>
                         <th>No.</th>
@@ -64,28 +68,26 @@
                         <th>Email</th>
                         <th>Materi Ujian</th>
 {{--                        <th>Kelas</th>--}}
-{{--                        <th>Jurusan</th>--}}
+                        <th>Prodi</th>
                         <th>Aksi</th>
-                        <th class="text-center">
-                            <input class="select_all" type="checkbox">
-                        </th>
+{{--                        <th class="text-center">--}}
+{{--                            <input class="select_all" type="checkbox">--}}
+{{--                        </th>--}}
                     </tr>
                 </thead>
-                <tfoot>
-                    <tr>
-                        <th>No.</th>
-                        <th>No Peserta</th>
-                        <th>Nama</th>
-                        <th>Email</th>
-                        <th>Materi Ujian</th>
-{{--                        <th>Kelas</th>--}}
-{{--                        <th>Jurusan</th>--}}
-                        <th>Aksi</th>
-                        <th class="text-center">
-                            <input class="select_all" type="checkbox">
-                        </th>
-                    </tr>
-                </tfoot>
+{{--                <tfoot>--}}
+{{--                    <tr>--}}
+{{--                        <th>No.</th>--}}
+{{--                        <th>No Peserta</th>--}}
+{{--                        <th>Nama</th>--}}
+{{--                        <th>Email</th>--}}
+{{--                        <th>Materi Ujian</th>--}}
+{{--                        <th>Aksi</th>--}}
+{{--                        <th class="text-center">--}}
+{{--                            <input class="select_all" type="checkbox">--}}
+{{--                        </th>--}}
+{{--                    </tr>--}}
+{{--                </tfoot>--}}
             </table>
         </div>
         <?= form_close() ?>

@@ -95,10 +95,12 @@ class Users extends CI_Controller {
 //		$this->form_validation->set_rules('last_name', 'Last Name', 'required');
 		$this->form_validation->set_rules('full_name', 'Nama', 'required');
 		
-		if($user->email == $this->input->post('email', true))
-			$this->form_validation->set_rules('email', 'Email', 'required|valid_email');
-		else
-			$this->form_validation->set_rules('email', 'Email', 'required|valid_email|is_unique[users.email]');
+		$this->form_validation->set_rules('email', 'Email', 'required|valid_email');
+		
+//		if($user->email == $this->input->post('email', true))
+//			$this->form_validation->set_rules('email', 'Email', 'required|valid_email');
+//		else
+//			$this->form_validation->set_rules('email', 'Email', 'required|valid_email|is_unique[users.email]');
 		
 		if($this->form_validation->run()===FALSE){
 			$data['status'] = false;

@@ -128,6 +128,36 @@ $(document).on('keyup','input[name="foto"]',function(){
     );
 });
 
+$(document).on('click','#btn_set_materi',function(){
+    let val = $('#matkul').val();
+    if(!val.length){
+        Swal({
+            "title": "Perhatian",
+            "text": "Materi ujian tidak boleh kosong",
+            "type": "warning"
+        });
+        return false;
+    }
+    $.ajax({
+        url: '{{ url('mahasiswa/ajax/set_matkul') }}',
+        type: 'POST',
+        data: {'matkul' : JSON.stringify(val), 'mhs_id' : '{{ $mahasiswa->id_mahasiswa }}'},
+        success: function (data) {
+            Swal({
+                "title": "Sukses",
+                "text": "Data berhasil disimpan",
+                "type": "success"
+            });
+        },
+        error: function(){
+            Swal({
+                "title": "Perhatian",
+                "text": "Simpan gagal",
+                "type": "warning"
+            });
+        }
+    });
+});
 
 </script>
 <script src="{{ asset('assets/dist/js/app/master/mahasiswa/edit.js') }}"></script>
@@ -144,6 +174,13 @@ $(document).on('keyup','input[name="foto"]',function(){
             </div>
             <div class="card-content">
                 <div class="card-body">
+                <div class="row">
+                    <div class="col-md-12 pb-1">
+                    <a href="{{ site_url('mahasiswa') }}" class="btn btn-flat btn-warning">
+                        <i class="fa fa-arrow-left"></i> Kembali
+                    </a>
+                    </div>
+                </div>
 
 
 <!---- --->
@@ -195,12 +232,19 @@ $(document).on('keyup','input[name="foto"]',function(){
         </div>
         <div class="form-group">
             <label for="matkul">Materi Ujian</label>
-            <select name="matkul[]" id="matkul" class="form-control select2" style="width: 100%!important" multiple="multiple">
-{{--                        <option value="" disabled selected>Pilih Mata Kuliah</option>--}}
-                <?php foreach ($matkul as $row) : ?>
-                    <option value="<?=$row->id_matkul?>"><?=$row->nama_matkul?></option>
-                <?php endforeach; ?>
-            </select>
+            <div class="row">
+                <div class="col-md-9">
+                    <select name="matkul[]" id="matkul" class="form-control select2" style="width: 100%!important" multiple="multiple">
+        {{--                        <option value="" disabled selected>Pilih Mata Kuliah</option>--}}
+                        <?php foreach ($matkul as $row) : ?>
+                            <option value="<?=$row->id_matkul?>"><?=$row->nama_matkul?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <button type="button" class="btn btn-info" id="btn_set_materi"><i class="fa fa-check"></i> Set Materi</button>
+                </div>
+            </div>
             <small class="help-block"></small>
         </div>
 {{--        <div class="form-group">--}}
@@ -227,12 +271,12 @@ $(document).on('keyup','input[name="foto"]',function(){
 {{--            </select>--}}
 {{--            <small class="help-block"></small>--}}
 {{--        </div>--}}
-        <div class="form-group pull-right">
-            <a href="{{ site_url('mahasiswa') }}" class="btn btn-flat btn-warning">
-                <i class="fa fa-arrow-left"></i> Kembali
-            </a>
-            <button type="submit" id="submit" class="btn btn-flat btn-outline-primary"><i class="fa fa-save"></i> Simpan</button>
-        </div>
+{{--        <div class="form-group pull-right">--}}
+{{--            <a href="{{ site_url('mahasiswa') }}" class="btn btn-flat btn-warning">--}}
+{{--                <i class="fa fa-arrow-left"></i> Kembali--}}
+{{--            </a>--}}
+{{--            <button type="submit" id="submit" class="btn btn-flat btn-outline-primary"><i class="fa fa-save"></i> Simpan</button>--}}
+{{--        </div>--}}
                 </div>
             </div>
         </div>
@@ -266,7 +310,7 @@ $(document).on('keyup','input[name="foto"]',function(){
                 <small class="help-block"></small>
             </div>
             <div style="text-align: center">
-                <img id="img_profile" src="{{ $mahasiswa->foto }}" />
+                <img id="img_profile" style="width: 320px" src="{{ $mahasiswa->foto }}" />
             </div>
     </div>
 </div>

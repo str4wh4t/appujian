@@ -77,7 +77,6 @@ $(document).ready(function () {
                         }
                     });
                 } else {
-                    console.log(data.errors);
                     $.each(data.errors, function (key, value) {
                         $('[name="' + key + '"]').nextAll('.help-block').eq(0).text(value);
                         $('[name="' + key + '"]').closest('.form-group').addClass('has-error');

@@ -6,10 +6,18 @@ $(document).ready(function() {
   table = $("#mahasiswa").DataTable({
     initComplete: function() {
       var api = this.api();
+      // $("#mahasiswa_filter input")
+      //   .off(".DT")
+      //   .on("keyup.DT", function(e) {
+      //     api.search(this.value).draw();
+      //   });
       $("#mahasiswa_filter input")
         .off(".DT")
-        .on("keyup.DT", function(e) {
-          api.search(this.value).draw();
+        .on("keypress.DT", function(e) {
+          if(e.which == 13) {
+            api.search(this.value).draw();
+            return false;
+          }
         });
     },
     lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
@@ -83,44 +91,24 @@ $(document).ready(function() {
       { data: "nama" },
       { data: "email" },
       { data: "nama_matkul" },
+      { data: "prodi" },
       // { data: "nama_kelas" },
       // { data: "nama_jurusan" }
     ],
     columnDefs: [
       {
         searchable: false,
-        targets: 5,
-        data: {
-          id_mahasiswa: "id_mahasiswa",
-          ada: "ada"
-        },
-        render: function(data, type, row, meta) {
-          let btn;
-          if (data.ada > 0) {
-            btn = "";
-          } else {
-            btn = `<button data-id="${data.id_mahasiswa}" type="button" class="btn btn-sm btn-primary btn-aktif">
-								<i class="fa fa-user-plus"></i>
-							</button>`;
-          }
-          return `<div class="btn-group btn-group-sm" role="group" aria-label="">
-									<a class="btn btn-sm btn-warning" href="${base_url}mahasiswa/edit/${data.id_mahasiswa}">
-										<i class="fa fa-pencil"></i>
-									</a>
-									${btn}
-								</div>`;
-        }
-      },
-      {
-        searchable: false,
+        orderable: false,
         targets: 4,
         data: "nama_matkul",
         render: function(data, type, row, meta) {
-          let data_array = data.split('---');
           let str_return = '';
-          data_array.forEach(function (item,index) {
-            str_return += '<span class="badge bg-info">' + item + '</span> ';
-          });
+          if(data != null) {
+            let data_array = data.split('---');
+            data_array.forEach(function (item, index) {
+              str_return += '<span class="badge bg-info">' + item + '</span> ';
+            });
+          }
           return str_return;
           // return `<div class="text-center">
 			// 						<input name="checked[]" class="check" value="${data}" type="checkbox">
@@ -129,16 +117,38 @@ $(document).ready(function() {
       },
       {
         searchable: false,
+        orderable: false,
         targets: 6,
-        data: "id_mahasiswa",
+        data: "ada",
         render: function(data, type, row, meta) {
-          return `<div class="text-center">
-									<input name="checked[]" class="check" value="${data}" type="checkbox">
+          let btn;
+          if (data > 0) {
+            btn = "";
+          } else {
+            btn = `<button data-id="${row.id_mahasiswa}" type="button" class="btn btn-sm btn-primary btn-aktif">
+								<i class="fa fa-user-plus"></i>
+							</button>`;
+          }
+          return `<div class="btn-group btn-group-sm" role="group" aria-label="">
+									<a class="btn btn-sm btn-warning" href="${base_url}mahasiswa/edit/${row.id_mahasiswa}">
+										<i class="fa fa-pencil"></i>
+									</a>
+									${btn}
 								</div>`;
         }
-      }
+      },
+      // {
+      //   searchable: false,
+      //   targets: 7,
+      //   data: "id_mahasiswa",
+      //   render: function(data, type, row, meta) {
+      //     return `<div class="text-center">
+		// 							<input name="checked[]" class="check" value="${data}" type="checkbox">
+		// 						</div>`;
+      //   }
+      // }
     ],
-    order: [[1, "asc"]],
+    order: [[4, "asc"],[6, "asc"],[1, "asc"]],
     rowId: function(a) {
       return a;
     },
@@ -148,6 +158,10 @@ $(document).ready(function() {
       var length = info.iLength;
       var index = page * length + (iDisplayIndex + 1);
       $("td:eq(0)", row).html(index);
+    },
+    scrollX:        true,
+    fixedColumns:   {
+        leftColumns: 3,
     }
   });
 

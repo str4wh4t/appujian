@@ -94,6 +94,7 @@
 
                             </div>
                             <button type="submit" class="btn btn-outline-info btn-block" style="display: none" id="btn_submit_login"><i class="ft-unlock"></i> Login</button>
+                            <div class="alert bg-warning mt-1" style="background-color: #fffccc !important; color: #f00; border: solid 1px #f00;"><small><i class="fa fa-exclamation-triangle"></i> &nbsp;Jika terkendala login silahkan hub. <a href="mailto:cat@undip.ac.id">cat@undip.ac.id</a></small></div>
                         <?= form_close() ?>
                     </div>
                 </div>

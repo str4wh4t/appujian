@@ -143,14 +143,15 @@
     }
 
     function init_socket(){
-        conn = new WebSocket('wss://ujian.undip.ac.id:8080');
+        conn = new WebSocket('wss://ujian.undip.ac.id/wss2/NNN');
+        // conn = new WebSocket('ws://localhost:8080');
         conn.onopen = function(e) {
             // console.log('conn.onopen', e.data);
 {{--            conn.send(JSON.stringify({'username':'{{ get_logged_user()->username }}'}));--}}
         };
 
         conn.onmessage = function(e) {
-            // console.log('conn.onmessage', e.data);
+            console.log('conn.onmessage', e.data);
             let data = jQuery.parseJSON(e.data);
             if(Array.isArray(data)){
                 $.each(data, function(index, item){

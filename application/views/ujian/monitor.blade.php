@@ -143,7 +143,7 @@
     }
 
     function init_socket(){
-        conn = new WebSocket('ws://localhost:8080');
+        conn = new WebSocket('ws://ujian.undip.ac.id:8080');
         conn.onopen = function(e) {
             // console.log('conn.onopen', e.data);
 {{--            conn.send(JSON.stringify({'username':'{{ get_logged_user()->username }}'}));--}}

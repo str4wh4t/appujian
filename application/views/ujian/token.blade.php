@@ -213,16 +213,20 @@
                     <span class="d-block"> <span class="live-clock" id="time_now" style="font-size: 20px"><?=date('H:i:s')?></span></span>
                 </div>
                 <div class="alert bg-info">
-                    <p style="font-size: 20px">Mengenal Ujian Online Undip<i class="pull-right fa fa-exclamation-triangle"></i></p>
+                    <p style="font-size: 20px">Tata Tertib Ujian<i class="pull-right fa fa-exclamation-triangle"></i></p>
                     <hr>
                     <p>
-                    Computer Assisted Test (CAT) Universitas Diponegoro yang dikelola oleh Lembaga Pengembangan dan Penjaminan Mutu Pendidikan memberikan kemudahan dalam pelayanan test baik secara online maupun offline.</p>
-                <p>Test yang diadakan meliputi : Tes Potensi Akademik (TPA), Tes Substansi Bidang, Tes Prediksi dan lain-lain. Sistem ujian menggunakan CAT akan diperoleh hasil seleksi yang kredible, akurat dan cepat. </p>
-                <p>Informasi layanan CAT dapat menghubungi layanan ujian Undip di : </p>
-                <p><i class="fa fa-phone-square"></i> +62-24 7460041</p>
-                <p><i class="fa fa-whatsapp"></i> 0812-2561-1333</p>
-                <p><i class="ft-mail"></i> lp2mp@live.undip.ac.id</p>
-                <p><i class="icon-globe"></i> www.lp2mp.undip.ac.id</p>
+                        <ol>
+                            <li>Peserta tidak boleh melakukan perjokian, tidak jujur dan bentuk kecurangan lainnya.</li>
+                            <li>Peserta boleh mengerjakan soal berdasarkan waktu dimulainya pada aplikasi CAT.</li>
+                            <li>Peserta boleh melaporkan kepada panitia jika terjadi masalah pada aplikasi CAT.</li>
+                            <li>Peserta boleh menekan pilihan Ragu, jika ada keraguan dalam menjawab salah satu soal.</li>
+                            <li>Peserta yang sudah menyelesaikan seluruh soal ujian sebelum waktu ujian habis boleh menekan tombol selesai jika memang akan mengakhiri sebelum waktunya habis.</li>
+                            <li>Peserta tidak boleh melakukan menggandakan atau menyadur dengan mengambil gambar menggunakan kamera maupun meng copy paste soal.</li>
+                            <li>Peserta dilarang membuka halaman/aplikasi lain diluar aplikasi CAT.</li>
+                            <li>Peserta tetap akan menjaga nama baik Universitas Diponegoro dan aplikasi CAT dari tindak kejahatan lainnya.</li>
+                        </ol>
+                    </p>
                 </div>
             </div>
             <div class="col-sm-6">
@@ -353,14 +357,15 @@
                     TATA TERTIB PESERTA UJIAN TULIS<br>COMPUTER ASSISTED TEST</h5>
                 <p>
                     <ol>
-                        <li>Peserta tidak boleh melakukan perjokian atau berlaku untuk tidak jujur.</li>
-                        <li>Peserta mulai mengerjakan berdasarkan waktu dimulainya pada aplikasi CAT.</li>
-                        <li>Peserta boleh melaporkan kepada panitia jika terjadi masalah pada aplikasi CAT.</li>
-                        <li>Peserta boleh menekan pilihan Ragu, jika ada keraguan dalam menjawab salah satu soal.</li>
-                        <li>Peserta yang sudah menyelesaikan seluruh soal ujian sebelum waktu ujian habis boleh menekan tombol selesai jika memang akan mengakhiri sebelum waktunya habis.</li>
-                        <li>Peserta tidak boleh melakukan duplikat soal dengan mengambil gambar menggunakan kamera maupun meng copy paste soal.</li>
-                        <li>Peserta tetap akan menjaga nama baik Universitas Diponegoro dan aplikasi CAT dari tindak kejahatan lainnya.</li>
-                    </ol>
+                            <li>Peserta tidak boleh melakukan perjokian, tidak jujur dan bentuk kecurangan lainnya.</li>
+                            <li>Peserta boleh mengerjakan soal berdasarkan waktu dimulainya pada aplikasi CAT.</li>
+                            <li>Peserta boleh melaporkan kepada panitia jika terjadi masalah pada aplikasi CAT.</li>
+                            <li>Peserta boleh menekan pilihan Ragu, jika ada keraguan dalam menjawab salah satu soal.</li>
+                            <li>Peserta yang sudah menyelesaikan seluruh soal ujian sebelum waktu ujian habis boleh menekan tombol selesai jika memang akan mengakhiri sebelum waktunya habis.</li>
+                            <li>Peserta tidak boleh melakukan menggandakan atau menyadur dengan mengambil gambar menggunakan kamera maupun meng copy paste soal.</li>
+                            <li>Peserta dilarang membuka halaman/aplikasi lain diluar aplikasi CAT.</li>
+                            <li>Peserta tetap akan menjaga nama baik Universitas Diponegoro dan aplikasi CAT dari tindak kejahatan lainnya.</li>
+                        </ol>
                 </p>
                 <div class="alert" id="div_setuju_tata_tertib" style="border: 1px solid #f00;background-color: #ffff9a;">
                     <fieldset>

@@ -7,6 +7,7 @@
 {{--<script src="{{ asset('assets/template/robust/app-assets/vendors/js/extensions/sweetalert.min.js') }}"></script>--}}
 <script src="{{ asset('assets/bower_components/sweetalert2/sweetalert2.all.min.js') }}"></script>
 <script src="https://cdn.jsdelivr.net/npm/gasparesganga-jquery-loading-overlay@2.1.7/dist/loadingoverlay.min.js"></script>
+<script src="{{ asset('assets/plugins/ifvisible.js') }}"></script>
 <!-- END PAGE VENDOR JS (GLOBAL)-->
 
 <!-- BEGIN PAGE VENDOR JS (PAGE LEVEL)-->
@@ -56,8 +57,18 @@ function ajaxcsrf() {
     });
 }
 
-function reload_ajax() {
-    table.ajax.reload(null, false);
+function ajx_overlay(show){
+    if(show)
+        $.LoadingOverlay("show");
+    else
+        $.LoadingOverlay("hide");
+}
+
+function reload_ajax(){
+    ajx_overlay(true);
+    table.ajax.reload(function(){
+        ajx_overlay(false);
+    }, false);
 }
 
 $(document).ready(function(){
@@ -80,13 +91,59 @@ $(document).ready(function(){
         });
     @endif
 
+    @if(in_group('mahasiswa'))
+    let conn = new WebSocket('ws://localhost:8080');
+    conn.onopen = function(e) {
+        // console.log("Connection established!");
+        conn.send(JSON.stringify({
+            'username':'{{ get_logged_user()->username }}',
+            'as':'{{ get_selected_role()->name }}',
+            'cmd':'ONLINE'
+        }));
+    };
+
+    conn.onmessage = function(e) {
+        // console.log(e.data);
+    };
+
+    conn.onclose = function(e) {
+        // console.log(e.data);
+        conn.send(JSON.stringify({
+            'username':'{{ get_logged_user()->username }}',
+            'as':'{{ get_selected_role()->name }}',
+            'cmd':'OFFLINE',
+        }));
+    };
+
+    window.onblur = function () {
+        Swal({
+            title: "Perhatian",
+            text: "Anda diperingatkan tidak boleh membuka halaman lain, semua aktifitas anda direkam oleh sistem untuk penilaian",
+            type: "warning"
+        });
+
+        conn.send(JSON.stringify({
+            'username': '{{ get_logged_user()->username }}',
+            'as': '{{ get_selected_role()->name }}',
+            'cmd': 'BUKA TAB LAIN',
+        }));
+    };
+
+    window.onfocus = function () {
+        conn.send(JSON.stringify({
+            'username': '{{ get_logged_user()->username }}',
+            'as': '{{ get_selected_role()->name }}',
+            'cmd': 'ONLINE'
+        }));
+    };
+
+    @endif
+
 });
 
-function ajx_overlay(show){
-    if(show)
-        $.LoadingOverlay("show");
-    else
-        $.LoadingOverlay("hide");
-}
+
+
+
+
 
 </script>

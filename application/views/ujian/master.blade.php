@@ -25,7 +25,7 @@
 <script type="text/javascript">
 	{{--let id_dosen = '{{ $dosen->id_dosen }}';--}}
 </script>
-<script src="{{ asset('assets/dist/js/app/ujian/master.js') }}"></script>
+<script src="{{ asset('assets/dist/js/app/ujian/master.js?u=') . mt_rand() }}"></script>
 <!-- END PAGE LEVEL JS-->
 @endpush
 
@@ -45,11 +45,18 @@
 <div class="box">
     <div class="box-body">
         <div class="mb-4">
+            @if(is_admin())
             <a href="{{ site_url('ujian/add') }}" class="btn btn-outline-primary btn-sm btn-flat"><i class="fa fa-file-text-o"></i> Ujian Baru</a>
+            @endif
+
             <button type="button" onclick="reload_ajax()" class="btn btn-sm btn-flat btn-outline-secondary"><i class="fa fa-refresh"></i> Reload</button>
+
+            @if(is_admin())
             <div class="pull-right">
                 <button type="button" onclick="bulk_delete()" class="btn btn-sm btn-flat btn-danger"><i class="fa fa-trash"></i> Bulk Delete</button>
             </div>
+            @endif
+
         </div>
     </div>
 	<?=form_open('ujian/delete', array('id'=>'bulk'))?>

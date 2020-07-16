@@ -10,7 +10,7 @@ use Orm\Hujian_orm;
 
 class Ujian_model extends CI_Model {
     
-    public function getDataUjian($id = null, $username = null)
+    public function getDataUjian($id = null, $username = null, $role = null)
     {
 //        $this->datatables->select('a.id_ujian, a.token, a.nama_ujian, b.nama_matkul, a.jumlah_soal, CONCAT(a.tgl_mulai, " <br/> (", a.waktu, " Menit)") as waktu, a.jenis');
 //        $this->datatables->from('m_ujian a');
@@ -30,7 +30,7 @@ class Ujian_model extends CI_Model {
     	
 	    $dt = new Datatables( new MySQL($config) );
 	    
-	    $this->db->select('a.id_ujian,status_ujian, a.token, a.nama_ujian, b.nama_matkul, a.jumlah_soal, a.tgl_mulai, a.terlambat, CONCAT(a.waktu, " Mnt") AS waktu, CONCAT(a.jenis , "/" , a.jenis_jawaban) AS jenis, a.created_by as oleh, a.pakai_token');
+	    $this->db->select('a.id_ujian, status_ujian, a.token, a.nama_ujian, b.nama_matkul, a.jumlah_soal, a.tgl_mulai, a.terlambat, CONCAT(a.waktu, " Mnt") AS waktu, CONCAT(a.jenis , "/" , a.jenis_jawaban) AS jenis, a.created_by as oleh, a.pakai_token');
         $this->db->from('m_ujian a');
         $this->db->join('matkul b', 'a.matkul_id = b.id_matkul');
         
@@ -53,6 +53,17 @@ class Ujian_model extends CI_Model {
 	    $query = $this->db->get_compiled_select() ; // GET QUERY PRODUCED BY ACTIVE RECORD WITHOUT RUNNING I
 
         $dt->query($query);
+        
+        $dt->edit('nama_ujian', function ($data) use ($role){
+        	$return = '';
+        	if(($role->name == 'admin') || ($role->name == 'dosen')) {
+        		$return = '<a href="'. site_url('ujian/edit/' . $data['id_ujian']) .'" >'. $data['nama_ujian'] .'</a >';
+	        }else if($role->name == 'pengawas') {
+		        $return = '<a href="'. site_url('ujian/monitor/' . $data['id_ujian']) .'" >'. $data['nama_ujian'] .'</a >';
+        	}
+            return $return ;
+        });
+        
         $dt->edit('status_ujian', function ($data) {
 //            $today = date('Y-m-d H:i:s');
 //			$data_start = date('Y-m-d H:i:s', strtotime($data['tgl_mulai']));
@@ -66,11 +77,36 @@ class Ujian_model extends CI_Model {
 			
 			return $data['status_ujian'] ? "active" : "close";
         });
+        
         $user_orm = new Users_orm;
         $dt->edit('oleh', function ($data) use ($user_orm){
             $user = $user_orm->where('username',$data['oleh'])->first();
             return $user != null ? $user->full_name : '';
         });
+        
+        $dt->add('aksi', function($data) use ($role){
+        // return a link in a new column
+	        $return = '';
+	        if(($role->name == 'admin') || ($role->name == 'dosen')) {
+		
+		        $return = '<div class="btn-group btn-group-sm" role="group" aria-label="">
+								<a href="' . site_url('ujian/edit/' . $data['id_ujian']) . '" class="btn btn-sm btn-warning">
+											<i class="fa fa-edit"></i> Edit
+										</a>
+										<a href="' . site_url('ujian/monitor/' . $data['id_ujian']) . '" class="btn btn-sm btn-info">
+											<i class="fa fa-desktop"></i> Monitor
+										</a>
+									</div>';
+	        }else if($role->name == 'pengawas') {
+		
+		        $return = '<a href="' . site_url('ujian/monitor/' . $data['id_ujian']) . '" class="btn btn-sm btn-info">
+											<i class="fa fa-desktop"></i> Monitor
+										</a>';
+	        }
+	        
+	        return $return;
+	        
+	    });
         
         return $dt->generate();
     }
@@ -256,7 +292,7 @@ class Ujian_model extends CI_Model {
     public function HslUjianById($id, $dt=false)
     {
     	
-    	$this->db->select('d.id, a.nim, a.nama, d.detail_bobot_benar, d.nilai_bobot_benar, "AKSI" AS aksi');
+    	$this->db->select('d.id, a.nim, a.nama, d.detail_bobot_benar, d.nilai_bobot_benar');
         $this->db->from('h_ujian d');
 		$this->db->join('mahasiswa a', 'a.id_mahasiswa=d.mahasiswa_id');
         $this->db->where([ 'd.ujian_id' => $id, 'd.ujian_selesai' => 'Y']);
@@ -296,11 +332,12 @@ class Ujian_model extends CI_Model {
 	        });
 	        
 	        $dt->edit('nilai_bobot_benar', function ($data){
-	        		  
-	            return number_format($data['nilai_bobot_benar'] / 3,2,'.', '') ;
+	        
+//	            return number_format($data['nilai_bobot_benar'] / 3,2,'.', '') ;
+	            return number_format($data['nilai_bobot_benar'] ,2,'.', '') ;
 	        });
 	        
-	        $dt->edit('aksi', function ($data) use($id){
+	        $dt->add('aksi', function ($data) use($id){
 	        	if(is_admin()){
 	        	    $return = '<div class="btn-group">';
 	        	    $return .= '<button class="btn btn-sm btn-danger btn_reset_hasil" type="button" title="Reset ujian" data-id="'. $data['id'] .'"><i class="fa fa-times-circle"></i></button>';

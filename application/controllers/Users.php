@@ -4,9 +4,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 use Orm\Users_orm;
 use Orm\Mhs_orm;
 use Orm\Dosen_orm;
-use Illuminate\Database\Eloquent\Builder;
+use GuzzleHttp\Exception\ClientException;
 
-class Users extends CI_Controller {
+class Users extends MY_Controller {
 
 	public function __construct(){
 		parent::__construct();
@@ -20,29 +20,16 @@ class Users extends CI_Controller {
 		$this->form_validation->set_error_delimiters('','');
 	}
 	
-	public function is_admin()
-	{
-		if (!$this->ion_auth->is_admin()){
-			show_error('Hanya Administrator yang diberi hak untuk mengakses halaman ini, <a href="'.base_url('dashboard').'">Kembali ke menu awal</a>', 403, 'Akses Terlarang');
-		}
-	}
-
-	public function output_json($data, $encode = true)
-	{
-        if($encode) $data = json_encode($data);
-        $this->output->set_content_type('application/json')->set_output($data);
-	}
-	
 
     public function data($id = null)
     {
-		$this->is_admin();
-        $this->output_json($this->users->getDataUsers($id), false);
+		$this->_akses_admin();
+        $this->_json($this->users->getDataUsers($id), false);
     }
 
     public function index()
 	{
-		$this->is_admin();
+		$this->_akses_admin();
 		$data = [
 			'user' => $this->ion_auth->user()->row(),
 			'judul'	=> 'User',
@@ -88,7 +75,7 @@ class Users extends CI_Controller {
 		
 		$user = Users_orm::findOrFail($id);
 	
-//		$this->is_admin();
+//		$this->_akses_admin();
 		$this->form_validation->set_rules('id', 'Id User', 'required');
 //		$this->form_validation->set_rules('username', 'Username', 'required');
 //		$this->form_validation->set_rules('first_name', 'First Name', 'required');
@@ -160,12 +147,12 @@ class Users extends CI_Controller {
 			
 			$data['status'] = $action ? true : false;
 		}
-		$this->output_json($data);
+		$this->_json($data);
 	}
 
 	public function edit_status()
 	{
-		$this->is_admin();
+		$this->_akses_admin();
 		$this->form_validation->set_rules('id', 'Id User', 'required');
 		$this->form_validation->set_rules('status', 'Status', 'required');
 		
@@ -183,12 +170,12 @@ class Users extends CI_Controller {
 			$update = $this->master->update('users', $input, 'id', $id);
 			$data['status'] = $update ? true : false;
 		}
-		$this->output_json($data);
+		$this->_json($data);
 	}
 	
 	public function edit_level()
 	{
-		$this->is_admin();
+		$this->_akses_admin();
 		$this->form_validation->set_rules('id', 'Id User', 'required');
 		$this->form_validation->set_rules('level', 'Level', 'required');
 		
@@ -206,7 +193,7 @@ class Users extends CI_Controller {
 			$update = $this->master->update('users_groups', $input, 'user_id', $id);
 			$data['status'] = $update ? true : false;
 		}
-		$this->output_json($data);
+		$this->_json($data);
 	}
 
 	public function change_password()
@@ -239,11 +226,11 @@ class Users extends CI_Controller {
 				];
 			}
 		}
-		$this->output_json($data);
+		$this->_json($data);
 	}
 	
 	public function reset_password_by_admin(){
-		$this->is_admin();
+		$this->_akses_admin();
 		$this->form_validation->set_rules('id', 'Id User', 'required');
 		
 		if($this->form_validation->run()===FALSE){
@@ -267,13 +254,92 @@ class Users extends CI_Controller {
 				];
 			}
 		}
-		$this->output_json($data);
+		$this->_json($data);
 	}
 
 	public function delete($id)
 	{
-		$this->is_admin();
+		$this->_akses_admin();
 		$data['status'] = $this->ion_auth->delete_user($id) ? true : false;
-		$this->output_json($data);
+		$this->_json($data);
+	}
+	
+	protected function _cari_pegawai(){
+		
+		$nip = $this->input->post('nip', true);
+		$client = new \GuzzleHttp\Client();
+		$data = [];
+		try{
+			$options = [
+				    'form_params' => [
+				        'nip' => $nip,
+				        'auth' => '{"user":"sempak","pass":"teles"}'
+				    ]
+			   ];
+			$response = $client->post('https://siap.undip.ac.id/apidata/get_data_pegawai', $options);
+
+			// echo $response->getBody();
+
+			if($response->getStatusCode() == 200){
+				$json  = $response->getBody()->getContents();
+				$return = json_decode($json);
+				$data['record'] = $return->record;
+				$this->_json($data);
+			}else{
+				show_error('Terjadi kesalahan, status : ' . $response->getStatusCode(), 500, 'Perhatian');
+			}
+		}catch(ClientException $e){
+			show_error('Terjadi kesalahan, ' . $e->getMessage(), 500, 'Perhatian');
+		}
+	}
+	
+	protected function _save_pengawas(){
+		
+		$nip = $this->input->post('nip', true);
+		
+		$client = new \GuzzleHttp\Client();
+		$data = [];
+		try{
+			$options = [
+				    'form_params' => [
+				        'nip' => $nip,
+				        'auth' => '{"user":"sempak","pass":"teles"}'
+				    ]
+			   ];
+			$response = $client->post('https://siap.undip.ac.id/apidata/get_data_pegawai', $options);
+
+			// echo $response->getBody();
+
+			if($response->getStatusCode() == 200){
+				$json  = $response->getBody()->getContents();
+				$return = json_decode($json);
+				$record = $return->record;
+				
+				$nama       = explode(' ', $record->nama, 2);
+				$first_name = $nama[0];
+				$last_name  = end($nama);
+				$full_name  = $record->nama;
+				
+				$username        = $record->nip;
+				$password        = date("dmY", strtotime($record->tgl_lahir));
+				$email           = $record->email;
+				$tgl_lahir        = date("dmY", strtotime($record->tgl_lahir));
+				$additional_data = [
+					'first_name' => $first_name,
+					'last_name'  => $last_name,
+					'full_name'  => $full_name,
+					'tgl_lahir'  => $tgl_lahir,
+				];
+				$group           = [ PENGAWAS_GROUP_ID ]; // Sets user to pengawas
+				$status = $this->ion_auth->register($username, $password, $email, $additional_data, $group);
+				$this->_json(['status' => $status]);
+			}else{
+				show_error('Terjadi kesalahan, status : ' . $response->getStatusCode(), 500, 'Perhatian');
+			}
+		}catch(ClientException $e){
+			show_error('Terjadi kesalahan, ' . $e->getMessage(), 500, 'Perhatian');
+		}
+		
+		
 	}
 }

@@ -34,3 +34,12 @@ function in_group($group){
 	$ci =& get_instance();
 	return $ci->ion_auth->in_group($group);
 }
+
+function get_logged_user(){
+	$user = null;
+	if(null !== session('session_data')){
+		$session_data = session('session_data');
+		$user = $session_data['user'];
+	}
+	return $user;
+}

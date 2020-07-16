@@ -1,6 +1,8 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
+use Ozdemir\Datatables\Datatables;
+use Ozdemir\Datatables\DB\MySQL;
 use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\Exception\UnsatisfiedDependencyException;
 use Orm\Mujian_orm;
@@ -38,7 +40,10 @@ class Ujian extends MY_Controller {
 	
 	protected function _data()
 	{
-		if (!$this->ion_auth->in_group('admin') && !$this->ion_auth->in_group('dosen')) {
+		if (!$this->ion_auth->in_group('admin')
+			&& !$this->ion_auth->in_group('dosen')
+			&& !$this->ion_auth->in_group('pengawas'))
+		{
 			show_404();
 		}
 //		if (empty($id)) {
@@ -47,15 +52,20 @@ class Ujian extends MY_Controller {
 //		}
 		$id = null;
 		$username = null;
-		if(!$this->ion_auth->is_admin()){
+		
+		if($this->ion_auth->in_group('dosen')){
 			$username = $this->ion_auth->user()->row()->username;
 		}
-		$this->_json($this->ujian->getDataUjian($id, $username), false);
+		
+		$this->_json($this->ujian->getDataUjian($id, $username, get_selected_role()), false);
 	}
 
     public function master()
 	{
-         if ( !$this->ion_auth->in_group('admin') && !$this->ion_auth->in_group('dosen') ){
+         if ( !$this->ion_auth->in_group('admin') &&
+	         !$this->ion_auth->in_group('dosen') &&
+	         !$this->ion_auth->in_group('pengawas')
+         ){
          	show_404();
          }
         $user = $this->ion_auth->user()->row();
@@ -1308,5 +1318,74 @@ class Ujian extends MY_Controller {
 		}
 
 		$this->_json($data);
+	}
+	
+	public function monitor($id_ujian){
+		$m_ujian = Mujian_orm::findOrFail($id_ujian);
+		if (!$this->ion_auth->in_group('admin')
+			&& !$this->ion_auth->in_group('dosen')
+			&& !$this->ion_auth->in_group('pengawas'))
+		{
+			show_404();
+		}
+		
+		$data = [
+			'judul'		=> 'Ujian',
+			'subjudul'	=> 'Monitor Ujian',
+		];
+		
+		$data['m_ujian'] = $m_ujian ;
+		
+		view('ujian/monitor',$data);
+	}
+	
+	protected function _data_daftar_hadir(){
+		$id = $this->input->post('id');
+		$m_ujian = Mujian_orm::findOrFail($id);
+		$config = [
+            'host'     => $this->db->hostname,
+            'port'     => $this->db->port,
+            'username' => $this->db->username,
+            'password' => $this->db->password,
+            'database' => $this->db->database,
+        ];
+		
+		$this->db->select('a.id, c.nim, c.nama, c.nik, c.jenis_kelamin, c.tgl_lahir, c.prodi, d.absen_by, "OFFLINE" AS koneksi');
+		$this->db->from('mahasiswa_ujian AS a');
+		$this->db->join('mahasiswa_matkul AS b', 'a.mahasiswa_matkul_id = b.id');
+        $this->db->join('mahasiswa AS c', 'b.mahasiswa_id = c.id_mahasiswa');
+		$this->db->join('daftar_hadir AS d', 'a.id = d.mahasiswa_ujian_id', 'left');
+        $this->db->where([ 'a.ujian_id' => $m_ujian->id_ujian]);
+        $this->db->group_by('a.id');
+        $this->db->order_by('c.nim');
+        
+        $dt = new Datatables( new MySQL($config) );
+
+	    $query = $this->db->get_compiled_select() ; // GET QUERY PRODUCED BY ACTIVE RECORD WITHOUT RUNNING I
+
+        $dt->query($query);
+        
+        $users_groups = new \Orm\Users_groups_orm();
+        $dt->edit('absen_by', function ($data) use($users_groups){
+	       
+//	            return number_format($data['nilai_bobot_benar'] / 3,2,'.', '') ;
+	        $return = '<span class="badge border-danger danger round badge-border" id="badge_absensi_'. $data['nim'] .'">BELUM ABSEN</span>';
+	        if(!empty($data['absen_by'])){
+	        	$return = '<span class="badge border-success success round badge-border" id="badge_absensi_'. $data['nim'] .'">SUDAH ABSEN</span>';
+	        }
+            return  $return;
+        });
+        
+        $dt->edit('koneksi', function ($data) use($id){
+
+            return '<span class="badge bg-danger" id="badge_koneksi_'. $data['nim'] .'">'. $data['koneksi'] .'</span>';
+        });
+		
+        $dt->add('absensi', function ($data) use($id){
+            
+            return '<button type="button" class="btn btn-sm btn-info btn_absensi" data-id="'. $data['id'] .'" data-nim="'. $data['nim'] .'"><i class="fa fa-check"></i> Absen</button>';
+        });
+        
+        $this->_json($dt->generate(), false);
 	}
 }

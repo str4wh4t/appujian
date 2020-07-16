@@ -243,7 +243,7 @@ $('form#form_reset_password_by_admin').on('submit', function (e) {
                             <div class="box-body pb-0">
                                 <div class="form-group">
                                     <div class="alert " style="border: 1px solid #ff0000; background-color: #ffeded;">
-                                        <b><span class="text-danger">Perhatian : </span></b><hr>Password setelah direset = username
+                                        <b><span class="text-danger">Perhatian : </span></b><hr>Password = tgl_lahir [ddmmyyyy]
                                     </div>
                                 </div>
                             </div>

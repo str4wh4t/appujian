@@ -90,20 +90,26 @@ class Auth extends CI_Controller
 			$remember = (bool)$this->input->post('remember');
 			if ($this->ion_auth->login($this->input->post('identity'), $this->input->post('password'), $remember)){
 				$user = $this->ion_auth->user()->row();
-				$session_data = [
-                        'username'          => $user->username,
-                        'nama_lengkap'      => get_nama_lengkap_user($user),
-                        'login_at'          => date('Y-m-d H:i:s'),
-                        'login_as'          => $this->ion_auth->get_users_groups($user->id)->result()[0],
-                    ];
-				$this->session->set_userdata('session_data',$session_data);
-				$message_rootpage = [
-					'header' => 'Welcome',
-					'content' => 'Login berhasil.',
-					'type' => 'success'
-				];
-				$this->session->set_flashdata('message_rootpage', $message_rootpage);
-				redirect('/dashboard', 'refresh');
+				if(!$user->is_online){
+					$session_data = [
+	                        'username'          => $user->username,
+	                        'nama_lengkap'      => $user->full_name,
+	                        'user'              => $user,
+	                        'login_at'          => date('Y-m-d H:i:s'),
+	                        'login_as'          => $this->ion_auth->get_users_groups($user->id)->result()[0],
+	                    ];
+					$this->session->set_userdata('session_data',$session_data);
+					$message_rootpage = [
+						'header' => 'Welcome',
+						'content' => 'Login berhasil.',
+						'type' => 'success'
+					];
+					$this->session->set_flashdata('message_rootpage', $message_rootpage);
+					redirect('/dashboard', 'refresh');
+				}else{
+					$this->session->set_flashdata('error_login_msg', 'Anda tidak diperkenankan login di tempat lain.');
+					redirect('logout', 'refresh');
+				}
 			}else {
 				$this->session->set_flashdata('error_login_msg', 'Login salah atau login akun anda ditutup.');
 				redirect('/', 'refresh');

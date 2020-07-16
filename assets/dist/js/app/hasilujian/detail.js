@@ -8,10 +8,13 @@ $(document).ready(function () {
         initComplete: function () {
             var api = this.api();
             $('#detail_hasil_filter input')
-                .off('.DT')
-                .on('keyup.DT', function (e) {
+                .off(".DT")
+                .on("keypress.DT", function(e) {
+                  if(e.which == 13) {
                     api.search(this.value).draw();
-                });
+                    return false;
+                  }
+            });
         },
         lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
         oLanguage: {

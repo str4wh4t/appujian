@@ -4,6 +4,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 use Orm\Mhs_orm;
 use Orm\Hujian_orm;
 use Orm\Topik_orm;
+use Ratchet\Server\IoServer;
+use Ratchet\Http\HttpServer;
+use Ratchet\WebSocket\WsServer;
+use Wsock\Chat;
 
 
 class Pub extends MY_Controller {
@@ -48,7 +52,7 @@ class Pub extends MY_Controller {
 	}
 	
 	public function c_user(){
-		show_404();
+		show_404(); /* <--- DISABLED FUNCTION */
 		$data_mhs = Mhs_orm::all();
 		foreach($data_mhs as $data) {
 			$nama       = explode(' ', $data->nama, 2);
@@ -94,6 +98,19 @@ class Pub extends MY_Controller {
 			}
 		}
 		die('DONE');
+	}
+	
+	public function socket(){
+		$server = IoServer::factory(
+		    new HttpServer(
+		        new WsServer(
+		            new Chat()
+		        )
+		    ),
+		    8080
+		);
+		
+		$server->run();
 	}
 
 }

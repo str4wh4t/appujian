@@ -128,7 +128,7 @@
 			</li>
 			@endif
 
-			@if( is_admin() || in_group('dosen') )
+			@if( is_admin() || in_group('dosen') || in_group('pengawas') )
 			<li class="{{ $page === 'ujian' ? "active" : "" }} nav-item">
 				<a href="{{ site_url('ujian/master') }}">
 					<i class="fa fa-calendar"></i><span class="menu-title" data-i18n="nav.dash.main">Ujian Manaj.</span>

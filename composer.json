@@ -17,7 +17,8 @@
         "illuminate/events": "^7.13",
         "ramsey/uuid": "^4.0",
         "ozdemir/datatables": "^2.3",
-        "codeitnowin/barcode": "^3.0"
+        "codeitnowin/barcode": "^3.0",
+        "cboden/ratchet": "^0.4.3"
     },
     "suggest": {
         "paragonie/random_compat": "Provides better randomness in PHP 5.x"
@@ -27,7 +28,8 @@
     },
    "autoload": {
         "psr-4": {
-            "Orm\\": "application/orms/"
+            "Orm\\": "application/orms/",
+            "Wsock\\": "application/websocket/"
         }
     }
 }

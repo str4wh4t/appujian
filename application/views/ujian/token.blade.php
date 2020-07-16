@@ -213,9 +213,16 @@
                     <span class="d-block"> <span class="live-clock" id="time_now" style="font-size: 20px"><?=date('H:i:s')?></span></span>
                 </div>
                 <div class="alert bg-info">
-                    <p style="font-size: 20px">Peraturan Ujian<i class="pull-right fa fa-exclamation-triangle"></i></p>
+                    <p style="font-size: 20px">Mengenal Ujian Online Undip<i class="pull-right fa fa-exclamation-triangle"></i></p>
                     <hr>
-                    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Maxime minus dolores accusantium fugiat debitis modi voluptates non consequuntur nemo expedita nihil laudantium commodi voluptatum voluptatem molestiae consectetur incidunt animi, qui exercitationem? Nisi illo, magnam perferendis commodi consequuntur impedit, et nihil excepturi quas iste cum sunt debitis odio beatae placeat nemo..</p>
+                    <p>
+                    Computer Assisted Test (CAT) Universitas Diponegoro yang dikelola oleh Lembaga Pengembangan dan Penjaminan Mutu Pendidikan memberikan kemudahan dalam pelayanan test baik secara online maupun offline.</p>
+                <p>Test yang diadakan meliputi : Tes Potensi Akademik (TPA), Tes Substansi Bidang, Tes Prediksi dan lain-lain. Sistem ujian menggunakan CAT akan diperoleh hasil seleksi yang kredible, akurat dan cepat. </p>
+                <p>Informasi layanan CAT dapat menghubungi layanan ujian Undip di : </p>
+                <p><i class="fa fa-phone-square"></i> +62-24 7460041</p>
+                <p><i class="fa fa-whatsapp"></i> 0812-2561-1333</p>
+                <p><i class="ft-mail"></i> lp2mp@live.undip.ac.id</p>
+                <p><i class="icon-globe"></i> www.lp2mp.undip.ac.id</p>
                 </div>
             </div>
             <div class="col-sm-6">

@@ -106,11 +106,6 @@ $(document).ready(function () {
             {
                 "targets": 1,
                 "data": "nama_ujian",
-                "render": function (data, type, row, meta) {
-                    return `<a href="${base_url}ujian/edit/${row.id_ujian}">
-										${data}
-									</a>`;
-                }
             },
             {
                 "targets": 3,
@@ -147,26 +142,7 @@ $(document).ready(function () {
             },
             {
                 "targets": 11,
-                "data": "id_ujian",
-                "render": function (data, type, row, meta) {
-                    // return `<div class="btn-group btn-group-sm" role="group" aria-label="">
-					// 				<button type="button" data-id="${data}" class="btn btn-token btn-sm btn-primary">
-					// 					<i class="fa fa-refresh"></i>
-					// 				</button>
-					// 				<a href="${base_url}ujian/edit/${data}" class="btn btn-sm btn-warning">
-					// 					<i class="fa fa-edit"></i>
-					// 				</a>
-					// 			</div>`;
-
-                    return `<div class="btn-group btn-group-sm" role="group" aria-label="">
-									<a href="${base_url}ujian/edit/${data}" class="btn btn-sm btn-warning">
-										<i class="fa fa-edit"></i> Edit
-									</a>
-									<a href="${base_url}ujian/monitor/${data}" class="btn btn-sm btn-info">
-										<i class="fa fa-desktop"></i> Monitor
-									</a>
-								</div>`;
-                }
+                "data": "aksi",
             },
         ],
         order: [

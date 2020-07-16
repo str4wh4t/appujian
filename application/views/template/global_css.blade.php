@@ -56,4 +56,12 @@
     }
     body { &.swal2-shown { &.swal2-shown { height: 100% !important; } } }
 
+    .header-navbar .navbar-header .navbar-brand {
+        padding-top: 17px;
+    }
+
+    .header-navbar.navbar-brand-center .navbar-header {
+        left: 20%;
+    }
+
 </style>

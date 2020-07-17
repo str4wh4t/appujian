@@ -1476,17 +1476,10 @@ class Ujian extends MY_Controller {
 	}
 	
 	protected function _check_pengabsen(){
-		$user_id = $this->input->post('user_id');
 		$mahasiswa_ujian_id = $this->input->post('mahasiswa_ujian_id');
-		
-		$users_groups    = Users_groups_orm::where([
-		    'user_id'  => $user_id,
-		    'group_id' => PENGAWAS_GROUP_ID
-	    ])->firstOrFail();
 		
 	    $daftar_hadir = Daftar_hadir_orm::where([
 		    'mahasiswa_ujian_id' => $mahasiswa_ujian_id,
-		    'absen_by'           => $users_groups->id,
 	    ])->first();
 	    
 	    $data['nama_pengabsen'] = null;

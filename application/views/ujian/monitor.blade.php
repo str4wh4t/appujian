@@ -400,13 +400,11 @@ body {
             {{--}));--}}
         });
 
-
-
     });
 
     $(document).on('click','.btn_absensi_check',function() {
 
-        $.post('{{ url('ujian/ajax/check_pengabsen') }}',{'user_id': '{{ get_logged_user()->id }}', 'mahasiswa_ujian_id': $(this).data('id') },function(res){
+        $.post('{{ url('ujian/ajax/check_pengabsen') }}',{'mahasiswa_ujian_id': $(this).data('id') },function(res){
             let txt = "Belum diabsenkan" ;
             let nama_pengabsen = res.nama_pengabsen;
             if(nama_pengabsen) {
@@ -416,10 +414,8 @@ body {
                 title: "Info Absen",
                 text: txt,
                 type: "success",
-                showCancelButton: true,
                 confirmButtonColor: "#3085d6",
-                cancelButtonColor: "#d33",
-                confirmButtonText: "Kick"
+                confirmButtonText: "Tutup"
             });
         });
     });

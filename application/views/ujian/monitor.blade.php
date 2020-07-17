@@ -207,6 +207,7 @@ body {
             //
             // }else {
                 if (data.cmd == 'OPEN') {
+                    console.log(data);
                     $.each(data.absensi,function(index, nim){
                         push_absensi(nim);
                         $('#badge_absensi_' + nim).text('SUDAH').removeClass('danger').removeClass('border-danger').addClass('border-success').addClass('success');
@@ -413,14 +414,16 @@ body {
     $(document).on('click','.btn_absensi_check',function() {
         $.post('{{ url('ujian/ajax/check_pengabsen') }}',{'mahasiswa_ujian_id': $(this).data('id') },function(res){
             let txt = "Belum diabsenkan" ;
+            let type = "warning";
             let nama_pengabsen = res.nama_pengabsen;
             if(nama_pengabsen) {
                 txt = "Telah Diabsen Oleh : " + res.nama_pengabsen;
+                type = "success";
             }
             Swal({
                 title: "Info Absen",
                 text: txt,
-                type: "success",
+                type: type,
                 confirmButtonColor: "#3085d6",
                 confirmButtonText: "Tutup"
             });

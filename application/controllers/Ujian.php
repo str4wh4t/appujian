@@ -1428,8 +1428,7 @@ class Ujian extends MY_Controller {
 		$this->db->join('mahasiswa_matkul AS b', 'a.mahasiswa_matkul_id = b.id');
         $this->db->join('mahasiswa AS c', 'b.mahasiswa_id = c.id_mahasiswa');
 		$this->db->join('daftar_hadir AS d', 'a.id = d.mahasiswa_ujian_id', 'left');
-        $this->db->where([ 'a.ujian_id' => $m_ujian->id_ujian]);
-        $this->db->where([ 'd.absen_by' => $pengawas_id]);
+        $this->db->where(['a.ujian_id' => $m_ujian->id_ujian, 'd.absen_by' => $pengawas_id]);
         $this->db->group_by('a.id');
         $this->db->order_by('c.nim');
         

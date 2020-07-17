@@ -73,7 +73,7 @@ class Chat implements MessageComponentInterface {
 			                                    ->get();
 			    $absensi         = [];
 			    $absensi_by_self = [];
-			    if (!empty($mahasiswa_ujian)) {
+			    if ($mahasiswa_ujian->isNotEmpty()) {
 				    foreach ($mahasiswa_ujian as $mu) {
 					    $absensi[] = $mu->mhs_matkul->mhs->nim;
 					    if ($mu->daftar_hadir->absen_by == $users_groups->id) {

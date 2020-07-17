@@ -20,6 +20,30 @@
 <!-- END PAGE VENDOR -->
 @endpush
 
+@push('page_custom_css')
+<style type="text/css">
+/* styling opsi */
+html body {
+    height: auto;
+}
+body {
+    /*overflow: hidden;*/
+}
+.card.card-fullscreen{
+    z-index: 9995 !important;
+}
+.enjoyhint{
+    z-index: 9996 !important;
+}
+.swal2-container{
+    z-index: 9997 !important;
+}
+.enjoyhint_close_btn{
+    display: none;
+}
+</style>
+@endpush
+
 @push('page_level_js')
 <!-- BEGIN PAGE LEVEL JS-->
 <script type="text/javascript">
@@ -48,7 +72,7 @@
                 $('#badge_koneksi_' + item).text('ONLINE').removeClass('bg-danger').addClass('bg-success');
             });
             $.each(list_absensi, function(index, item){
-                $('#badge_absensi_' + item).text('SUDAH ABSEN').removeClass('danger').removeClass('border-danger').addClass('border-success').addClass('success');
+                $('#badge_absensi_' + item).text('SUDAH').removeClass('danger').removeClass('border-danger').addClass('border-success').addClass('success');
             });
         },
         "drawCallback": function( settings ) {
@@ -56,10 +80,10 @@
                 $('#badge_koneksi_' + item).text('ONLINE').removeClass('bg-danger').addClass('bg-success');
             });
             $.each(list_absensi, function(index, item){
-                $('#badge_absensi_' + item).text('SUDAH ABSEN').removeClass('danger').removeClass('border-danger').addClass('border-success').addClass('success');
+                $('#badge_absensi_' + item).text('SUDAH').removeClass('danger').removeClass('border-danger').addClass('border-success').addClass('success');
             });
         },
-        lengthMenu: [[5, 10, 50, -1], [5, 10, 50, "All"]],
+        lengthMenu: [[10, 50, -1], [10, 50, "All"]],
         dom:
           "<'row'<'col-sm-3'l><'col-sm-6 text-center'B><'col-sm-3'f>>" +
           "<'row'<'col-sm-12'tr>>" +
@@ -70,10 +94,17 @@
               text: '<i class="fa fa-save"></i> Tampilkan Absensi Anda',
               className: 'btn btn-info btn-glow',
               action: function ( e, dt, node, config ) {
-                  // reload_ajax();
+                  load_absen_pengawas();
               }
-          }
+          },
           @endif
+            {
+                  text: '<i class="fa fa-th"></i> Tampilkan Absensi Semua',
+                  className: 'btn btn-success btn-glow ml-1',
+                  action: function ( e, dt, node, config ) {
+                      load_absen_semua();
+                  }
+            }
       ],
         oLanguage: {
           sProcessing: "loading..."
@@ -96,6 +127,16 @@
                 "orderable": false,
                 "searchable": false
             },
+            {
+                "data": 'koneksi',
+                "orderable": false,
+                "searchable": false
+            },
+            {
+                "data": 'aksi',
+                "orderable": false,
+                "searchable": false
+            },
             { "data": 'nim' },
             { "data": 'nama' },
             { "data": 'nik' },
@@ -108,14 +149,9 @@
                 "data": 'prodi',
                 "orderable": false,
                 "searchable": false
-            },
-            {
-                "data": 'koneksi',
-                "orderable": false,
-                "searchable": false
             }
         ],
-        order: [[0, "asc"], [5, "asc"]],
+        order: [[4, "asc"], [8, "asc"]],
         rowId: function(a) {
           return a;
         },
@@ -126,17 +162,17 @@
           // var index = page * length + (iDisplayIndex + 1);
           // $("td:eq(1)", row).html(index);
         },
-        scrollX:        true,
-        fixedColumns:   {
-            leftColumns: 3,
-        }
+        // scrollX:        true,
+        // fixedColumns:   {
+        //     leftColumns: 6,
+        // }
       });
 
     }
 
     function init_socket(){
-        conn = new WebSocket('wss://ujian.undip.ac.id/wss2/NNN');
-        // conn = new WebSocket('ws://localhost:8080');
+        // conn = new WebSocket('wss://ujian.undip.ac.id/wss2/NNN');
+        conn = new WebSocket('ws://localhost:8080');
         conn.onopen = function(e) {
             console.log('conn.onopen');
 {{--            conn.send(JSON.stringify({'username':'{{ get_logged_user()->username }}'}));--}}
@@ -173,7 +209,7 @@
                 if (data.cmd == 'OPEN') {
                     $.each(data.absensi,function(index, nim){
                         push_absensi(nim);
-                        $('#badge_absensi_' + nim).text('SUDAH ABSEN').removeClass('danger').removeClass('border-danger').addClass('border-success').addClass('success');
+                        $('#badge_absensi_' + nim).text('SUDAH').removeClass('danger').removeClass('border-danger').addClass('border-success').addClass('success');
                     });
                     $.each(data.absensi_by_self,function(index, nim){
                         push_absensi_by_self(nim);
@@ -194,10 +230,29 @@
                     pop_mhs_online(data.nim);
                     $('#badge_koneksi_' + data.nim).text('OFFLINE').removeClass('bg-success').removeClass('bg-warning').addClass('bg-danger');
                     $('#jml_mhs_online').text(list_mhs_online.length);
-                }else if (data.cmd == 'MHS_NEW_TAB') {
-                    $('#badge_koneksi_' + data.nim).text('BUKA TAB LAIN').removeClass('bg-danger').removeClass('bg-success').addClass('bg-warning');
-                    $('#jml_mhs_online').text(list_mhs_online.length);
+                }else if (data.cmd == 'MHS_LOST_FOCUS') {
+                    $('#badge_koneksi_' + data.nim).text('BUKA PAGE LAIN').removeClass('bg-danger').removeClass('bg-success').addClass('bg-warning');
+                }else if (data.cmd == 'MHS_GET_FOCUS') {
+                    $('#badge_koneksi_' + data.nim).text('ONLINE').removeClass('bg-danger').removeClass('bg-warning').addClass('bg-success');
+                }else if (data.cmd == 'DO_ABSENSI') {
+                    push_absensi(data.nim);
+                    $('#badge_absensi_' + data.nim).text('SUDAH').removeClass('danger').removeClass('border-danger').addClass('border-success').addClass('success');
+                    $('#jml_mhs_absen').text(list_absensi.length);
+                    if(data.user_id == '{{ get_logged_user()->id }}'){
+                        push_absensi_by_self(data.nim);
+                        $('#jml_mhs_absen_by_self').text(list_absensi_by_self.length);
+                    }
+                }else if (data.cmd == 'DO_ABSENSI_BATAL') {
+                    pop_absensi(data.nim);
+                    $('#badge_absensi_' + data.nim).text('BELUM').removeClass('success').removeClass('border-success').addClass('border-danger').addClass('danger');
+                    $('#jml_mhs_absen').text(list_absensi.length);
+                    if(data.user_id == '{{ get_logged_user()->id }}'){
+                        pop_absensi_by_self(data.nim);
+                        $('#jml_mhs_absen_by_self').text(list_absensi_by_self.length);
+                    }
                 }
+
+
                 // else if (data.cmd == 'ONLINE') {
                 //     list_online.push(data.username);
                 //     $('#badge_koneksi_' + data.username).text('ONLINE').removeClass('bg-danger').removeClass('bg-warning').addClass('bg-success');
@@ -238,13 +293,31 @@
             'mahasiswa_ujian_id': mahasiswa_ujian_id,
             'user_id':'{{ get_logged_user()->id }}',
             'as':'{{ get_selected_role()->name }}',
+            'nim': nim,
             'cmd':'DO_ABSENSI'
         }));
-        $('#badge_absensi_' + nim).text('SUDAH ABSEN').removeClass('danger').removeClass('border-danger').addClass('border-success').addClass('success');
-        push_absensi(nim);
-        push_absensi_by_self(nim);
-        $('#jml_mhs_absen').text(list_absensi.length);
-        $('#jml_mhs_absen_by_self').text(list_absensi_by_self.length);
+    });
+
+    $(document).on('click','.btn_absensi_batal',function(){
+        Swal({
+            title: "Anda yakin",
+            text: "Absensi peserta tsb akan dihapus",
+            type: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Hapus"
+        }).then(result => {
+            let mahasiswa_ujian_id = $(this).data('id');
+            let nim = $(this).data('nim');
+            conn.send(JSON.stringify({
+                'mahasiswa_ujian_id': mahasiswa_ujian_id,
+                'user_id':'{{ get_logged_user()->id }}',
+                'as':'{{ get_selected_role()->name }}',
+                'nim': nim,
+                'cmd':'DO_ABSENSI_BATAL'
+            }));
+        });
     });
 
     function push_absensi(nim){
@@ -256,6 +329,14 @@
         list_absensi.push(nim);
     }
 
+    function pop_absensi(nim){
+        nim = nim.toString();
+        const index = list_absensi.indexOf(nim);
+        if (index > -1) {
+          list_absensi.splice(index, 1);
+        }
+    }
+
     function push_absensi_by_self(nim){
         nim = nim.toString();
         const index = list_absensi_by_self.indexOf(nim);
@@ -263,6 +344,14 @@
           list_absensi_by_self.splice(index, 1);
         }
         list_absensi_by_self.push(nim);
+    }
+
+    function pop_absensi_by_self(nim){
+        nim = nim.toString();
+        const index = list_absensi_by_self.indexOf(nim);
+        if (index > -1) {
+          list_absensi_by_self.splice(index, 1);
+        }
     }
 
     function push_mhs_online(nim){
@@ -282,12 +371,66 @@
         }
     }
 
+    function load_absen_pengawas(){
+        table.ajax.url('{!! url('ujian/ajax/data_absen_pengawas/?id=' . $m_ujian->id_ujian . '&user_id=' . get_logged_user()->id) !!}').load();
+    }
+
+    function load_absen_semua(){
+        table.ajax.url('{!! url('ujian/ajax/data_daftar_hadir') !!}') .load();
+    }
+
+    $(document).on('click','.btn_kick',function(){
+        Swal({
+            title: "Anda yakin",
+            text: "Sesi ujian peserta tsb akan diakhiri",
+            type: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Kick"
+        }).then(result => {
+            {{--let mahasiswa_ujian_id = $(this).data('id');--}}
+            {{--let nim = $(this).data('nim');--}}
+            {{--conn.send(JSON.stringify({--}}
+            {{--    'mahasiswa_ujian_id': mahasiswa_ujian_id,--}}
+            {{--    'user_id':'{{ get_logged_user()->id }}',--}}
+            {{--    'as':'{{ get_selected_role()->name }}',--}}
+            {{--    'nim': nim,--}}
+            {{--    'cmd':'DO_KICK'--}}
+            {{--}));--}}
+        });
+
+
+
+    });
+
+    $(document).on('click','.btn_absensi_check',function() {
+
+        $.post('{{ url('ujian/ajax/check_pengabsen') }}',{'user_id': '{{ get_logged_user()->id }}', 'mahasiswa_ujian_id': $(this).data('id') },function(res){
+            let txt = "Belum diabsenkan" ;
+            let nama_pengabsen = res.nama_pengabsen;
+            if(nama_pengabsen) {
+                txt = "Telah Diabsen Oleh : " + res.nama_pengabsen;
+            }
+            Swal({
+                title: "Info Absen",
+                text: txt,
+                type: "success",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Kick"
+            });
+        });
+    });
+
 </script>
 <!-- END PAGE LEVEL JS-->
 @endpush
 
 @section('content')
-<section class="row">
+<section style="background-color: #f3f3f3; overflow-x: hidden;" class="card card-fullscreen">
+<div class="row">
     <div class="col-12">
         <div class="card">
             <div class="card-header">
@@ -301,18 +444,19 @@
 <!---- --->
 <div class="box">
     <div class="box-body">
-        <div class="mb-4">
-                <button type="button" onclick="reload_ajax()" class="btn btn-outline-secondary btn-glow"><i class="fa fa-refresh"></i> Reload</button>
+        <div class="mb-4" style="text-align: center">
+                <a href="{{ site_url('ujian/master') }}" class="btn btn-warning btn-flat"><i class="fa fa-arrow-left"></i> Kembali</a>
+{{--                <button type="button" onclick="reload_ajax()" class="btn btn-outline-secondary btn-glow"><i class="fa fa-refresh"></i> Reload</button>--}}
 
-                <button type="button" class="btn btn-outline-success btn-glow ml-1">
+                <button type="button" class="btn btn-outline-success btn-glow">
                     JUMLAH MHS ONLINE : <span id="jml_mhs_online">0</span>
                 </button>
 
-                <button type="button" class="btn btn-outline-primary btn-glow ml-1">
+                <button type="button" class="btn btn-outline-primary btn-glow">
                     JUMLAH MHS ABSEN OLEH ANDA : <span id="jml_mhs_absen_by_self">0</span>
                 </button>
 
-                <button type="button" class="btn btn-outline-danger btn-glow ml-1">
+                <button type="button" class="btn btn-outline-danger btn-glow">
                     JUMLAH MHS SUDAH ABSEN TOTAL : <span id="jml_mhs_absen">0</span>
                 </button>
         </div>
@@ -321,14 +465,15 @@
         <table id="tb_daftar_hadir" class="table table-striped table-bordered table-hover">
         <thead>
             <tr>
-                <th class="text-center">Aksi</th>
+                <th class="text-center">Absensi</th>
                 <th>Absensi</th>
+                <th>Status</th>
+                <th>Aksi</th>
                 <th>No Peserta</th>
                 <th>Nama</th>
                 <th>NIK</th>
                 <th>Tgl Lahir</th>
                 <th>Prodi</th>
-                <th>Status</th>
             </tr>
         </thead>
         </table>
@@ -344,5 +489,6 @@
             </div>
         </div>
     </div>
+</div>
 </section>
 @endsection

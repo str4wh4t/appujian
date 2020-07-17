@@ -23,8 +23,8 @@ class Auth extends CI_Controller
 	public function index()
 	{
 		if ($this->ion_auth->logged_in()){
-			$user_id = $this->ion_auth->user()->row()->id; // Get User ID
-			$group = $this->ion_auth->get_users_groups($user_id)->row()->name; // Get user group
+//			$user_id = $this->ion_auth->user()->row()->id; // Get User ID
+//			$group = $this->ion_auth->get_users_groups($user_id)->row()->name; // Get user group
 			redirect('dashboard');
 		}
 		$this->data['identity'] = [
@@ -40,7 +40,7 @@ class Auth extends CI_Controller
 			'name' => 'password',
 			'id' => 'password',
 			'type' => 'password',
-			'placeholder' => 'Password, default : Tgl Lahir [ddmmyyyy]',
+			'placeholder' => 'Tgl Lahir [ddmmyyyy]',
 			'class' => 'form-control',
 		];
 		$this->data['message'] = (validation_errors()) ? validation_errors() : $this->session->flashdata('message');

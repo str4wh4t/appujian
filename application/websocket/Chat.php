@@ -100,13 +100,42 @@ class Chat implements MessageComponentInterface {
 		    $daftar_hadir = Daftar_hadir_orm::where([
 			    'mahasiswa_ujian_id' => $req->mahasiswa_ujian_id,
 			    'absen_by'           => $users_groups->id,
-		    ])->get();
-	        if($daftar_hadir->isEmpty()) {
+		    ])->first();
+	        if(empty($daftar_hadir)) {
 		        $daftar_hadir                     = new Daftar_hadir_orm();
 		        $daftar_hadir->mahasiswa_ujian_id = $req->mahasiswa_ujian_id;
 		        $daftar_hadir->absen_by           = $users_groups->id;
 		        $daftar_hadir->save();
 	        }
+	        $res = [
+			    'cmd'         => $req->cmd,
+			    'nim'         => $req->nim,
+		        'user_id'     => $req->user_id,
+		    ];
+		    foreach ($this->clients as $client) {
+			    $client->send(json_encode($res));
+		    }
+	    }elseif($req->cmd == 'DO_ABSENSI_BATAL'){
+	    	// UNTUK PENGAWAS
+	    	$users_groups    = Users_groups_orm::where([
+			    'user_id'  => $req->user_id,
+			    'group_id' => PENGAWAS_GROUP_ID
+		    ])->firstOrFail();
+		    $daftar_hadir = Daftar_hadir_orm::where([
+			    'mahasiswa_ujian_id' => $req->mahasiswa_ujian_id,
+			    'absen_by'           => $users_groups->id,
+		    ])->first();
+	        if(!empty($daftar_hadir)) {
+		        $daftar_hadir->delete();
+	        }
+	        $res = [
+			    'cmd'         => $req->cmd,
+			    'nim'         => $req->nim,
+		        'user_id'     => $req->user_id,
+		    ];
+		    foreach ($this->clients as $client) {
+			    $client->send(json_encode($res));
+		    }
 	    }elseif($req->cmd == 'MHS_ONLINE'){
             $this->data_clients_mhs[$req->nim] = $from->resourceId;
 	    	$res = [
@@ -116,7 +145,23 @@ class Chat implements MessageComponentInterface {
 	        foreach ($this->clients as $client) {
 			    $client->send(json_encode($res));
 		    }
-	    }elseif($req->cmd == 'MHS_NEW_TAB'){
+	    }elseif($req->cmd == 'MHS_LOST_FOCUS'){
+	    	$res = [
+			    'cmd'             => $req->cmd,
+			    'nim'             => $req->nim,
+		    ];
+	        foreach ($this->clients as $client) {
+			    $client->send(json_encode($res));
+		    }
+	    }elseif($req->cmd == 'MHS_GET_FOCUS'){
+	    	$res = [
+			    'cmd'             => $req->cmd,
+			    'nim'             => $req->nim,
+		    ];
+	        foreach ($this->clients as $client) {
+			    $client->send(json_encode($res));
+		    }
+	    }elseif($req->cmd == 'DO_KICK'){
 	    	$res = [
 			    'cmd'             => $req->cmd,
 			    'nim'             => $req->nim,
@@ -174,6 +219,7 @@ class Chat implements MessageComponentInterface {
         // The connection is closed, remove it, as we can no longer send it messages
         $this->clients->detach($conn);
         $nim = null;
+        $res = [];
         foreach($this->data_clients_mhs as $cnim => $resourceId){
         	if($resourceId == $conn->resourceId){
         		$nim = $cnim;

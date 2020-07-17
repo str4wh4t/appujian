@@ -92,8 +92,8 @@ $(document).ready(function(){
     @endif
 
     @if(in_group('mahasiswa'))
-    let conn = new WebSocket('wss://ujian.undip.ac.id/wss2/NNN');
-    // let conn = new WebSocket('ws://localhost:8080');
+    // let conn = new WebSocket('wss://ujian.undip.ac.id/wss2/NNN');
+    let conn = new WebSocket('ws://localhost:8080');
     conn.onopen = function(e) {
         // console.log("Connection established!");
         conn.send(JSON.stringify({
@@ -127,15 +127,15 @@ $(document).ready(function(){
         conn.send(JSON.stringify({
             'nim':'{{ get_logged_user()->username }}',
             'as':'{{ get_selected_role()->name }}',
-            'cmd':'MHS_NEW_TAB'
+            'cmd':'MHS_LOST_FOCUS'
         }));
     };
 
     window.onfocus = function () {
         conn.send(JSON.stringify({
-            'username': '{{ get_logged_user()->username }}',
-            'as': '{{ get_selected_role()->name }}',
-            'cmd': 'ONLINE'
+            'nim':'{{ get_logged_user()->username }}',
+            'as':'{{ get_selected_role()->name }}',
+            'cmd':'MHS_GET_FOCUS'
         }));
     };
 

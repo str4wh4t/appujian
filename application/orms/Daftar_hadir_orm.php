@@ -8,9 +8,9 @@ class Daftar_hadir_orm extends Eloquent
     protected $table = 'daftar_hadir';
 	protected $dateFormat = 'Y-m-d H:i:s';
 	
-    public function absen_by()
+    public function pengawas()
     {
-        return $this->hasOne('Orm\Users_groups_orm','absen_by');
+        return $this->hasOne('Orm\Users_groups_orm','id','absen_by');
     }
     
     public function mhs_ujian()

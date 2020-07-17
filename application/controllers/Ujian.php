@@ -17,6 +17,7 @@ use Orm\Topik_ujian_orm;
 use Orm\Bobot_soal_orm;
 use Orm\Mhs_ujian_orm;
 use Orm\Mhs_matkul_orm;
+use Orm\Users_groups_orm;
 use Orm\Daftar_hadir_orm;
 
 class Ujian extends MY_Controller {
@@ -1351,7 +1352,7 @@ class Ujian extends MY_Controller {
             'database' => $this->db->database,
         ];
 		
-		$this->db->select('a.id, c.nim, c.nama, c.nik, c.jenis_kelamin, c.tgl_lahir, c.prodi, d.absen_by, "OFFLINE" AS koneksi');
+		$this->db->select('a.id, c.nim, c.nama, c.nik, c.jenis_kelamin, c.tgl_lahir, c.prodi, d.absen_by, "OFFLINE" AS koneksi, "AKSI" AS aksi');
 		$this->db->from('mahasiswa_ujian AS a');
 		$this->db->join('mahasiswa_matkul AS b', 'a.mahasiswa_matkul_id = b.id');
         $this->db->join('mahasiswa AS c', 'b.mahasiswa_id = c.id_mahasiswa');
@@ -1366,34 +1367,134 @@ class Ujian extends MY_Controller {
 
         $dt->query($query);
         
-        $users_groups = new \Orm\Users_groups_orm();
+        $users_groups = new Users_groups_orm();
         $dt->edit('absen_by', function ($data) use($users_groups){
-	       
 //	            return number_format($data['nilai_bobot_benar'] / 3,2,'.', '') ;
-	        $return = '<span class="badge border-danger danger round badge-border" id="badge_absensi_'. $data['nim'] .'">BELUM ABSEN</span>';
+	        $return = '<span class="badge border-danger danger round badge-border" id="badge_absensi_'. $data['nim'] .'">BELUM</span>';
 	        if(!empty($data['absen_by'])){
-	        	$return = '<span class="badge border-success success round badge-border" id="badge_absensi_'. $data['nim'] .'">SUDAH ABSEN</span>';
+	        	$return = '<span class="badge border-success success round badge-border" id="badge_absensi_'. $data['nim'] .'">SUDAH</span>';
 	        }
             return  $return;
         });
         
+        $dt->edit('aksi', function ($data) use($id){
+            return '<button type="button" class="btn btn-sm btn-danger btn_kick" data-id="'. $data['id'] .'" data-nim="'. $data['nim'] .'"><i class="fa fa-user-times"></i> Kick</button>';
+        });
+        
         $dt->edit('koneksi', function ($data) use($id){
-
             return '<span class="badge bg-danger" id="badge_koneksi_'. $data['nim'] .'">'. $data['koneksi'] .'</span>';
         });
-		
+        
         $dt->add('absensi', function ($data) use($id){
             if(in_group('admin')){
                 return '<button type="button" class="btn btn-sm btn-success btn_open" data-id="'. $data['id'] .'" data-nim="'. $data['nim'] .'"><i class="fa fa-folder-open"></i> Lihat</button>';
             }
         	else if(in_group('pengawas')){
-                return '<button type="button" class="btn btn-sm btn-info btn_absensi" data-id="'. $data['id'] .'" data-nim="'. $data['nim'] .'"><i class="fa fa-check"></i> Absen</button>';
+                return '<div class="btn-group">
+							<button type="button" title="isi absen" class="btn btn-sm btn-info btn_absensi" data-id="'. $data['id'] .'" data-nim="'. $data['nim'] .'"><i class="fa fa-check"></i></button>
+							<button type="button" title="batal absen" class="btn btn-sm btn-danger btn_absensi_batal" data-id="'. $data['id'] .'" data-nim="'. $data['nim'] .'"><i class="fa fa-times"></i></button>
+							<button type="button" title="check absen" class="btn btn-sm btn-secondary btn_absensi_check" data-id="'. $data['id'] .'" data-nim="'. $data['nim'] .'"><i class="fa fa-question"></i></button>
+							</div>';
             }else{
         		return '-';
 	        }
         });
         
         $this->_json($dt->generate(), false);
+	}
+	
+	protected function _data_absen_pengawas(){
+		$id = $this->input->get('id');
+		$user_id = $this->input->get('user_id');
+		
+		$users_groups    = Users_groups_orm::where([
+		    'user_id'  => $user_id,
+		    'group_id' => PENGAWAS_GROUP_ID
+	    ])->firstOrFail();
+		
+		$pengawas_id = $users_groups->id;
+		
+		$m_ujian = Mujian_orm::findOrFail($id);
+		$config = [
+            'host'     => $this->db->hostname,
+            'port'     => $this->db->port,
+            'username' => $this->db->username,
+            'password' => $this->db->password,
+            'database' => $this->db->database,
+        ];
+		
+		$this->db->select('a.id, c.nim, c.nama, c.nik, c.jenis_kelamin, c.tgl_lahir, c.prodi, d.absen_by, "OFFLINE" AS koneksi, "AKSI" AS aksi');
+		$this->db->from('mahasiswa_ujian AS a');
+		$this->db->join('mahasiswa_matkul AS b', 'a.mahasiswa_matkul_id = b.id');
+        $this->db->join('mahasiswa AS c', 'b.mahasiswa_id = c.id_mahasiswa');
+		$this->db->join('daftar_hadir AS d', 'a.id = d.mahasiswa_ujian_id', 'left');
+        $this->db->where([ 'a.ujian_id' => $m_ujian->id_ujian]);
+        $this->db->where([ 'd.absen_by' => $pengawas_id]);
+        $this->db->group_by('a.id');
+        $this->db->order_by('c.nim');
+        
+        $dt = new Datatables( new MySQL($config) );
+
+	    $query = $this->db->get_compiled_select() ; // GET QUERY PRODUCED BY ACTIVE RECORD WITHOUT RUNNING I
+
+        $dt->query($query);
+        
+        $users_groups = new Users_groups_orm();
+        $dt->edit('absen_by', function ($data) use($users_groups){
+//	            return number_format($data['nilai_bobot_benar'] / 3,2,'.', '') ;
+	        $return = '<span class="badge border-danger danger round badge-border" id="badge_absensi_'. $data['nim'] .'">BELUM</span>';
+	        if(!empty($data['absen_by'])){
+	        	$return = '<span class="badge border-success success round badge-border" id="badge_absensi_'. $data['nim'] .'">SUDAH</span>';
+	        }
+            return  $return;
+        });
+        
+        $dt->edit('aksi', function ($data) use($id){
+            return '<button type="button" class="btn btn-sm btn-danger" data-id="'. $data['id'] .'" data-nim="'. $data['nim'] .'"><i class="fa fa-user-times"></i> Kick</button>';
+        });
+        
+        $dt->edit('koneksi', function ($data) use($id){
+            return '<span class="badge bg-danger" id="badge_koneksi_'. $data['nim'] .'">'. $data['koneksi'] .'</span>';
+        });
+        
+        $dt->add('absensi', function ($data) use($id){
+            if(in_group('admin')){
+                return '<button type="button" class="btn btn-sm btn-success btn_open" data-id="'. $data['id'] .'" data-nim="'. $data['nim'] .'"><i class="fa fa-folder-open"></i> Lihat</button>';
+            }
+        	else if(in_group('pengawas')){
+                return '<div class="btn-group">
+							<button type="button" class="btn btn-sm btn-info btn_absensi" data-id="'. $data['id'] .'" data-nim="'. $data['nim'] .'"><i class="fa fa-check"></i></button>
+							<button type="button" class="btn btn-sm btn-danger btn_absensi_batal" data-id="'. $data['id'] .'" data-nim="'. $data['nim'] .'"><i class="fa fa-times"></i></button>
+							<button type="button" title="check absen" class="btn btn-sm btn-secondary btn_absensi_check" data-id="'. $data['id'] .'" data-nim="'. $data['nim'] .'"><i class="fa fa-question"></i></button>
+							</div>';
+            }else{
+        		return '-';
+	        }
+        });
+        
+        $this->_json($dt->generate(), false);
+	}
+	
+	protected function _check_pengabsen(){
+		$user_id = $this->input->post('user_id');
+		$mahasiswa_ujian_id = $this->input->post('mahasiswa_ujian_id');
+		
+		$users_groups    = Users_groups_orm::where([
+		    'user_id'  => $user_id,
+		    'group_id' => PENGAWAS_GROUP_ID
+	    ])->firstOrFail();
+		
+	    $daftar_hadir = Daftar_hadir_orm::where([
+		    'mahasiswa_ujian_id' => $mahasiswa_ujian_id,
+		    'absen_by'           => $users_groups->id,
+	    ])->first();
+	    
+	    $data['nama_pengabsen'] = null;
+	    if(!empty($daftar_hadir)){
+	    	$data['nama_pengabsen'] = $daftar_hadir->pengawas->users->full_name;
+	    }
+	    
+	    $this->_json($data);
 	}
 	
 //	function c(){

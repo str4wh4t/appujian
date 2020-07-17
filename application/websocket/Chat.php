@@ -99,7 +99,6 @@ class Chat implements MessageComponentInterface {
 		    ])->firstOrFail();
 		    $daftar_hadir = Daftar_hadir_orm::where([
 			    'mahasiswa_ujian_id' => $req->mahasiswa_ujian_id,
-			    'absen_by'           => $users_groups->id,
 		    ])->first();
 	        if(empty($daftar_hadir)) {
 		        $daftar_hadir                     = new Daftar_hadir_orm();

@@ -18,4 +18,9 @@ class Mhs_ujian_orm extends Eloquent
         return $this->belongsTo('Orm\Mhs_matkul_orm','mahasiswa_matkul_id');
     }
     
+    public function daftar_hadir()
+    {
+        return $this->hasOne('Orm\Daftar_hadir_orm', 'mahasiswa_ujian_id');
+    }
+    
 }

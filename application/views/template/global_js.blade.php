@@ -97,9 +97,9 @@ $(document).ready(function(){
     conn.onopen = function(e) {
         // console.log("Connection established!");
         conn.send(JSON.stringify({
-            'username':'{{ get_logged_user()->username }}',
+            'nim':'{{ get_logged_user()->username }}',
             'as':'{{ get_selected_role()->name }}',
-            'cmd':'ONLINE'
+            'cmd':'MHS_ONLINE'
         }));
     };
 
@@ -108,12 +108,13 @@ $(document).ready(function(){
     };
 
     conn.onclose = function(e) {
-        // console.log(e.data);
+        console.log(e.data);
         conn.send(JSON.stringify({
-            'username':'{{ get_logged_user()->username }}',
+            'nim':'{{ get_logged_user()->username }}',
             'as':'{{ get_selected_role()->name }}',
-            'cmd':'OFFLINE',
+            'cmd':'MHS_OFFLINE'
         }));
+
     };
 
     window.onblur = function () {
@@ -124,9 +125,9 @@ $(document).ready(function(){
         });
 
         conn.send(JSON.stringify({
-            'username': '{{ get_logged_user()->username }}',
-            'as': '{{ get_selected_role()->name }}',
-            'cmd': 'BUKA TAB LAIN',
+            'nim':'{{ get_logged_user()->username }}',
+            'as':'{{ get_selected_role()->name }}',
+            'cmd':'MHS_NEW_TAB'
         }));
     };
 

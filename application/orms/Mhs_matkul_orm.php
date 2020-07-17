@@ -18,4 +18,9 @@ class Mhs_matkul_orm extends Eloquent
         return $this->belongsToMany('Orm\Mujian_orm','mahasiswa_ujian','mahasiswa_matkul_id','ujian_id');
     }
     
+    public function mhs()
+    {
+        return $this->belongsTo('Orm\Mhs_orm','mahasiswa_id','id_mahasiswa');
+    }
+    
 }

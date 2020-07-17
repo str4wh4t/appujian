@@ -17,6 +17,7 @@ use Orm\Topik_ujian_orm;
 use Orm\Bobot_soal_orm;
 use Orm\Mhs_ujian_orm;
 use Orm\Mhs_matkul_orm;
+use Orm\Daftar_hadir_orm;
 
 class Ujian extends MY_Controller {
 
@@ -390,7 +391,7 @@ class Ujian extends MY_Controller {
 					
 					$mhs_ujian = Mhs_ujian_orm::where(['ujian_id' => $m_ujian_orm->id_ujian])->get();
 					$peserta_ujian_before = [];
-					if(!empty($mhs_ujian)){
+					if($mhs_ujian->isNotEmpty()){
 						foreach($mhs_ujian as $mu){
 							$peserta_ujian_before[] = $mu->mhs_matkul->mahasiswa_id;
 						}
@@ -1382,10 +1383,27 @@ class Ujian extends MY_Controller {
         });
 		
         $dt->add('absensi', function ($data) use($id){
-            
-            return '<button type="button" class="btn btn-sm btn-info btn_absensi" data-id="'. $data['id'] .'" data-nim="'. $data['nim'] .'"><i class="fa fa-check"></i> Absen</button>';
+            if(in_group('admin')){
+                return '<button type="button" class="btn btn-sm btn-success btn_open" data-id="'. $data['id'] .'" data-nim="'. $data['nim'] .'"><i class="fa fa-folder-open"></i> Lihat</button>';
+            }
+        	else if(in_group('pengawas')){
+                return '<button type="button" class="btn btn-sm btn-info btn_absensi" data-id="'. $data['id'] .'" data-nim="'. $data['nim'] .'"><i class="fa fa-check"></i> Absen</button>';
+            }else{
+        		return '-';
+	        }
         });
         
         $this->_json($dt->generate(), false);
 	}
+	
+//	function c(){
+//		$mhs_ujian = Mhs_ujian_orm::where(['ujian_id' => 50])->first();
+////		    echo '1.' . count($daftar_hadir);
+////	    vdebug($mhs_ujian->isNotEmpty());
+//	    vdebug(empty($mhs_ujian));
+//        if(empty($daftar_hadir)) {
+////	            echo '2.' . count($daftar_hadir);
+//        }
+//	}
+
 }

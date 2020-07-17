@@ -207,11 +207,6 @@
         <div class="row">
             <div class="col-sm-6">
                 <a href="{{ site_url('ujian/list') }}" class="btn btn-warning mb-1"><i class="fa fa-arrow-left"></i> Kembali</a>
-                <div class="alert bg-danger">
-                    <span style="font-size: 20px">Waktu<i class="pull-right fa fa-clock-o"></i></span>
-                    <hr>
-                    <span class="d-block"> <span class="live-clock" id="time_now" style="font-size: 20px"><?=date('H:i:s')?></span></span>
-                </div>
                 <div class="alert bg-info">
                     <p style="font-size: 20px">Tata Tertib Ujian<i class="pull-right fa fa-exclamation-triangle"></i></p>
                     <hr>
@@ -230,6 +225,11 @@
                 </div>
             </div>
             <div class="col-sm-6">
+                <div class="alert bg-danger mt-5">
+                    <span style="font-size: 20px">Waktu<i class="pull-right fa fa-clock-o"></i></span>
+                    <hr>
+                    <span class="d-block"> <span class="live-clock" id="time_now" style="font-size: 20px"><?=date('H:i:s')?></span></span>
+                </div>
                 <table class="table table-bordered">
                     <tr>
                         <th>No Peserta</th>
@@ -350,7 +350,7 @@
 {{--                        data-dismiss="modal"--}}
 {{--                        aria-label="Close">--}}
 {{--                    <span aria-hidden="true">&times;</span>--}}
-                </button>
+{{--                </button>--}}
             </div>
             <div class="modal-body">
                 <h5 style="text-align: center; border: 1px solid #333; padding: 5px; font-weight: bold;">

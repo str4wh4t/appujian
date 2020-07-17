@@ -117,28 +117,6 @@ $(document).ready(function(){
 
     };
 
-    window.onblur = function () {
-        Swal({
-            title: "Perhatian",
-            text: "Anda diperingatkan tidak boleh membuka halaman lain, semua aktifitas anda direkam oleh sistem untuk penilaian",
-            type: "warning"
-        });
-
-        conn.send(JSON.stringify({
-            'nim':'{{ get_logged_user()->username }}',
-            'as':'{{ get_selected_role()->name }}',
-            'cmd':'MHS_LOST_FOCUS'
-        }));
-    };
-
-    window.onfocus = function () {
-        conn.send(JSON.stringify({
-            'nim':'{{ get_logged_user()->username }}',
-            'as':'{{ get_selected_role()->name }}',
-            'cmd':'MHS_GET_FOCUS'
-        }));
-    };
-
     @endif
 
 });

@@ -53,7 +53,6 @@ body {
     let list_mhs_online = [];
     let list_absensi = [];
     let list_absensi_by_self = [];
-    let conn ;
     function init_page_level() {
         ajaxcsrf();
         init_socket();

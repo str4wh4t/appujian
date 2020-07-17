@@ -253,12 +253,14 @@ body {
                             $('#jml_mhs_absen_by_self').text(list_absensi_by_self.length);
                         }
                     }else{
-                       Swal({
-                            title: "Perhatian",
-                            text: "Bukan absensi anda",
-                            type: "error",
-                            confirmButtonText: "Tutup"
-                        });
+                        if (data.user_id == '{{ get_logged_user()->id }}') {
+                           Swal({
+                                title: "Perhatian",
+                                text: "Bukan absensi anda",
+                                type: "error",
+                                confirmButtonText: "Tutup"
+                            });
+                        }
                     }
                 }
 

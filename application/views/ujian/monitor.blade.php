@@ -207,21 +207,22 @@ body {
             //
             // }else {
                 if (data.cmd == 'OPEN') {
-                    console.log(data);
                     $.each(data.absensi,function(index, nim){
                         push_absensi(nim);
                         $('#badge_absensi_' + nim).text('SUDAH').removeClass('danger').removeClass('border-danger').addClass('border-success').addClass('success');
                     });
-                    $.each(data.absensi_by_self,function(index, nim){
-                        push_absensi_by_self(nim);
-                    });
+                    $('#jml_mhs_absen').text(list_absensi.length);
+                    if (data.user_id == '{{ get_logged_user()->id }}') {
+                        $.each(data.absensi_by_self, function (index, nim) {
+                            push_absensi_by_self(nim);
+                        });
+                        $('#jml_mhs_absen_by_self').text(list_absensi_by_self.length);
+                    }
                     $.each(data.mhs_online,function(index, code){
                         let nim = index ;
                         push_mhs_online(nim);
                         $('#badge_koneksi_' + nim).text('ONLINE').removeClass('bg-danger').removeClass('bg-warning').addClass('bg-success');
                     });
-                    $('#jml_mhs_absen').text(list_absensi.length);
-                    $('#jml_mhs_absen_by_self').text(list_absensi_by_self.length);
                     $('#jml_mhs_online').text(list_mhs_online.length);
                 }else if (data.cmd == 'MHS_ONLINE') {
                     push_mhs_online(data.nim);

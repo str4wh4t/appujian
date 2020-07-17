@@ -86,6 +86,7 @@ class Chat implements MessageComponentInterface {
 				    'mhs_online' => $this->data_clients_mhs,
 				    'absensi'         => $absensi,
 				    'absensi_by_self' => $absensi_by_self,
+				    'user_id'     => $req->user_id,
 			    ];
 			    foreach ($this->clients as $client) {
 				    $client->send(json_encode($res));

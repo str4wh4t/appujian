@@ -93,7 +93,7 @@ $(document).ready(function(){
 
     @if(in_group('mahasiswa'))
     // let conn = new WebSocket('wss://ujian.undip.ac.id/wss2/NNN');
-    let conn = new WebSocket('ws://localhost:8080');
+    let conn = new WebSocket('{{ ws_url() }}');
     conn.onopen = function(e) {
         // console.log("Connection established!");
         conn.send(JSON.stringify({

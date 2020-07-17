@@ -94,3 +94,9 @@ function commit_db_trx(){
 	$ci->db->trans_commit();
     DB::commit();
 }
+
+/** WEBSOCKET */
+function ws_url(){
+	$ci =& get_instance();
+	return $ci->config->item('ws_url');
+}

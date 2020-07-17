@@ -125,13 +125,15 @@ class Chat implements MessageComponentInterface {
 			    'mahasiswa_ujian_id' => $req->mahasiswa_ujian_id,
 			    'absen_by'           => $users_groups->id,
 		    ])->first();
+		    $ok = false ;
 	        if(!empty($daftar_hadir)) {
-		        $daftar_hadir->delete();
+		        $ok = $daftar_hadir->delete();
 	        }
 	        $res = [
 			    'cmd'         => $req->cmd,
 			    'nim'         => $req->nim,
 		        'user_id'     => $req->user_id,
+			    'ok'          => $ok,
 		    ];
 		    foreach ($this->clients as $client) {
 			    $client->send(json_encode($res));

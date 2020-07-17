@@ -243,12 +243,21 @@ body {
                         $('#jml_mhs_absen_by_self').text(list_absensi_by_self.length);
                     }
                 }else if (data.cmd == 'DO_ABSENSI_BATAL') {
-                    pop_absensi(data.nim);
-                    $('#badge_absensi_' + data.nim).text('BELUM').removeClass('success').removeClass('border-success').addClass('border-danger').addClass('danger');
-                    $('#jml_mhs_absen').text(list_absensi.length);
-                    if(data.user_id == '{{ get_logged_user()->id }}'){
-                        pop_absensi_by_self(data.nim);
-                        $('#jml_mhs_absen_by_self').text(list_absensi_by_self.length);
+                    if(data.ok) {
+                        pop_absensi(data.nim);
+                        $('#badge_absensi_' + data.nim).text('BELUM').removeClass('success').removeClass('border-success').addClass('border-danger').addClass('danger');
+                        $('#jml_mhs_absen').text(list_absensi.length);
+                        if (data.user_id == '{{ get_logged_user()->id }}') {
+                            pop_absensi_by_self(data.nim);
+                            $('#jml_mhs_absen_by_self').text(list_absensi_by_self.length);
+                        }
+                    }else{
+                       Swal({
+                            title: "Perhatian",
+                            text: "Bukan absensi anda",
+                            type: "error",
+                            confirmButtonText: "Tutup"
+                        });
                     }
                 }
 
@@ -399,11 +408,9 @@ body {
             {{--    'cmd':'DO_KICK'--}}
             {{--}));--}}
         });
-
     });
 
     $(document).on('click','.btn_absensi_check',function() {
-
         $.post('{{ url('ujian/ajax/check_pengabsen') }}',{'mahasiswa_ujian_id': $(this).data('id') },function(res){
             let txt = "Belum diabsenkan" ;
             let nama_pengabsen = res.nama_pengabsen;

@@ -100,16 +100,18 @@ class Chat implements MessageComponentInterface {
 		    $daftar_hadir = Daftar_hadir_orm::where([
 			    'mahasiswa_ujian_id' => $req->mahasiswa_ujian_id,
 		    ])->first();
+		    $ok = false ;
 	        if(empty($daftar_hadir)) {
 		        $daftar_hadir                     = new Daftar_hadir_orm();
 		        $daftar_hadir->mahasiswa_ujian_id = $req->mahasiswa_ujian_id;
 		        $daftar_hadir->absen_by           = $users_groups->id;
-		        $daftar_hadir->save();
+		        $ok = $daftar_hadir->save();
 	        }
 	        $res = [
 			    'cmd'         => $req->cmd,
 			    'nim'         => $req->nim,
 		        'user_id'     => $req->user_id,
+			    'ok'          => $ok,
 		    ];
 		    foreach ($this->clients as $client) {
 			    $client->send(json_encode($res));

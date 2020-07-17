@@ -236,12 +236,14 @@ body {
                 }else if (data.cmd == 'MHS_GET_FOCUS') {
                     $('#badge_koneksi_' + data.nim).text('ONLINE').removeClass('bg-danger').removeClass('bg-warning').addClass('bg-success');
                 }else if (data.cmd == 'DO_ABSENSI') {
-                    push_absensi(data.nim);
-                    $('#badge_absensi_' + data.nim).text('SUDAH').removeClass('danger').removeClass('border-danger').addClass('border-success').addClass('success');
-                    $('#jml_mhs_absen').text(list_absensi.length);
-                    if(data.user_id == '{{ get_logged_user()->id }}'){
-                        push_absensi_by_self(data.nim);
-                        $('#jml_mhs_absen_by_self').text(list_absensi_by_self.length);
+                    if(data.ok) {
+                        push_absensi(data.nim);
+                        $('#badge_absensi_' + data.nim).text('SUDAH').removeClass('danger').removeClass('border-danger').addClass('border-success').addClass('success');
+                        $('#jml_mhs_absen').text(list_absensi.length);
+                        if (data.user_id == '{{ get_logged_user()->id }}') {
+                            push_absensi_by_self(data.nim);
+                            $('#jml_mhs_absen_by_self').text(list_absensi_by_self.length);
+                        }
                     }
                 }else if (data.cmd == 'DO_ABSENSI_BATAL') {
                     if(data.ok) {

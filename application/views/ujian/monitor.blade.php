@@ -322,7 +322,7 @@ body {
             cancelButtonColor: "#d33",
             confirmButtonText: "Hapus"
         }).then(result => {
-            if(result) {
+            if (result.value) {
                 let mahasiswa_ujian_id = $(this).data('id');
                 let nim = $(this).data('nim');
                 conn.send(JSON.stringify({
@@ -405,7 +405,7 @@ body {
             cancelButtonColor: "#d33",
             confirmButtonText: "Kick"
         }).then(result => {
-            if(result) {
+            if (result.value) {
                 {{--let mahasiswa_ujian_id = $(this).data('id');--}}
                 {{--let nim = $(this).data('nim');--}}
                 {{--conn.send(JSON.stringify({--}}

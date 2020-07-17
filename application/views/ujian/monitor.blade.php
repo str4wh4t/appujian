@@ -322,15 +322,17 @@ body {
             cancelButtonColor: "#d33",
             confirmButtonText: "Hapus"
         }).then(result => {
-            let mahasiswa_ujian_id = $(this).data('id');
-            let nim = $(this).data('nim');
-            conn.send(JSON.stringify({
-                'mahasiswa_ujian_id': mahasiswa_ujian_id,
-                'user_id':'{{ get_logged_user()->id }}',
-                'as':'{{ get_selected_role()->name }}',
-                'nim': nim,
-                'cmd':'DO_ABSENSI_BATAL'
-            }));
+            if(result) {
+                let mahasiswa_ujian_id = $(this).data('id');
+                let nim = $(this).data('nim');
+                conn.send(JSON.stringify({
+                    'mahasiswa_ujian_id': mahasiswa_ujian_id,
+                    'user_id': '{{ get_logged_user()->id }}',
+                    'as': '{{ get_selected_role()->name }}',
+                    'nim': nim,
+                    'cmd': 'DO_ABSENSI_BATAL'
+                }));
+            }
         });
     });
 
@@ -403,15 +405,17 @@ body {
             cancelButtonColor: "#d33",
             confirmButtonText: "Kick"
         }).then(result => {
-            {{--let mahasiswa_ujian_id = $(this).data('id');--}}
-            {{--let nim = $(this).data('nim');--}}
-            {{--conn.send(JSON.stringify({--}}
-            {{--    'mahasiswa_ujian_id': mahasiswa_ujian_id,--}}
-            {{--    'user_id':'{{ get_logged_user()->id }}',--}}
-            {{--    'as':'{{ get_selected_role()->name }}',--}}
-            {{--    'nim': nim,--}}
-            {{--    'cmd':'DO_KICK'--}}
-            {{--}));--}}
+            if(result) {
+                {{--let mahasiswa_ujian_id = $(this).data('id');--}}
+                {{--let nim = $(this).data('nim');--}}
+                {{--conn.send(JSON.stringify({--}}
+                {{--    'mahasiswa_ujian_id': mahasiswa_ujian_id,--}}
+                {{--    'user_id':'{{ get_logged_user()->id }}',--}}
+                {{--    'as':'{{ get_selected_role()->name }}',--}}
+                {{--    'nim': nim,--}}
+                {{--    'cmd':'DO_KICK'--}}
+                {{--}));--}}
+            }
         });
     });
 

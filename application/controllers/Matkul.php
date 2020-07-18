@@ -253,7 +253,7 @@ class Matkul extends MY_Controller
 				                    $query->where('matkul_id', $matkul_id);
 			                    })
 			                    ->get();
-		$mhs_ujian = $mhs_matkul->has('mhs_ujian')->get();
+		$mhs_ujian = $mhs_matkul->has('mhs_ujian');
 		$this->_json(['mhs_matkul' => $mhs_matkul, 'mhs_ujian' => $mhs_ujian]);
 	}
 }

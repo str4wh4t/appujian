@@ -101,6 +101,7 @@ function init_peserta_table_value(){
                 $.each(response.mhs_matkul, function (i, item) {
                     let chkbox = $('<input>').attr('class', 'chkbox_pilih_peserta').attr('type', 'checkbox').attr('name', 'peserta[]').attr('value', item.id_mahasiswa);
                     $('<tr>').append(
+                        $('<td>').text(i + 1),
                         $('<td>').text(item.nama),
                         $('<td>').text(item.nim),
                         $('<td>').text(item.prodi),
@@ -109,7 +110,7 @@ function init_peserta_table_value(){
                 });
             }else{
                 $('<tr>').append(
-                        $('<td>').text('Tidak ada peserta tersedia').attr('colspan', '4').css('text-align', 'center')
+                        $('<td>').text('Tidak ada peserta tersedia').attr('colspan', '5').css('text-align', 'center')
                     ).appendTo('#tbody_tb_peserta');
             }
             $('#chkbox_pilih_semua_peserta').prop('checked', false);
@@ -174,6 +175,7 @@ $(document).on('change','#chkbox_pilih_semua_peserta',function () {
                     <table class="table table-bordered">
                         <thead>
                             <tr>
+                                <th>No</th>
                                 <th>Nama</th>
                                 <th>No Peserta</th>
                                 <th>Prodi</th>
@@ -182,7 +184,7 @@ $(document).on('change','#chkbox_pilih_semua_peserta',function () {
                         </thead>
                         <tbody id="tbody_tb_peserta">
                             <tr>
-                                <td colspan="4" style="text-align: center">Tidak ada peserta tersedia</td>
+                                <td colspan="5" style="text-align: center">Tidak ada peserta tersedia</td>
                             </tr>
                         </tbody>
                     </table>

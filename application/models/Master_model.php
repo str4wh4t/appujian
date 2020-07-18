@@ -188,9 +188,12 @@ class Master_model extends CI_Model {
 
     public function getDataMatkul()
     {
-        $this->datatables->select('id_matkul, nama_matkul');
-        $this->datatables->from('matkul');
+        $this->datatables->select('a.id_matkul, a.nama_matkul, CONCAT(COUNT(b.matkul_id), " psrt") AS jml_peserta');
+        $this->datatables->from('matkul AS a');
+        $this->datatables->join('mahasiswa_matkul AS b', 'b.matkul_id = a.id_matkul', 'left');
+        $this->datatables->group_by('a.id_matkul');
         return $this->datatables->generate();
+        
     }
 
     public function getAllMatkul()

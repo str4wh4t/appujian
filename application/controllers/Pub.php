@@ -52,7 +52,7 @@ class Pub extends MY_Controller {
 	}
 	
 	public function c_user(){
-		show_404(); /* <--- DISABLED FUNCTION */
+//		show_404(); /* <--- DISABLED FUNCTION */
 		$data_mhs = Mhs_orm::all();
 		foreach($data_mhs as $data) {
 			$nama       = explode(' ', $data->nama, 2);

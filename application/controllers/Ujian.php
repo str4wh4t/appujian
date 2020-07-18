@@ -114,7 +114,7 @@ class Ujian extends MY_Controller {
         	$data['topik'] = $matkul->topik;
         }
         
-        $data['bobot_soal'] = Bobot_soal_orm::All();
+        $data['bobot_soal'] = Bobot_soal_orm::all();
         $data['peserta_avail'] = [];
         
 		view('ujian/add',$data);
@@ -178,7 +178,7 @@ class Ujian extends MY_Controller {
         }
         
         $data['peserta_avail'] = []; // VALUE INI TIDAK BERGUNA KRN AKAN DI OVERIDE DI VIEW, DATA DIAMBIL SCR AJAX
-        $data['bobot_soal'] = Bobot_soal_orm::All();
+        $data['bobot_soal'] = Bobot_soal_orm::all();
         
         
 		view('ujian/edit',$data);
@@ -660,10 +660,10 @@ class Ujian extends MY_Controller {
 			
 			$today = date('Y-m-d H:i:s');
 			//echo $paymentDate; // echos today!
-			$data_start = date('Y-m-d H:i:s', strtotime($ujian->tgl_mulai));
+			$date_start = date('Y-m-d H:i:s', strtotime($ujian->tgl_mulai));
 			$date_end = date('Y-m-d H:i:s', strtotime($ujian->terlambat));
 			
-			if (!(($today >= $data_start) && ($today < $date_end))){
+			if (!(($today >= $date_start) && ($today < $date_end))){
 			    show_404();
 			}
 			
@@ -813,10 +813,10 @@ class Ujian extends MY_Controller {
 		
 		$today = date('Y-m-d H:i:s');
 		//echo $paymentDate; // echos today!
-		$data_start = date('Y-m-d H:i:s', strtotime($h_ujian->tgl_mulai));
+		$date_start = date('Y-m-d H:i:s', strtotime($h_ujian->tgl_mulai));
 		$date_end = date('Y-m-d H:i:s', strtotime($h_ujian->tgl_selesai));
 		
-		if (!(($today >= $data_start) && ($today < $date_end))){
+		if (!(($today >= $date_start) && ($today < $date_end))){
 		    show_404();
 		}
 		
@@ -962,10 +962,10 @@ class Ujian extends MY_Controller {
 //
 //			$today = date('Y-m-d H:i:s');
 //			//echo $paymentDate; // echos today!
-//			$data_start = date('Y-m-d H:i:s', strtotime($m_ujian_orm->tgl_mulai));
+//			$date_start = date('Y-m-d H:i:s', strtotime($m_ujian_orm->tgl_mulai));
 //			$date_end = date('Y-m-d H:i:s', strtotime($m_ujian_orm->terlambat));
 //
-//			if (!(($today >= $data_start) && ($today < $date_end))){
+//			if (!(($today >= $date_start) && ($today < $date_end))){
 //			    show_404();
 //			}
 //
@@ -1031,10 +1031,10 @@ class Ujian extends MY_Controller {
 //
 //		$today = date('Y-m-d H:i:s');
 //		//echo $paymentDate; // echos today!
-//		$data_start = date('Y-m-d H:i:s', strtotime($h_ujian_orm->tgl_mulai));
+//		$date_start = date('Y-m-d H:i:s', strtotime($h_ujian_orm->tgl_mulai));
 //		$date_end = date('Y-m-d H:i:s', strtotime($h_ujian_orm->tgl_selesai));
 //
-//		if (!(($today >= $data_start) && ($today < $date_end))){
+//		if (!(($today >= $date_start) && ($today < $date_end))){
 //		    show_404();
 //		}
 //
@@ -1487,6 +1487,26 @@ class Ujian extends MY_Controller {
 	    }
 	    
 	    $this->_json($data);
+	}
+	
+	public function cron_auto_close(){
+		if(!is_cli()) show_404();
+		$cron_end = date("Y-m-d", strtotime("+1 minutes"));
+		$h_ujian_list = Hujian_orm::all();
+		if($h_ujian_list->isNotEmpty()){
+			foreach($h_ujian_list as $h_ujian){
+				$today = date('Y-m-d H:i:s');
+				if($today > $cron_end){
+					break;
+				}
+				$date_end = date('Y-m-d H:i:s', strtotime($h_ujian->tgl_selesai));
+				if (($today > $date_end) && ($h_ujian->ujian_selesai == 'N')){
+				    $h_ujian->ujian_selesai = 'Y';
+				    $h_ujian->save();
+				}
+			}
+		}
+		return;
 	}
 	
 //	function c(){

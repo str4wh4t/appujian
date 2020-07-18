@@ -49,11 +49,12 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 | Examples:	my-controller/index	-> my_controller/index
 |		my-controller/my-method	-> my_controller/my_method
 */
-$route['default_controller'] = 'Auth';
-$route['404_override'] = 'Auth/notfound_page';
+$route['default_controller'] = 'auth';
+$route['404_override'] = 'auth/notfound_page';
 $route['translate_uri_dashes'] = FALSE;
-$route['login'] = 'Auth/index';
-$route['logout'] = 'Auth/logout';
-$route['expired_page'] = 'Auth/expired_page';
-$route['get_server_time'] = 'Auth/get_server_time';
+$route['login'] = 'auth/index';
+$route['logout'] = 'auth/logout';
+$route['not_valid_login'] = 'auth/not_valid_login';
+$route['expired_page'] = 'auth/expired_page';
+$route['get_server_time'] = 'auth/get_server_time';
 $route['c/(:num)/(:any)'] = 'pub/cetak_sertifikat/$1/$2';

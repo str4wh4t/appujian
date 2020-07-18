@@ -2,6 +2,7 @@
 defined('BASEPATH') or exit('No direct script access allowed');
 
 use Orm\Mhs_orm;
+use Orm\Mhs_source_orm;
 use Orm\Mhs_matkul_orm;
 use Orm\Users_orm;
 use Orm\Matkul_orm;
@@ -385,7 +386,7 @@ class Mahasiswa extends MY_Controller
 			'user' => $this->ion_auth->user()->row(),
 			'judul'	=> 'Peserta Ujian',
 			'subjudul' => 'Import Peserta Ujian',
-			'matkul_list' => Matkul_orm::All()
+			'matkul_list' => Matkul_orm::all()
 		];
 		if ($import_data != null) $data['import'] = $import_data;
 
@@ -900,7 +901,8 @@ class Mahasiswa extends MY_Controller
 		Mhs_orm::findOrFail($mhs_id);
 		$mhs_matkul = Mhs_matkul_orm::where('mahasiswa_id', $mhs_id)->get();
 		$mhs_matkul_ids_before = [];
-		if(!empty($mhs_matkul)){
+//		if(!empty($mhs_matkul)){
+		if($mhs_matkul->isNotEmpty()){
 			foreach($mhs_matkul as $mm){
 				$mhs_matkul_ids_before[] = $mm->matkul_id;
 			}
@@ -942,5 +944,92 @@ class Mahasiswa extends MY_Controller
 			show_error('Data masih digunakan', 500, 'Perhatian');
 	    }
 		
+	}
+	
+	protected function _sync_pendaftaran(){
+		$mhs_before = Mhs_orm::all();
+		$mhs_ids_before = [];
+//		if(!empty($mhs_matkul)){
+		if($mhs_before->isNotEmpty()){
+			foreach($mhs_before as $mb){
+				$mhs_ids_before[] = $mb->id_mahasiswa;
+			}
+		}
+		
+		$mhs_source = Mhs_source_orm::all();
+		$mhs_ids_source = [];
+		if($mhs_source->isNotEmpty()){
+			foreach($mhs_source as $ms){
+				$mhs_ids_source[] = $ms->id_mahasiswa;
+			}
+		}
+		
+		$mhs_ids_insert = array_diff($mhs_ids_source, $mhs_ids_before);
+		$mhs_ids_delete = array_diff($mhs_ids_before, $mhs_ids_source);
+		vdebug($mhs_ids_insert);
+		try {
+			begin_db_trx();
+			if(!empty($mhs_ids_delete)) {
+				foreach ($mhs_ids_delete as $mhs_id) {
+					$mhs = Mhs_orm::findOrFail($mhs_id);
+					$mhs->delete();
+				}
+			}
+			
+			if(!empty($mhs_ids_insert)) {
+				foreach ($mhs_ids_insert as $mhs_id) {
+					$mhs_source = Mhs_source_orm::findOrFail($mhs_id);
+					$mhs = new Mhs_orm;
+					$mhs->nim = $mhs_source->nim;
+					$mhs->nama = $mhs_source->nama;
+					$mhs->nik = $mhs_source->nik;
+					$mhs->tmp_lahir = $mhs_source->tmp_lahir;
+					$mhs->tgl_lahir = $mhs_source->tgl_lahir;
+					$mhs->email = $mhs_source->email;
+					$mhs->foto = $mhs_source->foto;
+					$mhs->jenis_kelamin = $mhs_source->jenis_kelamin;
+					$mhs->save();
+					
+					// MENDAFTARKAN SBG USER
+					$nama       = explode(' ', $mhs->nama, 2);
+					$first_name = $nama[0];
+					$last_name  = end($nama);
+					$full_name  = $mhs->nama;
+					
+					$username        = $mhs->nim;
+					$password        = date("dmY", strtotime($mhs->tgl_lahir));
+					$email           = $mhs->email;
+					$tgl_lahir        = date("dmY", strtotime($mhs->tgl_lahir));
+					$additional_data = [
+						'first_name' => $first_name,
+						'last_name'  => $last_name,
+						'full_name'  => $full_name,
+						'tgl_lahir'  => $tgl_lahir,
+					];
+					$group           = [ MHS_GROUP_ID ]; // Sets user to mhs.
+					$this->ion_auth->register($username, $password, $email, $additional_data, $group);
+				}
+			}
+			
+			// RESYNC TGL LAHIR
+			if($mhs_before->isNotEmpty()){
+				foreach($mhs_before as $mb){
+					$mhs_source = Mhs_source_orm::findOrFail($mb->id_mahasiswa);
+					$mb->tgl_lahir = $mhs_source->tgl_lahir;
+					$mb->save();
+					$users = Users_orm::where('username', $mb->nim)->first();
+					if(!empty($users)){
+						$users->tgl_lahir = date("dmY", strtotime($mb->tgl_lahir));
+						$users->save();
+					}
+				}
+			}
+			commit_db_trx();
+			$this->_json(['status' => true]);
+			
+		} catch(\Illuminate\Database\QueryException $e){
+			rollback_db_trx();
+			show_error('Data masih digunakan', 500, 'Perhatian');
+	    }
 	}
 }

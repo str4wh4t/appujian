@@ -78,12 +78,15 @@ $(document).ready(function() {
       {
         data: "id_matkul",
         orderable: false,
+        searchable: false,
       },
       {
         data: "id_matkul",
         orderable: false,
+        searchable: false,
       },
-      { data: "nama_matkul" }
+      { data: "nama_matkul" },
+      { data: "jml_peserta" }
     ],
     columnDefs: [
       {
@@ -102,7 +105,7 @@ $(document).ready(function() {
       },
       {
         searchable: false,
-        targets: 3,
+        targets: 4,
         data: "id_matkul",
         render: function(data, type, row, meta) {
           return `<a class="btn btn-sm btn-info" href="${base_url}matkul/peserta/${data}">Peserta</a>`;

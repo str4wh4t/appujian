@@ -195,7 +195,7 @@ let terlambat = '{{ $ujian->terlambat }}';
 
 function init_peserta_table_value(){
     $.ajax({
-        url: "{{ site_url('matkul/ajax/get_peserta_matkul') }}",
+        url: "{{ site_url('matkul/ajax/get_peserta_ujian_matkul') }}",
         data: { 'id' : $('#matkul_id').val(), 'ujian_id': '{{ $ujian->id_ujian }}' },
         type: 'POST',
         async: false,

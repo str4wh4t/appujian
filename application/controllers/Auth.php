@@ -107,8 +107,7 @@ class Auth extends CI_Controller
 					$this->session->set_flashdata('message_rootpage', $message_rootpage);
 					redirect('/dashboard', 'refresh');
 				}else{
-					$this->session->set_flashdata('error_login_msg', 'Anda tidak diperkenankan login di tempat lain.');
-					redirect('logout', 'refresh');
+					redirect('not_valid_login', 'refresh');
 				}
 			}else {
 				$this->session->set_flashdata('error_login_msg', 'Login salah atau login akun anda ditutup.');
@@ -134,7 +133,20 @@ class Auth extends CI_Controller
 	public function logout()
 	{
 		$this->ion_auth->logout();
+		session_destroy();
 		redirect('login','refresh');
+	}
+	
+	public function not_valid_login(){
+		$this->ion_auth->logout();
+		session_destroy();
+		redirect('auth/logout_out_from_not_valid_login', 'refresh');
+	}
+	
+	public function logout_out_from_not_valid_login(){
+		$this->load->library('user_agent');
+		$this->session->set_flashdata('error_login_msg', 'Username tsb sedang login di tempat lain.');
+		redirect('/', 'refresh');
 	}
 
 	/**

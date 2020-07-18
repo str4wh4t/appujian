@@ -106,6 +106,16 @@ $(document).ready(function(){
 
     conn.onmessage = function(e) {
         // console.log(e.data);
+        let data = jQuery.parseJSON(e.data);
+        if (data.cmd == 'MHS_ONLINE') {
+            if((data.nim == '{{ get_logged_user()->username }}') && (!data.ok)){
+                location.href = '{{ url('auth/not_valid_login') }}';
+            }
+        }else if (data.cmd == 'MHS_KICKED') {
+            if(data.nim == '{{ get_logged_user()->username }}'){
+                // location.href = '{{ url('ujian/not_valid_login') }}';
+            }
+        }
     };
 
     conn.onclose = function(e) {

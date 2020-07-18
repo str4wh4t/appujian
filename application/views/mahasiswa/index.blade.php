@@ -24,7 +24,48 @@
 @push('page_level_js')
 <!-- BEGIN PAGE LEVEL JS-->
 <script type="text/javascript">
-
+$(document).on('click','#btn_sync_pendaftaran',function(){
+    Swal({
+        title: "Anda yakin",
+        text: "Data peserta ujian akan di-sync",
+        type: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yakin"
+    }).then(result => {
+        if (result.value) {
+            $.ajax({
+                url: '{{ url('mahasiswa/ajax/sync_pendaftaran') }}',
+                // data: $(this).serialize(),
+                type: "POST",
+                success: function (respon) {
+                  if (respon.status) {
+                        Swal({
+                          title: "Berhasil",
+                          text: respon.total + " data berhasil di-sync",
+                          type: "success"
+                        });
+                      } else {
+                        Swal({
+                          title: "Gagal",
+                          text: "Tidak ada data yg di sync",
+                          type: "error"
+                        });
+                      }
+                    reload_ajax();
+                },
+                error: function () {
+                  Swal({
+                    title: "Gagal",
+                    text: "Terjadi kesalahan",
+                    type: "error"
+                  });
+                }
+            });
+        }
+    });
+});
 </script>
 <script src="{{ asset('assets/dist/js/app/master/mahasiswa/index.js?u=') . mt_rand() }}"></script>
 <!-- END PAGE LEVEL JS-->
@@ -45,16 +86,17 @@
 <!---- --->
 <div class="box">
     <div class="box-body">
-        <!--
 		<div class="mb-4">
-            <a href="{{ site_url('mahasiswa/add') }}" class="btn btn-sm btn-flat btn-outline-primary"><i class="fa fa-plus"></i> Tambah</a>
-            <a href="{{ site_url('mahasiswa/import') }}" class="btn btn-sm btn-flat btn-success"><i class="fa fa-upload"></i> Import</a>
+{{--            <a href="{{ site_url('mahasiswa/add') }}" class="btn btn-sm btn-flat btn-outline-primary"><i class="fa fa-plus"></i> Tambah</a>--}}
+{{--            <a href="{{ site_url('mahasiswa/import') }}" class="btn btn-sm btn-flat btn-success"><i class="fa fa-upload"></i> Import</a>--}}
             <button type="button" onclick="reload_ajax()" class="btn btn-sm btn-flat btn-outline-secondary"><i class="fa fa-refresh"></i> Reload</button>
+{{--            <div class="pull-right">--}}
+{{--                <button onclick="bulk_delete()" class="btn btn-sm btn-flat btn-danger" type="button"><i class="fa fa-trash"></i> Delete</button>--}}
+{{--            </div>--}}
             <div class="pull-right">
-                <button onclick="bulk_delete()" class="btn btn-sm btn-flat btn-danger" type="button"><i class="fa fa-trash"></i> Delete</button>
+                <button class="btn btn-sm btn-flat btn-danger" id="btn_sync_pendaftaran" type="button"><i class="fa fa-refresh"></i> Syncron Data</button>
             </div>
 		</div>
-		-->
         <?= form_open('', array('id' => 'bulk')); ?>
 {{--        <div class="table-responsive">--}}
 {{--            <table id="mahasiswa" class="table table-striped table-bordered table-hover pb-3">--}}

@@ -1,12 +1,14 @@
 <?php
 defined('BASEPATH') or exit('No direct script access allowed');
 
-use PhpOffice\PhpSpreadsheet\Spreadsheet;
-use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
-use PhpOffice\PhpSpreadsheet\Writer\Xls;
-use PhpOffice\PhpSpreadsheet\Writer\Csv;
+//use PhpOffice\PhpSpreadsheet\Spreadsheet;
+//use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+//use PhpOffice\PhpSpreadsheet\Writer\Xls;
+//use PhpOffice\PhpSpreadsheet\Writer\Csv;
 use Orm\Matkul_orm;
 use Illuminate\Database\Eloquent\Builder;
+use Orm\Prodi_orm;
+use Orm\Mhs_orm;
 
 class Matkul extends MY_Controller
 {
@@ -212,7 +214,7 @@ class Matkul extends MY_Controller
 		}
 	}
 	
-	protected function _get_peserta_matkul(){
+	protected function _get_peserta_ujian_matkul(){
 		$id = $this->input->post('id', true);
 		$ujian_id = $this->input->post('ujian_id', true);
 		$matkul = Matkul_orm::findOrFail($id);
@@ -226,5 +228,32 @@ class Matkul extends MY_Controller
 			                    ->get();
 		}
 		$this->_json(['mhs_matkul' => $matkul->mhs,'mhs_ujian' => $mhs_ujian]);
+	}
+	
+	public function peserta($matkul_id)
+	{
+		$matkul = Matkul_orm::findOrFail($matkul_id);
+		$data = [
+			'judul'	=> 'Materi Ujian',
+			'subjudul' => 'Peserta Materi Ujian'
+		];
+//		$this->load->view('_templates/dashboard/_header.php', $data);
+//		$this->load->view('master/matkul/data');
+//		$this->load->view('_templates/dashboard/_footer.php');
+		$data['prodi'] = Prodi_orm::all();
+		$data['matkul'] = $matkul;
+		view('matkul/peserta',$data);
+	}
+	
+	protected function _get_peserta_matkul(){
+		$matkul_id = $this->input->post('matkul_id', true);
+		$kodeps = $this->input->post('kodeps', true);
+		$kodeps = json_decode($kodeps);
+		$mhs_matkul = Mhs_orm::whereIn('kodeps', $kodeps)->whereHas('mhs_matkul', function (Builder $query) use($matkul_id){
+				                    $query->where('matkul_id', $matkul_id);
+			                    })
+			                    ->get();
+		$mhs_ujian = $mhs_matkul->has('mhs_ujian')->get();
+		$this->_json(['mhs_matkul' => $mhs_matkul, 'mhs_ujian' => $mhs_ujian]);
 	}
 }

@@ -142,9 +142,21 @@ class Chat implements MessageComponentInterface {
 		    }
 	    }elseif($req->cmd == 'MHS_ONLINE'){
             $this->data_clients_mhs[$req->nim] = $from->resourceId;
+            $users = Users_orm::where('username', $req->nim)->first();
+            $ok = true ;
+	        if(!empty($users)){
+	        	if($users->is_online == 1){
+	        		// JIKA TERNYATA SUDAH ONLINE
+			        $ok = false;
+		        }else {
+			        $users->is_online = 1;
+			        $users->save();
+		        }
+	        }
 	    	$res = [
-			    'cmd'             => $req->cmd,
-			    'nim'             => $req->nim,
+		        'cmd'         => $req->cmd,
+		        'nim'         => $req->nim,
+			    'ok'          => $ok,
 		    ];
 	        foreach ($this->clients as $client) {
 			    $client->send(json_encode($res));
@@ -232,6 +244,11 @@ class Chat implements MessageComponentInterface {
         }
         if(!empty($nim)) {
 	        unset($this->data_clients_mhs[$nim]);
+	        $users = Users_orm::where('username', $nim)->first();
+	        if(!empty($users)){
+		        $users->is_online = 0;
+		        $users->save();
+	        }
 	        $res = [
 		        'cmd' => 'MHS_OFFLINE',
 		        'nim' => $nim,

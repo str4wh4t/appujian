@@ -169,7 +169,7 @@ function sum_input_jumlah_soal(){
 
 function init_peserta_table_value(){
     $.ajax({
-        url: "{{ site_url('matkul/ajax/get_peserta_matkul') }}",
+        url: "{{ site_url('matkul/ajax/get_peserta_ujian_matkul') }}",
         data: { 'id' : $('#matkul_id').val() },
         type: 'POST',
         async: false,

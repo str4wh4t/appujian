@@ -202,11 +202,6 @@ $(document).on('click','#btn_simpan_pengawas',function(){
             <div class="modal-header bg-info white">
                 <h4 class="modal-title white"
                     id="myModalLabel11">Tambah Pengawas</h4>
-                <button type="button"
-                        class="close"
-                        data-dismiss="modal"
-                        aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
                 </button>
             </div>
             <div class="modal-body">
@@ -250,6 +245,7 @@ $(document).on('click','#btn_simpan_pengawas',function(){
                                 </div>
                             </div>
                         </div>
+                    </div>
                 </form>
             </div>
             <div class="modal-footer">
@@ -264,4 +260,5 @@ $(document).on('click','#btn_simpan_pengawas',function(){
         </div>
     </div>
 </div>
+
 @endsection

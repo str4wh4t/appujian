@@ -26,7 +26,7 @@
 <script type="text/javascript">
 
 </script>
-<script src="{{ asset('assets/dist/js/app/master/matkul/index.js?u=') . mt_rand() }}"></script>
+<script src="{{ asset('assets/dist/js/app/master/matkul/index.js') }}"></script>
 <!-- END PAGE LEVEL JS-->
 @endpush
 
@@ -63,6 +63,7 @@
 					</th>
 					<th>No.</th>
 					<th>Materi Ujian</th>
+					<th>Jml Peserta</th>
 					<th>Aksi</th>
 				</tr>
 			</thead>
@@ -73,6 +74,7 @@
 					</th>
 					<th>No.</th>
 					<th>Materi Ujian</th>
+					<th>Jml Peserta</th>
 					<th>Aksi</th>
 				</tr>
 			</tfoot>

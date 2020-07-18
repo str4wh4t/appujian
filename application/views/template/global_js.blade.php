@@ -100,6 +100,7 @@ $(document).ready(function(){
         conn.send(JSON.stringify({
             'nim':'{{ get_logged_user()->username }}',
             'as':'{{ get_selected_role()->name }}',
+            'ip': '{{ get_client_ip() }}',
             'cmd':'MHS_ONLINE'
         }));
     };

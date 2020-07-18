@@ -90,7 +90,7 @@ class Auth extends CI_Controller
 			$remember = (bool)$this->input->post('remember');
 			if ($this->ion_auth->login($this->input->post('identity'), $this->input->post('password'), $remember)){
 				$user = $this->ion_auth->user()->row();
-				if(!$user->is_online){
+//				if(!$user->is_online){
 					$session_data = [
 	                        'username'          => $user->username,
 	                        'nama_lengkap'      => $user->full_name,
@@ -106,9 +106,9 @@ class Auth extends CI_Controller
 					];
 					$this->session->set_flashdata('message_rootpage', $message_rootpage);
 					redirect('/dashboard', 'refresh');
-				}else{
-					redirect('not_valid_login', 'refresh');
-				}
+//				}else{
+//					redirect('not_valid_login', 'refresh');
+//				}
 			}else {
 				$this->session->set_flashdata('error_login_msg', 'Login salah atau login akun anda ditutup.');
 				redirect('/', 'refresh');

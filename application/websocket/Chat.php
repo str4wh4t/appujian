@@ -117,21 +117,21 @@ class Chat implements MessageComponentInterface {
 		    }
 	    }elseif($req->cmd == 'MHS_ONLINE'){
             $this->data_clients_mhs[$req->nim] = $from->resourceId;
-            $this->data_clients_mhs_ips[$req->nim] = $from->remoteAddress;
+            $this->data_clients_mhs_ips[$req->nim] = $req->ip;
             $users = Users_orm::where('username', $req->nim)->first();
             $ok = true ;
 	        if(!empty($users)){
 //	        	if($users->ip_address == $from->remoteAddress){
 //			        $ok = false;
 //		        }else {
-			        $users->ip_address = $from->remoteAddress;
+			        $users->ip_address = $req->ip;
 			        $users->save();
 //		        }
 	        }
 	    	$res = [
 		        'cmd'         => $req->cmd,
 		        'nim'         => $req->nim,
-		        'ip'          => $from->remoteAddress,
+		        'ip'          => $req->ip,
 			    'ok'          => $ok,
 		    ];
 	        foreach ($this->clients as $client) {

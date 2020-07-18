@@ -234,6 +234,7 @@ legend{
         let curr_date;
 
         let close_ujian = () => {
+            ajx_overlay(true);
             $.ajax({
                 type: "POST",
                 url: "{{ site_url('ujian/ajax/close_ujian') }}",
@@ -272,7 +273,7 @@ legend{
                     let duration = moment.duration(diffTime*1000, 'milliseconds');
                     let duration_text = '';
 
-                    setInterval(function(){
+                    let refreshIntervalId = setInterval(function(){
 
                         curr_date.add(1, 'second');
                         // datetime_el.html(curr_date.format('dddd, Do MMMM YYYY, HH:mm:ss'));
@@ -294,6 +295,7 @@ legend{
                            duration_text = "0:0:0";
                            $('#btn_lanjut_ujian').removeClass('btn-success').addClass('btn-danger');
                            close_ujian();
+                           clearInterval(refreshIntervalId);
 
                         }
 
@@ -526,7 +528,7 @@ window.onfocus = function () {
 
 
     </script>
-    <script src="{{ asset('assets/dist/js/app/ujian/index.js') }}"></script>
+    <script src="{{ asset('assets/dist/js/app/ujian/index.js?u=') . mt_rand() }}"></script>
     <!-- END PAGE LEVEL JS-->
 @endpush
 

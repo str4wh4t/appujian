@@ -175,7 +175,7 @@ body {
         // conn = new WebSocket();
         conn = new WebSocket('{{ ws_url() }}');
         conn.onopen = function(e) {
-            console.log('conn.onopen');
+            console.log('wesocket status opened');
 {{--            conn.send(JSON.stringify({'username':'{{ get_logged_user()->username }}'}));--}}
             conn.send(JSON.stringify({
                 'user_id':'{{ get_logged_user()->id }}',
@@ -208,7 +208,7 @@ body {
             //
             // }else {
                 if (data.cmd == 'OPEN') {
-                    console.log(data);
+                    // console.log(data);
                     $.each(data.absensi,function(index, nim){
                         push_absensi(nim);
                         $('#badge_absensi_' + nim).text('SUDAH').removeClass('danger').removeClass('border-danger').addClass('border-success').addClass('success');
@@ -399,7 +399,7 @@ body {
         ip = ip.toString();
         delete list_mhs_online_ips[nim];
         list_mhs_online_ips[nim] = ip;
-        console.log(list_mhs_online_ips);
+        // console.log(list_mhs_online_ips);
     }
 
     function pop_mhs_online_ips(nim){

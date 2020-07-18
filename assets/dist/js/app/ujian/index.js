@@ -259,15 +259,32 @@ function simpan_sementara() {
 
 function do_save(){
     var form = $("#ujian");
-
+    ajx_overlay(true);
     $.ajax({
         type: "POST",
         url: base_url + "ujian/ajax/simpan_satu",
         data: form.serialize(),
         dataType: 'json',
         success: function (data) {
+            if(!data.status){
+                Swal({
+                    title: "Perhatian",
+                    text: "Terjadi kesalahan, window akan mereload",
+                    type: "warning",
+                    confirmButtonColor: "#37bc9b",
+                    cancelButtonColor: "#f6bb42",
+                    confirmButtonText: "Reload"
+                }).then(result => {
+                    if (result.value) {
+                        location.href = base_url + "ujian/index";
+                    }else{
+                        location.href = base_url + "ujian/index";
+                    }
+                });
+            }
+            ajx_overlay(false);
             // $('.ajax-loading').show();
-            console.log(data);
+            // console.log(data);
         }
     });
 }

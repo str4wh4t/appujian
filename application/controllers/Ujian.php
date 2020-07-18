@@ -1251,7 +1251,7 @@ class Ujian extends MY_Controller {
 		$h_ujian = Hujian_orm::findOrFail($id_h_ujian);
 //		$m_ujian = Hujian_orm::findOrFail($h_ujian->ujian_id);
 		
-		if(!empty($h_ujian) && $allow) {
+		if($allow) {
 			// Get Jawaban
 			$list_jawaban = $this->ujian->getJawaban($id_h_ujian);
 			
@@ -1490,26 +1490,6 @@ class Ujian extends MY_Controller {
 	    }
 	    
 	    $this->_json($data);
-	}
-	
-	public function cron_auto_close(){
-		if(!is_cli()) show_404();
-		$cron_end = date("Y-m-d", strtotime("+1 minutes"));
-		$h_ujian_list = Hujian_orm::all();
-		if($h_ujian_list->isNotEmpty()){
-			foreach($h_ujian_list as $h_ujian){
-				$today = date('Y-m-d H:i:s');
-				if($today > $cron_end){
-					break;
-				}
-				$date_end = date('Y-m-d H:i:s', strtotime($h_ujian->tgl_selesai));
-				if (($today > $date_end) && ($h_ujian->ujian_selesai == 'N')){
-				    $h_ujian->ujian_selesai = 'Y';
-				    $h_ujian->save();
-				}
-			}
-		}
-		return;
 	}
 	
 //	function c(){

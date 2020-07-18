@@ -41,6 +41,9 @@ body {
 .enjoyhint_close_btn{
     display: none;
 }
+.modal {
+    z-index: 9996;
+}
 </style>
 @endpush
 
@@ -208,7 +211,7 @@ body {
             //
             // }else {
                 if (data.cmd == 'OPEN') {
-                    // console.log(data);
+                    console.log(data);
                     $.each(data.absensi,function(index, nim){
                         push_absensi(nim);
                         $('#badge_absensi_' + nim).text('SUDAH').removeClass('danger').removeClass('border-danger').addClass('border-success').addClass('success');
@@ -424,7 +427,7 @@ body {
             showCancelButton: true,
             confirmButtonColor: "#3085d6",
             cancelButtonColor: "#d33",
-            confirmButtonText: "Kick"
+            confirmButtonText: "Akhiri"
         }).then(result => {
             if (result.value) {
                 {{--let mahasiswa_ujian_id = $(this).data('id');--}}
@@ -458,6 +461,48 @@ body {
             });
         });
     });
+
+function checkImage(imageSrc, good, bad) {
+    let img = new Image();
+    img.onload = good;
+    img.onerror = bad;
+    img.src = imageSrc;
+}
+
+let foto_url = null ;
+$(document).on('click','.btn_foto',function(){
+    ajx_overlay(true);
+    $.post('{{ url('ujian/ajax/get_foto_url') }}',{'nim': $(this).data('nim')},function(data){
+        // $('#img_profile').attr('src',data.src_img);
+        // $('#modal_foto_peserta').modal('show');
+        foto_url = data.src_img ;
+        checkImage(data.src_img, function(){
+                $('#img_profile').attr('src',data.src_img);
+                $('#modal_foto_peserta').modal('show');
+                ajx_overlay(false);
+            }, function(){
+                $('#img_profile').attr('src','{{ asset('assets/imgs/no_profile.jpg') }}');
+                $('#modal_foto_peserta').modal('show');
+                ajx_overlay(false);
+            }
+        );
+    });
+});
+
+$(document).on('click','#btn_reload_foto',function(){
+    ajx_overlay(true);
+    checkImage(foto_url, function(){
+            console.log('good');
+            $('#img_profile').attr('src',foto_url);
+            ajx_overlay(false);
+        }, function(){
+            console.log('bad');
+            $('#img_profile').attr('src','{{ asset('assets/imgs/no_profile.jpg') }}');
+            ajx_overlay(false);
+        }
+    );
+});
+
 
 </script>
 <!-- END PAGE LEVEL JS-->
@@ -526,4 +571,34 @@ body {
     </div>
 </div>
 </section>
+
+<!-- Modal -->
+<div class="modal text-left"
+     id="modal_foto_peserta"
+     tabindex="-1"
+     role="dialog"
+     aria-labelledby="myModalLabel11"
+     aria-hidden="true">
+    <div class="modal-dialog"
+         role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-info white">
+                <h4 class="modal-title white"
+                    id="myModalLabel11">Foto Peserta</h4>
+            </div>
+            <div class="modal-body" style="text-align: center">
+                <img id="img_profile" style="width: 250px" src="{{ asset('assets/imgs/no_profile.jpg') }}" />
+            </div>
+            <div class="modal-footer">
+                <button type="button"
+                        class="btn btn-info" id="btn_reload_foto">Reload Foto
+                </button>
+                <button type="button"
+                        class="btn grey btn-outline-secondary"
+                        data-dismiss="modal">Tutup
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
 @endsection

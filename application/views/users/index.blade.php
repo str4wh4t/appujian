@@ -202,7 +202,6 @@ $(document).on('click','#btn_simpan_pengawas',function(){
             <div class="modal-header bg-info white">
                 <h4 class="modal-title white"
                     id="myModalLabel11">Tambah Pengawas</h4>
-                </button>
             </div>
             <div class="modal-body">
                 <form class="form">

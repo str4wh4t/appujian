@@ -63,6 +63,28 @@ class Chat implements MessageComponentInterface {
 				    'absensi_by_self' => $absensi_by_self,
 				    'user_id'     => $req->user_id,
 			    ];
+			    
+			    foreach ($this->clients as $client) {
+				    $client->send(json_encode($res));
+			    }
+		    }else if($req->as == 'admin') {
+		    	$mahasiswa_ujian = Mhs_ujian_orm::where('ujian_id', $req->m_ujian_id)
+			                                    ->has('daftar_hadir')
+			                                    ->get();
+		    	if ($mahasiswa_ujian->isNotEmpty()) {
+				    foreach ($mahasiswa_ujian as $mu) {
+					    $absensi[] = $mu->mhs_matkul->mhs->nim;
+				    }
+			    }
+		    	$res = [
+				    'cmd'             => $req->cmd,
+				    'mhs_online' => $this->data_clients_mhs,
+				    'mhs_online_ips' => $this->data_clients_mhs_ips,
+				    'absensi'         => $absensi,
+				    'absensi_by_self' => [],
+				    'user_id'     => $req->user_id,
+			    ];
+			    
 			    foreach ($this->clients as $client) {
 				    $client->send(json_encode($res));
 			    }

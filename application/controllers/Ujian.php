@@ -1326,6 +1326,9 @@ class Ujian extends MY_Controller {
 	}
 	
 	public function monitor($id_ujian){
+		
+		if(!(in_group('admin') || in_group('pengawas'))) show_404();
+		
 		$m_ujian = Mujian_orm::findOrFail($id_ujian);
 		if (!$this->ion_auth->in_group('admin')
 			&& !$this->ion_auth->in_group('dosen')
@@ -1345,6 +1348,9 @@ class Ujian extends MY_Controller {
 	}
 	
 	protected function _data_daftar_hadir(){
+		
+		if(!(in_group('admin') || in_group('pengawas'))) show_404();
+		
 		$id = $this->input->post('id');
 		$m_ujian = Mujian_orm::findOrFail($id);
 		$config = [
@@ -1381,7 +1387,10 @@ class Ujian extends MY_Controller {
         });
         
         $dt->edit('aksi', function ($data) use($id){
-            return '<button type="button" class="btn btn-sm btn-danger btn_kick" data-id="'. $data['id'] .'" data-nim="'. $data['nim'] .'"><i class="fa fa-user-times"></i> Kick</button>';
+            return '<div class="btn-group">
+						<button type="button" title="hentikan ujian peserta" class="btn btn-sm btn-danger btn_kick" data-id="'. $data['id'] .'" data-nim="'. $data['nim'] .'"><i class="fa fa-user-times"></i></button>
+						<button type="button" title="lihat foto peserta" class="btn btn-sm btn-info btn_foto" data-id="'. $data['id'] .'" data-nim="'. $data['nim'] .'"><i class="fa fa-camera"></i></button>
+						</div>';
         });
         
         $dt->edit('koneksi', function ($data) use($id){
@@ -1407,6 +1416,9 @@ class Ujian extends MY_Controller {
 	}
 	
 	protected function _data_absen_pengawas(){
+		
+		$this->_akses_pengawas();
+		
 		$id = $this->input->get('id');
 		$user_id = $this->input->get('user_id');
 		
@@ -1452,7 +1464,10 @@ class Ujian extends MY_Controller {
         });
         
         $dt->edit('aksi', function ($data) use($id){
-            return '<button type="button" class="btn btn-sm btn-danger" data-id="'. $data['id'] .'" data-nim="'. $data['nim'] .'"><i class="fa fa-user-times"></i> Kick</button>';
+            return '<div class="btn-group">
+						<button type="button" title="hentikan ujian peserta" class="btn btn-sm btn-danger btn_kick" data-id="'. $data['id'] .'" data-nim="'. $data['nim'] .'"><i class="fa fa-user-times"></i></button>
+						<button type="button" title="lihat foto peserta" class="btn btn-sm btn-info btn_foto" data-id="'. $data['id'] .'" data-nim="'. $data['nim'] .'"><i class="fa fa-camera"></i></button>
+						</div>';
         });
         
         $dt->edit('koneksi', function ($data) use($id){
@@ -1490,6 +1505,12 @@ class Ujian extends MY_Controller {
 	    }
 	    
 	    $this->_json($data);
+	}
+	
+	protected function _get_foto_url(){
+		$nim = $this->input->post('nim');
+		$mhs = Mhs_orm::where('nim', $nim)->firstOrFail();
+		$this->_json(['src_img' => $mhs->foto]);
 	}
 	
 //	function c(){

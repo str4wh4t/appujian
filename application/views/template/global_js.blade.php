@@ -109,7 +109,7 @@ $(document).ready(function(){
         let data = jQuery.parseJSON(e.data);
         if (data.cmd == 'MHS_ONLINE') {
             if((data.nim == '{{ get_logged_user()->username }}') && (!data.ok)){
-                location.href = '{{ url('auth/not_valid_login') }}';
+                // location.href = '{{ url('auth/not_valid_login') }}';
             }
         }else if (data.cmd == 'MHS_KICKED') {
             if(data.nim == '{{ get_logged_user()->username }}'){

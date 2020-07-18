@@ -11,46 +11,20 @@ use Orm\Login_log_orm;
 
 class Chat implements MessageComponentInterface {
     protected $clients;
-    protected $data_clients;
     protected $data_clients_mhs;
+    protected $data_clients_mhs_ips;
 
     public function __construct() {
         $this->clients = new \SplObjectStorage;
-        $this->data_clients = [];
         $this->data_absensi = [];
         $this->data_clients_mhs = [];
+        $this->data_clients_mhs_ips = [];
     }
 
     public function onOpen(ConnectionInterface $conn) {
         // Store the new connection to send messages to later
         $this->clients->attach($conn);
         echo "New connection! ({$conn->resourceId})\n";
-        foreach ($this->clients as $client) {
-                // The sender is not the receiver, send to each client connected
-	            $msgs = [];
-	            if(!empty($this->data_clients)) {
-		            foreach ($this->data_clients as $resourceId => $username) {
-			            $msg    = [
-				            'username' => $username,
-				            'cmd'      => 'ONLINE',
-			            ];
-			            $msgs[] = $msg;
-		            }
-		            $client->send(json_encode($msgs));
-	            }
-        }
-        
-        if(!empty($this->data_absensi)) {
-        	    $msgs = [];
-	            foreach ($this->data_absensi as $daftar_hadir_id => $nim) {
-		            $msg    = [
-			            'nim' => $nim,
-			            'cmd'      => 'LIST ABSENSI',
-		            ];
-		            $msgs[] = $msg;
-	            }
-	            $client->send(json_encode($msgs));
-            }
         
     }
 
@@ -84,6 +58,7 @@ class Chat implements MessageComponentInterface {
 			    $res = [
 				    'cmd'             => $req->cmd,
 				    'mhs_online' => $this->data_clients_mhs,
+				    'mhs_online_ips' => $this->data_clients_mhs_ips,
 				    'absensi'         => $absensi,
 				    'absensi_by_self' => $absensi_by_self,
 				    'user_id'     => $req->user_id,
@@ -142,20 +117,21 @@ class Chat implements MessageComponentInterface {
 		    }
 	    }elseif($req->cmd == 'MHS_ONLINE'){
             $this->data_clients_mhs[$req->nim] = $from->resourceId;
+            $this->data_clients_mhs_ips[$req->nim] = $from->remoteAddress;
             $users = Users_orm::where('username', $req->nim)->first();
             $ok = true ;
 	        if(!empty($users)){
-	        	if($users->is_online == 1){
-	        		// JIKA TERNYATA SUDAH ONLINE
-			        $ok = false;
-		        }else {
-			        $users->is_online = 1;
+//	        	if($users->ip_address == $from->remoteAddress){
+//			        $ok = false;
+//		        }else {
+			        $users->ip_address = $from->remoteAddress;
 			        $users->save();
-		        }
+//		        }
 	        }
 	    	$res = [
 		        'cmd'         => $req->cmd,
 		        'nim'         => $req->nim,
+		        'ip'          => $from->remoteAddress,
 			    'ok'          => $ok,
 		    ];
 	        foreach ($this->clients as $client) {
@@ -244,11 +220,11 @@ class Chat implements MessageComponentInterface {
         }
         if(!empty($nim)) {
 	        unset($this->data_clients_mhs[$nim]);
-	        $users = Users_orm::where('username', $nim)->first();
-	        if(!empty($users)){
-		        $users->is_online = 0;
-		        $users->save();
-	        }
+//	        $users = Users_orm::where('username', $nim)->first();
+//	        if(!empty($users)){
+//		        $users->is_online = 0;
+//		        $users->save();
+//	        }
 	        $res = [
 		        'cmd' => 'MHS_OFFLINE',
 		        'nim' => $nim,

@@ -51,11 +51,11 @@ body {
     let table ;
     // let list_online = [];
     let list_mhs_online = [];
+    let list_mhs_online_ips = {};
     let list_absensi = [];
     let list_absensi_by_self = [];
     function init_page_level() {
         ajaxcsrf();
-        init_socket();
         table = $("#tb_daftar_hadir").DataTable({
         initComplete: function() {
           var api = this.api();
@@ -67,16 +67,18 @@ body {
                 return false;
               }
             });
-            $.each(list_mhs_online, function(index, item){
-                $('#badge_koneksi_' + item).text('ONLINE').removeClass('bg-danger').addClass('bg-success');
-            });
-            $.each(list_absensi, function(index, item){
-                $('#badge_absensi_' + item).text('SUDAH').removeClass('danger').removeClass('border-danger').addClass('border-success').addClass('success');
-            });
+            init_socket();
+            // $.each(list_mhs_online, function(index, item){
+            //     $('#badge_koneksi_' + item).text('ONLINE').removeClass('bg-danger').addClass('bg-success');
+            // });
+            // $.each(list_absensi, function(index, item){
+            //     $('#badge_absensi_' + item).text('SUDAH').removeClass('danger').removeClass('border-danger').addClass('border-success').addClass('success');
+            // });
         },
         "drawCallback": function( settings ) {
             $.each(list_mhs_online, function(index, item){
                 $('#badge_koneksi_' + item).text('ONLINE').removeClass('bg-danger').addClass('bg-success');
+                $('#badge_ip_' + item).text(list_mhs_online_ips[item]).show();
             });
             $.each(list_absensi, function(index, item){
                 $('#badge_absensi_' + item).text('SUDAH').removeClass('danger').removeClass('border-danger').addClass('border-success').addClass('success');
@@ -206,6 +208,7 @@ body {
             //
             // }else {
                 if (data.cmd == 'OPEN') {
+                    console.log(data);
                     $.each(data.absensi,function(index, nim){
                         push_absensi(nim);
                         $('#badge_absensi_' + nim).text('SUDAH').removeClass('danger').removeClass('border-danger').addClass('border-success').addClass('success');
@@ -221,15 +224,19 @@ body {
                         let nim = index ;
                         push_mhs_online(nim);
                         $('#badge_koneksi_' + nim).text('ONLINE').removeClass('bg-danger').removeClass('bg-warning').addClass('bg-success');
+                        push_mhs_online_ips(nim, data.mhs_online_ips[nim]);
+                        $('#badge_ip_' + nim).text(data.mhs_online_ips[nim]).show();
                     });
                     $('#jml_mhs_online').text(list_mhs_online.length);
                 }else if (data.cmd == 'MHS_ONLINE') {
                     push_mhs_online(data.nim);
                     $('#badge_koneksi_' + data.nim).text('ONLINE').removeClass('bg-danger').removeClass('bg-warning').addClass('bg-success');
+                    $('#badge_ip_' + data.nim).text(data.ip).show();
                     $('#jml_mhs_online').text(list_mhs_online.length);
                 }else if (data.cmd == 'MHS_OFFLINE') {
                     pop_mhs_online(data.nim);
                     $('#badge_koneksi_' + data.nim).text('OFFLINE').removeClass('bg-success').removeClass('bg-warning').addClass('bg-danger');
+                    $('#badge_ip_' + data.nim).text(data.ip).hide();
                     $('#jml_mhs_online').text(list_mhs_online.length);
                 }else if (data.cmd == 'MHS_LOST_FOCUS') {
                     $('#badge_koneksi_' + data.nim).text('BUKA PAGE LAIN').removeClass('bg-danger').removeClass('bg-success').addClass('bg-warning');
@@ -385,6 +392,20 @@ body {
         if (index > -1) {
           list_mhs_online.splice(index, 1);
         }
+    }
+
+    function push_mhs_online_ips(nim, ip){
+        nim = nim.toString();
+        ip = ip.toString();
+        delete list_mhs_online_ips[nim];
+        list_mhs_online_ips[nim] = ip;
+        console.log(list_mhs_online_ips);
+    }
+
+    function pop_mhs_online_ips(nim){
+        nim = nim.toString();
+        ip = ip.toString();
+        delete list_mhs_online_ips[nim];
     }
 
     function load_absen_pengawas(){

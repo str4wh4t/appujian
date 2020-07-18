@@ -1160,6 +1160,9 @@ class Ujian extends MY_Controller {
 				$_tidsoal 	= "id_soal_".$i;
 				$_ragu 		= "rg_".$i;
 				$jawaban_ujian = Jawaban_ujian_orm::where('ujian_id',$id_tes)->where('soal_id',$input[$_tidsoal])->firstOrFail();
+				if($jawaban_ujian->h_ujian->ujian_selesai == 'Y'){
+					throw new Exception();
+				}
 				
 				if(!empty($input[$_tjawab]))
 					 $jawaban_ujian->jawaban = $input[$_tjawab];
@@ -1171,7 +1174,7 @@ class Ujian extends MY_Controller {
 			commit_db_trx();
 			$action = true;
 		
-		} catch(\Illuminate\Database\QueryException $e){
+		} catch(Exception $e){
 			rollback_db_trx();
 			$action = false;
 	    }
@@ -1382,7 +1385,7 @@ class Ujian extends MY_Controller {
         });
         
         $dt->edit('koneksi', function ($data) use($id){
-            return '<span class="badge bg-danger" id="badge_koneksi_'. $data['nim'] .'">'. $data['koneksi'] .'</span>';
+            return '<span class="badge bg-danger" id="badge_koneksi_'. $data['nim'] .'">'. $data['koneksi'] .'</span><span class="badge bg-info" id="badge_ip_'. $data['nim'] .'" style="display: none">-</span>';
         });
         
         $dt->add('absensi', function ($data) use($id){

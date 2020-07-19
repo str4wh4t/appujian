@@ -70,8 +70,8 @@ foreach($ujian->topik AS $topik){
 }
 $str_topik = implode(',', $t);
 
-$min_nilai = number_format($nilai->min_nilai,0,'.', '') ;
-$max_nilai = number_format($nilai->max_nilai,0,'.', '') ;
+$min_nilai = number_format($nilai->min_nilai,2,'.', '') ;
+$max_nilai = number_format($nilai->max_nilai,2,'.', '') ;
 $rata_rata_ujian = number_format($nilai->avg_nilai,2,'.', '') ;
 
 // create some HTML content
@@ -133,7 +133,7 @@ EOD;
 
 $no = 1;
 foreach($hasil as $row) {
-$hasil_akhir = number_format($row['nilai_bobot_benar'] / 3,2,'.', '') ;
+$hasil_akhir = number_format($row['nilai'],2,'.', '') ;
 $html .= <<<EOD
     <tr>
         <td align="center" width="5%">{$no}</td>

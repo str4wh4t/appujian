@@ -41,7 +41,7 @@ $(document).ready(function () {
             { "data": 'detail_bobot_benar' },
             // { "data": 'jml_salah' },
             // { "data": 'nilai' },
-            { "data": 'nilai_bobot_benar' },
+            { "data": 'nilai' },
             { "data": 'aksi' }
         ],
         order: [

@@ -69,7 +69,7 @@ $(document).on('click','.btn_reset_hasil',function(){
     });
 });
 </script>
-<script src="{{ asset('assets/dist/js/app/hasilujian/detail.js') }}"></script>
+<script src="{{ asset('assets/dist/js/app/hasilujian/detail.js?u=') . mt_rand() }}"></script>
 <!-- END PAGE LEVEL JS-->
 @endpush
 
@@ -142,11 +142,11 @@ $(document).on('click','.btn_reset_hasil',function(){
             </tr>
             <tr>
                 <th>Nilai Terendah</th>
-                <td><?=number_format($nilai->min_nilai,0,'.', '')?></td>
+                <td><?=number_format($nilai->min_nilai,2,'.', '')?></td>
             </tr>
             <tr>
                 <th>Nilai Tertinggi</th>
-                <td><?=number_format($nilai->max_nilai,0,'.', '')?></td>
+                <td><?=number_format($nilai->max_nilai,2,'.', '')?></td>
             </tr>
             <tr>
                 <th>Rata-rata Nilai</th>

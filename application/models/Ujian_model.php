@@ -292,9 +292,9 @@ class Ujian_model extends CI_Model {
     public function HslUjianById($id, $dt=false)
     {
     	
-    	$this->db->select('d.id, a.nim, a.nama, d.detail_bobot_benar, d.nilai_bobot_benar');
+    	$this->db->select('d.id, a.nim, a.nama, d.detail_bobot_benar, d.nilai');
         $this->db->from('h_ujian d');
-		$this->db->join('mahasiswa a', 'a.id_mahasiswa=d.mahasiswa_id');
+		$this->db->join('mahasiswa a', 'a.id_mahasiswa = d.mahasiswa_id');
         $this->db->where([ 'd.ujian_id' => $id, 'd.ujian_selesai' => 'Y']);
         $this->db->group_by('a.id_mahasiswa');
         $this->db->order_by('d.nilai_bobot_benar','desc');
@@ -325,16 +325,16 @@ class Ujian_model extends CI_Model {
 	        	foreach($hasil_ujian_per_topik as $t => $v){
 	        	    $tpk = $topik->findOrFail($t);
 	        	    $return .= '<dt class="col-md-8">' . $tpk->nama_topik . '</dt>';
-	        	    $return .= '<dd class="col-md-4">' . $v . '</dd>';
+//	        	    $return .= '<dd class="col-md-4">' . $v . '</dd>';
 		        }
 	        	$return .= '</dl>';
 	            return $return;
 	        });
 	        
-	        $dt->edit('nilai_bobot_benar', function ($data){
+	        $dt->edit('nilai', function ($data){
 	        
 //	            return number_format($data['nilai_bobot_benar'] / 3,2,'.', '') ;
-	            return number_format($data['nilai_bobot_benar'] ,2,'.', '') ;
+	            return number_format($data['nilai'] ,2,'.', '') ;
 	        });
 	        
 	        $dt->add('aksi', function ($data) use($id){
@@ -362,10 +362,14 @@ class Ujian_model extends CI_Model {
 //        $this->db->select_min('nilai', 'min_nilai');
 //        $this->db->select_max('nilai', 'max_nilai');
 //        $this->db->select_avg('FORMAT(FLOOR(nilai),0)', 'avg_nilai');
-	    
-	    $this->db->select_min('nilai_bobot_benar', 'min_nilai');
-        $this->db->select_max('nilai_bobot_benar', 'max_nilai');
-        $this->db->select_avg('nilai_bobot_benar', 'avg_nilai');
+
+//	    $this->db->select_min('nilai_bobot_benar', 'min_nilai');
+//        $this->db->select_max('nilai_bobot_benar', 'max_nilai');
+//        $this->db->select_avg('nilai_bobot_benar', 'avg_nilai');
+        
+        $this->db->select_min('nilai', 'min_nilai');
+        $this->db->select_max('nilai', 'max_nilai');
+        $this->db->select_avg('nilai', 'avg_nilai');
         
         $this->db->where('ujian_id', $id)->where('ujian_selesai', 'Y');
         return $this->db->get('h_ujian')->row();

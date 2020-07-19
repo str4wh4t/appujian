@@ -204,14 +204,14 @@ class HasilUjian extends MY_Controller {
             	$return .= '<tr>';
                 $tpk = Topik_orm::findOrFail($t);
                 $return .= '<td width="80%">' . $tpk->nama_topik . '</td>';
-                $return .= '<td width="20%">' . $v . '</td>';
+//                $return .= '<td width="20%">' . $v . '</td>';
                 $return .= '</tr>';
 	        }
             $return .= '</table>';
             $new_hasil[] = [
 				'nim' => $hasil->nim,
 				'nama' => $hasil->nama,
-				'nilai_bobot_benar' => $hasil->nilai_bobot_benar,
+				'nilai' => $hasil->nilai,
 				'detail_bobot_benar' => $return
 			];
 		}

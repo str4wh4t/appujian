@@ -58,7 +58,7 @@
 
 
     </script>
-    <script src="{{ asset('assets/dist/js/app/ujian/list.js') }}"></script>
+    <script src="{{ asset('assets/dist/js/app/ujian/list.js?u=') . mt_rand() }}"></script>
     <!-- END PAGE LEVEL JS-->
 @endpush
 
@@ -115,6 +115,7 @@
                                                 <thead>
                                                 <tr>
 {{--                                                    <th>No.</th>--}}
+                                                    <th class="text-center">Aksi</th>
                                                     <th>Nama Ujian</th>
                                                     <th>Materi Ujian</th>
                                                     <th>Status</th>
@@ -122,12 +123,12 @@
                                                     <th>Jadwal Mulai</th>
                                                     <th>Jadwal Selesai</th>
                                                     <th>Lama Ujian</th>
-                                                    <th class="text-center">Aksi</th>
                                                 </tr>
                                                 </thead>
                                                 <tfoot>
                                                 <tr>
 {{--                                                    <th>No.</th>--}}
+                                                    <th class="text-center">Aksi</th>
                                                     <th>Nama Ujian</th>
                                                     <th>Materi Ujian</th>
                                                     <th>Status</th>
@@ -135,7 +136,6 @@
                                                     <th>Jadwal Mulai</th>
                                                     <th>Jadwal Selesai</th>
                                                     <th>Lama Ujian</th>
-                                                    <th class="text-center">Aksi</th>
                                                 </tr>
                                                 </tfoot>
                                             </table>

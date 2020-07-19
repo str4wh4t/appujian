@@ -37,11 +37,11 @@ $(document).ready(function () {
             "type": "POST",
         },
         columns: [
-            // {
-            //     "data": "id_ujian",
-            //     "orderable": false,
-            //     "searchable": false
-            // },
+            {
+                "data": "id_ujian",
+                "orderable": false,
+                "searchable": false
+            },
             { "data": 'nama_ujian' },
             { "data": 'nama_matkul' },
             { "data": 'status_ujian' },
@@ -49,14 +49,14 @@ $(document).ready(function () {
             { "data": 'tgl_mulai' },
             { "data": 'terlambat' },
             { "data": 'waktu' },
-            {
-                "searchable": false,
-                "orderable": false
-            }
+            // {
+            //     "searchable": false,
+            //     "orderable": false
+            // }
         ],
         columnDefs: [
             {
-                "targets": 7,
+                "targets": 0,
                 "data": "id_ujian",
                 "render": function (data, type, row, meta) {
                     let btn;
@@ -94,7 +94,7 @@ $(document).ready(function () {
                 }
             },
             {
-                "targets": 2,
+                "targets": 3,
                 "render": function (data, type, row, meta) {
                     if(data == 'active'){
                         return `<span class="badge badge-success">

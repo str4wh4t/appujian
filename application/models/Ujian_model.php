@@ -292,7 +292,7 @@ class Ujian_model extends CI_Model {
     public function HslUjianById($id, $dt=false)
     {
     	
-    	$this->db->select('d.id, a.nim, a.nama, d.detail_bobot_benar, d.nilai');
+    	$this->db->select('d.id, a.nim, a.nama, d.detail_bobot_benar, d.nilai, d.nilai_bobot_benar');
         $this->db->from('h_ujian d');
 		$this->db->join('mahasiswa a', 'a.id_mahasiswa = d.mahasiswa_id');
         $this->db->where([ 'd.ujian_id' => $id, 'd.ujian_selesai' => 'Y']);
@@ -331,9 +331,14 @@ class Ujian_model extends CI_Model {
 	            return $return;
 	        });
 	        
-	        $dt->edit('nilai', function ($data){
+	        $dt->edit('nilai_bobot_benar', function ($data){
 	        
 //	            return number_format($data['nilai_bobot_benar'] / 3,2,'.', '') ;
+	            return number_format($data['nilai_bobot_benar'] / 3 ,2,'.', '') ;
+	        });
+	        
+	        $dt->edit('nilai', function ($data){
+	        
 	            return number_format($data['nilai'] ,2,'.', '') ;
 	        });
 	        

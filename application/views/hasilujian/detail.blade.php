@@ -171,7 +171,8 @@ $(document).on('click','.btn_reset_hasil',function(){
                     <th>Nama</th>
                     <th>Nilai Per Topik</th>
 {{--                    <th>Jml Salah</th>--}}
-                    <th>Skor Akhir</th>
+                    <th>Bobot</th>
+                    <th>Nilai</th>
                     <th>Aksi</th>
                 </tr>
             </thead>
@@ -182,7 +183,8 @@ $(document).on('click','.btn_reset_hasil',function(){
                     <th>Nama</th>
                     <th>Nilai Per Topik</th>
 {{--                    <th>Jml Salah</th>--}}
-                    <th>Skor Akhir</th>
+                    <th>Bobot</th>
+                    <th>Nilai</th>
                     <th>Aksi</th>
                 </tr>
             </tfoot>

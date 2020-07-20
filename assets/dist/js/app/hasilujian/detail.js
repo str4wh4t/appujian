@@ -41,8 +41,13 @@ $(document).ready(function () {
             { "data": 'detail_bobot_benar' },
             // { "data": 'jml_salah' },
             // { "data": 'nilai' },
+            { "data": 'nilai_bobot_benar' },
             { "data": 'nilai' },
-            { "data": 'aksi' }
+            {
+                "data": 'aksi',
+                "orderable": false,
+                "searchable": false
+            }
         ],
         order: [
             [4, 'desc'],

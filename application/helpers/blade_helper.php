@@ -38,11 +38,11 @@ function csrf_token() {
 }
 
 function asset($asset_path) {
-	return base_url() . $asset_path ;
+	return base_url($asset_path) ;
 }
 
 function url($path) {
-	return site_url() . $path ;
+	return site_url($path) ;
 }
 
 function flash_data($name){

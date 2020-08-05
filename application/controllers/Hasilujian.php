@@ -212,6 +212,7 @@ class HasilUjian extends MY_Controller {
 				'nim' => $hasil->nim,
 				'nama' => $hasil->nama,
 				'nilai' => $hasil->nilai,
+				'nilai_bobot_benar' => $hasil->nilai_bobot_benar,
 				'detail_bobot_benar' => $return
 			];
 		}

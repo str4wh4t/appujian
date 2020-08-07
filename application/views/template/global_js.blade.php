@@ -94,13 +94,16 @@ $(document).ready(function(){
 
     @if(in_group('mahasiswa'))
     // let conn = new WebSocket('wss://ujian.undip.ac.id/wss2/NNN');
+    @php($identifier = mt_rand())
+{{--    @php($identifier = get_client_ip())    --}}
     conn = new WebSocket('{{ ws_url() }}');
     conn.onopen = function(e) {
         // console.log("Connection established!");
         conn.send(JSON.stringify({
             'nim':'{{ get_logged_user()->username }}',
             'as':'{{ get_selected_role()->name }}',
-            'ip': '{{ get_client_ip() }}',
+            'ip': '{{ $identifier }}',
+
             'cmd':'MHS_ONLINE'
         }));
     };
@@ -109,8 +112,11 @@ $(document).ready(function(){
         // console.log(e.data);
         let data = jQuery.parseJSON(e.data);
         if (data.cmd == 'MHS_ONLINE') {
-            if((data.nim == '{{ get_logged_user()->username }}') && (!data.ok)){
-                // location.href = '{{ url('auth/not_valid_login') }}';
+            if(data.nim == '{{ get_logged_user()->username }}'){
+                if (data.ip != '{{ $identifier }}') {
+                    // JIKA YANG MENGAKSES BERBEDA IP DENGAN MHS YG ONLINE
+                    location.href = '{{ url('auth/not_valid_login') }}';
+                }
             }
         }else if (data.cmd == 'MHS_KICKED') {
             if(data.nim == '{{ get_logged_user()->username }}'){

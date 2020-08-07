@@ -59,7 +59,9 @@ class Ujian extends MY_Controller {
 			$username = $this->ion_auth->user()->row()->username;
 		}
 		
-		$this->_json($this->ujian->getDataUjian($id, $username, get_selected_role()), false);
+		$status_ujian = empty($this->input->post('status_ujian')) ? 'active' : $this->input->post('status_ujian') ;
+		
+		$this->_json($this->ujian->getDataUjian($id, $username, get_selected_role(), $status_ujian), false);
 	}
 
     public function master()

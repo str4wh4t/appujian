@@ -252,7 +252,7 @@ $(document).on('change','.chkbox_pilih_peserta',function () {
 });
 
 </script>
-<script src="{{ asset('assets/dist/js/app/ujian/edit.js') }}"></script>
+<script src="{{ asset('assets/dist/js/app/ujian/edit.js?v=' . mt_rand()) }}"></script>
 <!-- END PAGE LEVEL JS-->
 @endpush
 

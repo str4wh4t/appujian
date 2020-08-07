@@ -10,7 +10,7 @@ use Orm\Hujian_orm;
 
 class Ujian_model extends CI_Model {
     
-    public function getDataUjian($id = null, $username = null, $role = null)
+    public function getDataUjian($id = null, $username = null, $role = null, $status_ujian = 'active')
     {
 //        $this->datatables->select('a.id_ujian, a.token, a.nama_ujian, b.nama_matkul, a.jumlah_soal, CONCAT(a.tgl_mulai, " <br/> (", a.waktu, " Menit)") as waktu, a.jenis');
 //        $this->datatables->from('m_ujian a');
@@ -33,6 +33,24 @@ class Ujian_model extends CI_Model {
 	    $this->db->select('a.id_ujian, status_ujian, a.token, a.nama_ujian, b.nama_matkul, a.jumlah_soal, a.tgl_mulai, a.terlambat, CONCAT(a.waktu, " Mnt") AS waktu, CONCAT(a.jenis , "/" , a.jenis_jawaban) AS jenis, a.created_by as oleh, a.pakai_token');
         $this->db->from('m_ujian a');
         $this->db->join('matkul b', 'a.matkul_id = b.id_matkul');
+        
+        if($status_ujian == 'active'){
+        	$this->db->where('a.status_ujian', 1);
+        	$this->db->where('a.terlambat >=', date('Y-m-d H:i:s'));
+        }
+        
+        if($status_ujian == 'expired'){
+        	$this->db->where('a.terlambat <', date('Y-m-d H:i:s'));
+        }
+        
+        if($status_ujian == 'close'){
+        	$this->db->where('a.status_ujian', 0);
+        	$this->db->where('a.terlambat >=', date('Y-m-d H:i:s'));
+        }
+        
+        if($status_ujian == 'semua'){
+			// JIKA SEMUA
+        }
         
         if ($id !== null) {
                 $this->db->where('a.matkul_id', $id);
@@ -65,17 +83,20 @@ class Ujian_model extends CI_Model {
         });
         
         $dt->edit('status_ujian', function ($data) {
-//            $today = date('Y-m-d H:i:s');
-//			$data_start = date('Y-m-d H:i:s', strtotime($data['tgl_mulai']));
-//			$date_end = date('Y-m-d H:i:s', strtotime($data['terlambat']));
-//
-//			if (($today >= $data_start) && ($today <= $date_end)){
-//			    return $data['status_ujian'] ? "active" : "close";
-//			}else{
-//			    return "expired";
-//			}
+            $today = date('Y-m-d H:i:s');
+			$data_start = date('Y-m-d H:i:s', strtotime($data['tgl_mulai']));
+			$date_end = date('Y-m-d H:i:s', strtotime($data['terlambat']));
 			
-			return $data['status_ujian'] ? "active" : "close";
+			$return = $data['status_ujian'] ? "active" : "close" ;
+			// if (($today >= $data_start) && ($today <= $date_end)) {
+	        if ($today <= $date_end) {
+				// JIKA MASIH DALAM RANGE TANGGAL
+				// $return = "expired";
+			}else{
+			    $return = "expired";
+			}
+			
+			return $return;
         });
         
         $user_orm = new Users_orm;

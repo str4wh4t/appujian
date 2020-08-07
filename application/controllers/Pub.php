@@ -2,6 +2,7 @@
 defined('BASEPATH') OR exit('No direct script access allowed');
 
 use Orm\Mhs_orm;
+use Orm\Mhs_source_orm;
 use Orm\Hujian_orm;
 use Orm\Topik_orm;
 use Ratchet\Server\IoServer;
@@ -98,6 +99,48 @@ class Pub extends MY_Controller {
 			}
 		}
 		die('DONE');
+	}
+	
+	public function asign_prodi(){
+		$mhs_source = Mhs_source_orm::all();
+		$i = 0;
+		foreach($mhs_source as $m){
+			$mhs = Mhs_orm::find($m->id_mahasiswa);
+			if(!empty($mhs)){
+				$mhs->kodeps = $m->kodeps;
+				$mhs->prodi =  $m->prodi;
+				$mhs->jalur = 'IUP';
+				$mhs->gel = 2;
+				$mhs->tahun = 2020;
+				if($mhs->save())
+					echo "[UPDATE]" . $mhs->nama ;
+				else
+					echo "[GAGAL]" . $mhs->nama ;
+			}else{
+				echo "[NOTFOUND]" . $m->id_mahasiswa ;
+				die;
+			}
+			echo "\n";
+			$i++;
+		}
+		die('DONE, j = ' . $i);
+	}
+	
+	public function perbaiki(){
+		$mhs_list = Mhs_orm::whereNotNull('no_billkey')->get();
+		$i = 0;
+		foreach($mhs_list as $mhs){
+				$mhs->jalur = 'IUP';
+				$mhs->gel = 2;
+				$mhs->tahun = 2020;
+				if($mhs->save())
+					echo "[UPDATE]" . $mhs->nama ;
+				else
+					echo "[GAGAL]" . $mhs->nama ;
+				echo "\n";
+				$i++;
+		}
+		die('DONE, j = ' . $i);
 	}
 	
 	public function socket(){

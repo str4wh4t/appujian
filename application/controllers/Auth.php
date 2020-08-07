@@ -40,7 +40,7 @@ class Auth extends CI_Controller
 			'name' => 'password',
 			'id' => 'password',
 			'type' => 'password',
-			'placeholder' => 'Tgl Lahir [ddmmyyyy]',
+			'placeholder' => 'No Billkey',
 			'class' => 'form-control',
 		];
 		$this->data['message'] = (validation_errors()) ? validation_errors() : $this->session->flashdata('message');

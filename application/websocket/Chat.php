@@ -34,6 +34,7 @@ class Chat implements MessageComponentInterface {
             , $from->resourceId, $req, $numRecv, $numRecv == 1 ? '' : 's');
 
 	    $req = json_decode($req);
+	    $absensi         = [];
 	    if($req->cmd == 'OPEN'){
 	    	// UNTUK PENGAWAS
 		    if($req->as == 'pengawas') {
@@ -45,7 +46,7 @@ class Chat implements MessageComponentInterface {
 			    $mahasiswa_ujian = Mhs_ujian_orm::where('ujian_id', $req->m_ujian_id)
 			                                    ->has('daftar_hadir')
 			                                    ->get();
-			    $absensi         = [];
+			   
 			    $absensi_by_self = [];
 			    if ($mahasiswa_ujian->isNotEmpty()) {
 				    foreach ($mahasiswa_ujian as $mu) {

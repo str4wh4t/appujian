@@ -35,6 +35,7 @@ $(document).on('click','#btn_sync_pendaftaran',function(){
         confirmButtonText: "Yakin"
     }).then(result => {
         if (result.value) {
+            ajx_overlay(true);
             $.ajax({
                 url: '{{ url('mahasiswa/ajax/sync_pendaftaran') }}',
                 // data: $(this).serialize(),
@@ -43,7 +44,7 @@ $(document).on('click','#btn_sync_pendaftaran',function(){
                   if (respon.status) {
                         Swal({
                           title: "Berhasil",
-                          text: respon.total + " data berhasil di-sync",
+                          text: respon.jml_mhs_inserted + " data berhasil di-sync",
                           type: "success"
                         });
                       } else {
@@ -54,6 +55,7 @@ $(document).on('click','#btn_sync_pendaftaran',function(){
                         });
                       }
                     reload_ajax();
+                    ajx_overlay(false);
                 },
                 error: function () {
                   Swal({
@@ -61,6 +63,7 @@ $(document).on('click','#btn_sync_pendaftaran',function(){
                     text: "Terjadi kesalahan",
                     type: "error"
                   });
+                  ajx_overlay(false);
                 }
             });
         }
@@ -101,7 +104,7 @@ $(document).on('click','#btn_sync_pendaftaran',function(){
 {{--        <div class="table-responsive">--}}
 {{--            <table id="mahasiswa" class="table table-striped table-bordered table-hover pb-3">--}}
         <div class="table-responsive pb-3" style="border: 0">
-		    <table id="mahasiswa" class="table table-striped table-bordered table-hover">
+		    <table id="mahasiswa" class="table table-striped table-bordered table-hover w-100">
                 <thead>
                     <tr>
                         <th>No.</th>

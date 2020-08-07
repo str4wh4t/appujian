@@ -3,6 +3,7 @@
 @push('page_level_css')
 <!-- BEGIN PAGE LEVEL JS-->
 <link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/vendors/css/tables/datatable/datatables.min.css') }}">
+<link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/vendors/css/forms/selects/select2.min.css') }}">
 {{--<link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/vendors/css/tables/datatable/dataTables.bootstrap4.min.css') }}">--}}
 {{--<link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/vendors/css/tables/extensions/rowReorder.dataTables.min.css') }}">--}}
 {{--<link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/vendors/css/tables/extensions/responsive.dataTables.min.css') }}">--}}
@@ -13,6 +14,7 @@
 <!-- BEGIN PAGE VENDOR JS-->
 <script src="{{ asset('assets/template/robust/app-assets/vendors/js/tables/datatable/datatables.min.js') }}"></script>
 <script src="//cdn.datatables.net/plug-ins/1.10.21/api/fnPagingInfo.js"></script>
+<script src="{{ asset('assets/template/robust/app-assets/vendors/js/forms/select/select2.full.min.js') }}"></script>
 {{--<script src="{{ asset('assets/template/robust/app-assets/vendors/js/tables/jquery.dataTables.min.js') }}"></script>--}}
 {{--<script src="{{ asset('assets/template/robust/app-assets/vendors/js/tables/datatable/dataTables.bootstrap4.min.js') }}"></script>--}}
 {{--<script src="{{ asset('assets/template/robust/app-assets/vendors/js/tables/datatable/dataTables.responsive.min.js') }}"></script>--}}
@@ -24,6 +26,21 @@
 <!-- BEGIN PAGE LEVEL JS-->
 <script type="text/javascript">
 	{{--let id_dosen = '{{ $dosen->id_dosen }}';--}}
+
+    let status_ujian ;
+
+    function init_page_level(){
+        $('.select2').select2({
+            width: '100%'
+        });
+
+        status_ujian = $('#status_ujian').val();
+    }
+
+    $(document).on('change','#status_ujian',function () {
+		status_ujian = $(this).val();
+		table.ajax.reload();
+	});
 </script>
 <script src="{{ asset('assets/dist/js/app/ujian/master.js?u=') . mt_rand() }}"></script>
 <!-- END PAGE LEVEL JS-->
@@ -42,26 +59,38 @@
 
 
 <!---- --->
-<div class="box">
-    <div class="box-body">
-        <div class="mb-4">
-            @if(is_admin())
-            <a href="{{ site_url('ujian/add') }}" class="btn btn-outline-primary btn-sm btn-flat"><i class="fa fa-file-text-o"></i> Ujian Baru</a>
-            @endif
-
-            <button type="button" onclick="reload_ajax()" class="btn btn-sm btn-flat btn-outline-secondary"><i class="fa fa-refresh"></i> Reload</button>
-
-            @if(is_admin())
-            <div class="pull-right">
-                <button type="button" onclick="bulk_delete()" class="btn btn-sm btn-flat btn-danger"><i class="fa fa-trash"></i> Bulk Delete</button>
-            </div>
-            @endif
-
-        </div>
+<div class="row pb-3">
+    <div class="col-md-4">
+    @if(is_admin())
+        <a href="{{ site_url('ujian/add') }}" class="btn btn-outline-primary btn-sm btn-flat"><i class="fa fa-file-text-o"></i> Ujian Baru</a>
+    @endif
+    <button type="button" onclick="reload_ajax()" class="btn btn-sm btn-flat btn-outline-secondary"><i class="fa fa-refresh"></i> Reload</button>
     </div>
+
+    <div class="col-md-4" style="text-align: center">
+        <select name="status_ujian" id="status_ujian" class="select2" >
+            <option value="active">ACTIVE</option>
+            <option value="close">CLOSE</option>
+            <option value="expired">EXPIRED</option>
+            <option value="semua">SEMUA</option>
+        </select>
+    </div>
+
+    <div class="col-md-4">
+    @if(is_admin())
+    <div class="pull-right">
+        <button type="button" onclick="bulk_delete()" class="btn btn-sm btn-flat btn-danger"><i class="fa fa-trash"></i> Bulk Delete</button>
+    </div>
+    @endif
+    </div>
+
+</div>
+
+<div class="row">
+    <div class="col-md-12">
 	<?=form_open('ujian/delete', array('id'=>'bulk'))?>
     <div class="table-responsive pb-3" style="">
-        <table id="ujian" class="table table-striped table-bordered table-hover">
+        <table id="ujian" class="table table-striped table-bordered table-hover w-100">
         <thead>
             <tr>
 				<th class="text-center">
@@ -101,11 +130,8 @@
         </table>
     </div>
 	<?=form_close();?>
+        </div>
 </div>
-
-<script type="text/javascript">
-
-</script>
 <!---- --->
 
 				</div>

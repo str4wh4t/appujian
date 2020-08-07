@@ -947,7 +947,9 @@ class Mahasiswa extends MY_Controller
 	}
 	
 	protected function _sync_pendaftaran(){
-		$mhs_before = Mhs_orm::all();
+		ini_set('max_execution_time', 0);
+//		$mhs_before = Mhs_orm::all();
+		$mhs_before = Mhs_orm::where(['tahun' => 2020, 'gel' => 2, 'jalur' => 'IUP'])->get();
 		$mhs_ids_before = [];
 //		if(!empty($mhs_matkul)){
 		if($mhs_before->isNotEmpty()){
@@ -966,7 +968,8 @@ class Mahasiswa extends MY_Controller
 		
 		$mhs_ids_insert = array_diff($mhs_ids_source, $mhs_ids_before);
 		$mhs_ids_delete = array_diff($mhs_ids_before, $mhs_ids_source);
-		vdebug($mhs_ids_insert);
+		die; // DIMATIKAN TGL 07/08/2020
+//		vdebug($mhs_ids_insert);
 		try {
 			begin_db_trx();
 			if(!empty($mhs_ids_delete)) {
@@ -976,19 +979,29 @@ class Mahasiswa extends MY_Controller
 				}
 			}
 			
+			$jml_mhs_inserted = 0;
+			
 			if(!empty($mhs_ids_insert)) {
 				foreach ($mhs_ids_insert as $mhs_id) {
 					$mhs_source = Mhs_source_orm::findOrFail($mhs_id);
-					$mhs = new Mhs_orm;
+					$mhs = new Mhs_orm();
+					$mhs->id_mahasiswa = $mhs_source->id_mahasiswa;
 					$mhs->nim = $mhs_source->nim;
 					$mhs->nama = $mhs_source->nama;
 					$mhs->nik = $mhs_source->nik;
 					$mhs->tmp_lahir = $mhs_source->tmp_lahir;
-					$mhs->tgl_lahir = $mhs_source->tgl_lahir;
+//					$mhs->tgl_lahir = $mhs_source->tgl_lahir; // DI KOSONGI KARENA MASIH BERMASALAH
+					$mhs->no_billkey = $mhs_source->no_billkey;
 					$mhs->email = $mhs_source->email;
 					$mhs->foto = $mhs_source->foto;
 					$mhs->jenis_kelamin = $mhs_source->jenis_kelamin;
+					$mhs->prodi = $mhs_source->prodi;
+					$mhs->kodeps = $mhs_source->kodeps;
+					$mhs->jalur = $mhs_source->jalur;
+					$mhs->gel = $mhs_source->gel;
+					$mhs->tahun = $mhs_source->tahun;
 					$mhs->save();
+					
 					
 					// MENDAFTARKAN SBG USER
 					$nama       = explode(' ', $mhs->nama, 2);
@@ -997,39 +1010,62 @@ class Mahasiswa extends MY_Controller
 					$full_name  = $mhs->nama;
 					
 					$username        = $mhs->nim;
-					$password        = date("dmY", strtotime($mhs->tgl_lahir));
+//					$password        = date("dmY", strtotime($mhs->tgl_lahir));
+					$password        = $mhs->no_billkey;
 					$email           = $mhs->email;
-					$tgl_lahir        = date("dmY", strtotime($mhs->tgl_lahir));
+//					$tgl_lahir        = date("dmY", strtotime($mhs->tgl_lahir));
 					$additional_data = [
 						'first_name' => $first_name,
 						'last_name'  => $last_name,
 						'full_name'  => $full_name,
-						'tgl_lahir'  => $tgl_lahir,
+//						'tgl_lahir'  => $tgl_lahir,
+						'no_billkey'  => $mhs->no_billkey,
 					];
 					$group           = [ MHS_GROUP_ID ]; // Sets user to mhs.
 					$this->ion_auth->register($username, $password, $email, $additional_data, $group);
+					
+					
+					
+					// ASIGN KE MATERI UJIAN
+					$mhs_matkul = new Mhs_matkul_orm();
+					$mhs_matkul->mahasiswa_id = $mhs_source->id_mahasiswa;
+					$mhs_matkul->matkul_id = 18; // TRIAL UJIAN
+					$mhs_matkul->save();
+					$mhs_matkul = new Mhs_matkul_orm();
+					$mhs_matkul->mahasiswa_id = $mhs_source->id_mahasiswa;
+					$mhs_matkul->matkul_id = 19; // TPA
+					$mhs_matkul->save();
+					$mhs_matkul = new Mhs_matkul_orm();
+					$mhs_matkul->mahasiswa_id = $mhs_source->id_mahasiswa;
+					$mhs_matkul->matkul_id = 25; // TPA
+					$mhs_matkul->save();
+					
+					$jml_mhs_inserted++ ;
 				}
 			}
 			
 			// RESYNC TGL LAHIR
-			if($mhs_before->isNotEmpty()){
-				foreach($mhs_before as $mb){
-					$mhs_source = Mhs_source_orm::findOrFail($mb->id_mahasiswa);
-					$mb->tgl_lahir = $mhs_source->tgl_lahir;
-					$mb->save();
-					$users = Users_orm::where('username', $mb->nim)->first();
-					if(!empty($users)){
-						$users->tgl_lahir = date("dmY", strtotime($mb->tgl_lahir));
-						$users->save();
-					}
-				}
-			}
+//			if($mhs_before->isNotEmpty()){
+//				foreach($mhs_before as $mb){
+//					$mhs_source = Mhs_source_orm::findOrFail($mb->id_mahasiswa);
+//					$mb->tgl_lahir = $mhs_source->tgl_lahir;
+//					$mb->save();
+//					$users = Users_orm::where('username', $mb->nim)->first();
+//					if(!empty($users)){
+//						$users->tgl_lahir = date("dmY", strtotime($mb->tgl_lahir));
+//						$users->save();
+//					}
+//				}
+//			}
+			
+			
+			
 			commit_db_trx();
-			$this->_json(['status' => true]);
+			$this->_json(['status' => true, 'jml_mhs_inserted' => $jml_mhs_inserted]);
 			
 		} catch(\Illuminate\Database\QueryException $e){
 			rollback_db_trx();
-			show_error('Data masih digunakan', 500, 'Perhatian');
+			show_error($e->getMessage(), 500, 'Perhatian');
 	    }
 	}
 }

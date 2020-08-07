@@ -72,6 +72,9 @@ $(document).ready(function () {
         ajax: {
             "url": base_url+"ujian/ajax/data",
             "type": "POST",
+            data: function (d) {
+                d.status_ujian = status_ujian;
+            },
         },
         columns: [
             {
@@ -146,7 +149,7 @@ $(document).ready(function () {
             },
         ],
         order: [
-            [2, 'desc']
+            [1, 'asc'],
         ],
         rowId: function (a) {
             return a;

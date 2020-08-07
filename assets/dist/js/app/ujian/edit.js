@@ -43,7 +43,7 @@ $(document).ready(function () {
     $('#formujian').on('submit', function (e) {
         e.preventDefault();
         e.stopImmediatePropagation();
-
+        ajx_overlay(true);
         $.ajax({
             url: $(this).attr('action'),
             data: $(this).serialize(),
@@ -76,6 +76,7 @@ $(document).ready(function () {
                         });
                     }
                 }
+                ajx_overlay(false);
             }
         });
     });

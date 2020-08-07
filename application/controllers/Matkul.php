@@ -6,6 +6,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
 //use PhpOffice\PhpSpreadsheet\Writer\Xls;
 //use PhpOffice\PhpSpreadsheet\Writer\Csv;
 use Orm\Matkul_orm;
+use Orm\Mhs_matkul_orm;
 use Illuminate\Database\Eloquent\Builder;
 use Orm\Prodi_orm;
 use Orm\Mhs_orm;
@@ -240,8 +241,61 @@ class Matkul extends MY_Controller
 //		$this->load->view('_templates/dashboard/_header.php', $data);
 //		$this->load->view('master/matkul/data');
 //		$this->load->view('_templates/dashboard/_footer.php');
+		
+		if($this->input->post()){
+			$mhs_ids = $this->input->post('peserta[]');
+			$mhs_matkul = Mhs_matkul_orm::where('matkul_id', $matkul_id)->get();
+			$mhs_ids_before = [];
+			if($mhs_matkul->isNotEmpty($mhs_matkul)){
+				foreach($mhs_matkul as $mm){
+					$mhs_ids_before[] = $mm->mahasiswa_id;
+				}
+			}
+			$mhs_ids_insert = array_diff($mhs_ids, $mhs_ids_before);
+			$mhs_ids_delete = array_diff($mhs_ids_before, $mhs_ids);
+			
+			try {
+				begin_db_trx();
+				
+				if(!empty($mhs_ids_delete)) {
+					foreach ($mhs_ids_delete as $mhs_id) {
+						$mhs_matkul = Mhs_matkul_orm::where([
+							'mahasiswa_id' => $mhs_id,
+							'matkul_id'    => $matkul_id
+						])->firstOrFail();
+						
+						$mhs_matkul->delete();
+					}
+				}
+				
+				if(!empty($mhs_ids_insert)) {
+					foreach ($mhs_ids_insert as $mhs_id) {
+						$mhs_matkul_orm                      = new Mhs_matkul_orm();
+						$mhs_matkul_orm->mahasiswa_id = $mhs_id;
+						$mhs_matkul_orm->matkul_id            =$matkul_id;
+						$mhs_matkul_orm->save();
+					}
+				}
+				commit_db_trx();
+				$data['msg_ok'] = "Data berhasil disimpan";
+			} catch(\Illuminate\Database\QueryException $e){
+				rollback_db_trx();
+				show_error('Terjadi kesalahan : ' . $e->getMessage(), 500, 'Perhatian');
+		    }
+		}
+		
 		$data['prodi'] = Prodi_orm::all();
 		$data['matkul'] = $matkul;
+		
+		$prodi_mhs_selected = [];
+		if($matkul->mhs->isNotEmpty()){
+			foreach($matkul->mhs as $mhs){
+				$prodi_mhs_selected[$mhs->kodeps] = $mhs->kodeps;
+			}
+		}
+		
+		$data['prodi_mhs_selected'] = $prodi_mhs_selected;
+		
 		view('matkul/peserta',$data);
 	}
 	
@@ -249,11 +303,25 @@ class Matkul extends MY_Controller
 		$matkul_id = $this->input->post('matkul_id', true);
 		$kodeps = $this->input->post('kodeps', true);
 		$kodeps = json_decode($kodeps);
-		$mhs_matkul = Mhs_orm::whereIn('kodeps', $kodeps)->whereHas('mhs_matkul', function (Builder $query) use($matkul_id){
+		$mhs_matkul = Mhs_orm::whereIn('kodeps', $kodeps)
+		                        ->whereHas('mhs_matkul', function (Builder $query) use($matkul_id){
 				                    $query->where('matkul_id', $matkul_id);
 			                    })
 			                    ->get();
 		$mhs_ujian = $mhs_matkul->has('mhs_ujian');
 		$this->_json(['mhs_matkul' => $mhs_matkul, 'mhs_ujian' => $mhs_ujian]);
+	}
+	
+	protected function _get_mhs_prodi(){
+		$matkul_id = $this->input->post('matkul_id', true);
+		$kodeps = $this->input->post('kodeps', true);
+		$kodeps = json_decode($kodeps);
+		$mhs = Mhs_orm::whereIn('kodeps', $kodeps)->get();
+		$mhs_matkul = Mhs_orm::whereIn('kodeps', $kodeps)
+		                        ->whereHas('mhs_matkul', function (Builder $query) use($matkul_id){
+				                    $query->where('matkul_id', $matkul_id);
+			                    })
+			                    ->get();
+		$this->_json(['mhs' => $mhs, 'mhs_matkul' => $mhs_matkul]);
 	}
 }

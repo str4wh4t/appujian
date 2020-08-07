@@ -123,7 +123,7 @@ $('form#form_reset_password_by_admin').on('submit', function (e) {
                 </a>
             </div>
             <div class="col-md-10">
-                <div class="alert bg-info"><b>User :</b> {{ $users->full_name }}</div>
+                <div class="alert bg-info"><b>User :</b> {{ $users->full_name }} , <b>Level :</b> {{ strtoupper($level->name) }}</div>
             </div>
         </div>
         @endif
@@ -243,7 +243,11 @@ $('form#form_reset_password_by_admin').on('submit', function (e) {
                             <div class="box-body pb-0">
                                 <div class="form-group">
                                     <div class="alert " style="border: 1px solid #ff0000; background-color: #ffeded;">
+                                        @if($level->id == MHS_GROUP_ID)
+                                        <b><span class="text-danger">Perhatian : </span></b><hr>Password = no_billkey [{{ $users->no_billkey }}]
+                                        @else
                                         <b><span class="text-danger">Perhatian : </span></b><hr>Password = tgl_lahir [{{ $users->tgl_lahir }}]
+                                        @endif
                                     </div>
                                 </div>
                             </div>

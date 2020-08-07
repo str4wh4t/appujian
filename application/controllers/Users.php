@@ -58,6 +58,8 @@ class Users extends MY_Controller {
 			'groups'	=> $this->ion_auth->groups()->result(),
 			'level'		=> $level[0]
 		];
+		
+//		vdebug($data);
 //		$this->load->view('_templates/dashboard/_header.php', $data);
 //		$this->load->view('users/edit');
 //		$this->load->view('_templates/dashboard/_footer.php');
@@ -240,10 +242,14 @@ class Users extends MY_Controller {
 			];
 		}else{
 			$id = $this->input->post('id', true);
-			$users = Users_orm::find($id);
+			$users = Users_orm::findOrFail($id);
+			$level = $this->ion_auth->get_users_groups($id)->result();
+			$pass_default = $users->tgl_lahir;
+			if($level[0]->id == MHS_GROUP_ID)
+				$pass_default = $users->no_billkey;
 			if($users->count() > 0){
 			    $data = [
-	                'password' => $users->tgl_lahir,
+	                'password' => $pass_default,
 	            ];
 			    $change = $this->ion_auth->update($id, $data);
 				$data['status'] = $change ? true : false;
@@ -315,10 +321,11 @@ class Users extends MY_Controller {
 				$return = json_decode($json);
 				$record = $return->record;
 				
-				$nama       = explode(' ', $record->nama, 2);
+				$record_nama = trim($record->nama);
+				$nama       = explode(' ', $record_nama, 2);
 				$first_name = $nama[0];
 				$last_name  = end($nama);
-				$full_name  = $record->nama;
+				$full_name  = $record_nama;
 				
 				$username        = $record->nip;
 				$password        = date("dmY", strtotime($record->tgl_lahir));
@@ -330,6 +337,7 @@ class Users extends MY_Controller {
 					'full_name'  => $full_name,
 					'tgl_lahir'  => $tgl_lahir,
 				];
+				
 				$group           = [ PENGAWAS_GROUP_ID ]; // Sets user to pengawas
 				$status = $this->ion_auth->register($username, $password, $email, $additional_data, $group);
 				$this->_json(['status' => $status]);

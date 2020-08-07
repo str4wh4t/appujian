@@ -3,6 +3,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 use Orm\Mhs_orm;
 use Orm\Mhs_source_orm;
+use Orm\Mhs_ujian_orm;
+use Orm\Mhs_matkul_orm;
 use Orm\Hujian_orm;
 use Orm\Topik_orm;
 use Ratchet\Server\IoServer;
@@ -53,7 +55,7 @@ class Pub extends MY_Controller {
 	}
 	
 	public function c_user(){
-//		show_404(); /* <--- DISABLED FUNCTION */
+		show_404(); /* <--- DISABLED FUNCTION */
 		$data_mhs = Mhs_orm::all();
 		foreach($data_mhs as $data) {
 			$nama       = explode(' ', $data->nama, 2);
@@ -102,6 +104,7 @@ class Pub extends MY_Controller {
 	}
 	
 	public function asign_prodi(){
+		if(!is_cli()) show_404();
 		$mhs_source = Mhs_source_orm::all();
 		$i = 0;
 		foreach($mhs_source as $m){
@@ -127,6 +130,7 @@ class Pub extends MY_Controller {
 	}
 	
 	public function perbaiki(){
+		if(!is_cli()) show_404();
 		$mhs_list = Mhs_orm::whereNotNull('no_billkey')->get();
 		$i = 0;
 		foreach($mhs_list as $mhs){
@@ -143,7 +147,30 @@ class Pub extends MY_Controller {
 		die('DONE, j = ' . $i);
 	}
 	
+	public function asign_ujian(){
+		if(!is_cli()) show_404();
+		$mhs_list = Mhs_orm::whereNotNull('no_billkey')->get();
+		$i = 0;
+		foreach($mhs_list as $m){
+			$mhs_matkul = Mhs_matkul_orm::where(['mahasiswa_id' => $m->id_mahasiswa, 'matkul_id' => 19])->firstOrFail();
+			$mhs_ujian = new Mhs_ujian_orm();
+				$mhs_ujian->mahasiswa_matkul_id = $mhs_matkul->id;
+				$mhs_ujian->ujian_id =  53;
+				if($mhs_ujian->save())
+					echo "[UPDATE]" . $m->nama ;
+				else {
+					echo "[GAGAL]" . $m->nama;
+					die;
+				}
+			echo "\n";
+			$i++;
+		}
+		die('DONE, j = ' . $i);
+	}
+	
+	
 	public function socket(){
+		if(!is_cli()) show_404();
 		$server = IoServer::factory(
 		    new HttpServer(
 		        new WsServer(

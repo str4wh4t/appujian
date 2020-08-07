@@ -968,7 +968,7 @@ class Mahasiswa extends MY_Controller
 		
 		$mhs_ids_insert = array_diff($mhs_ids_source, $mhs_ids_before);
 		$mhs_ids_delete = array_diff($mhs_ids_before, $mhs_ids_source);
-		die; // DIMATIKAN TGL 07/08/2020
+		show_error('Fungsi sync dimatikan', 500, 'Perhatian');
 //		vdebug($mhs_ids_insert);
 		try {
 			begin_db_trx();

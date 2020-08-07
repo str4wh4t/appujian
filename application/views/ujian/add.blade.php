@@ -183,6 +183,9 @@ function init_peserta_table_value(){
                         $('<td>').text(item.nama),
                         $('<td>').text(item.nim),
                         $('<td>').text(item.prodi),
+                        $('<td>').text(item.jalur),
+                        $('<td>').text(item.gel),
+                        $('<td>').text(item.tahun),
                         $('<td>').css('text-align', 'center').append(chkbox)
                     ).appendTo('#tbody_tb_peserta');
                 });
@@ -245,7 +248,7 @@ $(document).on('change','.chkbox_pilih_peserta',function () {
 {{--                    <p><?=$dosen->nama_dosen?></p>--}}
 {{--                </div>--}}
 {{--            </div>--}}
-            <div class="col-md-8">
+            <div class="col-md-12">
                 <?=form_open('ujian/save', array('id'=>'formujian'), array('method'=>'add'))?>
                 <div class="form-group">
                     <label>Materi Ujian</label>
@@ -375,12 +378,15 @@ $(document).on('change','.chkbox_pilih_peserta',function () {
                                 <th>Nama</th>
                                 <th>No Peserta</th>
                                 <th>Prodi</th>
+                                <th>Jalur</th>
+                                <th>Gel</th>
+                                <th>Tahun</th>
                                 <th style="text-align: center"><input type="checkbox" id="chkbox_pilih_semua_peserta"></th>
                             </tr>
                         </thead>
                         <tbody id="tbody_tb_peserta">
                             <tr>
-                                <td colspan="5" style="text-align: center">Tidak ada peserta tersedia</td>
+                                <td colspan="8" style="text-align: center">Tidak ada peserta tersedia</td>
                             </tr>
                         </tbody>
                     </table>

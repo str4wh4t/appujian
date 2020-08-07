@@ -33,6 +33,7 @@
 <script type="text/javascript">
 
 let prodi_avail = [];
+let prodi_mhs_selected = [];
 
 function init_page_level(){
     ajaxcsrf();
@@ -43,6 +44,15 @@ function init_page_level(){
     @foreach($prodi as $p)
         prodi_avail.push('{{ $p->kodeps }}');
     @endforeach
+
+    @if(!empty($prodi_mhs_selected))
+    @foreach($prodi_mhs_selected as $kodeps)
+        prodi_mhs_selected.push('{{ $kodeps }}');
+    @endforeach
+
+    $('#prodi_id').val(prodi_mhs_selected).trigger('change');
+    init_peserta_table_value();
+    @endif
 
 }
 
@@ -91,20 +101,31 @@ function init_peserta_table_value(){
         });
     }
     $.ajax({
-        url: "{{ site_url('matkul/ajax/get_peserta_matkul') }}",
+        url: "{{ site_url('matkul/ajax/get_mhs_prodi') }}",
         data: { 'matkul_id' : '{{ $matkul->id_matkul }}', 'kodeps': JSON.stringify(selected_ids) },
         type: 'POST',
         async: false,
         success: function (response) {
             $('#tbody_tb_peserta').html('');
+            let mhs_matkul_existing = [];
             if(!$.isEmptyObject(response.mhs_matkul)) {
                 $.each(response.mhs_matkul, function (i, item) {
+                    mhs_matkul_existing.push(item.id_mahasiswa);
+                });
+            }
+            if(!$.isEmptyObject(response.mhs)) {
+                $.each(response.mhs, function (i, item) {
                     let chkbox = $('<input>').attr('class', 'chkbox_pilih_peserta').attr('type', 'checkbox').attr('name', 'peserta[]').attr('value', item.id_mahasiswa);
+                    if(mhs_matkul_existing.includes(item.id_mahasiswa))
+                        chkbox.prop('checked', true);
                     $('<tr>').append(
                         $('<td>').text(i + 1),
                         $('<td>').text(item.nama),
                         $('<td>').text(item.nim),
                         $('<td>').text(item.prodi),
+                        $('<td>').text(item.jalur),
+                        $('<td>').text(item.gel),
+                        $('<td>').text(item.tahun),
                         $('<td>').css('text-align', 'center').append(chkbox)
                     ).appendTo('#tbody_tb_peserta');
                 });
@@ -113,7 +134,8 @@ function init_peserta_table_value(){
                         $('<td>').text('Tidak ada peserta tersedia').attr('colspan', '5').css('text-align', 'center')
                     ).appendTo('#tbody_tb_peserta');
             }
-            $('#chkbox_pilih_semua_peserta').prop('checked', false);
+            $('#peserta_hidden').val(JSON.stringify(mhs_matkul_existing));
+            $('#span_jml_mhs').text(mhs_matkul_existing.length);
         }
     });
 }
@@ -154,8 +176,13 @@ $(document).on('change','#chkbox_pilih_semua_peserta',function () {
 {{--                    <p><?=$dosen->nama_dosen?></p>--}}
 {{--                </div>--}}
 {{--            </div>--}}
-            <div class="col-md-8">
-                <?=form_open('matkul/peserta', array('id'=>'formpeserta'), array('method'=>'post'))?>
+
+
+            <div class="col-md-12">
+                @if(isset($msg_ok))
+                    <div class="alert bg-info">Perhatian : {{ $msg_ok }}</div>
+                @endif
+                <?=form_open('matkul/peserta/' . $matkul->id_matkul, array('id'=>'formpeserta'), array('method'=>'post'))?>
                 <div class="form-group">
                     <label for="nama_matkul">Nama Materi Ujian</label>
                     <input value="{{ $matkul->nama_matkul }}" disabled="disabled" type="text" class="form-control" name="nama_matkul">
@@ -170,8 +197,9 @@ $(document).on('change','#chkbox_pilih_semua_peserta',function () {
                     </select> <small class="help-block" style="color: #dc3545"><?=form_error('prodi_id')?></small>
                 </div>
                 <div class="form-group">
-                    <label for="status_ujian">Peserta Ujian</label>  <small class="help-block text-danger"><b>***</b> Pilih peserta yg akan dienroll ke ujian</small>
+                    <label for="status_ujian">Peserta Ujian</label>  <small class="help-block text-danger"><b>***</b> Pilih peserta yg akan di-asign ke materi ujian dipilih</small>
                     <input type="hidden" name="peserta_hidden" class="form-control" id="peserta_hidden">
+                    <div class="alert bg-success">Jumlah mhs yang di-asign : <span id="span_jml_mhs"><b>0</b></span> mhs</div>
                     <table class="table table-bordered">
                         <thead>
                             <tr>
@@ -179,12 +207,15 @@ $(document).on('change','#chkbox_pilih_semua_peserta',function () {
                                 <th>Nama</th>
                                 <th>No Peserta</th>
                                 <th>Prodi</th>
+                                <th>Jalur</th>
+                                <th>Gel</th>
+                                <th>Tahun</th>
                                 <th style="text-align: center"><input type="checkbox" id="chkbox_pilih_semua_peserta"></th>
                             </tr>
                         </thead>
                         <tbody id="tbody_tb_peserta">
                             <tr>
-                                <td colspan="5" style="text-align: center">Tidak ada peserta tersedia</td>
+                                <td colspan="8" style="text-align: center">Tidak ada peserta tersedia</td>
                             </tr>
                         </tbody>
                     </table>

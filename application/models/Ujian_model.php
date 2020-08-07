@@ -36,16 +36,16 @@ class Ujian_model extends CI_Model {
         
         if($status_ujian == 'active'){
         	$this->db->where('a.status_ujian', 1);
-        	$this->db->where('a.terlambat >=', date('Y-m-d H:i:s'));
+        	$this->db->where('a.terlambat >', date('Y-m-d H:i:s'));
         }
         
         if($status_ujian == 'expired'){
-        	$this->db->where('a.terlambat <', date('Y-m-d H:i:s'));
+        	$this->db->where('a.terlambat <=', date('Y-m-d H:i:s'));
         }
         
         if($status_ujian == 'close'){
         	$this->db->where('a.status_ujian', 0);
-        	$this->db->where('a.terlambat >=', date('Y-m-d H:i:s'));
+        	$this->db->where('a.terlambat >', date('Y-m-d H:i:s'));
         }
         
         if($status_ujian == 'semua'){
@@ -89,8 +89,8 @@ class Ujian_model extends CI_Model {
 			
 			$return = $data['status_ujian'] ? "active" : "close" ;
 			// if (($today >= $data_start) && ($today <= $date_end)) {
-	        if ($today <= $date_end) {
-				// JIKA MASIH DALAM RANGE TANGGAL
+			// JIKA MASIH DALAM RANGE TANGGAL
+	        if ($today < $date_end) {
 				// $return = "expired";
 			}else{
 			    $return = "expired";
@@ -343,10 +343,12 @@ class Ujian_model extends CI_Model {
 	        $dt->edit('detail_bobot_benar', function ($data) use ($topik){
 	        	$hasil_ujian_per_topik = json_decode($data['detail_bobot_benar']);
 	        	$return = '<dl class="row">';
-	        	foreach($hasil_ujian_per_topik as $t => $v){
-	        	    $tpk = $topik->findOrFail($t);
-	        	    $return .= '<dt class="col-md-8">' . $tpk->nama_topik . '</dt>';
-//	        	    $return .= '<dd class="col-md-4">' . $v . '</dd>';
+	        	if(!empty($hasil_ujian_per_topik)) {
+			        foreach ($hasil_ujian_per_topik as $t => $v) {
+				        $tpk    = $topik->findOrFail($t);
+				        $return .= '<dt class="col-md-8">' . $tpk->nama_topik . '</dt>';
+				        //	        	    $return .= '<dd class="col-md-4">' . $v . '</dd>';
+			        }
 		        }
 	        	$return .= '</dl>';
 	            return $return;

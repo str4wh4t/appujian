@@ -225,7 +225,7 @@ class Ujian extends MY_Controller {
 //		$this->form_validation->set_rules('pakai_token', 'Pakai Token', 'required|in_list[Y,N]');
 		$this->form_validation->set_rules('jenis', 'Acak Soal', 'required|in_list[acak,urut]');
 		$this->form_validation->set_rules('jenis_jawaban', 'Acak Jawaban', 'required|in_list[acak,urut]');
-		$this->form_validation->set_rules('peserta_hidden', 'Peserta', 'required');
+//		$this->form_validation->set_rules('peserta_hidden', 'Peserta', 'required');
 	}
 
 	public function save()
@@ -250,7 +250,7 @@ class Ujian extends MY_Controller {
 				'jenis' 		=> form_error('jenis'),
 				'jenis_jawaban' 		=> form_error('jenis_jawaban'),
 				'jumlah_soal_total' 	=> form_error('jumlah_soal_total'),
-				'peserta_hidden' 	=> form_error('peserta_hidden'),
+//				'peserta_hidden' 	=> form_error('peserta_hidden'),
 			];
 			$jumlah_soal_list = $this->input->post('jumlah_soal', true);
 			if(!empty($jumlah_soal_list)) {
@@ -287,7 +287,7 @@ class Ujian extends MY_Controller {
 			$tampilkan_tutorial			= $this->input->post('tampilkan_tutorial', true) == 'on' ? '1' : '0';
 			$jenis			= $this->input->post('jenis', true);
 			$jenis_jawaban			= $this->input->post('jenis_jawaban', true);
-			$peserta			= $this->input->post('peserta[]', true);
+			$peserta			= empty($this->input->post('peserta[]', true)) ? [] : $this->input->post('peserta[]', true);
 		
 			$input = [
 				'nama_ujian' 	=> $nama_ujian,
@@ -420,7 +420,7 @@ class Ujian extends MY_Controller {
 					
 					if(!empty($mhs_ids_insert)) {
 						foreach ($mhs_ids_insert as $mhs_id) {
-							$mhs_matkul                         = Mhs_matkul_orm::where([
+							$mhs_matkul = Mhs_matkul_orm::where([
 								'mahasiswa_id' => $mhs_id,
 								'matkul_id'    => $m_ujian_orm->matkul_id
 							])
@@ -685,14 +685,7 @@ class Ujian extends MY_Controller {
 				if($jumlah_soal_diset > $soal_avail->count()){
 					show_error('Jumlah soal tidak memenuhi untuk ujian',500,'Perhatian');
 				}
-//				foreach($topik->soal as $topik_soal){
-//					if($i < $ujian->topik_ujian()->where('topik_id',$topik->id)->first()->jumlah_soal){
-//						$soal_topik[] = $topik_soal;
-//						$i++;
-//					}else{
-//						break;
-//					}
-//				}
+
 				foreach($soal_avail as $s){
 					if($i < $jumlah_soal_diset){
 						$soal_topik[] = $s;
@@ -708,49 +701,19 @@ class Ujian extends MY_Controller {
 				$i = 0;
 			}
 			
-//			vdebug(count($soal));
-
-//			$soal_urut_ok 	= array();
-//			$i = 0;
-//			foreach ($soal as $s) {
-//				$soal_per = new stdClass();
-//				$soal_per->id_soal 		= $s->id_soal;
-//				$soal_per->soal 		= $s->soal;
-//				$soal_per->file 		= $s->file;
-//				$soal_per->tipe_file 	= $s->tipe_file;
-//				$soal_per->opsi_a 		= $s->opsi_a;
-//				$soal_per->opsi_b 		= $s->opsi_b;
-//				$soal_per->opsi_c 		= $s->opsi_c;
-//				$soal_per->opsi_d 		= $s->opsi_d;
-//				$soal_per->opsi_e 		= $s->opsi_e;
-//				$soal_per->jawaban 		= $s->jawaban;
-//				$soal_urut_ok[$i] 		= $soal_per;
-//				$i++;
-//			}
-
-//			$list_id_soal	= "";
-//			$list_jw_soal 	= "";
-//			if (!empty($soal)) {
-//				foreach ($soal as $d) {
-//					$list_id_soal .= $d->id_soal.",";
-//					$list_jw_soal .= $d->id_soal."::N,";
-//				}
-//			}
-//
-//			$list_id_soal 	= substr($list_id_soal, 0, -1);
-//			$list_jw_soal 	= substr($list_jw_soal, 0, -1);
-			$waktu_selesai 	= date('Y-m-d H:i:s', strtotime("+{$ujian->waktu} minute"));
+			// WAKTU SELESAI DIGANTI SESUAI DENGAN WAKTU TERLAMBAT UJIAN
+			// $waktu_selesai 	= date('Y-m-d H:i:s', strtotime("+{$ujian->waktu} minute"));
+			
+			$waktu_selesai 	= $date_end;
 			$time_mulai		= date('Y-m-d H:i:s');
 			
 			$mhs_matkul = Mhs_matkul_orm::where(['mahasiswa_id' => $mhs->id_mahasiswa, 'matkul_id' => $ujian->matkul_id])->firstOrFail();
 			$mhs_ujian = Mhs_ujian_orm::where(['mahasiswa_matkul_id' => $mhs_matkul->id, 'ujian_id' => $ujian->id_ujian])->firstOrFail();
-//
+
 			$input = [
 				'ujian_id' 		=> $ujian->id_ujian,
 				'mahasiswa_id'	=> $mhs->id_mahasiswa,
 				'mahasiswa_ujian_id'  => $mhs_ujian->id,
-//				'list_soal'		=> $list_id_soal,
-//				'list_jawaban' 	=> $list_jw_soal,
 				'jml_soal'		=> 0,
 				'jml_benar'		=> 0,
 				'jml_salah'		=> 0,

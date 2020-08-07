@@ -201,26 +201,25 @@ function init_peserta_table_value(){
         async: false,
         success: function (response) {
             $('#tbody_tb_peserta').html('');
-            let values = [];
+            let mhs_ujian_existing = [];
             if(!$.isEmptyObject(response.mhs_ujian)) {
-                $.each(response.mhs_ujian, function (ii, iitem) {
-                    values.push(iitem.mahasiswa_id.toString());
+                $.each(response.mhs_ujian, function (i, item) {
+                    mhs_ujian_existing.push(item.mahasiswa_id);
                 });
             }
             if(!$.isEmptyObject(response.mhs_matkul)) {
                 $.each(response.mhs_matkul, function (i, item) {
                     let chkbox = $('<input>').attr('class', 'chkbox_pilih_peserta').attr('type', 'checkbox').attr('name', 'peserta[]').attr('value', item.id_mahasiswa);
-                    $.each(response.mhs_ujian, function(ii, iitem){
-                        if(iitem.mahasiswa_id == item.id_mahasiswa){
-                            chkbox.prop('checked', true);
-                            return false;
-                        }
-                    });
+                    if(mhs_ujian_existing.includes(item.id_mahasiswa))
+                        chkbox.prop('checked', true);
                     $('<tr>').append(
                         $('<td>').text(i + 1),
                         $('<td>').text(item.nama),
                         $('<td>').text(item.nim),
                         $('<td>').text(item.prodi),
+                        $('<td>').text(item.jalur),
+                        $('<td>').text(item.gel),
+                        $('<td>').text(item.tahun),
                         $('<td>').css('text-align', 'center').append(chkbox)
                     ).appendTo('#tbody_tb_peserta');
                 });
@@ -229,7 +228,7 @@ function init_peserta_table_value(){
                         $('<td>').text('Tidak ada peserta tersedia').attr('colspan', '5').css('text-align', 'center')
                     ).appendTo('#tbody_tb_peserta');
             }
-            $('#peserta_hidden').val(JSON.stringify(values));
+            $('#peserta_hidden').val(JSON.stringify(mhs_ujian_existing));
             $('#chkbox_pilih_semua_peserta').prop('checked', false);
         }
     });
@@ -252,7 +251,7 @@ $(document).on('change','.chkbox_pilih_peserta',function () {
 });
 
 </script>
-<script src="{{ asset('assets/dist/js/app/ujian/edit.js?v=' . mt_rand()) }}"></script>
+<script src="{{ asset('assets/dist/js/app/ujian/edit.js') }}"></script>
 <!-- END PAGE LEVEL JS-->
 @endpush
 
@@ -271,7 +270,7 @@ $(document).on('change','.chkbox_pilih_peserta',function () {
 <div class="box">
     <div class="box-body">
         <div class="row">
-            <div class="col-md-8">
+            <div class="col-md-12">
                 <?=form_open('ujian/save', array('id'=>'formujian'), array('method'=>'edit', 'id_ujian'=>$ujian->id_ujian))?>
                 <div class="form-group">
                     <label>Materi Ujian</label>
@@ -400,6 +399,24 @@ $(document).on('change','.chkbox_pilih_peserta',function () {
                 </div>
                  <div class="form-group">
                     <label for="status_ujian">Peserta Ujian</label>  <small class="help-block text-danger"><b>***</b> Pilih peserta yg akan dienroll ke ujian</small>
+{{--                        <div class="form-group">--}}
+{{--                             <label>Jalur</label>--}}
+{{--                             <select name="pilihan_jalur" id="pilihan_jalur" class="form-control" style="width:100% !important" multiple="multiple">--}}
+{{--                                 <option value="IUP">IUP</option>--}}
+{{--                             </select>--}}
+{{--                        </div>--}}
+{{--                        <div class="form-group">--}}
+{{--                             <label>Gel</label>--}}
+{{--                             <select name="pilihan_jalur" id="pilihan_jalur" class="form-control" style="width:100% !important" multiple="multiple">--}}
+{{--                                 <option value="IUP">IUP</option>--}}
+{{--                             </select>--}}
+{{--                         </div>--}}
+{{--                        <div class="form-group">--}}
+{{--                             <label>Tahun</label>--}}
+{{--                             <select name="pilihan_jalur" id="pilihan_jalur" class="form-control" style="width:100% !important" multiple="multiple">--}}
+{{--                                 <option value="IUP">IUP</option>--}}
+{{--                             </select>--}}
+{{--                         </div>--}}
                     <input type="hidden" name="peserta_hidden" class="form-control" id="peserta_hidden">
                     <table class="table table-bordered">
                         <thead>
@@ -408,12 +425,15 @@ $(document).on('change','.chkbox_pilih_peserta',function () {
                                 <th>Nama</th>
                                 <th>No Peserta</th>
                                 <th>Prodi</th>
+                                <th>Jalur</th>
+                                <th>Gel</th>
+                                <th>Tahun</th>
                                 <th style="text-align: center"><input type="checkbox" id="chkbox_pilih_semua_peserta"></th>
                             </tr>
                         </thead>
                         <tbody id="tbody_tb_peserta">
                             <tr>
-                                <td colspan="5" style="text-align: center">Tidak ada peserta tersedia</td>
+                                <td colspan="8" style="text-align: center">Tidak ada peserta tersedia</td>
                             </tr>
                         </tbody>
                     </table>

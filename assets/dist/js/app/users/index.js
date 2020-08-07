@@ -99,7 +99,7 @@ $(document).ready(function() {
                 }
             }
         ],
-        order: [[1, "asc"]],
+        order: [[4, "asc"], [1, "asc"]],
         rowId: function(a) {
             return a;
         },

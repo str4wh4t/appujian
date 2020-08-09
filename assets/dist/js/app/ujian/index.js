@@ -291,32 +291,6 @@ function do_save(){
 
 function simpan() {
     simpan_sementara();
-
-}
-
-function selesai() {
-    simpan();
-    ajaxcsrf();
-    $.ajax({
-        type: "POST",
-        // url: base_url + "ujian/simpan_akhir",
-        url: base_url + "ujian/ajax/close_ujian",
-        // data: { id: id_tes },
-        data: {
-            'id': id_ujian,
-            'key': key
-        },
-        beforeSend: function () {
-            simpan();
-            // $('.ajax-loading').show();
-        },
-        success: function (r) {
-            // console.log(r);
-            if (r.status) {
-                window.location.href = base_url + 'ujian/list';
-            }
-        }
-    });
 }
 
 function waktuHabis() {
@@ -326,10 +300,6 @@ function waktuHabis() {
 
 function simpan_akhir() {
     simpan();
-    // if (confirm('Yakin ingin mengakhiri ujian ?')) {
-    //     selesai();
-    // }
-
     Swal({
         title: "Akhiri Ujian",
         text: "Ujian yang sudah diakhiri tidak dapat diulangi.",

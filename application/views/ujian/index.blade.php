@@ -199,281 +199,286 @@ legend{
 @endpush
 
 @push('page_level_js')
-    <!-- BEGIN PAGE LEVEL JS-->
-    <script type="text/javascript">
+<!-- BEGIN PAGE LEVEL JS-->
+<script type="text/javascript">
 
-        let id_ujian = '{{  uuid_create_from_integer($h_ujian->id) }}';
-        let key = '{{ $one_time_token }}';
+let id_ujian = '{{  uuid_create_from_integer($h_ujian->id) }}';
+let key = '{{ $one_time_token }}';
 
-        let topik = [];
-        let topik_nama = [];
-        @php
-        $i=1;
-        @endphp
-        @foreach($h_ujian->soal as $s)
-            @php
-                if(!isset($topik_ujian_jml[$s->topik_id]))
-                    $i = 1;
-                $topik_ujian_jml[$s->topik_id] = $i;
-                $topik_ujian_nama[$s->topik_id] = $s->topik->nama_topik;
-                $i++;
-            @endphp
-        @endforeach
-        @foreach($topik_ujian_jml as $topik_id => $jml_topik)
-            topik[{{ $topik_id }}] = '{{ $jml_topik }}';
-        @endforeach
-        @foreach($topik_ujian_nama as $topik_id => $nama_topik)
-            topik_nama[{{ $topik_id }}] = '{{ $nama_topik }}';
-        @endforeach
+let topik = [];
+let topik_nama = [];
+@php
+$i=1;
+@endphp
+@foreach($h_ujian->soal as $s)
+    @php
+        if(!isset($topik_ujian_jml[$s->topik_id]))
+            $i = 1;
+        $topik_ujian_jml[$s->topik_id] = $i;
+        $topik_ujian_nama[$s->topik_id] = $s->topik->nama_topik;
+        $i++;
+    @endphp
+@endforeach
+@foreach($topik_ujian_jml as $topik_id => $jml_topik)
+    topik[{{ $topik_id }}] = '{{ $jml_topik }}';
+@endforeach
+@foreach($topik_ujian_nama as $topik_id => $nama_topik)
+    topik_nama[{{ $topik_id }}] = '{{ $nama_topik }}';
+@endforeach
 
-                // console.log(topik_nama);
+let curr_date;
 
-{{--        @php(vdebug($topik))--}}
-                        {{--topik[{{ $us->topik_id }}] =--}}
-        // let datetime_el = $("#time_now");
-        let curr_date;
-
-        let close_ujian = () => {
-            ajx_overlay(true);
-            $.ajax({
-                type: "POST",
-                url: "{{ site_url('ujian/ajax/close_ujian') }}",
-                data: {
-                    'id': id_ujian,
-                    'key': key
-                },
-                success: function (r) {
-                    if (r.status) {
-                        window.location.href = '{{ site_url('ujian/list') }}';
-                    }
-                }
-            });
-        };
-
-        let update_time = () => {
-            moment.locale('id');
-            /**
-             * date from server
-             */
-            $.ajaxSetup({
-                url: '<?= site_url('get_server_time') ?>',
-                global: false,
-                type: "GET"
-            });
-            $.ajax({
-                success: function (date_ajax) {
-                    moment.locale('id');
-                    curr_date = moment(date_ajax, "YYYY-MM-DD HH:mm:ss");
-
-                    let interval = 1000;
-
-                    let ujian_selesai = moment('{{ date('Y-m-d H:i:s', strtotime($h_ujian->tgl_selesai)) }}', "YYYY-MM-DD HH:mm:ss");
-                    let diffTime = ujian_selesai.unix() - curr_date.unix();
-
-                    let duration = moment.duration(diffTime*1000, 'milliseconds');
-                    let duration_text = '';
-
-                    let refreshIntervalId = setInterval(function(){
-
-                        curr_date.add(1, 'second');
-                        // datetime_el.html(curr_date.format('dddd, Do MMMM YYYY, HH:mm:ss'));
-
-                        duration = moment.duration(duration - interval, 'milliseconds');
-                        if(duration.as('milliseconds') > 0){
-                            duration_text = Math.floor(duration.as('hours')) + ":" + duration.minutes() + ":" + duration.seconds() ;
-                            $('#btn_lanjut_ujian').removeClass('btn-danger').addClass('btn-success');
-                            if(duration.as('milliseconds') == 599000){
-                                // JIKA WAKTU KURANG 10 MENIT
-                                Swal({
-                                  title: "Perhatian",
-                                  text: "Waktu ujian kurang dari 10 menit",
-                                  type: "warning"
-                                });
-                                // alert("Waktu ujian kurang dari 10 menit");
-                            }
-                        }else{
-                           duration_text = "0:0:0";
-                           $('#btn_lanjut_ujian').removeClass('btn-success').addClass('btn-danger');
-                           close_ujian();
-                           clearInterval(refreshIntervalId);
-
-                        }
-
-                        $('#sisa_waktu').text(duration_text);
-
-                    },interval);
-                }
-            });
-
-            /**
-             * date from local computer
-             */
-            // date = moment(new Date());
-            // datetime_el.html(date.format('dddd, MMMM Do YYYY, h:mm:ss a'));
-
-        };
-        // setInterval(update_time, 1000); // PER SECOND
-
-        $(document).on('click','#btn_lanjut_ujian',function(){
-            if($(this).hasClass('btn-danger')){
-                Swal('Perhatian', 'Anda berada diluar jadwal ujian', 'error');
-                return false;
-            }else{
-                location.href = '{!! site_url('ujian/?key='. $one_time_token .'&id='. $id_tes ) !!}';
+let close_ujian = () => {
+    ajx_overlay(true);
+    $.ajax({
+        type: "POST",
+        url: "{{ site_url('ujian/ajax/close_ujian') }}",
+        data: {
+            'id': id_ujian,
+            'key': key
+        },
+        success: function (r) {
+            if (r.status) {
+                conn.send(JSON.stringify({
+                    'nim':'{{ get_logged_user()->username }}',
+                    'as':'{{ get_selected_role()->name }}',
+                    'cmd':'MHS_STOP_UJIAN'
+                }));
+                window.location.href = '{{ site_url('ujian/list') }}';
             }
-        });
-
-        let id_tes          = "{{ $id_tes }}";
-        let widget          = $(".step_pertanyaan");
-        let total_widget    = widget.length;
-
-        // const element = $('#lembar_ujian')[0]; // Get DOM element from jQuery collection
-        //
-        // $(document).on('click','#maximize',function(){
-        //     if (screenfull.isEnabled) {
-        //         screenfull.request(element);
-        //     }
-        //     $(this).hide();
-        // });
-    let ofs = 0;
-
-    let enjoyhint_instance = null;
-
-    let enjoyhint_script_steps = [
-        {
-            'next #tb_identitas_peserta': 'Selamat datang di ujian CAT UNDIP. <br>Sebelum memulai ujian pastikan identitas anda benar',
-            "nextButton" : {className: "black border-amber btn-amber", text: "Lanjut"},
-            'showSkip': false,
-        },
-        {
-            'next #sisa_waktu': 'Perhatikan sisa waktu ujian anda',
-            "nextButton" : {className: "black border-amber btn-amber", text: "Lanjut"},
-            'showSkip': false,
-        },
-        {
-            'next #nav_opener': 'Anda dapat "BUKA" / "TUTUP" navigasi untuk melihat pertanyaan yg tersedia',
-            "nextButton" : {className: "black border-amber btn-amber", text: "Lanjut"},
-            'showSkip': false,
-            'shape': 'circle',
-            'radius': 50,
-            'onBeforeStart': function () {
-                $('#lembar_ujian').animate({
-                    scrollTop: $("#lembar_ujian").offset().top
-                }, 100, 'swing', function(){
-                    setTimeout(function(){
-                        $('#nav_content').slideDown();
-                        $('#nav_opener').text('TUTUP');
-                        nav_is_open = true;
-                    }, 100);
-                });
-            },
-            'timeout': 100,
-        },
-        {
-            'next #btn_soal_2': 'Pilih soal yang ingin dikerjakan, contoh : kita pilih soal nomer 2',
-            "nextButton" : {className: "black border-amber btn-amber", text: "Lanjut"},
-            'showSkip': false,
-            'onBeforeStart': function () {
-                $('#lembar_ujian').animate({
-                    scrollTop: $("#lembar_ujian").offset().top
-                }, 100, 'swing', function(){
-                    setTimeout(function(){
-                        $('#nav_content').slideDown();
-                        $('#nav_opener').text('TUTUP');
-                        nav_is_open = true;
-                    }, 100);
-                });
-            },
-            'timeout': 100,
-        },
-        {
-            'next #isi_pertanyaan': 'Pertanyaan yang ditampilkan',
-            "nextButton" : {className: "black border-amber btn-amber", text: "Lanjut"},
-            'showSkip': false,
-            'onBeforeStart': function () {
-                $('#btn_soal_2').trigger('click');
-                $('#lembar_ujian').scrollTo('#isi_pertanyaan');
-                // setTimeout(function(){
-                //     $('#lembar_ujian').animate({
-                //         scrollTop: $("#isi_pertanyaan").offset().top
-                //     }, 100);
-                // }, 100);
-            },
-            // 'timeout': 100,
-        },
-        {
-            'next .funkyradio-success:visible:nth-child(2)': 'Terdiri 5 (lima) opsi jawaban (a, b, c, d, dan e), contoh : kita pilih jawaban "b"',
-            "nextButton" : {className: "black border-amber btn-amber", text: "Lanjut"},
-            'showSkip': false,
-            'onBeforeStart': function () {
-                $('#lembar_ujian').scrollTo('#pil_jawaban');
-                setTimeout(function(){
-                   $(".funkyradio-success:visible:nth-child(2) > input").trigger('click');
-                },1000);
-            },
-        },
-        {
-            'next #next_prev_pertanyaan': 'Anda dapat men-skip atau kembali ke pertanyaan sebelumnya, dan juga dapat menandai "RAGU" pada pilihan jawaban anda',
-            "nextButton" : {className: "black border-amber btn-amber", text: "Lanjut"},
-            'showSkip': false,
-            'onBeforeStart': function () {
-                $('#lembar_ujian').scrollTo('#next_prev_pertanyaan');
-            },
-        },
-        {
-            'skip #btn_akhiri_ujian': 'Tombol ini untuk mengakhiri ujian apabila anda ingin menyelesaikan ujian lebih awal',
-            'showNext': false,
-            'skipButton' : {className: "white border-white bg-transparent width-200", text: "Sudahi petunjuk."},
-            'onBeforeStart': function () {
-                $('#lembar_ujian').scrollTo('#tb_identitas_peserta');
-            },
         }
-    ];
+    });
+};
 
-    function setup_hint(){
-        enjoyhint_instance = new EnjoyHint({
-            onSkip: function(){
-                $('#lembar_ujian').animate({
-                    scrollTop: $("#lembar_ujian").offset().top
-                }, 1000, 'swing', function(){
-                    setTimeout(function(){
-                        $('#nav_content').slideUp();
-                        $('#nav_opener').text('BUKA');
-                        nav_is_open = false;
-                    }, 100);
-                });
-            }
-        });
-        // enjoyhint_instance.setScript(enjoyhint_script_data);
-        // enjoyhint_instance.runScript();
-        enjoyhint_instance.set(enjoyhint_script_steps);
-        enjoyhint_instance.run();
-    }
+let update_time = () => {
+    moment.locale('id');
+    /**
+     * date from server
+     */
+    $.ajaxSetup({
+        url: '<?= site_url('get_server_time') ?>',
+        global: false,
+        type: "GET"
+    });
 
-    function init_page_level(){
-        update_time();
-        @if($h_ujian->m_ujian->tampilkan_tutorial)
-        setup_hint();
-        @endif
-        // ofs = $('#q_n_a').offset();
-        // console.log('ofs',ofs);
-        // $('body').bind('copy paste cut drag drop', function (e) {
-        //   e.preventDefault();
-        // });
-        document.addEventListener('contextmenu', event => event.preventDefault());
-    }
-    function wrap_navigasi(){
-        $.each(topik, function(i,v){
-            if(v)
-                $('.class_topik_id_' + i).wrapAll('<fieldset class="legend_topik" data-id="'+ i +'" />');
-        });
+    $.ajax({
+        success: function (date_ajax) {
+            moment.locale('id');
+            curr_date = moment(date_ajax, "YYYY-MM-DD HH:mm:ss");
 
-        $('.legend_topik').each(function(i,v){
-            let id = $(this).data('id');
-            if(v)
-                $(this).prepend('<legend>'+ topik_nama[id] +'</legend>');
-        });
+            let interval = 1000;
+
+            let ujian_selesai = moment('{{ date('Y-m-d H:i:s', strtotime($h_ujian->tgl_selesai)) }}', "YYYY-MM-DD HH:mm:ss");
+            let diffTime = ujian_selesai.unix() - curr_date.unix();
+
+            let duration = moment.duration(diffTime*1000, 'milliseconds');
+            let duration_text = '';
+
+            let refreshIntervalId = setInterval(function(){
+
+                curr_date.add(1, 'second');
+                // datetime_el.html(curr_date.format('dddd, Do MMMM YYYY, HH:mm:ss'));
+
+                duration = moment.duration(duration - interval, 'milliseconds');
+                if(duration.as('milliseconds') > 0){
+                    duration_text = Math.floor(duration.as('hours')) + ":" + duration.minutes() + ":" + duration.seconds() ;
+                    $('#btn_lanjut_ujian').removeClass('btn-danger').addClass('btn-success');
+                    if(duration.as('milliseconds') == 599000){
+                        // JIKA WAKTU KURANG 10 MENIT
+                        Swal({
+                          title: "Perhatian",
+                          text: "Waktu ujian kurang dari 10 menit",
+                          type: "warning"
+                        });
+                        // alert("Waktu ujian kurang dari 10 menit");
+                    }
+                }else{
+                   duration_text = "0:0:0";
+                   $('#btn_lanjut_ujian').removeClass('btn-success').addClass('btn-danger');
+                   close_ujian();
+                   clearInterval(refreshIntervalId);
+
+                }
+
+                $('#sisa_waktu').text(duration_text);
+
+            },interval);
+        }
+    });
+
+    /**
+     * date from local computer
+     */
+    // date = moment(new Date());
+    // datetime_el.html(date.format('dddd, MMMM Do YYYY, h:mm:ss a'));
+
+};
+
+// setInterval(update_time, 1000); // PER SECOND
+
+$(document).on('click','#btn_lanjut_ujian',function(){
+    if($(this).hasClass('btn-danger')){
+        Swal('Perhatian', 'Anda berada diluar jadwal ujian', 'error');
+        return false;
+    }else{
+        location.href = '{!! site_url('ujian/?key='. $one_time_token .'&id='. $id_tes ) !!}';
     }
+});
+
+let id_tes          = "{{ $id_tes }}";
+let widget          = $(".step_pertanyaan");
+let total_widget    = widget.length;
+
+// const element = $('#lembar_ujian')[0]; // Get DOM element from jQuery collection
+//
+// $(document).on('click','#maximize',function(){
+//     if (screenfull.isEnabled) {
+//         screenfull.request(element);
+//     }
+//     $(this).hide();
+// });
+
+let ofs = 0;
+
+let enjoyhint_instance = null;
+
+let enjoyhint_script_steps = [
+    {
+        'next #tb_identitas_peserta': 'Selamat datang di ujian CAT UNDIP. <br>Sebelum memulai ujian pastikan identitas anda benar',
+        "nextButton" : {className: "black border-amber btn-amber", text: "Lanjut"},
+        'showSkip': false,
+    },
+    {
+        'next #sisa_waktu': 'Perhatikan sisa waktu ujian anda',
+        "nextButton" : {className: "black border-amber btn-amber", text: "Lanjut"},
+        'showSkip': false,
+    },
+    {
+        'next #nav_opener': 'Anda dapat "BUKA" / "TUTUP" navigasi untuk melihat pertanyaan yg tersedia',
+        "nextButton" : {className: "black border-amber btn-amber", text: "Lanjut"},
+        'showSkip': false,
+        'shape': 'circle',
+        'radius': 50,
+        'onBeforeStart': function () {
+            $('#lembar_ujian').animate({
+                scrollTop: $("#lembar_ujian").offset().top
+            }, 100, 'swing', function(){
+                setTimeout(function(){
+                    $('#nav_content').slideDown();
+                    $('#nav_opener').text('TUTUP');
+                    nav_is_open = true;
+                }, 100);
+            });
+        },
+        'timeout': 100,
+    },
+    {
+        'next #btn_soal_2': 'Pilih soal yang ingin dikerjakan, contoh : kita pilih soal nomer 2',
+        "nextButton" : {className: "black border-amber btn-amber", text: "Lanjut"},
+        'showSkip': false,
+        'onBeforeStart': function () {
+            $('#lembar_ujian').animate({
+                scrollTop: $("#lembar_ujian").offset().top
+            }, 100, 'swing', function(){
+                setTimeout(function(){
+                    $('#nav_content').slideDown();
+                    $('#nav_opener').text('TUTUP');
+                    nav_is_open = true;
+                }, 100);
+            });
+        },
+        'timeout': 100,
+    },
+    {
+        'next #isi_pertanyaan': 'Pertanyaan yang ditampilkan',
+        "nextButton" : {className: "black border-amber btn-amber", text: "Lanjut"},
+        'showSkip': false,
+        'onBeforeStart': function () {
+            $('#btn_soal_2').trigger('click');
+            $('#lembar_ujian').scrollTo('#isi_pertanyaan');
+            // setTimeout(function(){
+            //     $('#lembar_ujian').animate({
+            //         scrollTop: $("#isi_pertanyaan").offset().top
+            //     }, 100);
+            // }, 100);
+        },
+        // 'timeout': 100,
+    },
+    {
+        'next .funkyradio-success:visible:nth-child(2)': 'Terdiri 5 (lima) opsi jawaban (a, b, c, d, dan e), contoh : kita pilih jawaban "b"',
+        "nextButton" : {className: "black border-amber btn-amber", text: "Lanjut"},
+        'showSkip': false,
+        'onBeforeStart': function () {
+            $('#lembar_ujian').scrollTo('#pil_jawaban');
+            setTimeout(function(){
+               $(".funkyradio-success:visible:nth-child(2) > input").trigger('click');
+            },1000);
+        },
+    },
+    {
+        'next #next_prev_pertanyaan': 'Anda dapat men-skip atau kembali ke pertanyaan sebelumnya, dan juga dapat menandai "RAGU" pada pilihan jawaban anda',
+        "nextButton" : {className: "black border-amber btn-amber", text: "Lanjut"},
+        'showSkip': false,
+        'onBeforeStart': function () {
+            $('#lembar_ujian').scrollTo('#next_prev_pertanyaan');
+        },
+    },
+    {
+        'skip #btn_akhiri_ujian': 'Tombol ini untuk mengakhiri ujian apabila anda ingin menyelesaikan ujian lebih awal',
+        'showNext': false,
+        'skipButton' : {className: "white border-white bg-transparent width-200", text: "Sudahi petunjuk."},
+        'onBeforeStart': function () {
+            $('#lembar_ujian').scrollTo('#tb_identitas_peserta');
+        },
+    }
+];
+
+function setup_hint(){
+    enjoyhint_instance = new EnjoyHint({
+        onSkip: function(){
+            $('#lembar_ujian').animate({
+                scrollTop: $("#lembar_ujian").offset().top
+            }, 1000, 'swing', function(){
+                setTimeout(function(){
+                    $('#nav_content').slideUp();
+                    $('#nav_opener').text('BUKA');
+                    nav_is_open = false;
+                }, 100);
+            });
+        }
+    });
+    // enjoyhint_instance.setScript(enjoyhint_script_data);
+    // enjoyhint_instance.runScript();
+    enjoyhint_instance.set(enjoyhint_script_steps);
+    enjoyhint_instance.run();
+}
+
+function init_page_level(){
+    update_time();
+    update_status_ujian();
+    @if($h_ujian->m_ujian->tampilkan_tutorial)
+    setup_hint();
+    @endif
+    // ofs = $('#q_n_a').offset();
+    // console.log('ofs',ofs);
+    // $('body').bind('copy paste cut drag drop', function (e) {
+    //   e.preventDefault();
+    // });
+    document.addEventListener('contextmenu', event => event.preventDefault());
+}
+
+function wrap_navigasi(){
+    $.each(topik, function(i,v){
+        if(v)
+            $('.class_topik_id_' + i).wrapAll('<fieldset class="legend_topik" data-id="'+ i +'" />');
+    });
+
+    $('.legend_topik').each(function(i,v){
+        let id = $(this).data('id');
+        if(v)
+            $(this).prepend('<legend>'+ topik_nama[id] +'</legend>');
+    });
+}
 
 // $('#lembar_ujian').on('scroll', function(event) {
 //     let scrollValue = $(this).scrollTop();
@@ -510,7 +515,6 @@ window.onblur = function () {
         text: "Anda diperingatkan tidak boleh membuka halaman lain, semua aktifitas anda direkam oleh sistem untuk penilaian",
         type: "warning"
     });
-
     conn.send(JSON.stringify({
         'nim':'{{ get_logged_user()->username }}',
         'as':'{{ get_selected_role()->name }}',
@@ -526,10 +530,54 @@ window.onfocus = function () {
     }));
 };
 
+function selesai() {
+    simpan();
+    ajaxcsrf();
+    ajx_overlay(true);
+    $.ajax({
+        type: "POST",
+        // url: base_url + "ujian/simpan_akhir",
+        url: base_url + "ujian/ajax/close_ujian",
+        // data: { id: id_tes },
+        data: {
+            'id': id_ujian,
+            'key': key
+        },
+        beforeSend: function () {
+            simpan();
+            // $('.ajax-loading').show();
+        },
+        success: function (r) {
+            // console.log(r);
+            if (r.status) {
+                conn.send(JSON.stringify({
+                    'nim':'{{ get_logged_user()->username }}',
+                    'as':'{{ get_selected_role()->name }}',
+                    'cmd':'MHS_STOP_UJIAN'
+                }));
 
-    </script>
-    <script src="{{ asset('assets/dist/js/app/ujian/index.js?u=') . mt_rand() }}"></script>
-    <!-- END PAGE LEVEL JS-->
+                setTimeout(function() {
+                  window.location.href = base_url + 'ujian/list';
+                }, 1000);
+            }
+        }
+    });
+}
+
+function update_status_ujian(){
+    setTimeout(function() {
+      //your code to be executed after 1 second
+        conn.send(JSON.stringify({
+            'nim':'{{ get_logged_user()->username }}',
+            'as':'{{ get_selected_role()->name }}',
+            'cmd':'MHS_START_UJIAN'
+        }));
+    }, 1000);
+}
+
+</script>
+<script src="{{ asset('assets/dist/js/app/ujian/index.js') }}"></script>
+<!-- END PAGE LEVEL JS-->
 @endpush
 
 @section('content')

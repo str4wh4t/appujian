@@ -19,6 +19,7 @@
 {{--<link rel="stylesheet" href="{{ asset('assets/bower_components/froala_editor/css/third_party/image_tui.min.css') }}">--}}
 
 <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-bs4.min.css" rel="stylesheet">
+<link href="{{ asset('assets/plugins/summernote_plugins/summernote-audio.css') }}" rel="stylesheet">
 
 <!-- END PAGE LEVEL JS-->
 @endpush
@@ -47,7 +48,8 @@
 <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-bs4.min.js"></script>
 
 <script src="{{ asset('assets/plugins/select2-cascade.js') }}"></script>
-<script src="{{ asset('assets/plugins/summernote-cleaner.js') }}"></script>
+<script src="{{ asset('assets/plugins/summernote_plugins/summernote-cleaner.js') }}"></script>
+<script src="{{ asset('assets/plugins/summernote_plugins/summernote-audio.js') }}"></script>
 {{--<script src="https://rawgit.com/RobinHerbots/Inputmask/5.x/dist/jquery.inputmask.js"></script>--}}
 <!-- END PAGE VENDOR -->
 @endpush
@@ -87,7 +89,8 @@ function init_page_level(){
             ['table', ['table']],
             ['para', ['ul', 'ol', 'paragraph']],
             ['height', ['height']],
-            ['view', ['codeview']],
+            // ['view', ['codeview']],
+            ['insert', ['audio']],
           ],
         cleaner:{
               action: 'both', // both|button|paste 'button' only cleans via toolbar button, 'paste' only clean when pasting content, both does both options.

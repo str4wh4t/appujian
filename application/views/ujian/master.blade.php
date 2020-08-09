@@ -42,7 +42,7 @@
 		table.ajax.reload();
 	});
 </script>
-<script src="{{ asset('assets/dist/js/app/ujian/master.js?u=') . mt_rand() }}"></script>
+<script src="{{ asset('assets/dist/js/app/ujian/master.js') }}"></script>
 <!-- END PAGE LEVEL JS-->
 @endpush
 

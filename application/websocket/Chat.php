@@ -35,27 +35,27 @@ class Chat implements MessageComponentInterface {
 
 	    $req = json_decode($req);
 	    $absensi         = [];
+	    $absensi_by_self = [];
 	    if($req->cmd == 'OPEN'){
-	    	// UNTUK PENGAWAS
 		    if($req->as == 'pengawas') {
-			    $users_groups    = Users_groups_orm::where([
-				    'user_id'  => $req->user_id,
-				    'group_id' => PENGAWAS_GROUP_ID
-			    ])->firstOrFail();
-			    
-			    $mahasiswa_ujian = Mhs_ujian_orm::where('ujian_id', $req->m_ujian_id)
-			                                    ->has('daftar_hadir')
-			                                    ->get();
-			   
-			    $absensi_by_self = [];
-			    if ($mahasiswa_ujian->isNotEmpty()) {
-				    foreach ($mahasiswa_ujian as $mu) {
-					    $absensi[] = $mu->mhs_matkul->mhs->nim;
-					    if ($mu->daftar_hadir->absen_by == $users_groups->id) {
-						    $absensi_by_self[] = $mu->mhs_matkul->mhs->nim;
-					    }
-				    }
-			    }
+	    	    // UNTUK PENGAWAS
+//			    $users_groups    = Users_groups_orm::where([
+//				    'user_id'  => $req->user_id,
+//				    'group_id' => PENGAWAS_GROUP_ID
+//			    ])->firstOrFail();
+//
+//			    $mahasiswa_ujian = Mhs_ujian_orm::where('ujian_id', $req->m_ujian_id)
+//			                                    ->has('daftar_hadir')
+//			                                    ->get();
+//
+//			    if ($mahasiswa_ujian->isNotEmpty()) {
+//				    foreach ($mahasiswa_ujian as $mu) {
+//					    $absensi[] = $mu->mhs_matkul->mhs->nim;
+//					    if ($mu->daftar_hadir->absen_by == $users_groups->id) {
+//						    $absensi_by_self[] = $mu->mhs_matkul->mhs->nim;
+//					    }
+//				    }
+//			    }
 			    $res = [
 				    'cmd'             => $req->cmd,
 				    'mhs_online' => $this->data_clients_mhs,
@@ -69,14 +69,15 @@ class Chat implements MessageComponentInterface {
 				    $client->send(json_encode($res));
 			    }
 		    }else if($req->as == 'admin') {
-		    	$mahasiswa_ujian = Mhs_ujian_orm::where('ujian_id', $req->m_ujian_id)
-			                                    ->has('daftar_hadir')
-			                                    ->get();
-		    	if ($mahasiswa_ujian->isNotEmpty()) {
-				    foreach ($mahasiswa_ujian as $mu) {
-					    $absensi[] = $mu->mhs_matkul->mhs->nim;
-				    }
-			    }
+		    	// UNTUK ADMIN
+//		    	$mahasiswa_ujian = Mhs_ujian_orm::where('ujian_id', $req->m_ujian_id)
+//			                                    ->has('daftar_hadir')
+//			                                    ->get();
+//		    	if ($mahasiswa_ujian->isNotEmpty()) {
+//				    foreach ($mahasiswa_ujian as $mu) {
+//					    $absensi[] = $mu->mhs_matkul->mhs->nim;
+//				    }
+//			    }
 		    	$res = [
 				    'cmd'             => $req->cmd,
 				    'mhs_online' => $this->data_clients_mhs,
@@ -91,70 +92,77 @@ class Chat implements MessageComponentInterface {
 			    }
 		    }
 	    }elseif($req->cmd == 'DO_ABSENSI'){
-	    	// UNTUK PENGAWAS
-	    	$users_groups    = Users_groups_orm::where([
-			    'user_id'  => $req->user_id,
-			    'group_id' => PENGAWAS_GROUP_ID
-		    ])->firstOrFail();
-		    $daftar_hadir = Daftar_hadir_orm::where([
-			    'mahasiswa_ujian_id' => $req->mahasiswa_ujian_id,
-		    ])->first();
-		    $ok = false ;
-	        if(empty($daftar_hadir)) {
-		        $daftar_hadir                     = new Daftar_hadir_orm();
-		        $daftar_hadir->mahasiswa_ujian_id = $req->mahasiswa_ujian_id;
-		        $daftar_hadir->absen_by           = $users_groups->id;
-		        $ok = $daftar_hadir->save();
-	        }
-	        $res = [
-			    'cmd'         => $req->cmd,
-			    'nim'         => $req->nim,
-		        'user_id'     => $req->user_id,
-			    'ok'          => $ok,
-		    ];
-		    foreach ($this->clients as $client) {
-			    $client->send(json_encode($res));
+		    if($req->as == 'pengawas') {
+	    	    // UNTUK PENGAWAS
+//			    $users_groups = Users_groups_orm::where([
+			    ////				    'user_id'  => $req->user_id,
+			    ////				    'group_id' => PENGAWAS_GROUP_ID
+			    ////			    ])->firstOrFail();
+			    ////
+			    ////			    $daftar_hadir = Daftar_hadir_orm::where([
+			    ////				    'mahasiswa_ujian_id' => $req->mahasiswa_ujian_id,
+			    ////			    ])->first();
+//
+//			    $ok = false;
+//			    if (empty($daftar_hadir)) {
+//				    $daftar_hadir                     = new Daftar_hadir_orm();
+//				    $daftar_hadir->mahasiswa_ujian_id = $req->mahasiswa_ujian_id;
+//				    $daftar_hadir->absen_by           = $users_groups->id;
+//				    $ok                               = $daftar_hadir->save();
+//			    }
+			    $ok =  true;
+			    $res = [
+				    'cmd'     => $req->cmd,
+				    'nim'     => $req->nim,
+				    'user_id' => $req->user_id,
+				    'ok'      => $ok,
+			    ];
+			    foreach ($this->clients as $client) {
+				    $client->send(json_encode($res));
+			    }
 		    }
 	    }elseif($req->cmd == 'DO_ABSENSI_BATAL'){
-	    	// UNTUK PENGAWAS
-	    	$users_groups    = Users_groups_orm::where([
-			    'user_id'  => $req->user_id,
-			    'group_id' => PENGAWAS_GROUP_ID
-		    ])->firstOrFail();
-		    $daftar_hadir = Daftar_hadir_orm::where([
-			    'mahasiswa_ujian_id' => $req->mahasiswa_ujian_id,
-			    'absen_by'           => $users_groups->id,
-		    ])->first();
-		    $ok = false ;
-	        if(!empty($daftar_hadir)) {
-		        $ok = $daftar_hadir->delete();
-	        }
-	        $res = [
-			    'cmd'         => $req->cmd,
-			    'nim'         => $req->nim,
-		        'user_id'     => $req->user_id,
-			    'ok'          => $ok,
-		    ];
-		    foreach ($this->clients as $client) {
-			    $client->send(json_encode($res));
+	    	if($req->as == 'pengawas') {
+//			    // UNTUK PENGAWAS
+//			    $users_groups = Users_groups_orm::where([
+//				    'user_id'  => $req->user_id,
+//				    'group_id' => PENGAWAS_GROUP_ID
+//			    ])->firstOrFail();
+//
+//			    $daftar_hadir = Daftar_hadir_orm::where([
+//				    'mahasiswa_ujian_id' => $req->mahasiswa_ujian_id,
+//				    'absen_by'           => $users_groups->id,
+//			    ])->first();
+//
+//			    $ok           = false;
+//			    if (!empty($daftar_hadir)) {
+//				    $ok = $daftar_hadir->delete();
+//			    }
+			    $ok = true ;
+			    $res = [
+				    'cmd'     => $req->cmd,
+				    'nim'     => $req->nim,
+				    'user_id' => $req->user_id,
+				    'ok'      => $ok,
+			    ];
+			    foreach ($this->clients as $client) {
+				    $client->send(json_encode($res));
+			    }
 		    }
 	    }elseif($req->cmd == 'MHS_ONLINE'){
             $this->data_clients_mhs[$req->nim] = $from->resourceId;
             $this->data_clients_mhs_ips[$req->nim] = $req->ip;
-            $users = Users_orm::where('username', $req->nim)->first();
+//            $users = Users_orm::where('username', $req->nim)->first();
             $ok = true ;
-	        if(!empty($users)){
-//	        	if($users->ip_address == $from->remoteAddress){
-//			        $ok = false;
-//		        }else {
-			        $users->ip_address = $req->ip;
-			        $users->save();
-//		        }
-	        }
+//	        if(!empty($users)){
+//			        $users->ip_address = $req->ip;
+//			        $users->save();
+//	        }
 	    	$res = [
 		        'cmd'         => $req->cmd,
 		        'nim'         => $req->nim,
 		        'ip'          => $req->ip,
+		        'identifier'  => $req->identifier,
 			    'ok'          => $ok,
 		    ];
 	        foreach ($this->clients as $client) {
@@ -177,6 +185,22 @@ class Chat implements MessageComponentInterface {
 			    $client->send(json_encode($res));
 		    }
 	    }elseif($req->cmd == 'DO_KICK'){
+	    	$res = [
+			    'cmd'             => $req->cmd,
+			    'nim'             => $req->nim,
+		    ];
+	        foreach ($this->clients as $client) {
+			    $client->send(json_encode($res));
+		    }
+	    }elseif($req->cmd == 'MHS_START_UJIAN'){
+		    $res = [
+			    'cmd'             => $req->cmd,
+			    'nim'             => $req->nim,
+		    ];
+		    foreach ($this->clients as $client) {
+			    $client->send(json_encode($res));
+		    }
+	    }elseif($req->cmd == 'MHS_STOP_UJIAN'){
 	    	$res = [
 			    'cmd'             => $req->cmd,
 			    'nim'             => $req->nim,

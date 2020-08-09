@@ -74,6 +74,47 @@ function reload_ajax(){
 
 $(document).ready(function(){
 
+    /* [START] WEBSOCKET BOOTSTRAP */
+    @if(in_group('mahasiswa'))
+    @php($identifier = mt_rand())
+    @php($ip = get_client_ip())
+    conn = new WebSocket('{{ ws_url() }}');
+    conn.onopen = function(e) {
+        conn.send(JSON.stringify({
+            'nim':'{{ get_logged_user()->username }}',
+            'as':'{{ get_selected_role()->name }}',
+            'identifier': '{{ $identifier }}',
+            'ip': '{{ $ip }}',
+            'cmd':'MHS_ONLINE'
+        }));
+    };
+
+    conn.onmessage = function(e) {
+        let data = jQuery.parseJSON(e.data);
+        if (data.cmd == 'MHS_ONLINE') {
+            if(data.nim == '{{ get_logged_user()->username }}'){
+                if (data.identifier != '{{ $identifier }}') {
+                    // JIKA YANG MENGAKSES BERBEDA DENGAN MHS YG ONLINE
+                    location.href = '{{ url('auth/not_valid_login') }}';
+                }
+            }
+        }else if (data.cmd == 'MHS_KICKED') {
+            if(data.nim == '{{ get_logged_user()->username }}'){
+                // location.href = '{{ url('ujian/not_valid_login') }}';
+            }
+        }
+    };
+
+    conn.onclose = function(e) {
+        conn.send(JSON.stringify({
+            'nim':'{{ get_logged_user()->username }}',
+            'as':'{{ get_selected_role()->name }}',
+            'cmd':'MHS_OFFLINE'
+        }));
+    };
+    @endif
+    /* [END] WEBSOCKET BOOTSTRAP */
+
     swal.setDefaults({ heightAuto : false }); // remove heightAuto in swal2 because broken the height of page when appeaer
 
     if (typeof init_page_level == 'function') {
@@ -90,51 +131,6 @@ $(document).ready(function(){
            text: "{{ $msg['content'] }}",
            type: "{{ $msg['type'] }}"
         });
-    @endif
-
-    @if(in_group('mahasiswa'))
-    // let conn = new WebSocket('wss://ujian.undip.ac.id/wss2/NNN');
-    @php($identifier = mt_rand())
-{{--    @php($identifier = get_client_ip())    --}}
-    conn = new WebSocket('{{ ws_url() }}');
-    conn.onopen = function(e) {
-        // console.log("Connection established!");
-        conn.send(JSON.stringify({
-            'nim':'{{ get_logged_user()->username }}',
-            'as':'{{ get_selected_role()->name }}',
-            'ip': '{{ $identifier }}',
-
-            'cmd':'MHS_ONLINE'
-        }));
-    };
-
-    conn.onmessage = function(e) {
-        // console.log(e.data);
-        let data = jQuery.parseJSON(e.data);
-        if (data.cmd == 'MHS_ONLINE') {
-            if(data.nim == '{{ get_logged_user()->username }}'){
-                if (data.ip != '{{ $identifier }}') {
-                    // JIKA YANG MENGAKSES BERBEDA IP DENGAN MHS YG ONLINE
-                    location.href = '{{ url('auth/not_valid_login') }}';
-                }
-            }
-        }else if (data.cmd == 'MHS_KICKED') {
-            if(data.nim == '{{ get_logged_user()->username }}'){
-                // location.href = '{{ url('ujian/not_valid_login') }}';
-            }
-        }
-    };
-
-    conn.onclose = function(e) {
-        console.log(e.data);
-        conn.send(JSON.stringify({
-            'nim':'{{ get_logged_user()->username }}',
-            'as':'{{ get_selected_role()->name }}',
-            'cmd':'MHS_OFFLINE'
-        }));
-
-    };
-
     @endif
 
 });

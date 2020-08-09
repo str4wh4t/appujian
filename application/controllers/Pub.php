@@ -151,19 +151,26 @@ class Pub extends MY_Controller {
 		if(!is_cli()) show_404();
 		$mhs_list = Mhs_orm::whereNotNull('no_billkey')->get();
 		$i = 0;
+		$matkul_id = 25; 
+		$ujian_id = 54;
 		foreach($mhs_list as $m){
-			$mhs_matkul = Mhs_matkul_orm::where(['mahasiswa_id' => $m->id_mahasiswa, 'matkul_id' => 19])->firstOrFail();
-			$mhs_ujian = new Mhs_ujian_orm();
-				$mhs_ujian->mahasiswa_matkul_id = $mhs_matkul->id;
-				$mhs_ujian->ujian_id =  53;
-				if($mhs_ujian->save())
-					echo "[UPDATE]" . $m->nama ;
-				else {
-					echo "[GAGAL]" . $m->nama;
-					die;
+			$mhs_matkul = Mhs_matkul_orm::where(['mahasiswa_id' => $m->id_mahasiswa, 'matkul_id' => $matkul_id])->first();
+			if(!empty($mhs_matkul)){
+				$mhs_ujian = Mhs_ujian_orm::where(['mahasiswa_matkul_id' => $mhs_matkul->id, 'ujian_id' => $ujian_id])->first();
+				if(empty($mhs_ujian)){
+					$mhs_ujian = new Mhs_ujian_orm();
+					$mhs_ujian->mahasiswa_matkul_id = $mhs_matkul->id;
+					$mhs_ujian->ujian_id =  $ujian_id;
+					if($mhs_ujian->save())
+						echo "[UPDATE]" . $m->nama ;
+					else {
+						echo "[GAGAL]" . $m->nama;
+						die;
+					}
+					echo "\n";
+					$i++;
 				}
-			echo "\n";
-			$i++;
+			}
 		}
 		die('DONE, j = ' . $i);
 	}
@@ -194,7 +201,8 @@ class Pub extends MY_Controller {
 					echo 'break';
 					break;
 				}
-				$date_end = date('Y-m-d H:i:s', strtotime($h_ujian->m_ujian->terlambat));
+				// $date_end = date('Y-m-d H:i:s', strtotime($h_ujian->m_ujian->terlambat));
+				$date_end = date('Y-m-d H:i:s', strtotime($h_ujian->tgl_selesai));
 				if ($today >= $date_end){
 					echo $h_ujian->id . "\n";
 					echo $h_ujian->mhs->nama . "\n";

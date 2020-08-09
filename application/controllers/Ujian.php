@@ -19,6 +19,7 @@ use Orm\Mhs_ujian_orm;
 use Orm\Mhs_matkul_orm;
 use Orm\Users_groups_orm;
 use Orm\Daftar_hadir_orm;
+use Illuminate\Database\Eloquent\Builder;
 
 class Ujian extends MY_Controller {
 
@@ -38,6 +39,7 @@ class Ujian extends MY_Controller {
 
 		$this->user = $this->ion_auth->user()->row();
 		$this->mhs 	= $this->ujian->getIdMahasiswa($this->user->username);
+		
     }
 	
 	protected function _data()
@@ -701,10 +703,10 @@ class Ujian extends MY_Controller {
 				$i = 0;
 			}
 			
-			// WAKTU SELESAI DIGANTI SESUAI DENGAN WAKTU TERLAMBAT UJIAN
-			// $waktu_selesai 	= date('Y-m-d H:i:s', strtotime("+{$ujian->waktu} minute"));
 			
-			$waktu_selesai 	= $date_end;
+		    $waktu_selesai 	= date('Y-m-d H:i:s', strtotime("+{$ujian->waktu} minute"));
+			
+			$waktu_selesai 	= $waktu_selesai > $date_end ? $date_end : $waktu_selesai;
 			$time_mulai		= date('Y-m-d H:i:s');
 			
 			$mhs_matkul = Mhs_matkul_orm::where(['mahasiswa_id' => $mhs->id_mahasiswa, 'matkul_id' => $ujian->matkul_id])->firstOrFail();
@@ -1309,6 +1311,30 @@ class Ujian extends MY_Controller {
 		
 		$data['m_ujian'] = $m_ujian ;
 		
+		$jml_daftar_hadir = 0;
+		$jml_daftar_hadir_by_pengawas = 0;
+		if(in_group('pengawas')) {
+			$users_groups = Users_groups_orm::where([
+				'user_id'  => get_logged_user()->id,
+				'group_id' => PENGAWAS_GROUP_ID
+			])->firstOrFail();
+			
+			$jml_daftar_hadir_by_pengawas = Mhs_ujian_orm::where('ujian_id', $m_ujian->id_ujian)
+												->whereHas('daftar_hadir', function (Builder $query) use($users_groups) {
+												    $query->where('absen_by', $users_groups->id);
+												})
+												->get()
+												->count();
+		}
+		
+		$jml_daftar_hadir = Mhs_ujian_orm::where('ujian_id', $m_ujian->id_ujian)
+											->whereHas('daftar_hadir')
+											->get()
+											->count();
+		
+		$data['jml_daftar_hadir'] = $jml_daftar_hadir ;
+		$data['jml_daftar_hadir_by_pengawas'] = $jml_daftar_hadir_by_pengawas ;
+		
 		view('ujian/monitor',$data);
 	}
 	
@@ -1317,6 +1343,18 @@ class Ujian extends MY_Controller {
 		if(!(in_group('admin') || in_group('pengawas'))) show_404();
 		
 		$id = $this->input->post('id');
+		$as = $this->input->post('as');
+		
+		if($as == 'pengawas'){
+			$user_id = $this->input->post('user_id');
+			$users_groups    = Users_groups_orm::where([
+			    'user_id'  => $user_id,
+			    'group_id' => PENGAWAS_GROUP_ID
+		    ])->firstOrFail();
+			
+			$pengawas_id = $users_groups->id;
+		}
+		
 		$m_ujian = Mujian_orm::findOrFail($id);
 		$config = [
             'host'     => $this->db->hostname,
@@ -1326,12 +1364,16 @@ class Ujian extends MY_Controller {
             'database' => $this->db->database,
         ];
 		
-		$this->db->select('a.id, c.nim, c.nama, c.nik, c.jenis_kelamin, c.tgl_lahir, c.prodi, d.absen_by, "OFFLINE" AS koneksi, "AKSI" AS aksi');
+		$this->db->select('a.id, c.nim, c.nama, c.nik, c.jenis_kelamin, c.tgl_lahir, c.prodi, d.absen_by, "OFFLINE" AS koneksi, e.ujian_selesai AS status, "AKSI" AS aksi');
 		$this->db->from('mahasiswa_ujian AS a');
 		$this->db->join('mahasiswa_matkul AS b', 'a.mahasiswa_matkul_id = b.id');
         $this->db->join('mahasiswa AS c', 'b.mahasiswa_id = c.id_mahasiswa');
 		$this->db->join('daftar_hadir AS d', 'a.id = d.mahasiswa_ujian_id', 'left');
+		$this->db->join('h_ujian AS e', 'a.id = e.mahasiswa_ujian_id', 'left');
         $this->db->where([ 'a.ujian_id' => $m_ujian->id_ujian]);
+		if($as == 'pengawas'){
+			$this->db->where('d.absen_by', $pengawas_id);
+		}
         $this->db->group_by('a.id');
         $this->db->order_by('c.nim');
         
@@ -1341,8 +1383,7 @@ class Ujian extends MY_Controller {
 
         $dt->query($query);
         
-        $users_groups = new Users_groups_orm();
-        $dt->edit('absen_by', function ($data) use($users_groups){
+        $dt->edit('absen_by', function ($data) {
 //	            return number_format($data['nilai_bobot_benar'] / 3,2,'.', '') ;
 	        $return = '<span class="badge border-danger danger round badge-border" id="badge_absensi_'. $data['nim'] .'">BELUM</span>';
 	        if(!empty($data['absen_by'])){
@@ -1351,18 +1392,35 @@ class Ujian extends MY_Controller {
             return  $return;
         });
         
-        $dt->edit('aksi', function ($data) use($id){
+        $dt->edit('aksi', function ($data) {
             return '<div class="btn-group">
 						<button type="button" title="hentikan ujian peserta" class="btn btn-sm btn-danger btn_kick" data-id="'. $data['id'] .'" data-nim="'. $data['nim'] .'"><i class="fa fa-user-times"></i></button>
 						<button type="button" title="lihat foto peserta" class="btn btn-sm btn-info btn_foto" data-id="'. $data['id'] .'" data-nim="'. $data['nim'] .'"><i class="fa fa-camera"></i></button>
 						</div>';
         });
         
-        $dt->edit('koneksi', function ($data) use($id){
-            return '<span class="badge bg-danger" id="badge_koneksi_'. $data['nim'] .'">'. $data['koneksi'] .'</span><span class="badge bg-info" id="badge_ip_'. $data['nim'] .'" style="display: none">-</span>';
+        $dt->edit('koneksi', function ($data) {
+			return '<span class="badge bg-danger" id="badge_koneksi_'. $data['nim'] .'">'. $data['koneksi'] .'</span><span class="badge bg-info" id="badge_ip_'. $data['nim'] .'" style="display: none">-</span>';
+		});
+        
+        $dt->edit('status', function ($data){
+        	$status = '' ;
+        	$status_badge = '' ;
+        	
+        	if(empty($data['status'])){
+        		$status = $data['status'] == null ? 'BELUM UJIAN' : 'SUDAH UJIAN' ;
+        	    $status_badge = $data['status'] == null ? 'secondary' : 'success' ;
+	        }else{
+        		$status = $data['status'] == 'N' ? 'SEDANG UJIAN' : 'SUDAH UJIAN' ;
+        	    $status_badge = $data['status'] == 'N' ? 'info' : 'success' ;
+		        // $status = 'BELUM UJIAN' ;
+        	    // $status_badge = 'secondary' ;
+	        }
+        	
+            return '<span class="badge bg-'. $status_badge .'" id="badge_status_'. $data['nim'] .'">'. $status .'</span>';
         });
         
-        $dt->add('absensi', function ($data) use($id){
+        $dt->add('absensi', function ($data) {
             if(in_group('admin')){
                 return '<button type="button" class="btn btn-sm btn-success btn_open" data-id="'. $data['id'] .'" data-nim="'. $data['nim'] .'"><i class="fa fa-folder-open"></i> Lihat</button>';
             }
@@ -1370,83 +1428,6 @@ class Ujian extends MY_Controller {
                 return '<div class="btn-group">
 							<button type="button" title="isi absen" class="btn btn-sm btn-info btn_absensi" data-id="'. $data['id'] .'" data-nim="'. $data['nim'] .'"><i class="fa fa-check"></i></button>
 							<button type="button" title="batal absen" class="btn btn-sm btn-danger btn_absensi_batal" data-id="'. $data['id'] .'" data-nim="'. $data['nim'] .'"><i class="fa fa-times"></i></button>
-							<button type="button" title="check absen" class="btn btn-sm btn-secondary btn_absensi_check" data-id="'. $data['id'] .'" data-nim="'. $data['nim'] .'"><i class="fa fa-question"></i></button>
-							</div>';
-            }else{
-        		return '-';
-	        }
-        });
-        
-        $this->_json($dt->generate(), false);
-	}
-	
-	protected function _data_absen_pengawas(){
-		
-		$this->_akses_pengawas();
-		
-		$id = $this->input->get('id');
-		$user_id = $this->input->get('user_id');
-		
-		$users_groups    = Users_groups_orm::where([
-		    'user_id'  => $user_id,
-		    'group_id' => PENGAWAS_GROUP_ID
-	    ])->firstOrFail();
-		
-		$pengawas_id = $users_groups->id;
-		
-		$m_ujian = Mujian_orm::findOrFail($id);
-		$config = [
-            'host'     => $this->db->hostname,
-            'port'     => $this->db->port,
-            'username' => $this->db->username,
-            'password' => $this->db->password,
-            'database' => $this->db->database,
-        ];
-		
-		$this->db->select('a.id, c.nim, c.nama, c.nik, c.jenis_kelamin, c.tgl_lahir, c.prodi, d.absen_by, "OFFLINE" AS koneksi, "AKSI" AS aksi');
-		$this->db->from('mahasiswa_ujian AS a');
-		$this->db->join('mahasiswa_matkul AS b', 'a.mahasiswa_matkul_id = b.id');
-        $this->db->join('mahasiswa AS c', 'b.mahasiswa_id = c.id_mahasiswa');
-		$this->db->join('daftar_hadir AS d', 'a.id = d.mahasiswa_ujian_id', 'left');
-        $this->db->where(['a.ujian_id' => $m_ujian->id_ujian, 'd.absen_by' => $pengawas_id]);
-        $this->db->group_by('a.id');
-        $this->db->order_by('c.nim');
-        
-        $dt = new Datatables( new MySQL($config) );
-
-	    $query = $this->db->get_compiled_select() ; // GET QUERY PRODUCED BY ACTIVE RECORD WITHOUT RUNNING I
-
-        $dt->query($query);
-        
-        $users_groups = new Users_groups_orm();
-        $dt->edit('absen_by', function ($data) use($users_groups){
-//	            return number_format($data['nilai_bobot_benar'] / 3,2,'.', '') ;
-	        $return = '<span class="badge border-danger danger round badge-border" id="badge_absensi_'. $data['nim'] .'">BELUM</span>';
-	        if(!empty($data['absen_by'])){
-	        	$return = '<span class="badge border-success success round badge-border" id="badge_absensi_'. $data['nim'] .'">SUDAH</span>';
-	        }
-            return  $return;
-        });
-        
-        $dt->edit('aksi', function ($data) use($id){
-            return '<div class="btn-group">
-						<button type="button" title="hentikan ujian peserta" class="btn btn-sm btn-danger btn_kick" data-id="'. $data['id'] .'" data-nim="'. $data['nim'] .'"><i class="fa fa-user-times"></i></button>
-						<button type="button" title="lihat foto peserta" class="btn btn-sm btn-info btn_foto" data-id="'. $data['id'] .'" data-nim="'. $data['nim'] .'"><i class="fa fa-camera"></i></button>
-						</div>';
-        });
-        
-        $dt->edit('koneksi', function ($data) use($id){
-            return '<span class="badge bg-danger" id="badge_koneksi_'. $data['nim'] .'">'. $data['koneksi'] .'</span>';
-        });
-        
-        $dt->add('absensi', function ($data) use($id){
-            if(in_group('admin')){
-                return '<button type="button" class="btn btn-sm btn-success btn_open" data-id="'. $data['id'] .'" data-nim="'. $data['nim'] .'"><i class="fa fa-folder-open"></i> Lihat</button>';
-            }
-        	else if(in_group('pengawas')){
-                return '<div class="btn-group">
-							<button type="button" class="btn btn-sm btn-info btn_absensi" data-id="'. $data['id'] .'" data-nim="'. $data['nim'] .'"><i class="fa fa-check"></i></button>
-							<button type="button" class="btn btn-sm btn-danger btn_absensi_batal" data-id="'. $data['id'] .'" data-nim="'. $data['nim'] .'"><i class="fa fa-times"></i></button>
 							<button type="button" title="check absen" class="btn btn-sm btn-secondary btn_absensi_check" data-id="'. $data['id'] .'" data-nim="'. $data['nim'] .'"><i class="fa fa-question"></i></button>
 							</div>';
             }else{
@@ -1476,6 +1457,49 @@ class Ujian extends MY_Controller {
 		$nim = $this->input->post('nim');
 		$mhs = Mhs_orm::where('nim', $nim)->firstOrFail();
 		$this->_json(['src_img' => $mhs->foto]);
+	}
+	
+	protected function _absen_pengawas(){
+		$this->_akses_pengawas();
+		
+		$user_id = get_logged_user()->id;
+		$mahasiswa_ujian_id = $this->input->post('mahasiswa_ujian_id');
+		$aksi = $this->input->post('aksi');
+		
+		$users_groups = Users_groups_orm::where([
+		    'user_id'  => $user_id,
+		    'group_id' => PENGAWAS_GROUP_ID
+	    ])->firstOrFail();
+	
+		$ok = false;
+		if($aksi == 'batal'){
+			// JIKA MEMBATALKAN ABSEN
+			$daftar_hadir = Daftar_hadir_orm::where([
+			    'mahasiswa_ujian_id' => $mahasiswa_ujian_id,
+			    'absen_by'           => $users_groups->id,
+			])->first();
+			
+			
+			if (!empty($daftar_hadir)) {
+			    $ok = $daftar_hadir->delete();
+			}
+		
+		}else{
+			// JIKA MENGISI ABSEN
+		    $daftar_hadir = Daftar_hadir_orm::where([
+			    'mahasiswa_ujian_id' => $mahasiswa_ujian_id,
+		    ])->first();
+		    
+		    if (empty($daftar_hadir)) {
+			    $daftar_hadir                     = new Daftar_hadir_orm();
+			    $daftar_hadir->mahasiswa_ujian_id = $mahasiswa_ujian_id;
+			    $daftar_hadir->absen_by           = $users_groups->id;
+			    $ok                               = $daftar_hadir->save();
+		    }
+		    
+		}
+	
+	    $this->_json(['ok' => $ok]);
 	}
 	
 //	function c(){

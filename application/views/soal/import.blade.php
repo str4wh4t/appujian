@@ -86,7 +86,8 @@ function init_page_level(){
                     <div class="form-group">
                         <input type="file" name="upload_file" style="border: 3px solid #000; padding: 3px;">
                     </div>
-                    <button name="preview" type="submit" class="btn btn-sm btn-success"><i class="fa fa-th"></i> Preview</button> <a href="{{ site_url('mahasiswa') }}" class="btn btn-sm btn-warning"><i class="fa fa-arrow-left"></i> Batal</a>
+                    <button name="preview" type="submit" class="btn btn-sm btn-success"><i class="fa fa-th"></i> Preview</button>
+                    <a href="{{ site_url('soal') }}" class="btn btn-sm btn-warning"><i class="fa fa-arrow-left"></i> Batal</a>
                      <?= form_close(); ?>
                 </div>
             </div>

@@ -58,7 +58,7 @@
 
 
     </script>
-    <script src="{{ asset('assets/dist/js/app/ujian/list.js?u=') . mt_rand() }}"></script>
+    <script src="{{ asset('assets/dist/js/app/ujian/list.js') }}"></script>
     <!-- END PAGE LEVEL JS-->
 @endpush
 

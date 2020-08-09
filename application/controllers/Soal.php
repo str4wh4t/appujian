@@ -185,13 +185,15 @@ class Soal extends MY_Controller {
     public function save()
     {
     	
-    	if(!$this->input->post()){
+    	if(!$this->input->post())
     		redirect('soal');
-	    }
+    	
+//    	vdebug($this->input->post());
+	    
         $method = $this->input->post('method', true);
         $id_soal = $this->input->post('id_soal', true);
         $this->_validasi();
-        $this->_file_config();
+//        $this->_file_config();
         
         if($this->form_validation->run() === FALSE){
         	// VALIDASI SALAH
@@ -212,51 +214,50 @@ class Soal extends MY_Controller {
                 $data['opsi_'.$abj]    = $this->input->post('jawaban_'.$abj);
             }
 
-            $i = 0;
-            foreach ($_FILES as $key => $val) {
-                $img_src = FCPATH.'uploads/bank_soal/';
-//                $getsoal = $this->soal->getSoalById($this->input->post('id_soal', true));
-	            $getsoal = $this->soal->getSoalById($id_soal);
-                
-                $error = '';
-                if($key === 'file_soal'){
-                    if(!empty($_FILES['file_soal']['name'])){
-                        if (!$this->upload->do_upload('file_soal')){
-                            $error = $this->upload->display_errors();
-                            show_error($error, 500, 'File Soal Error');
-                            exit();
-                        }else{
-                            if($method === 'edit'){
-                                if(!unlink($img_src.$getsoal->file)){
-                                    show_error('Error saat delete gambar <br/>'.var_dump($getsoal), 500, 'Error Edit Gambar');
-                                    exit();
-                                }
-                            }
-                            $data['file'] = $this->upload->data('file_name');
-                            $data['tipe_file'] = $this->upload->data('file_type');
-                        }
-                    }
-                }else{
-                    $file_abj = 'file_'.$abjad[$i];
-                    if(!empty($_FILES[$file_abj]['name'])){
-                        if (!$this->upload->do_upload($key)){
-                            $error = $this->upload->display_errors();
-                            show_error($error, 500, 'File Opsi '.strtoupper($abjad[$i]).' Error');
-                            exit();
-                        }else{
-                            if($method === 'edit'){
-                                if(!unlink($img_src.$getsoal->$file_abj)){
-                                    show_error('Error saat delete gambar', 500, 'Error Edit Gambar');
-                                    exit();
-                                }
-                            }
-                            $data[$file_abj] = $this->upload->data('file_name');
-                        }
-                    }
-                    $i++;
-                }
-            }
-            
+//            $i = 0;
+//            foreach ($_FILES as $key => $val) {
+//                $img_src = FCPATH.'uploads/bank_soal/';
+//	            $getsoal = $this->soal->getSoalById($id_soal);
+//
+//                $error = '';
+//                if($key === 'file_soal'){
+//                    if(!empty($_FILES['file_soal']['name'])){
+//                        if (!$this->upload->do_upload('file_soal')){
+//                            $error = $this->upload->display_errors();
+//                            show_error($error, 500, 'File Soal Error');
+//                            exit();
+//                        }else{
+//                            if($method === 'edit'){
+//                                if(!unlink($img_src.$getsoal->file)){
+//                                    show_error('Error saat delete gambar <br/>'.var_dump($getsoal), 500, 'Error Edit Gambar');
+//                                    exit();
+//                                }
+//                            }
+//                            $data['file'] = $this->upload->data('file_name');
+//                            $data['tipe_file'] = $this->upload->data('file_type');
+//                        }
+//                    }
+//                }else{
+//                    $file_abj = 'file_'.$abjad[$i];
+//                    if(!empty($_FILES[$file_abj]['name'])){
+//                        if (!$this->upload->do_upload($key)){
+//                            $error = $this->upload->display_errors();
+//                            show_error($error, 500, 'File Opsi '.strtoupper($abjad[$i]).' Error');
+//                            exit();
+//                        }else{
+//                            if($method === 'edit'){
+//                                if(!unlink($img_src.$getsoal->$file_abj)){
+//                                    show_error('Error saat delete gambar', 500, 'Error Edit Gambar');
+//                                    exit();
+//                                }
+//                            }
+//                            $data[$file_abj] = $this->upload->data('file_name');
+//                        }
+//                    }
+//                    $i++;
+//                }
+//            }
+
 //            if($this->ion_auth->is_admin()){
 //                $pecah = $this->input->post('dosen_id', true);
 //                $pecah = explode(':', $pecah);

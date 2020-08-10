@@ -31,8 +31,10 @@
 
     function init_page_level(){
         $('.select2').select2({
-            width: '100%'
+            width: '100%',
         });
+
+        $('#status_ujian').val('active').trigger('change');
 
         status_ujian = $('#status_ujian').val();
     }

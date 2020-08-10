@@ -89,7 +89,7 @@ $(document).ready(function() {
       },
       { data: "nim" },
       { data: "nama" },
-      { data: "email" },
+      // { data: "email" },
       { data: "nama_matkul" },
       { data: "prodi" },
       // { data: "nama_kelas" },
@@ -99,7 +99,7 @@ $(document).ready(function() {
       {
         searchable: false,
         orderable: false,
-        targets: 4,
+        targets: 3,
         data: "nama_matkul",
         render: function(data, type, row, meta) {
           let str_return = '';
@@ -118,7 +118,7 @@ $(document).ready(function() {
       {
         searchable: false,
         orderable: false,
-        targets: 6,
+        targets: 5,
         data: "ada",
         render: function(data, type, row, meta) {
           let btn;
@@ -137,18 +137,18 @@ $(document).ready(function() {
 								</div>`;
         }
       },
-      // {
-      //   searchable: false,
-      //   targets: 7,
-      //   data: "id_mahasiswa",
-      //   render: function(data, type, row, meta) {
-      //     return `<div class="text-center">
-		// 							<input name="checked[]" class="check" value="${data}" type="checkbox">
-		// 						</div>`;
-      //   }
-      // }
+      {
+        searchable: false,
+        targets: 6,
+        data: "id_mahasiswa",
+        render: function(data, type, row, meta) {
+          return `<div class="text-center">
+									<input name="checked[]" class="check" value="${data}" type="checkbox">
+								</div>`;
+        }
+      }
     ],
-    order: [[4, "asc"],[6, "asc"],[1, "asc"]],
+    order: [[3, "asc"],[5, "asc"],[1, "asc"]],
     rowId: function(a) {
       return a;
     },

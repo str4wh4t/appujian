@@ -119,7 +119,7 @@ class Mahasiswa extends MY_Controller
 				}
 			}
 		}] ]);
-		
+		$this->form_validation->set_rules('no_billkey', 'No Billkey', 'required|trim|max_length[50]');
 		$this->form_validation->set_rules('foto', 'Foto', ['required','trim', ['check_valid_img_url', function($foto){
 			if(!empty($foto)) {
 				if ($size = @getimagesize($foto)){
@@ -162,6 +162,7 @@ class Mahasiswa extends MY_Controller
 					'foto' => form_error('foto'),
 					'jenis_kelamin' => form_error('jenis_kelamin'),
 					'matkul[]' => form_error('matkul[]'),
+					'no_billkey' => form_error('no_billkey'),
 //					'jurusan' => form_error('jurusan'),
 //					'kelas' => form_error('kelas'),
 				]
@@ -179,6 +180,7 @@ class Mahasiswa extends MY_Controller
 				'foto' 			=> $this->input->post('foto', true),
 				'jenis_kelamin' => $this->input->post('jenis_kelamin', true),
 				'matkul'        => $this->input->post('matkul[]', true),
+				'no_billkey' 	=> $this->input->post('no_billkey', true),
 //				'kelas_id' 		=> $this->input->post('kelas', true),
 			];
 			if ($method === 'add') {
@@ -196,6 +198,7 @@ class Mahasiswa extends MY_Controller
 					$mhs->email = $input['email'];
 					$mhs->foto = $input['foto'];
 					$mhs->jenis_kelamin = $input['jenis_kelamin'];
+					$mhs->no_billkey = $input['no_billkey'];
 					$mhs->save();
 					
 					foreach($input['matkul'] as $matkul_id){
@@ -212,14 +215,16 @@ class Mahasiswa extends MY_Controller
 					$full_name  = $mhs->nama;
 					
 					$username        = $mhs->nim;
-					$password        = date("dmY", strtotime($mhs->tgl_lahir));
+//					$password        = date("dmY", strtotime($mhs->tgl_lahir));
+					$password        = $mhs->no_billkey;
 					$email           = $mhs->email;
-					$tgl_lahir        = date("dmY", strtotime($mhs->tgl_lahir));
+//					$tgl_lahir        = date("dmY", strtotime($mhs->tgl_lahir));
 					$additional_data = [
 						'first_name' => $first_name,
 						'last_name'  => $last_name,
 						'full_name'  => $full_name,
-						'tgl_lahir'  => $tgl_lahir,
+//						'tgl_lahir'  => $tgl_lahir,
+						'no_billkey' => $mhs->no_billkey,
 					];
 					$group           = [ MHS_GROUP_ID ]; // Sets user to mhs.
 					$this->ion_auth->register($username, $password, $email, $additional_data, $group);
@@ -250,14 +255,44 @@ class Mahasiswa extends MY_Controller
 					$mhs->email = $input['email'];
 					$mhs->foto = $input['foto'];
 					$mhs->jenis_kelamin = $input['jenis_kelamin'];
+					$mhs->no_billkey = $input['no_billkey'];
 					$mhs->save();
 					
-					Mhs_matkul_orm::where('mahasiswa_id',$id_mahasiswa)->delete(); // LOGIKA NYA DI DELETE DULU BARU DI INSERT
-					foreach($matkul as $matkul_id){
-						$mhs_matkul = new Mhs_matkul_orm();
-						$mhs_matkul->mahasiswa_id = $mhs->id_mahasiswa;
-						$mhs_matkul->matkul_id = $matkul_id;
-						$mhs_matkul->save();
+					$mhs_matkul =  Mhs_matkul_orm::where('mahasiswa_id',$id_mahasiswa)->get();
+					
+					$mhs_matkul_ids_before = [];
+					if($mhs_matkul->isNotEmpty()){
+						foreach($mhs_matkul as $mm){
+							$mhs_matkul_ids_before[] = $mm->matkul_id;
+						}
+					}
+
+					$matkul_ids = $matkul;
+					foreach($matkul_ids as $matkul_id){
+						Matkul_orm::findOrFail($matkul_id);
+					}
+					
+					$matkul_ids_insert = array_diff($matkul_ids, $mhs_matkul_ids_before);
+					$matkul_ids_delete = array_diff($mhs_matkul_ids_before, $matkul_ids);
+					
+					if(!empty($matkul_ids_delete)) {
+						foreach ($matkul_ids_delete as $matkul_id) {
+							$mhs_matkul = Mhs_matkul_orm::where([
+								'mahasiswa_id' => $mhs->id_mahasiswa,
+								'matkul_id'    => $matkul_id
+							])->firstOrFail();
+							
+							$mhs_matkul->delete();
+						}
+					}
+					
+					if(!empty($matkul_ids_insert)) {
+						foreach ($matkul_ids_insert as $matkul_id) {
+							$mhs_matkul_orm = new Mhs_matkul_orm();
+							$mhs_matkul_orm->mahasiswa_id = $mhs->id_mahasiswa;
+							$mhs_matkul_orm->matkul_id = $matkul_id;
+							$mhs_matkul_orm->save();
+						}
 					}
 					
 	                $user = Users_orm::where('username',$mhs->nim)->first();
@@ -268,10 +303,11 @@ class Mahasiswa extends MY_Controller
 						$last_name  = end($nama);
 						
 						$user->first_name = $first_name;
-						$user->tgl_lahir  = date("dmY", strtotime($mhs->tgl_lahir));
+//						$user->tgl_lahir  = date("dmY", strtotime($mhs->tgl_lahir));
 						$user->last_name  = $last_name;
 						$user->full_name  = $mhs->nama;
 						$user->email      = $mhs->email;
+						$user->no_billkey = $mhs->no_billkey;
 						$user->save();
 					}
 	   
@@ -487,7 +523,16 @@ class Mahasiswa extends MY_Controller
 					$email = '!! ERROR !!';
 				}
 				
-				$foto = $sheetData[$i][6];
+				$no_billkey = strval($sheetData[$i][6]);
+				$no_billkey = str_replace("'" ,"", $no_billkey);
+				if(strlen($no_billkey) != NO_BILLKEY_LENGTH || !ctype_digit($no_billkey)) {
+					$no_billkey = '!! ERROR !!';
+				}
+				if(Mhs_orm::where('no_billkey',$no_billkey)->first() != null){
+					$no_billkey = '!! ERROR !!';
+				}
+				
+				$foto = $sheetData[$i][7];
 				if(!empty($foto)) {
 					if ($size = @getimagesize($foto)){
 						if (strtolower(substr($size['mime'], 0, 5)) != 'image') {
@@ -498,13 +543,13 @@ class Mahasiswa extends MY_Controller
 					}
 				}
 				
-				$jk = $sheetData[$i][7];
+				$jk = $sheetData[$i][8];
 				if(!in_array($jk,['L','P'])){
 					$jk = '!! ERROR !!';
 				}
 				
 				$matkul = [];
-				$sd = explode(',',$sheetData[$i][8]);
+				$sd = explode(',',$sheetData[$i][9]);
 				if(!empty($sd)){
 					foreach($sd as $s){
 						$m = Matkul_orm::find($s);
@@ -524,6 +569,7 @@ class Mahasiswa extends MY_Controller
 					'tmp_lahir' => $tmp_lahir,
 					'tgl_lahir' => $tgl_lahir,
 					'email' => $email,
+					'no_billkey' => $no_billkey,
 					'foto' => $foto,
 					'jenis_kelamin' => $jk,
 					'matkul' => $matkul
@@ -616,6 +662,18 @@ class Mahasiswa extends MY_Controller
 				break;
 			}
 			
+			$no_billkey = strval($d->no_billkey);
+			if(strlen($no_billkey) != NO_BILLKEY_LENGTH || !ctype_digit($no_billkey)) {
+				$allow = false;
+				$msg = 'No Billkey salah, no_billkey : '. $no_billkey ;
+				break;
+			}
+			if(Mhs_orm::where('no_billkey',$no_billkey)->first() != null){
+				$allow = false;
+				$msg = 'No Billkey sudah terdaftar, no_billkey : '. $no_billkey ;
+				break;
+			}
+			
 			$foto = $d->foto;
 			if(!empty($foto)) {
 				if ($size = @getimagesize($foto)){
@@ -666,6 +724,7 @@ class Mahasiswa extends MY_Controller
 			$mhs->tmp_lahir          = $tmp_lahir;
 			$mhs->tgl_lahir          = $tgl_lahir;
 			$mhs->email         = $email;
+			$mhs->no_billkey         = $no_billkey;
 			$mhs->foto         = $foto;
 			$mhs->jenis_kelamin = $jk;
 			$mhs->save();
@@ -684,14 +743,16 @@ class Mahasiswa extends MY_Controller
 			$full_name  = $mhs->nama;
 			
 			$username        = $mhs->nim;
-			$password        = date("dmY", strtotime($mhs->tgl_lahir));
+//			$password        = date("dmY", strtotime($mhs->tgl_lahir));
+			$password        = $no_billkey;
 			$email           = $mhs->email;
-			$tgl_lahir        = date("dmY", strtotime($mhs->tgl_lahir));
+//			$tgl_lahir        = date("dmY", strtotime($mhs->tgl_lahir));
 			$additional_data = [
 				'first_name' => $first_name,
 				'last_name'  => $last_name,
 				'full_name'  => $full_name,
-				'tgl_lahir'  => $tgl_lahir,
+//				'tgl_lahir'  => $tgl_lahir,
+				'no_billkey' => $no_billkey,
 			];
 			$group           = [ MHS_GROUP_ID ]; // Sets user to mhs.
 			$this->ion_auth->register($username, $password, $email, $additional_data, $group);
@@ -803,7 +864,19 @@ class Mahasiswa extends MY_Controller
 				break;
 			}
 			
-			$foto = $d[6];
+			$no_billkey = $d[6];
+			if(strlen($no_billkey) != NO_BILLKEY_LENGTH || !ctype_digit($no_billkey)) {
+				$allow = false;
+				$msg = 'Row : '. $i .', No Billkey salah, no_billkey : ' . $no_billkey  ;
+				break;
+			}
+			if(Mhs_orm::where('no_billkey',$no_billkey)->first() != null){
+				$allow = false;
+				$msg = 'Row : '. $i .', No Billkey sudah terdaftar, no_billkey : '. $no_billkey ;
+				break;
+			}
+			
+			$foto = $d[7];
 			if(!empty($foto)) {
 				if ($size = @getimagesize($foto)){
 					if (strtolower(substr($size['mime'], 0, 5)) != 'image') {
@@ -818,7 +891,7 @@ class Mahasiswa extends MY_Controller
 				}
 			}
 			
-			$jk = $d[7];
+			$jk = $d[8];
 			if(!in_array($jk,['L','P'])){
 				$allow = false;
 				$msg = 'Row : '. $i .', Jenis kelamin bermasalah, jenis kelamin : '. $jk ;
@@ -826,7 +899,7 @@ class Mahasiswa extends MY_Controller
 			}
 			
 			$matkul_list = [];
-			$sd = explode(',',$d[8]);
+			$sd = explode(',',$d[9]);
 			if(!empty($sd)){
 				foreach($sd as $s){
 					$m = Matkul_orm::find($s);
@@ -853,6 +926,7 @@ class Mahasiswa extends MY_Controller
 			$mhs->tmp_lahir     = $tmp_lahir;
 			$mhs->tgl_lahir     = $tgl_lahir;
 			$mhs->email         = $email;
+			$mhs->no_billkey         = $no_billkey;
 			$mhs->foto         = $foto;
 			$mhs->jenis_kelamin = $jk;
 			$mhs->save();
@@ -871,14 +945,16 @@ class Mahasiswa extends MY_Controller
 			$full_name  = $mhs->nama;
 			
 			$username        = $mhs->nim;
-			$password        = date("dmY", strtotime($mhs->tgl_lahir));
+//			$password        = date("dmY", strtotime($mhs->tgl_lahir));
+			$password        = $no_billkey;
 			$email           = $mhs->email;
-			$tgl_lahir        = date("dmY", strtotime($mhs->tgl_lahir));
+//			$tgl_lahir        = date("dmY", strtotime($mhs->tgl_lahir));
 			$additional_data = [
 				'first_name' => $first_name,
 				'last_name'  => $last_name,
 				'full_name'  => $full_name,
-				'tgl_lahir'  => $tgl_lahir,
+//				'tgl_lahir'  => $tgl_lahir,
+				'no_billkey' => $no_billkey,
 			];
 			$group           = [ MHS_GROUP_ID ]; // Sets user to mhs.
 			$this->ion_auth->register($username, $password, $email, $additional_data, $group);
@@ -1027,18 +1103,18 @@ class Mahasiswa extends MY_Controller
 					
 					
 					// ASIGN KE MATERI UJIAN
-					$mhs_matkul = new Mhs_matkul_orm();
-					$mhs_matkul->mahasiswa_id = $mhs_source->id_mahasiswa;
-					$mhs_matkul->matkul_id = 18; // TRIAL UJIAN
-					$mhs_matkul->save();
-					$mhs_matkul = new Mhs_matkul_orm();
-					$mhs_matkul->mahasiswa_id = $mhs_source->id_mahasiswa;
-					$mhs_matkul->matkul_id = 19; // TPA
-					$mhs_matkul->save();
-					$mhs_matkul = new Mhs_matkul_orm();
-					$mhs_matkul->mahasiswa_id = $mhs_source->id_mahasiswa;
-					$mhs_matkul->matkul_id = 25; // TPA
-					$mhs_matkul->save();
+//					$mhs_matkul = new Mhs_matkul_orm();
+//					$mhs_matkul->mahasiswa_id = $mhs_source->id_mahasiswa;
+//					$mhs_matkul->matkul_id = 18; // TRIAL UJIAN
+//					$mhs_matkul->save();
+//					$mhs_matkul = new Mhs_matkul_orm();
+//					$mhs_matkul->mahasiswa_id = $mhs_source->id_mahasiswa;
+//					$mhs_matkul->matkul_id = 19; // TPA
+//					$mhs_matkul->save();
+//					$mhs_matkul = new Mhs_matkul_orm();
+//					$mhs_matkul->mahasiswa_id = $mhs_source->id_mahasiswa;
+//					$mhs_matkul->matkul_id = 25; // TPA
+//					$mhs_matkul->save();
 					
 					$jml_mhs_inserted++ ;
 				}

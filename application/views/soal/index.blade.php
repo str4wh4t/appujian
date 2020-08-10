@@ -30,6 +30,8 @@
 
 		$('.select2').select2();
 
+		$('#matkul_filter').val('all').trigger('change');
+
 	}
 
 	$(document).on('change','#matkul_filter', function(){

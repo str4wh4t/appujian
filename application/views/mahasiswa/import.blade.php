@@ -93,6 +93,7 @@ function init_page_level(){
                             <li>Data No Peserta tepat {{ MHS_ID_LENGTH }} karakter</li>
                             <li>Data Nama min. 3 karakter dan maks. 250 karakter</li>
                             <li>Data Email maks. 250 karakter</li>
+                            <li>Data No Billkey tepat {{ NO_BILLKEY_LENGTH }} karakter</li>
                             <li>Data Jk hanya berisi L atau P</li>
                             <li>Data Materi Ujian harus sesuai dengan ID yang ada</li>
                         </ul>
@@ -108,6 +109,7 @@ function init_page_level(){
                                 <td>Tmp Lahir</td>
                                 <td>Tgl Lahir</td>
                                 <td>Email</td>
+                                <td>No Billkey</td>
                                 <td>Foto</td>
                                 <td>Jk</td>
                                 <td>Materi Ujian</td>
@@ -142,6 +144,9 @@ function init_page_level(){
                                         <td class="<?= ($data['email'] == null || $data['email'] == '!! ERROR !!') ? 'bg-danger text-white' : ''; ?>">
                                             <?= ($data['email'] == null || $data['email'] == '!! ERROR !!') ? '!! ERROR !!' : $data['email']; ?>
                                         </td>
+                                         <td class="<?= ($data['no_billkey'] == null || $data['no_billkey'] == '!! ERROR !!') ? 'bg-danger text-white' : ''; ?>">
+                                            <?= ($data['no_billkey'] == null || $data['no_billkey'] == '!! ERROR !!') ? '!! ERROR !!' : $data['no_billkey']; ?>
+                                        </td>
                                         <td class="<?= ($data['foto'] == null || $data['foto'] == '!! ERROR !!') ? 'bg-danger text-white' : ''; ?>">
                                             <?= ($data['foto'] == null || $data['foto'] == '!! ERROR !!') ? '!! ERROR !!' : '<img style="width:80px; height:100px;" src="' . $data['foto'] . '" />'; ?>
                                         </td>
@@ -157,11 +162,11 @@ function init_page_level(){
                                         </td>
                                     </tr>
                             <?php
-                                        if ($data['nim'] == null || $data['nama'] == null || $data['email'] == null || $data['jenis_kelamin'] == null || $data['matkul'] == null) {
+                                        if ($data['nim'] == null || $data['nama'] == null || $data['email'] == null || $data['no_billkey'] == null || $data['jenis_kelamin'] == null || $data['matkul'] == null) {
                                             $status = false;
                                         }
 
-                                        if ($data['nim'] == '!! ERROR !!' || $data['nama'] == '!! ERROR !!' || $data['email'] == '!! ERROR !!' || $data['jenis_kelamin'] == '!! ERROR !!' || $data['matkul'] == '!! ERROR !!') {
+                                        if ($data['nim'] == '!! ERROR !!' || $data['nama'] == '!! ERROR !!' || $data['email'] == '!! ERROR !!' || $data['no_billkey'] == '!! ERROR !!' || $data['jenis_kelamin'] == '!! ERROR !!' || $data['matkul'] == '!! ERROR !!') {
                                             $status = false;
                                         }
 

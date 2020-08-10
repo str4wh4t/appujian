@@ -93,12 +93,12 @@ $(document).on('click','#btn_sync_pendaftaran',function(){
 {{--            <a href="{{ site_url('mahasiswa/add') }}" class="btn btn-sm btn-flat btn-outline-primary"><i class="fa fa-plus"></i> Tambah</a>--}}
 {{--            <a href="{{ site_url('mahasiswa/import') }}" class="btn btn-sm btn-flat btn-success"><i class="fa fa-upload"></i> Import</a>--}}
             <button type="button" onclick="reload_ajax()" class="btn btn-sm btn-flat btn-outline-secondary"><i class="fa fa-refresh"></i> Reload</button>
-{{--            <div class="pull-right">--}}
-{{--                <button onclick="bulk_delete()" class="btn btn-sm btn-flat btn-danger" type="button"><i class="fa fa-trash"></i> Delete</button>--}}
-{{--            </div>--}}
+
             <div class="pull-right">
                 <button class="btn btn-sm btn-flat btn-danger" id="btn_sync_pendaftaran" type="button"><i class="fa fa-refresh"></i> Syncron Data</button>
+                <button onclick="bulk_delete()" class="btn btn-sm btn-flat btn-danger" type="button"><i class="fa fa-trash"></i> Delete</button>
             </div>
+
 		</div>
         <?= form_open('', array('id' => 'bulk')); ?>
 {{--        <div class="table-responsive">--}}
@@ -110,14 +110,14 @@ $(document).on('click','#btn_sync_pendaftaran',function(){
                         <th>No.</th>
                         <th>No Peserta</th>
                         <th>Nama</th>
-                        <th>Email</th>
+{{--                        <th>Email</th>--}}
                         <th>Materi Ujian</th>
 {{--                        <th>Kelas</th>--}}
                         <th>Prodi</th>
                         <th>Aksi</th>
-{{--                        <th class="text-center">--}}
-{{--                            <input class="select_all" type="checkbox">--}}
-{{--                        </th>--}}
+                        <th class="text-center">
+                            <input class="select_all" type="checkbox">
+                        </th>
                     </tr>
                 </thead>
 {{--                <tfoot>--}}

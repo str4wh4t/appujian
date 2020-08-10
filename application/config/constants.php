@@ -90,3 +90,4 @@ defined('MHS_GROUP_ID')      OR define('MHS_GROUP_ID', 3);
 defined('PENGAWAS_GROUP_ID')      OR define('PENGAWAS_GROUP_ID', 4);
 defined('MHS_ID_LENGTH')      OR define('MHS_ID_LENGTH', 11);
 defined('NIK_LENGTH')      OR define('NIK_LENGTH', 16);
+defined('NO_BILLKEY_LENGTH')      OR define('NO_BILLKEY_LENGTH', 12);

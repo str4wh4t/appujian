@@ -98,44 +98,48 @@ $(document).on('keyup','input[name="foto"]',function(){
                 <div class="col-md-12">
             <div class="form-group">
                 <label for="nim">No Peserta</label>
-                <input autofocus="autofocus" onfocus="this.select()" placeholder="No Peserta" type="text" name="nim" class="form-control">
+                <input autofocus="autofocus" onfocus="this.select()" placeholder="No Peserta" type="text" name="nim" id="nim" class="form-control">
                 <small class="help-block"></small>
             </div>
             <div class="form-group">
                 <label for="nama">Nama</label>
-                <input placeholder="Nama" type="text" name="nama" class="form-control">
+                <input placeholder="Nama" type="text" name="nama" id="nama" class="form-control">
                 <small class="help-block"></small>
             </div>
             <div class="form-group">
                 <label for="nim">NIK</label>
-                <input placeholder="NIK" type="text" name="nik" class="form-control">
+                <input placeholder="NIK" type="text" name="nik" id="nik" class="form-control">
                 <small class="help-block"></small>
             </div>
             <div class="form-group">
                 <label for="nama">Tmp Lahir</label>
-                <input placeholder="Tmp Lahir" type="text" name="tmp_lahir" class="form-control">
+                <input placeholder="Tmp Lahir" type="text" name="tmp_lahir" id="tmp_lahir" class="form-control">
                 <small class="help-block"></small>
             </div>
             <div class="form-group">
                 <label for="nama">Tgl Lahir</label>
-                <input placeholder="Tgl Lahir" type="text" name="tgl_lahir" class="datetimepicker form-control">
+                <input placeholder="Tgl Lahir" type="text" name="tgl_lahir" id="tgl_lahir" class="datetimepicker form-control">
                 <small class="help-block"></small>
             </div>
             <div class="form-group">
                 <label for="email">Email</label>
-                <input placeholder="Email" type="text" name="email" class="form-control">
+                <input placeholder="Email" type="text" name="email" id="email" class="form-control">
                 <small class="help-block"></small>
             </div>
             <div class="form-group">
                 <label for="jenis_kelamin">Jenis Kelamin</label>
-                <select name="jenis_kelamin" class="form-control select2">
+                <select name="jenis_kelamin" id="jenis_kelamin" class="form-control select2">
                     <option value="" disabled selected>-- Pilih --</option>
                     <option value="L">Laki-laki</option>
                     <option value="P">Perempuan</option>
                 </select>
                 <small class="help-block"></small>
             </div>
-
+            <div class="form-group">
+                <label for="no_billkey">No Billkey</label>
+                <input value="" placeholder="No Billkey" type="text" name="no_billkey" id="no_billkey" class="form-control">
+                <small class="help-block"></small>
+            </div>
             <div class="form-group">
                 <label for="matkul">Materi Ujian</label>
                 <select name="matkul[]" id="matkul" class="form-control" multiple="multiple" style="width: 100%!important">
@@ -161,6 +165,7 @@ $(document).on('keyup','input[name="foto"]',function(){
 {{--                </select>--}}
 {{--                <small class="help-block"></small>--}}
 {{--            </div>--}}
+
             <div class="form-group pull-right">
                 <a href="{{ site_url('mahasiswa') }}" class="btn btn-flat btn-warning">
                     <i class="fa fa-arrow-left"></i> Kembali

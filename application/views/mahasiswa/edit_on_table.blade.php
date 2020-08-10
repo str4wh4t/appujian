@@ -34,7 +34,7 @@
     <!-- BEGIN PAGE LEVEL JS-->
     <script type="text/javascript">
         let data = [
-          ['','','','','','',''],
+          ['','','','','','','','','',''],
         ];
 
         function isEmail(email) {
@@ -81,14 +81,14 @@
                 data: data,
                 rowHeaders: true,
                 // colHeaders: true,
-                colHeaders:  ['NO PESERTA','NAMA','NIK','TMP LAHIR','TGL LAHIR<br>(YYYY-MM-DD)','Email','FOTO','L/P','ID Materi Ujian'],
+                colHeaders:  ['NO PESERTA','NAMA','NIK','TMP LAHIR','TGL LAHIR<br>(YYYY-MM-DD)','EMAIL', 'NO BILLKEY', 'FOTO','L/P','ID MATERI UJIAN'],
                 filters: true,
                 dropdownMenu: true,
                 // minRows: 50,
                 // maxRows: 50,
                 width: 925,
                 height: 500,
-                colWidths: [150, 200, 150, 150, 150, 150, 150, 150, 150],
+                colWidths: [150, 200, 150, 150, 150, 150, 150, 150, 150, 150],
                 // rowHeights: [50, 40, 100],
                 manualColumnResize: false,
                 manualRowResize: true,
@@ -100,6 +100,7 @@
                     {},
                     {validator: isValidDate, allowInvalid: false},
                     {validator: emailValidator, allowInvalid: false},
+                    {},
                     {},
                     {},
                     {},
@@ -153,7 +154,7 @@
                        text: "Data berhasil di impor.",
                        type: "success"
                     });
-                    hot.updateSettings({data : [['','','','','']]});
+                    hot.updateSettings({data : [['','','','','','','','','','']]});
                 }
               });
             }

@@ -273,6 +273,11 @@ $(document).on('change','.chkbox_pilih_peserta',function () {
             <div class="col-md-12">
                 <?=form_open('ujian/save', array('id'=>'formujian'), array('method'=>'edit', 'id_ujian'=>$ujian->id_ujian))?>
                 <div class="form-group">
+                    <label for="nama_ujian">Nama Ujian</label>
+                    <input value="<?=$ujian->nama_ujian?>" placeholder="Nama Ujian" type="text" class="form-control" name="nama_ujian">
+                    <small class="help-block"></small>
+                </div>
+                <div class="form-group">
                     <label>Materi Ujian</label>
                     <select name="matkul_id" id="matkul_id" class="form-control" style="width:100% !important">
                         <option value="" disabled selected>- Pilih Materi Ujian -</option>
@@ -330,11 +335,6 @@ $(document).on('change','.chkbox_pilih_peserta',function () {
                             </td>
                         </tr>
                     </table>
-                </div>
-                <div class="form-group">
-                    <label for="nama_ujian">Nama Ujian</label>
-                    <input value="<?=$ujian->nama_ujian?>" placeholder="Nama Ujian" type="text" class="form-control" name="nama_ujian">
-                    <small class="help-block"></small>
                 </div>
                 <div class="form-group">
                     <label for="tgl_mulai">Tanggal Mulai</label>
@@ -429,6 +429,16 @@ $(document).on('change','.chkbox_pilih_peserta',function () {
                                 <th>Gel</th>
                                 <th>Tahun</th>
                                 <th style="text-align: center"><input type="checkbox" id="chkbox_pilih_semua_peserta"></th>
+                            </tr>
+                            <tr>
+                                <th><button id="btn_reset_search" class="btn btn-danger" type="button"></button></th>
+                                <th><input class="form-control" id="search_nama_pes"></th>
+                                <th><input class="form-control" id="search_no_pes"></th>
+                                <th><input class="form-control" id="search_prodi_pes"></th>
+                                <th><input class="form-control" id="search_jalur_pes"></th>
+                                <th><input class="form-control" id="search_gel_pes"></th>
+                                <th><input class="form-control" id="search_tahun_pes"></th>
+                                <th style="text-align: center"><button id="btn_reset_search" type="button"></button></th>
                             </tr>
                         </thead>
                         <tbody id="tbody_tb_peserta">

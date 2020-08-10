@@ -174,13 +174,14 @@ $(document).on('click','#btn_set_materi',function(){
             </div>
             <div class="card-content">
                 <div class="card-body">
-                <div class="row">
-                    <div class="col-md-12 pb-1">
-                    <a href="{{ site_url('mahasiswa') }}" class="btn btn-flat btn-warning">
-                        <i class="fa fa-arrow-left"></i> Kembali
-                    </a>
-                    </div>
-                </div>
+
+{{--                <div class="row">--}}
+{{--                    <div class="col-md-12 pb-1">--}}
+{{--                    <a href="{{ site_url('mahasiswa') }}" class="btn btn-flat btn-warning">--}}
+{{--                        <i class="fa fa-arrow-left"></i> Kembali--}}
+{{--                    </a>--}}
+{{--                    </div>--}}
+{{--                </div>--}}
 
 
 <!---- --->
@@ -193,32 +194,32 @@ $(document).on('click','#btn_set_materi',function(){
                 <div class="col-md-12">
         <div class="form-group">
             <label for="nim">No Peserta</label>
-            <input value="<?=$mahasiswa->nim?>" {{ $user_is_exist ? 'readonly="readonly"' : '' }} placeholder="No Peserta" type="text" name="nim" class="form-control">
+            <input value="<?=$mahasiswa->nim?>" {{ $user_is_exist ? 'readonly="readonly"' : '' }} placeholder="No Peserta" type="text" name="nim" id="nim" class="form-control">
             <small class="help-block"></small>
         </div>
         <div class="form-group">
             <label for="nama">Nama</label>
-            <input value="<?=$mahasiswa->nama?>" autofocus="autofocus" onfocus="this.select()" placeholder="Nama" type="text" name="nama" class="form-control">
+            <input value="<?=$mahasiswa->nama?>" autofocus="autofocus" onfocus="this.select()" placeholder="Nama" type="text" name="nama" id="nama" class="form-control">
             <small class="help-block"></small>
         </div>
         <div class="form-group">
-            <label for="nim">NIK</label>
-            <input value="<?=$mahasiswa->nik?>" placeholder="NIK" type="text" name="nik" class="form-control">
+            <label for="nik">NIK</label>
+            <input value="<?=$mahasiswa->nik?>" placeholder="NIK" type="text" name="nik" id="nik" class="form-control">
             <small class="help-block"></small>
         </div>
         <div class="form-group">
-            <label for="nama">Tmp Lahir</label>
-            <input value="<?=$mahasiswa->tmp_lahir?>" placeholder="Tmp Lahir" type="text" name="tmp_lahir" class="form-control">
+            <label for="tmp_lahir">Tmp Lahir</label>
+            <input value="<?=$mahasiswa->tmp_lahir?>" placeholder="Tmp Lahir" type="text" name="tmp_lahir" id="tmp_lahir" class="form-control">
             <small class="help-block"></small>
         </div>
         <div class="form-group">
-            <label for="nama">Tgl Lahir</label>
-            <input value="<?=$mahasiswa->tgl_lahir?>" placeholder="Tgl Lahir" type="text" name="tgl_lahir" class="datetimepicker form-control">
+            <label for="tgl_lahir">Tgl Lahir</label>
+            <input value="<?=$mahasiswa->tgl_lahir?>" placeholder="Tgl Lahir" type="text" name="tgl_lahir" id="tgl_lahir" class="datetimepicker form-control">
             <small class="help-block"></small>
         </div>
         <div class="form-group">
             <label for="email">Email</label>
-            <input value="<?=$mahasiswa->email?>" placeholder="Email" type="text" name="email" class="form-control">
+            <input value="<?=$mahasiswa->email?>" placeholder="Email" type="text" name="email" id="email" class="form-control">
             <small class="help-block"></small>
         </div>
         <div class="form-group">
@@ -231,22 +232,29 @@ $(document).on('click','#btn_set_materi',function(){
             <small class="help-block"></small>
         </div>
         <div class="form-group">
+            <label for="no_billkey">No Billkey</label>
+            <input value="<?=$mahasiswa->no_billkey?>" placeholder="No Billkey" type="text" name="no_billkey" id="no_billkey" class="form-control">
+            <small class="help-block"></small>
+        </div>
+        <div class="form-group">
             <label for="matkul">Materi Ujian</label>
             <div class="row">
-                <div class="col-md-9">
+                <div class="col-md-12">
                     <select name="matkul[]" id="matkul" class="form-control select2" style="width: 100%!important" multiple="multiple">
-        {{--                        <option value="" disabled selected>Pilih Mata Kuliah</option>--}}
                         <?php foreach ($matkul as $row) : ?>
                             <option value="<?=$row->id_matkul?>"><?=$row->nama_matkul?></option>
                         <?php endforeach; ?>
                     </select>
                 </div>
-                <div class="col-md-3">
-                    <button type="button" class="btn btn-info" id="btn_set_materi"><i class="fa fa-check"></i> Set Materi</button>
-                </div>
+
+{{--                <div class="col-md-3">--}}
+{{--                    <button type="button" class="btn btn-info" id="btn_set_materi"><i class="fa fa-check"></i> Set Materi</button>--}}
+{{--                </div>--}}
+
             </div>
             <small class="help-block"></small>
         </div>
+
 {{--        <div class="form-group">--}}
 {{--            <label for="jurusan">Jurusan</label>--}}
 {{--            <select id="jurusan" name="jurusan" class="form-control select2">--}}
@@ -271,12 +279,14 @@ $(document).on('click','#btn_set_materi',function(){
 {{--            </select>--}}
 {{--            <small class="help-block"></small>--}}
 {{--        </div>--}}
-{{--        <div class="form-group pull-right">--}}
-{{--            <a href="{{ site_url('mahasiswa') }}" class="btn btn-flat btn-warning">--}}
-{{--                <i class="fa fa-arrow-left"></i> Kembali--}}
-{{--            </a>--}}
-{{--            <button type="submit" id="submit" class="btn btn-flat btn-outline-primary"><i class="fa fa-save"></i> Simpan</button>--}}
-{{--        </div>--}}
+
+        <div class="form-group pull-right">
+            <a href="{{ site_url('mahasiswa') }}" class="btn btn-flat btn-warning">
+                <i class="fa fa-arrow-left"></i> Kembali
+            </a>
+            <button type="submit" id="submit" class="btn btn-flat btn-outline-primary"><i class="fa fa-save"></i> Simpan</button>
+        </div>
+
                 </div>
             </div>
         </div>

@@ -251,6 +251,11 @@ $(document).on('change','.chkbox_pilih_peserta',function () {
             <div class="col-md-12">
                 <?=form_open('ujian/save', array('id'=>'formujian'), array('method'=>'add'))?>
                 <div class="form-group">
+                    <label for="nama_ujian">Nama Ujian</label>
+                    <input placeholder="Nama Ujian" type="text" class="form-control" name="nama_ujian">
+                    <small class="help-block"></small>
+                </div>
+                <div class="form-group">
                     <label>Materi Ujian</label>
                     <select name="matkul_id" id="matkul_id" class="form-control" style="width:100% !important">
                         <option value="" disabled selected>- Pilih Materi Ujian -</option>
@@ -308,11 +313,6 @@ $(document).on('change','.chkbox_pilih_peserta',function () {
                             </td>
                         </tr>
                     </table>
-                </div>
-                <div class="form-group">
-                    <label for="nama_ujian">Nama Ujian</label>
-                    <input placeholder="Nama Ujian" type="text" class="form-control" name="nama_ujian">
-                    <small class="help-block"></small>
                 </div>
                 <div class="form-group">
                     <label for="tgl_mulai">Tanggal Mulai</label>

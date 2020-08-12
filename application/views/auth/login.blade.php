@@ -58,7 +58,7 @@
                     <div class="card-title text-center">
                         <img src="{{ asset('assets/imgs/logo_undip.png') }}" alt="logo undip" style="width: 100px">
                     </div>
-                    <h6 class="card-subtitle text-muted text-center font-small-3 pt-5 font-large-1"><span>{{ APP_BG_LOGIN }}</span></h6>
+                    <h6 class="card-subtitle text-muted text-center font-small-3 pt-5 font-large-1"><span>{{ APP_NAME }}</span></h6>
                 </div>
                 <div class="card-content">
                     <div class="card-body">

@@ -194,95 +194,100 @@ body {
                 'user_id':'{{ get_logged_user()->id }}',
                 'm_ujian_id':'{{ $m_ujian->id_ujian }}',
                 'as':'{{ get_selected_role()->name }}',
-                'cmd':'OPEN'
+                'cmd':'OPEN',
+                'app_id': '{{ APP_ID }}',
             }));
         };
 
         conn.onmessage = function(e) {
             // console.log('conn.onmessage', e.data);
             let data = jQuery.parseJSON(e.data);
-            if (data.cmd == 'OPEN') {
 
-                // $.each(data.absensi, function(index, nim){
-                //     push_absensi(nim);
-                //     $('#badge_absensi_' + nim).text('SUDAH').removeClass('danger').removeClass('border-danger').addClass('border-success').addClass('success');
-                // });
-                // $('#jml_mhs_absen').text(list_absensi.length);
+            if(data.app_id == '{{ APP_ID }}') {
 
-                {{--if (data.user_id == '{{ get_logged_user()->id }}') {--}}
-                {{--    $.each(data.absensi_by_self, function (index, nim) {--}}
-                {{--        push_absensi_by_self(nim);--}}
-                {{--    });--}}
-                {{--    $('#jml_mhs_absen_by_self').text(list_absensi_by_self.length);--}}
-                {{--}--}}
+                if (data.cmd == 'OPEN') {
 
-                $.each(data.mhs_online, function(index, code){
-                    let nim = index ;
-                    push_mhs_online(nim);
-                    $('#badge_koneksi_' + nim).text('ONLINE').removeClass('bg-danger').removeClass('bg-warning').addClass('bg-success');
-                    push_mhs_online_ips(nim, data.mhs_online_ips[nim]);
-                    $('#badge_ip_' + nim).text(data.mhs_online_ips[nim]).show();
-                });
-                $('#jml_mhs_online').text(list_mhs_online.length);
-            }else if (data.cmd == 'MHS_ONLINE') {
-                push_mhs_online(data.nim);
-                $('#badge_koneksi_' + data.nim).text('ONLINE').removeClass('bg-danger').removeClass('bg-warning').addClass('bg-success');
-                $('#badge_ip_' + data.nim).text(data.ip).show();
-                $('#jml_mhs_online').text(list_mhs_online.length);
-            }else if (data.cmd == 'MHS_OFFLINE') {
-                pop_mhs_online(data.nim);
-                $('#badge_koneksi_' + data.nim).text('OFFLINE').removeClass('bg-success').removeClass('bg-warning').addClass('bg-danger');
-                $('#badge_ip_' + data.nim).text(data.ip).hide();
-                $('#jml_mhs_online').text(list_mhs_online.length);
-            }else if (data.cmd == 'MHS_LOST_FOCUS') {
-                $('#badge_koneksi_' + data.nim).text('BUKA PAGE LAIN').removeClass('bg-danger').removeClass('bg-success').addClass('bg-warning');
-            }else if (data.cmd == 'MHS_GET_FOCUS') {
-                $('#badge_koneksi_' + data.nim).text('ONLINE').removeClass('bg-danger').removeClass('bg-warning').addClass('bg-success');
-            }else if (data.cmd == 'MHS_START_UJIAN') {
-                $('#badge_status_' + data.nim).text('SEDANG UJIAN').removeClass('bg-secondary').removeClass('bg-success').addClass('bg-info');
-            }else if (data.cmd == 'MHS_STOP_UJIAN') {
-                $('#badge_status_' + data.nim).text('SUDAH UJIAN').removeClass('bg-secondary').removeClass('bg-info').addClass('bg-success');
-            }else if (data.cmd == 'DO_ABSENSI') {
-                if(data.ok) {
+                    // $.each(data.absensi, function(index, nim){
+                    //     push_absensi(nim);
+                    //     $('#badge_absensi_' + nim).text('SUDAH').removeClass('danger').removeClass('border-danger').addClass('border-success').addClass('success');
+                    // });
+                    // $('#jml_mhs_absen').text(list_absensi.length);
 
-                    {{--push_absensi(data.nim);--}}
-                    {{--$('#jml_mhs_absen').text(list_absensi.length);--}}
                     {{--if (data.user_id == '{{ get_logged_user()->id }}') {--}}
-                    {{--    push_absensi_by_self(data.nim);--}}
+                    {{--    $.each(data.absensi_by_self, function (index, nim) {--}}
+                    {{--        push_absensi_by_self(nim);--}}
+                    {{--    });--}}
                     {{--    $('#jml_mhs_absen_by_self').text(list_absensi_by_self.length);--}}
                     {{--}--}}
 
-                    $('#jml_mhs_absen').text(++jml_daftar_hadir);
-                    if (data.user_id == '{{ get_logged_user()->id }}') {
-                        $('#jml_mhs_absen_by_self').text(++jml_daftar_hadir_by_pengawas);
+                    $.each(data.mhs_online, function (index, code) {
+                        let nim = index;
+                        push_mhs_online(nim);
+                        $('#badge_koneksi_' + nim).text('ONLINE').removeClass('bg-danger').removeClass('bg-warning').addClass('bg-success');
+                        push_mhs_online_ips(nim, data.mhs_online_ips[nim]);
+                        $('#badge_ip_' + nim).text(data.mhs_online_ips[nim]).show();
+                    });
+                    $('#jml_mhs_online').text(list_mhs_online.length);
+                } else if (data.cmd == 'MHS_ONLINE') {
+                    push_mhs_online(data.nim);
+                    $('#badge_koneksi_' + data.nim).text('ONLINE').removeClass('bg-danger').removeClass('bg-warning').addClass('bg-success');
+                    $('#badge_ip_' + data.nim).text(data.ip).show();
+                    $('#jml_mhs_online').text(list_mhs_online.length);
+                } else if (data.cmd == 'MHS_OFFLINE') {
+                    pop_mhs_online(data.nim);
+                    $('#badge_koneksi_' + data.nim).text('OFFLINE').removeClass('bg-success').removeClass('bg-warning').addClass('bg-danger');
+                    $('#badge_ip_' + data.nim).text(data.ip).hide();
+                    $('#jml_mhs_online').text(list_mhs_online.length);
+                } else if (data.cmd == 'MHS_LOST_FOCUS') {
+                    $('#badge_koneksi_' + data.nim).text('BUKA PAGE LAIN').removeClass('bg-danger').removeClass('bg-success').addClass('bg-warning');
+                } else if (data.cmd == 'MHS_GET_FOCUS') {
+                    $('#badge_koneksi_' + data.nim).text('ONLINE').removeClass('bg-danger').removeClass('bg-warning').addClass('bg-success');
+                } else if (data.cmd == 'MHS_START_UJIAN') {
+                    $('#badge_status_' + data.nim).text('SEDANG UJIAN').removeClass('bg-secondary').removeClass('bg-success').addClass('bg-info');
+                } else if (data.cmd == 'MHS_STOP_UJIAN') {
+                    $('#badge_status_' + data.nim).text('SUDAH UJIAN').removeClass('bg-secondary').removeClass('bg-info').addClass('bg-success');
+                } else if (data.cmd == 'DO_ABSENSI') {
+                    if (data.ok) {
+
+                        {{--push_absensi(data.nim);--}}
+                        {{--$('#jml_mhs_absen').text(list_absensi.length);--}}
+                        {{--if (data.user_id == '{{ get_logged_user()->id }}') {--}}
+                        {{--    push_absensi_by_self(data.nim);--}}
+                        {{--    $('#jml_mhs_absen_by_self').text(list_absensi_by_self.length);--}}
+                        {{--}--}}
+
+                        $('#jml_mhs_absen').text(++jml_daftar_hadir);
+                        if (data.user_id == '{{ get_logged_user()->id }}') {
+                            $('#jml_mhs_absen_by_self').text(++jml_daftar_hadir_by_pengawas);
+                        }
+
+                        $('#badge_absensi_' + data.nim).text('SUDAH').removeClass('danger').removeClass('border-danger').addClass('border-success').addClass('success');
                     }
+                } else if (data.cmd == 'DO_ABSENSI_BATAL') {
+                    if (data.ok) {
 
-                    $('#badge_absensi_' + data.nim).text('SUDAH').removeClass('danger').removeClass('border-danger').addClass('border-success').addClass('success');
-                }
-            }else if (data.cmd == 'DO_ABSENSI_BATAL') {
-                if(data.ok) {
+                        {{--pop_absensi(data.nim);--}}
+                        {{--$('#jml_mhs_absen').text(list_absensi.length);--}}
+                        {{--if (data.user_id == '{{ get_logged_user()->id }}') {--}}
+                        {{--    pop_absensi_by_self(data.nim);--}}
+                        {{--    $('#jml_mhs_absen_by_self').text(list_absensi_by_self.length);--}}
+                        {{--}--}}
 
-                    {{--pop_absensi(data.nim);--}}
-                    {{--$('#jml_mhs_absen').text(list_absensi.length);--}}
-                    {{--if (data.user_id == '{{ get_logged_user()->id }}') {--}}
-                    {{--    pop_absensi_by_self(data.nim);--}}
-                    {{--    $('#jml_mhs_absen_by_self').text(list_absensi_by_self.length);--}}
-                    {{--}--}}
+                        $('#jml_mhs_absen').text(--jml_daftar_hadir);
+                        if (data.user_id == '{{ get_logged_user()->id }}') {
+                            $('#jml_mhs_absen_by_self').text(--jml_daftar_hadir_by_pengawas);
+                        }
 
-                    $('#jml_mhs_absen').text(--jml_daftar_hadir);
-                    if (data.user_id == '{{ get_logged_user()->id }}') {
-                        $('#jml_mhs_absen_by_self').text(--jml_daftar_hadir_by_pengawas);
-                    }
-
-                    $('#badge_absensi_' + data.nim).text('BELUM').removeClass('success').removeClass('border-success').addClass('border-danger').addClass('danger');
-                }else{
-                    if (data.user_id == '{{ get_logged_user()->id }}') {
-                       Swal({
-                            title: "Perhatian",
-                            text: "Bukan absensi anda",
-                            type: "error",
-                            confirmButtonText: "Tutup"
-                        });
+                        $('#badge_absensi_' + data.nim).text('BELUM').removeClass('success').removeClass('border-success').addClass('border-danger').addClass('danger');
+                    } else {
+                        if (data.user_id == '{{ get_logged_user()->id }}') {
+                            Swal({
+                                title: "Perhatian",
+                                text: "Bukan absensi anda",
+                                type: "error",
+                                confirmButtonText: "Tutup"
+                            });
+                        }
                     }
                 }
             }
@@ -305,7 +310,8 @@ body {
                     'user_id': '{{ get_logged_user()->id }}',
                     'as': '{{ get_selected_role()->name }}',
                     'nim': nim,
-                    'cmd': 'DO_ABSENSI'
+                    'cmd': 'DO_ABSENSI',
+                    'app_id': '{{ APP_ID }}',
                 }));
             }
         });
@@ -332,7 +338,8 @@ body {
                             'user_id': '{{ get_logged_user()->id }}',
                             'as': '{{ get_selected_role()->name }}',
                             'nim': nim,
-                            'cmd': 'DO_ABSENSI_BATAL'
+                            'cmd': 'DO_ABSENSI_BATAL',
+                            'app_id': '{{ APP_ID }}',
                         }));
                     }
                 });

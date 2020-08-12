@@ -30,8 +30,8 @@ class Chat implements MessageComponentInterface {
 
     public function onMessage(ConnectionInterface $from, $req) {
         $numRecv = count($this->clients) - 1;
-        echo sprintf('Connection %d sending req "%s" to %d other connection%s' . "\n"
-            , $from->resourceId, $req, $numRecv, $numRecv == 1 ? '' : 's');
+//        echo sprintf('Connection %d sending req "%s" to %d other connection%s' . "\n"
+//            , $from->resourceId, $req, $numRecv, $numRecv == 1 ? '' : 's');
 
 	    $req = json_decode($req);
 	    $absensi         = [];
@@ -63,6 +63,7 @@ class Chat implements MessageComponentInterface {
 				    'absensi'         => $absensi,
 				    'absensi_by_self' => $absensi_by_self,
 				    'user_id'     => $req->user_id,
+				    'app_id'      => $req->app_id,
 			    ];
 			    
 			    foreach ($this->clients as $client) {
@@ -85,6 +86,7 @@ class Chat implements MessageComponentInterface {
 				    'absensi'         => $absensi,
 				    'absensi_by_self' => [],
 				    'user_id'     => $req->user_id,
+				    'app_id'      => $req->app_id,
 			    ];
 			    
 			    foreach ($this->clients as $client) {
@@ -116,6 +118,7 @@ class Chat implements MessageComponentInterface {
 				    'nim'     => $req->nim,
 				    'user_id' => $req->user_id,
 				    'ok'      => $ok,
+				    'app_id'      => $req->app_id,
 			    ];
 			    foreach ($this->clients as $client) {
 				    $client->send(json_encode($res));
@@ -144,6 +147,7 @@ class Chat implements MessageComponentInterface {
 				    'nim'     => $req->nim,
 				    'user_id' => $req->user_id,
 				    'ok'      => $ok,
+				    'app_id'      => $req->app_id,
 			    ];
 			    foreach ($this->clients as $client) {
 				    $client->send(json_encode($res));
@@ -164,6 +168,7 @@ class Chat implements MessageComponentInterface {
 		        'ip'          => $req->ip,
 		        'identifier'  => $req->identifier,
 			    'ok'          => $ok,
+		        'app_id'      => $req->app_id,
 		    ];
 	        foreach ($this->clients as $client) {
 			    $client->send(json_encode($res));
@@ -172,6 +177,7 @@ class Chat implements MessageComponentInterface {
 	    	$res = [
 			    'cmd'             => $req->cmd,
 			    'nim'             => $req->nim,
+			    'app_id'      => $req->app_id,
 		    ];
 	        foreach ($this->clients as $client) {
 			    $client->send(json_encode($res));
@@ -180,6 +186,7 @@ class Chat implements MessageComponentInterface {
 	    	$res = [
 			    'cmd'             => $req->cmd,
 			    'nim'             => $req->nim,
+			    'app_id'      => $req->app_id,
 		    ];
 	        foreach ($this->clients as $client) {
 			    $client->send(json_encode($res));
@@ -188,6 +195,7 @@ class Chat implements MessageComponentInterface {
 	    	$res = [
 			    'cmd'             => $req->cmd,
 			    'nim'             => $req->nim,
+			    'app_id'      => $req->app_id,
 		    ];
 	        foreach ($this->clients as $client) {
 			    $client->send(json_encode($res));
@@ -196,6 +204,7 @@ class Chat implements MessageComponentInterface {
 		    $res = [
 			    'cmd'             => $req->cmd,
 			    'nim'             => $req->nim,
+			    'app_id'      => $req->app_id,
 		    ];
 		    foreach ($this->clients as $client) {
 			    $client->send(json_encode($res));
@@ -204,6 +213,7 @@ class Chat implements MessageComponentInterface {
 	    	$res = [
 			    'cmd'             => $req->cmd,
 			    'nim'             => $req->nim,
+			    'app_id'      => $req->app_id,
 		    ];
 	        foreach ($this->clients as $client) {
 			    $client->send(json_encode($res));

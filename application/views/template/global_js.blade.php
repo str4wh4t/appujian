@@ -85,7 +85,8 @@ $(document).ready(function(){
             'as':'{{ get_selected_role()->name }}',
             'identifier': '{{ $identifier }}',
             'ip': '{{ $ip }}',
-            'cmd':'MHS_ONLINE'
+            'cmd':'MHS_ONLINE',
+            'app_id': '{{ APP_ID }}',
         }));
     };
 
@@ -109,7 +110,8 @@ $(document).ready(function(){
         conn.send(JSON.stringify({
             'nim':'{{ get_logged_user()->username }}',
             'as':'{{ get_selected_role()->name }}',
-            'cmd':'MHS_OFFLINE'
+            'cmd':'MHS_OFFLINE',
+            'app_id': '{{ APP_ID }}',
         }));
     };
     @endif

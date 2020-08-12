@@ -97,12 +97,12 @@ class Mahasiswa extends MY_Controller
 			$u_nik		= $dbdata->nik === $nik ? "" : "|is_unique[mahasiswa.nik]";
 			$u_email	= $dbdata->email === $email ? "" : "|is_unique[mahasiswa.email]|is_unique[users.email]";
 		}
-		$this->form_validation->set_rules('nim', 'No Peserta', 'required|is_natural_no_zero|trim|exact_length['.MHS_ID_LENGTH.']' . $u_nim);
+		$this->form_validation->set_rules('nim', 'No Peserta', 'required|is_natural_no_zero|trim|exact_length['. MHS_ID_LENGTH .']' . $u_nim);
 		$this->form_validation->set_rules('nama', 'Nama', 'required|trim|min_length[3]|max_length[250]');
 		// UNTUK SELANJUTNY USER DGN NIK DAN EMAIL YG SAMA DAPAT MENDAFTAR UJIAN KEMBALI
 		// $this->form_validation->set_rules('nik', 'NIK', 'required|is_natural_no_zero|trim|exact_length['.NIK_LENGTH.']' . $u_nik);
 		// $this->form_validation->set_rules('email', 'Email', 'required|trim|max_length[250]|valid_email' . $u_email);
-		$this->form_validation->set_rules('nik', 'NIK', 'required|is_natural_no_zero|trim|exact_length['.NIK_LENGTH.']');
+		$this->form_validation->set_rules('nik', 'NIK', 'required|is_natural_no_zero|trim|exact_length['. NIK_LENGTH .']');
 		$this->form_validation->set_rules('email', 'Email', 'required|trim|max_length[250]|valid_email');
 		$this->form_validation->set_rules('tmp_lahir', 'Tmp Lahir', 'required|trim|min_length[3]|max_length[250]');
 		$this->form_validation->set_rules('tgl_lahir', 'Tgl Lahir', ['required','trim', ['check_valid_date', function ($tgl_lahir) {
@@ -119,7 +119,7 @@ class Mahasiswa extends MY_Controller
 				}
 			}
 		}] ]);
-		$this->form_validation->set_rules('no_billkey', 'No Billkey', 'required|trim|max_length[50]');
+		$this->form_validation->set_rules('no_billkey', 'No Billkey', 'required|trim|max_length['. NO_BILLKEY_LENGTH .']');
 		$this->form_validation->set_rules('foto', 'Foto', ['required','trim', ['check_valid_img_url', function($foto){
 			if(!empty($foto)) {
 				if ($size = @getimagesize($foto)){
@@ -525,7 +525,7 @@ class Mahasiswa extends MY_Controller
 				
 				$no_billkey = strval($sheetData[$i][6]);
 				$no_billkey = str_replace("'" ,"", $no_billkey);
-				if(strlen($no_billkey) != NO_BILLKEY_LENGTH || !ctype_digit($no_billkey)) {
+				if(strlen($no_billkey)> NO_BILLKEY_LENGTH || !ctype_digit($no_billkey)) {
 					$no_billkey = '!! ERROR !!';
 				}
 				if(Mhs_orm::where('no_billkey',$no_billkey)->first() != null){
@@ -663,7 +663,7 @@ class Mahasiswa extends MY_Controller
 			}
 			
 			$no_billkey = strval($d->no_billkey);
-			if(strlen($no_billkey) != NO_BILLKEY_LENGTH || !ctype_digit($no_billkey)) {
+			if(strlen($no_billkey) > NO_BILLKEY_LENGTH || !ctype_digit($no_billkey)) {
 				$allow = false;
 				$msg = 'No Billkey salah, no_billkey : '. $no_billkey ;
 				break;
@@ -865,7 +865,7 @@ class Mahasiswa extends MY_Controller
 			}
 			
 			$no_billkey = $d[6];
-			if(strlen($no_billkey) != NO_BILLKEY_LENGTH || !ctype_digit($no_billkey)) {
+			if(strlen($no_billkey) > NO_BILLKEY_LENGTH || !ctype_digit($no_billkey)) {
 				$allow = false;
 				$msg = 'Row : '. $i .', No Billkey salah, no_billkey : ' . $no_billkey  ;
 				break;

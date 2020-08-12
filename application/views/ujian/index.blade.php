@@ -242,7 +242,8 @@ let close_ujian = () => {
                 conn.send(JSON.stringify({
                     'nim':'{{ get_logged_user()->username }}',
                     'as':'{{ get_selected_role()->name }}',
-                    'cmd':'MHS_STOP_UJIAN'
+                    'cmd':'MHS_STOP_UJIAN',
+                    'app_id': '{{ APP_ID }}',
                 }));
                 window.location.href = '{{ site_url('ujian/list') }}';
             }
@@ -518,7 +519,8 @@ window.onblur = function () {
     conn.send(JSON.stringify({
         'nim':'{{ get_logged_user()->username }}',
         'as':'{{ get_selected_role()->name }}',
-        'cmd':'MHS_LOST_FOCUS'
+        'cmd':'MHS_LOST_FOCUS',
+        'app_id': '{{ APP_ID }}',
     }));
 };
 
@@ -526,7 +528,8 @@ window.onfocus = function () {
     conn.send(JSON.stringify({
         'nim':'{{ get_logged_user()->username }}',
         'as':'{{ get_selected_role()->name }}',
-        'cmd':'MHS_GET_FOCUS'
+        'cmd':'MHS_GET_FOCUS',
+        'app_id': '{{ APP_ID }}',
     }));
 };
 
@@ -553,7 +556,8 @@ function selesai() {
                 conn.send(JSON.stringify({
                     'nim':'{{ get_logged_user()->username }}',
                     'as':'{{ get_selected_role()->name }}',
-                    'cmd':'MHS_STOP_UJIAN'
+                    'cmd':'MHS_STOP_UJIAN',
+                    'app_id': '{{ APP_ID }}',
                 }));
 
                 setTimeout(function() {
@@ -570,7 +574,8 @@ function update_status_ujian(){
         conn.send(JSON.stringify({
             'nim':'{{ get_logged_user()->username }}',
             'as':'{{ get_selected_role()->name }}',
-            'cmd':'MHS_START_UJIAN'
+            'cmd':'MHS_START_UJIAN',
+            'app_id': '{{ APP_ID }}',
         }));
     }, 1000);
 }

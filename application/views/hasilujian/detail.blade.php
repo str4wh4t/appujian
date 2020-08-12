@@ -69,7 +69,7 @@ $(document).on('click','.btn_reset_hasil',function(){
     });
 });
 </script>
-<script src="{{ asset('assets/dist/js/app/hasilujian/detail.js?u=') . mt_rand() }}"></script>
+<script src="{{ asset('assets/dist/js/app/hasilujian/detail.js') }}"></script>
 <!-- END PAGE LEVEL JS-->
 @endpush
 

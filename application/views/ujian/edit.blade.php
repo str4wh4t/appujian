@@ -225,7 +225,7 @@ function init_peserta_table_value(){
                 });
             }else{
                 $('<tr>').append(
-                        $('<td>').text('Tidak ada peserta tersedia').attr('colspan', '5').css('text-align', 'center')
+                        $('<td>').text('Tidak ada peserta tersedia').attr('colspan', '8').css('text-align', 'center')
                     ).appendTo('#tbody_tb_peserta');
             }
             $('#peserta_hidden').val(JSON.stringify(mhs_ujian_existing));
@@ -248,6 +248,61 @@ $(document).on('change','.chkbox_pilih_peserta',function () {
     values = values.length ? JSON.stringify(values) : '';
     $('#peserta_hidden').val(values);
     $('#peserta_hidden').nextAll('.help-block').eq(0).text('');
+});
+
+
+$(document).on('click','#submit',function (e) {
+    $('#formujian').submit();
+});
+
+$(document).on('click','#btn_reset_search',function () {
+    $('#search_nama_pes').val('');
+    $('#search_no_pes').val('');
+    $('#search_prodi_pes').val('');
+    $('#search_jalur_pes').val('');
+    $('#search_gel_pes').val('');
+    $('#search_tahun_pes').val('');
+    $('#btn_submit_search').trigger('click');
+});
+
+$(document).on('click','#btn_submit_search',function () {
+    let nama_pes = $('#search_nama_pes').val();
+    let no_pes = $('#search_no_pes').val();
+    let prodi_pes = $('#search_prodi_pes').val();
+    let jalur_pes = $('#search_jalur_pes').val();
+    let gel_pes = $('#search_gel_pes').val();
+    let tahun_pes = $('#search_tahun_pes').val();
+
+    let found = false ;
+    $("#tr_search_not_found").remove();
+
+    $("#tbody_tb_peserta tr").each(function(index) {
+        let row = $(this);
+        let td_nama_pes = row.find("td:nth-child(2)").text() ;
+        let td_no_pes = row.find("td:nth-child(3)").text() ;
+        let td_prodi_pes = row.find("td:nth-child(4)").text() ;
+        let td_jalur_pes = row.find("td:nth-child(5)").text() ;
+        let td_gel_pes = row.find("td:nth-child(6)").text() ;
+        let td_tahun_pes = row.find("td:nth-child(7)").text() ;
+
+        if (td_nama_pes.includes(nama_pes.toUpperCase())
+            && td_no_pes.includes(no_pes.toUpperCase())
+            && td_prodi_pes.includes(prodi_pes.toUpperCase())
+            && td_jalur_pes.includes(jalur_pes.toUpperCase())
+            && td_gel_pes.includes(gel_pes.toUpperCase())
+            && td_tahun_pes.includes(tahun_pes.toUpperCase())){
+            row.show();
+            found = true;
+        }
+        else
+            row.hide();
+    });
+
+    if(!found){
+        $('<tr id="tr_search_not_found">').append(
+                        $('<td>').text('Tidak ada peserta tersedia').attr('colspan', '8').css('text-align', 'center')
+                    ).appendTo('#tbody_tb_peserta');
+    }
 });
 
 </script>
@@ -431,14 +486,16 @@ $(document).on('change','.chkbox_pilih_peserta',function () {
                                 <th style="text-align: center"><input type="checkbox" id="chkbox_pilih_semua_peserta"></th>
                             </tr>
                             <tr>
-                                <th><button id="btn_reset_search" class="btn btn-danger" type="button"></button></th>
-                                <th><input class="form-control" id="search_nama_pes"></th>
-                                <th><input class="form-control" id="search_no_pes"></th>
-                                <th><input class="form-control" id="search_prodi_pes"></th>
-                                <th><input class="form-control" id="search_jalur_pes"></th>
-                                <th><input class="form-control" id="search_gel_pes"></th>
-                                <th><input class="form-control" id="search_tahun_pes"></th>
-                                <th style="text-align: center"><button id="btn_reset_search" type="button"></button></th>
+                                <th><button id="btn_reset_search" class="btn btn-danger" type="button"><i class="fa fa-refresh"></i></button></th>
+                                <th><input class="form-control search_pes" id="search_nama_pes"></th>
+                                <th><input class="form-control search_pes" id="search_no_pes"></th>
+                                <th><input class="form-control search_pes" id="search_prodi_pes"></th>
+                                <th><input class="form-control search_pes" id="search_jalur_pes"></th>
+                                <th><input class="form-control search_pes" id="search_gel_pes"></th>
+                                <th><input class="form-control search_pes" id="search_tahun_pes"></th>
+                                <th style="text-align: center">
+                                    <button id="btn_submit_search" class="btn btn-info" type="button"><i class="fa fa-search"></i></button>
+                                </th>
                             </tr>
                         </thead>
                         <tbody id="tbody_tb_peserta">
@@ -453,7 +510,7 @@ $(document).on('change','.chkbox_pilih_peserta',function () {
                     <a href="{{ site_url('ujian/master') }}" class="btn btn-flat btn-warning">
                         <i class="fa fa-arrow-left"></i> Kembali
                     </a>
-                    <button id="submit" type="submit" class="btn btn-flat btn-primary"><i class="fa fa-save"></i> Simpan</button>
+                    <button id="submit" type="button" class="btn btn-flat btn-primary"><i class="fa fa-save"></i> Simpan</button>
                 </div>
                 <?=form_close()?>
             </div>

@@ -369,7 +369,7 @@ class Ujian_model extends CI_Model {
 	        	if(is_admin()){
 	        	    $return = '<div class="btn-group">';
 	        	    $return .= '<button class="btn btn-sm btn-danger btn_reset_hasil" type="button" title="Reset ujian" data-id="'. $data['id'] .'"><i class="fa fa-times-circle"></i></button>';
-		            $return .= '<a class="btn btn-sm btn-info btn_cetak_hasil" target="_blank" href="'. url('pub/cetak_sertifikat/' . $data['nim'] . '/' . uuid_create_from_integer($id)) .'" title="Cetak hasil"><i class="fa fa-print"></i></a>';
+//		            $return .= '<a class="btn btn-sm btn-info btn_cetak_hasil" target="_blank" href="'. url('pub/cetak_sertifikat/' . $data['nim'] . '/' . uuid_create_from_integer($id)) .'" title="Cetak hasil"><i class="fa fa-print"></i></a>';
 		            $return .= '</div>';
 		        }else{
 	        		$return = '-';

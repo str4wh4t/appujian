@@ -121,8 +121,8 @@ $html .= <<<EOD
         <tr align="center">
             <th width="5%">No.</th>
             <th width="15%">No Peserta</th>
-            <th width="25%">Nama</th>
-            <th width="35%">Nilai Per Topik</th>
+            <th width="30%">Nama</th>
+            <th width="30%">Nilai Per Topik</th>
 <!--            <th width="10%">Jml Salah</th>-->
             <th width="10%">Bobot</th>
             <th width="10%">Nilai</th>
@@ -138,10 +138,10 @@ $hasil = number_format($row['nilai'],2,'.', '') ;
 $html .= <<<EOD
     <tr>
         <td align="center" width="5%">{$no}</td>
-        <td width="20%">{$row['nim']}</td>
+        <td width="15%">{$row['nim']}</td>
         <td width="30%">{$row['nama']}</td>
-        <td width="35%">{$row['detail_bobot_benar']}</td>
-        <td width="35%">{$nilai_bobot_benar}</td>
+        <td width="30%">{$row['detail_bobot_benar']}</td>
+        <td width="10%">{$nilai_bobot_benar}</td>
         <td width="10%">{$hasil}</td>
     </tr>
 EOD;

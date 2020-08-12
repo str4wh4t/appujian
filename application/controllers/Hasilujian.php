@@ -200,13 +200,15 @@ class HasilUjian extends MY_Controller {
 		foreach ($data['hasil'] as $hasil){
 			$hasil_ujian_per_topik = json_decode($hasil->detail_bobot_benar);
             $return = '<table>';
-            foreach($hasil_ujian_per_topik as $t => $v){
-            	$return .= '<tr>';
-                $tpk = Topik_orm::findOrFail($t);
-                $return .= '<td width="80%">' . $tpk->nama_topik . '</td>';
-//                $return .= '<td width="20%">' . $v . '</td>';
-                $return .= '</tr>';
-	        }
+            if(!empty($hasil_ujian_per_topik)) {
+	            foreach ($hasil_ujian_per_topik as $t => $v) {
+		            $return .= '<tr>';
+		            $tpk    = Topik_orm::findOrFail($t);
+		            $return .= '<td width="100%">' . $tpk->nama_topik . '</td>';
+		            //                $return .= '<td width="20%">' . $v . '</td>';
+		            $return .= '</tr>';
+	            }
+            }
             $return .= '</table>';
             $new_hasil[] = [
 				'nim' => $hasil->nim,

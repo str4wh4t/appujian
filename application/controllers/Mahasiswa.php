@@ -548,7 +548,32 @@ class Mahasiswa extends MY_Controller
 					$jk = '!! ERROR !!';
 				}
 				
-				$matkul = [];
+				$kodeps = $sheetData[$i][9];
+				if(!ctype_digit($kodeps)){
+					$kodeps = '!! ERROR !!';
+				}
+				
+				$prodi = $sheetData[$i][10];
+				if(strlen($prodi) > 250 || strlen($prodi) < 3){
+					$prodi = '!! ERROR !!';
+				}
+				
+				$jalur = $sheetData[$i][11];
+				if(strlen($jalur) > 250 || strlen($jalur) < 3){
+					$jalur = '!! ERROR !!';
+				}
+				
+				$gel = $sheetData[$i][12];
+				if(strlen($gel) > 250 || strlen($gel) < 3){
+					$gel = '!! ERROR !!';
+				}
+				
+				$tahun = $sheetData[$i][13];
+				if(strlen($tahun) != 4 || !ctype_digit($tahun)){
+					$tahun = '!! ERROR !!';
+				}
+				
+				$matkul = $sheetData[$i][14];
 				$sd = explode(',',$sheetData[$i][9]);
 				if(!empty($sd)){
 					foreach($sd as $s){
@@ -572,6 +597,11 @@ class Mahasiswa extends MY_Controller
 					'no_billkey' => $no_billkey,
 					'foto' => $foto,
 					'jenis_kelamin' => $jk,
+					'kodeps'   => $kodeps,
+					'prodi'   => $prodi,
+					'jalur'   => $jalur,
+					'gel'   => $gel,
+					'tahun'   => $tahun,
 					'matkul' => $matkul
 				];
 			}
@@ -696,6 +726,41 @@ class Mahasiswa extends MY_Controller
 				break;
 			}
 			
+			$kodeps = $d->kodeps;
+			if(!ctype_digit($kodeps)){
+				$allow = false;
+				$msg = 'Kodeps salah, kodeps : '. $kodeps ;
+				break;
+			}
+			
+			$prodi = $d->prodi;
+			if(strlen($prodi) > 250 || strlen($prodi) < 3){
+				$allow = false;
+				$msg = 'Prodi salah, prodi : '. $prodi ;
+				break;
+			}
+			
+			$jalur = $d->jalur;
+			if(strlen($jalur) > 250 || strlen($jalur) < 3){
+				$allow = false;
+				$msg = 'Jalur salah, jalur : '. $jalur ;
+				break;
+			}
+			
+			$gel = $d->gel;
+			if(strlen($gel) > 250 || strlen($gel) < 3){
+				$allow = false;
+				$msg = 'Gel salah, gel : '. $gel ;
+				break;
+			}
+			
+			$tahun = $d->tahun;
+			if(strlen($tahun) != 4 || !ctype_digit($tahun)){
+				$allow = false;
+				$msg = 'Tahun salah, tahun : '. $tahun ;
+				break;
+			}
+			
 			$matkul_list = [];
 			$sd = $d->matkul;
 			if(!empty($sd)){
@@ -727,6 +792,11 @@ class Mahasiswa extends MY_Controller
 			$mhs->no_billkey         = $no_billkey;
 			$mhs->foto         = $foto;
 			$mhs->jenis_kelamin = $jk;
+			$mhs->kodeps         = $kodeps;
+			$mhs->prodi         = $prodi;
+			$mhs->jalur         = $jalur;
+			$mhs->gel         = $gel;
+			$mhs->tahun         = $tahun;
 			$mhs->save();
 			
 			foreach ($matkul_list as $matkul) {
@@ -898,8 +968,43 @@ class Mahasiswa extends MY_Controller
 				break;
 			}
 			
+			$kodeps = $d[9];
+			if(!ctype_digit($kodeps)){
+				$allow = false;
+				$msg = 'Row : '. $i .', Kodeps bermasalah, kodeps : '. $kodeps ;
+				break;
+			}
+			
+			$prodi = $d[10];
+			if(strlen($prodi) > 250 || strlen($prodi) < 3){
+				$allow = false;
+				$msg = 'Row : '. $i .', Prodi bermasalah, prodi : '. $prodi ;
+				break;
+			}
+			
+			$jalur = $d[11];
+			if(strlen($jalur) > 250 || strlen($jalur) < 3){
+				$allow = false;
+				$msg = 'Row : '. $i .', Jalur bermasalah, jalur : '. $jalur ;
+				break;
+			}
+			
+			$gel = $d[12];
+			if(strlen($gel) > 250 || strlen($gel) < 3){
+				$allow = false;
+				$msg = 'Row : '. $i .', Gel bermasalah, gel : '. $gel ;
+				break;
+			}
+			
+			$tahun = $d[13];
+			if(strlen($tahun) != 4 || !ctype_digit($tahun)){
+				$allow = false;
+				$msg = 'Row : '. $i .', Tahun bermasalah, tahun : '. $tahun ;
+				break;
+			}
+			
 			$matkul_list = [];
-			$sd = explode(',',$d[9]);
+			$sd = explode(',',$d[14]);
 			if(!empty($sd)){
 				foreach($sd as $s){
 					$m = Matkul_orm::find($s);
@@ -929,6 +1034,11 @@ class Mahasiswa extends MY_Controller
 			$mhs->no_billkey         = $no_billkey;
 			$mhs->foto         = $foto;
 			$mhs->jenis_kelamin = $jk;
+			$mhs->kodeps         = $kodeps;
+			$mhs->prodi         = $prodi;
+			$mhs->jalur         = $jalur;
+			$mhs->gel         = $gel;
+			$mhs->tahun         = $tahun;
 			$mhs->save();
 			
 			foreach ($matkul_list as $matkul) {

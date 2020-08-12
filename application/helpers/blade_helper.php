@@ -100,3 +100,9 @@ function ws_url(){
 	$ci =& get_instance();
 	return $ci->config->item('ws_url');
 }
+
+/** CONFIG */
+function get_app_id(){
+	$ci =& get_instance();
+	return $ci->config->item('app_id');
+}

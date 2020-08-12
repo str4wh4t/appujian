@@ -153,6 +153,21 @@ function init_page_level(){
                                         <td class="<?= ($data['jenis_kelamin'] == null || $data['jenis_kelamin'] == '!! ERROR !!') ? 'bg-danger text-white' : ''; ?>">
                                             <?= ($data['jenis_kelamin'] == null || $data['jenis_kelamin'] == '!! ERROR !!') ? '!! ERROR !!' : $data['jenis_kelamin']; ?>
                                         </td>
+                                        <td class="<?= ($data['kodeps'] == null || $data['kodeps'] == '!! ERROR !!') ? 'bg-danger text-white' : ''; ?>">
+                                            <?= ($data['kodeps'] == null || $data['kodeps'] == '!! ERROR !!') ? '!! ERROR !!' : $data['kodeps']; ?>
+                                        </td>
+                                        <td class="<?= ($data['prodi'] == null || $data['prodi'] == '!! ERROR !!') ? 'bg-danger text-white' : ''; ?>">
+                                            <?= ($data['prodi'] == null || $data['prodi'] == '!! ERROR !!') ? '!! ERROR !!' : $data['prodi']; ?>
+                                        </td>
+                                        <td class="<?= ($data['jalur'] == null || $data['jalur'] == '!! ERROR !!') ? 'bg-danger text-white' : ''; ?>">
+                                            <?= ($data['jalur'] == null || $data['jalur'] == '!! ERROR !!') ? '!! ERROR !!' : $data['jalur']; ?>
+                                        </td>
+                                        <td class="<?= ($data['gel'] == null || $data['gel'] == '!! ERROR !!') ? 'bg-danger text-white' : ''; ?>">
+                                            <?= ($data['gel'] == null || $data['gel'] == '!! ERROR !!') ? '!! ERROR !!' : $data['gel']; ?>
+                                        </td>
+                                        <td class="<?= ($data['tahun'] == null || $data['tahun'] == '!! ERROR !!') ? 'bg-danger text-white' : ''; ?>">
+                                            <?= ($data['tahun'] == null || $data['tahun'] == '!! ERROR !!') ? '!! ERROR !!' : $data['tahun']; ?>
+                                        </td>
                                         <td class="<?= ($data['matkul'] == null || $data['matkul'] == '!! ERROR !!') ? 'bg-danger text-white' : ''; ?>">
                                             @forelse($data['matkul'] as $matkul)
                                                 <span class="badge bg-success">{{ $matkul->nama_matkul }}</span>
@@ -162,11 +177,11 @@ function init_page_level(){
                                         </td>
                                     </tr>
                             <?php
-                                        if ($data['nim'] == null || $data['nama'] == null || $data['email'] == null || $data['no_billkey'] == null || $data['jenis_kelamin'] == null || $data['matkul'] == null) {
+                                        if ($data['nim'] == null || $data['nama'] == null || $data['email'] == null || $data['no_billkey'] == null || $data['jenis_kelamin'] == null || $data['kodeps'] == null || $data['prodi'] == null || $data['jalur'] == null || $data['gel'] == null || $data['tahun'] == null || $data['matkul'] == null) {
                                             $status = false;
                                         }
 
-                                        if ($data['nim'] == '!! ERROR !!' || $data['nama'] == '!! ERROR !!' || $data['email'] == '!! ERROR !!' || $data['no_billkey'] == '!! ERROR !!' || $data['jenis_kelamin'] == '!! ERROR !!' || $data['matkul'] == '!! ERROR !!') {
+                                        if ($data['nim'] == '!! ERROR !!' || $data['nama'] == '!! ERROR !!' || $data['email'] == '!! ERROR !!' || $data['no_billkey'] == '!! ERROR !!' || $data['jenis_kelamin'] == '!! ERROR !!' || $data['kodeps'] == '!! ERROR !!' || $data['prodi'] == '!! ERROR !!' || $data['jalur'] == '!! ERROR !!' || $data['gel'] == '!! ERROR !!' || $data['tahun'] == '!! ERROR !!' || $data['matkul'] == '!! ERROR !!') {
                                             $status = false;
                                         }
 

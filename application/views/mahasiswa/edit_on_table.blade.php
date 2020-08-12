@@ -34,7 +34,7 @@
     <!-- BEGIN PAGE LEVEL JS-->
     <script type="text/javascript">
         let data = [
-          ['','','','','','','','','',''],
+          ['','','','','','','','','','','','','','',''],
         ];
 
         function isEmail(email) {
@@ -81,14 +81,14 @@
                 data: data,
                 rowHeaders: true,
                 // colHeaders: true,
-                colHeaders:  ['NO PESERTA','NAMA','NIK','TMP LAHIR','TGL LAHIR<br>(YYYY-MM-DD)','EMAIL', 'NO BILLKEY', 'FOTO','L/P','ID MATERI UJIAN'],
+                colHeaders:  ['NO PESERTA','NAMA','NIK','TMP LAHIR','TGL LAHIR<br>(YYYY-MM-DD)','EMAIL','NO BILLKEY','FOTO','L/P','KODEPS','PRODI','JALUR','GEL','TAHUN','ID MATERI UJIAN'],
                 filters: true,
                 dropdownMenu: true,
                 // minRows: 50,
                 // maxRows: 50,
                 width: 925,
                 height: 500,
-                colWidths: [150, 200, 150, 150, 150, 150, 150, 150, 150, 150],
+                colWidths: [150, 200, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150],
                 // rowHeights: [50, 40, 100],
                 manualColumnResize: false,
                 manualRowResize: true,
@@ -104,6 +104,11 @@
                     {},
                     {},
                     {},
+                    {},
+                    {},
+                    {},
+                    {},
+                    {}
                   ]
 
         });
@@ -154,7 +159,7 @@
                        text: "Data berhasil di impor.",
                        type: "success"
                     });
-                    hot.updateSettings({data : [['','','','','','','','','','']]});
+                    hot.updateSettings({data : [['','','','','','','','','','','','','','','']]});
                 }
               });
             }
@@ -220,6 +225,7 @@ html body {
                                 <p>Perhatian :</p>
                                 <ul class="">
                                     <li>Data No Peserta tepat {{ MHS_ID_LENGTH }} karakter</li>
+                                    <li>Data No Billkey maks. {{ NO_BILLKEY_LENGTH }} karakter</li>
                                     <li>Data Nama min. 3 karakter dan maks. 250 karakter</li>
                                     <li>Data Email maks. 250 karakter</li>
                                     <li>Data Jk hanya berisi L atau P</li>

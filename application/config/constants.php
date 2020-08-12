@@ -91,3 +91,7 @@ defined('PENGAWAS_GROUP_ID')      OR define('PENGAWAS_GROUP_ID', 4);
 defined('MHS_ID_LENGTH')      OR define('MHS_ID_LENGTH', 11);
 defined('NIK_LENGTH')      OR define('NIK_LENGTH', 16);
 defined('NO_BILLKEY_LENGTH')      OR define('NO_BILLKEY_LENGTH', 12);
+
+defined('APP_NAME')      OR define('APP_NAME', 'UJIAN ONLINE UNDIP');
+defined('APP_COLOR_NAV')      OR define('APP_COLOR_NAV', '#60a5b3');
+defined('APP_BG_LOGIN')      OR define('APP_BG_LOGIN', 'img_big_login');

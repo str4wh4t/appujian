@@ -31,7 +31,7 @@
 
 <style type="text/css">
     .header-navbar {
-        background-color: #60a5b3 !important;
+        background-color: {{ APP_COLOR_NAV  }} !important;
     }
     .select2-container .select2-search--inline .select2-search__field {
         margin-top: 3px;

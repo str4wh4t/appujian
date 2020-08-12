@@ -91,7 +91,7 @@ class Dosen extends MY_Controller
 			$u_nip		= $dbdata->nip === $nip ? "" : "|is_unique[dosen.nip]";
 			$u_email	= $dbdata->email === $email ? "" : "|is_unique[dosen.email]|is_unique[users.email]";
 		}
-		$this->form_validation->set_rules('nip', 'NIP', 'required|trim|min_length[8]|max_length[12]' . $u_nip);
+		$this->form_validation->set_rules('nip', 'NIP', 'required|trim|min_length[10]|max_length[25]' . $u_nip);
 		$this->form_validation->set_rules('nama_dosen', 'Nama Dosen', 'required|trim|min_length[3]|max_length[50]');
 		$this->form_validation->set_rules('email', 'Email', 'required|trim|valid_email' . $u_email);
 		$this->form_validation->set_rules('matkul[]', 'Mata Kuliah', 'required');

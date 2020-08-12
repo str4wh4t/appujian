@@ -35,7 +35,7 @@
 
     <style type="text/css">
         html body.bg-full-screen-image {
-            background: url({{ asset('assets/imgs/img_big_login.jpg') }}) no-repeat center center fixed;
+            background: url({{ asset('assets/imgs/'. APP_BG_LOGIN .'.jpg') }}) no-repeat center center fixed;
             webkit-background-size: cover; /** */
             background-size: cover;
             /** **/
@@ -58,7 +58,7 @@
                     <div class="card-title text-center">
                         <img src="{{ asset('assets/imgs/logo_undip.png') }}" alt="logo undip" style="width: 100px">
                     </div>
-                    <h6 class="card-subtitle text-muted text-center font-small-3 pt-5 font-large-1"><span>UJIAN ONLINE UNDIP</span></h6>
+                    <h6 class="card-subtitle text-muted text-center font-small-3 pt-5 font-large-1"><span>{{ APP_BG_LOGIN }}</span></h6>
                 </div>
                 <div class="card-content">
                     <div class="card-body">

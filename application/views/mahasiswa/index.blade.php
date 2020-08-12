@@ -90,12 +90,16 @@ $(document).on('click','#btn_sync_pendaftaran',function(){
 <div class="box">
     <div class="box-body">
 		<div class="mb-4">
-{{--            <a href="{{ site_url('mahasiswa/add') }}" class="btn btn-sm btn-flat btn-outline-primary"><i class="fa fa-plus"></i> Tambah</a>--}}
-{{--            <a href="{{ site_url('mahasiswa/import') }}" class="btn btn-sm btn-flat btn-success"><i class="fa fa-upload"></i> Import</a>--}}
+            @if(APP_ID == 'cat.undip.ac.id')
+            <a href="{{ site_url('mahasiswa/add') }}" class="btn btn-sm btn-flat btn-outline-primary"><i class="fa fa-plus"></i> Tambah</a>
+            <a href="{{ site_url('mahasiswa/import') }}" class="btn btn-sm btn-flat btn-success"><i class="fa fa-upload"></i> Import</a>
+            @endif
             <button type="button" onclick="reload_ajax()" class="btn btn-sm btn-flat btn-outline-secondary"><i class="fa fa-refresh"></i> Reload</button>
 
             <div class="pull-right">
+                @if(APP_ID == 'ujian.undip.ac.id')
                 <button class="btn btn-sm btn-flat btn-danger" id="btn_sync_pendaftaran" type="button"><i class="fa fa-refresh"></i> Syncron Data</button>
+                @endif
                 <button onclick="bulk_delete()" class="btn btn-sm btn-flat btn-danger" type="button"><i class="fa fa-trash"></i> Delete</button>
             </div>
 

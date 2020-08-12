@@ -92,9 +92,10 @@ defined('MHS_ID_LENGTH')      OR define('MHS_ID_LENGTH', 11);
 defined('NIK_LENGTH')      OR define('NIK_LENGTH', 16);
 defined('NO_BILLKEY_LENGTH')      OR define('NO_BILLKEY_LENGTH', 12);
 
+defined('APP_ID')      OR define('APP_ID', 'ujian.undip.ac.id');
 defined('APP_NAME')      OR define('APP_NAME', 'UJIAN ONLINE UNDIP');
 defined('APP_COLOR_NAV')      OR define('APP_COLOR_NAV', '#60a5b3');
 defined('APP_BG_LOGIN')      OR define('APP_BG_LOGIN', 'img_big_login');
-defined('APP_FAVICON_APPLE')      OR define('APP_FAVICON_APPLE', $_SERVER['HTTP_HOST'] == 'ujian.undip.ac.id' ? 'apple-touch-icon' : 'apple-touch-icon-cat');
-defined('APP_FAVICON')      OR define('APP_FAVICON', $_SERVER['HTTP_HOST'] == 'ujian.undip.ac.id' ? 'favicon' : 'favicon_cat');
-defined('APP_ICON')      OR define('APP_ICON', $_SERVER['HTTP_HOST'] == 'ujian.undip.ac.id' ? 'android-chrome-512x512' : 'android-chrome-512x512-cat');
+defined('APP_FAVICON_APPLE')      OR define('APP_FAVICON_APPLE', APP_ID == 'ujian.undip.ac.id' ? 'apple-touch-icon' : 'apple-touch-icon-cat');
+defined('APP_FAVICON')      OR define('APP_FAVICON', APP_ID == 'ujian.undip.ac.id' ? 'favicon' : 'favicon_cat');
+defined('APP_ICON')      OR define('APP_ICON', APP_ID == 'ujian.undip.ac.id' ? 'android-chrome-512x512' : 'android-chrome-512x512-cat');

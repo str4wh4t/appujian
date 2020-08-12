@@ -5,15 +5,15 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui">
-    <meta name="description" content="Aplikasi untuk ujian meliputi ujian masuk UM, UTBK, SBMPTN secara online di lingkungan Universitas Diponegoro Semarang">
+    <meta name="description" content="Aplikasi untuk ujian meliputi ujian masuk UM, UTBK, SBMPTN dan UJIAN LAIN secara online di lingkungan Universitas Diponegoro Semarang">
 {{--    <meta name="keywords" content="">--}}
     <meta name="author" content="Universitas Diponegoro">
 
     <meta name="{{ csrf_name() }}" content="{{ csrf_token() }}">
 
-    <title>UJIAN ONLINE UNDIP</title>
-    <link rel="apple-touch-icon" href="{{ asset('assets/icon/apple-touch-icon.png') }}">
-	<link rel="shortcut icon" type="image/x-icon" href="{{ asset('assets/icon/favicon.ico') }}">
+    <title>{{ APP_NAME }}</title>
+    <link rel="apple-touch-icon" href="{{ asset('assets/icon/'. APP_FAVICON_APPLE .'.png') }}">
+	<link rel="shortcut icon" type="image/x-icon" href="{{ asset('assets/icon/'. APP_FAVICON .'.ico') }}">
     <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i%7CMuli:300,400,500,700" rel="stylesheet">
     <!-- BEGIN VENDOR CSS-->
     <link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/css/vendors.css') }}">

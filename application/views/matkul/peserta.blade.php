@@ -141,8 +141,12 @@ function init_peserta_table_value(){
 }
 
 $(document).on('change','#chkbox_pilih_semua_peserta',function () {
-    $(this).is(':checked') ? $('.chkbox_pilih_peserta').prop('checked', true) : $('.chkbox_pilih_peserta').prop('checked', false);
-    $('.chkbox_pilih_peserta').trigger('change');
+    if($(this).is(':checked')){
+        $('.chkbox_pilih_peserta:visible').prop('checked', true)
+    }else{
+        $('.chkbox_pilih_peserta:visible').prop('checked', false)
+    }
+    $('.chkbox_pilih_peserta:visible').trigger('change');
 });
 
 $(document).on('click','#btn_submit',function (e) {
@@ -179,12 +183,12 @@ $(document).on('click','#btn_submit_search',function () {
         let td_gel_pes = row.find("td:nth-child(6)").text() ;
         let td_tahun_pes = row.find("td:nth-child(7)").text() ;
 
-        if (td_nama_pes.includes(nama_pes.toUpperCase())
-            && td_no_pes.includes(no_pes.toUpperCase())
-            && td_prodi_pes.includes(prodi_pes.toUpperCase())
-            && td_jalur_pes.includes(jalur_pes.toUpperCase())
-            && td_gel_pes.includes(gel_pes.toUpperCase())
-            && td_tahun_pes.includes(tahun_pes.toUpperCase())){
+        if (td_nama_pes.includes(nama_pes.trim().toUpperCase())
+            && td_no_pes.includes(no_pes.trim().toUpperCase())
+            && td_prodi_pes.includes(prodi_pes.trim().toUpperCase())
+            && td_jalur_pes.includes(jalur_pes.trim().toUpperCase())
+            && td_gel_pes.includes(gel_pes.trim().toUpperCase())
+            && td_tahun_pes.includes(tahun_pes.trim().toUpperCase())){
             row.show();
             found = true;
         }

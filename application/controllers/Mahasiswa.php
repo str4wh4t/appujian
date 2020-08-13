@@ -387,14 +387,17 @@ class Mahasiswa extends MY_Controller
 		$full_name = $data->nama;
 
 		$username = $data->nim;
-		$password = date("dmY", strtotime($data->tgl_lahir));
+//		$password = date("dmY", strtotime($data->tgl_lahir));
+		$password = $data->no_billkey;
 		$email = $data->email;
-		$tgl_lahir = date("dmY", strtotime($data->tgl_lahir));
+//		$tgl_lahir = date("dmY", strtotime($data->tgl_lahir));
 		$additional_data = [
 			'first_name'	=> $first_name,
 			'last_name'		=> $last_name,
 			'full_name'     => $full_name,
-			'tgl_lahir'  => $tgl_lahir,
+//			'tgl_lahir'  => $tgl_lahir,
+			'no_billkey'  => $data->no_billkey,
+			'updated_at'  => date('Y-m-d H:i:s'),
 		];
 		
 		$group = [ MHS_GROUP_ID ]; // Sets user to mhs.
@@ -1376,6 +1379,7 @@ class Mahasiswa extends MY_Controller
 						'last_name'  => $last_name,
 						'full_name'  => $full_name,
 						'no_billkey'  => $mhs->no_billkey,
+						'created_at'  => date('Y-m-d H:i:s'),
 					];
 					$group           = [ MHS_GROUP_ID ]; // Sets user to mhs.
 					$this->ion_auth->register($username, $password, $email, $additional_data, $group);

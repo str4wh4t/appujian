@@ -233,11 +233,6 @@ body {
                     $('#badge_koneksi_' + data.nim).text('ONLINE').removeClass('bg-danger').removeClass('bg-warning').addClass('bg-success');
                     $('#badge_ip_' + data.nim).text(data.ip).show();
                     $('#jml_mhs_online').text(list_mhs_online.length);
-                } else if (data.cmd == 'MHS_OFFLINE') {
-                    pop_mhs_online(data.nim);
-                    $('#badge_koneksi_' + data.nim).text('OFFLINE').removeClass('bg-success').removeClass('bg-warning').addClass('bg-danger');
-                    $('#badge_ip_' + data.nim).text(data.ip).hide();
-                    $('#jml_mhs_online').text(list_mhs_online.length);
                 } else if (data.cmd == 'MHS_LOST_FOCUS') {
                     $('#badge_koneksi_' + data.nim).text('BUKA PAGE LAIN').removeClass('bg-danger').removeClass('bg-success').addClass('bg-warning');
                 } else if (data.cmd == 'MHS_GET_FOCUS') {
@@ -290,6 +285,11 @@ body {
                         }
                     }
                 }
+            }else if (data.cmd == 'MHS_OFFLINE') {
+                pop_mhs_online(data.nim);
+                $('#badge_koneksi_' + data.nim).text('OFFLINE').removeClass('bg-success').removeClass('bg-warning').addClass('bg-danger');
+                $('#badge_ip_' + data.nim).text(data.ip).hide();
+                $('#jml_mhs_online').text(list_mhs_online.length);
             }
         };
 

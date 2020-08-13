@@ -1211,6 +1211,7 @@ class Mahasiswa extends MY_Controller
 						'full_name'  => $full_name,
 //						'tgl_lahir'  => $tgl_lahir,
 						'no_billkey'  => $mhs->no_billkey,
+						'created_at'  => date('Y-m-d H:i:s'),
 					];
 					$group           = [ MHS_GROUP_ID ]; // Sets user to mhs.
 					$this->ion_auth->register($username, $password, $email, $additional_data, $group);

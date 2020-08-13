@@ -40,7 +40,7 @@ $(document).on('click','#btn_proses_sync_mhs',function(){
         success: function (respon) {
             Swal({
                 title: "Perhatian",
-                text: "Data akan di-tambah : " + respon.jml_tambah + ", dan di-hapus : " + respon.jml_hapus,
+                text: "Data akan di-tambah : " + respon.jml_tambah , // + ", dan di-hapus : " + respon.jml_hapus,
                 type: "warning",
                 showCancelButton: true,
                 confirmButtonText: "Proses"

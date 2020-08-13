@@ -1332,17 +1332,18 @@ class Mahasiswa extends MY_Controller
 		$mhs_ids_delete = array_diff($mhs_ids_before, $mhs_ids);
 		try {
 			begin_db_trx();
-			if(!empty($mhs_ids_delete)) {
-				foreach ($mhs_ids_delete as $mhs_id) {
-					$mhs = Mhs_orm::find($mhs_id);
-					$mhs->delete();
-				}
-			}
+//			if(!empty($mhs_ids_delete)) {
+//				foreach ($mhs_ids_delete as $mhs_id) {
+//					$mhs = Mhs_orm::find($mhs_id);
+//					$mhs->delete();
+//				}
+//			}
 			
 			if(!empty($mhs_ids_insert)) {
 				foreach ($mhs_ids_insert as $mhs_id) {
 					$mhs_source = Mhs_source_orm::find($mhs_id);
 					$mhs = new Mhs_orm;
+					$mhs->id_mahasiswa = $mhs_source->id_mahasiswa;
 					$mhs->nim = $mhs_source->nim;
 					$mhs->nama = $mhs_source->nama;
 					$mhs->nik = $mhs_source->nik;
@@ -1357,7 +1358,7 @@ class Mahasiswa extends MY_Controller
 					$mhs->gel = $mhs_source->gel;
 					$mhs->jalur = $mhs_source->jalur;
 					$mhs->tahun = $mhs_source->tahun;
-					$mhs_orm->save();
+					$mhs->save();
 					
 					
 					// MENDAFTARKAN SBG USER
@@ -1385,6 +1386,7 @@ class Mahasiswa extends MY_Controller
 		
 		} catch(\Illuminate\Database\QueryException $e){
 			rollback_db_trx();
+			vdebug($e->getMessage());
 			$action = false;
 	    }
 		

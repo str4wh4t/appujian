@@ -6,7 +6,9 @@ use Orm\Mhs_source_orm;
 use Orm\Mhs_matkul_orm;
 use Orm\Users_orm;
 use Orm\Matkul_orm;
+use Orm\Jalur_orm;
 use Illuminate\Database\Capsule\Manager as DB;
+
 
 class Mahasiswa extends MY_Controller
 {
@@ -34,6 +36,9 @@ class Mahasiswa extends MY_Controller
 //		$this->load->view('_templates/dashboard/_header.php', $data);
 //		$this->load->view('master/mahasiswa/data');
 //		$this->load->view('_templates/dashboard/_footer.php');
+		
+		$data['jalur'] = Jalur_orm::all();
+		
 		view('mahasiswa/index',$data);
 	}
 
@@ -1253,5 +1258,136 @@ class Mahasiswa extends MY_Controller
 			rollback_db_trx();
 			show_error($e->getMessage(), 500, 'Perhatian');
 	    }
+	}
+	
+	protected function _check_sync(){
+		$jalur = $this->input->post('jalur[]');
+		$gel = $this->input->post('gel[]');
+		$tahun = $this->input->post('tahun[]');
+		
+		$mhs_source = Mhs_source_orm::whereIn('jalur', $jalur)
+										->whereIn('gel', $gel)
+										->whereIn('tahun', $tahun)
+										->get();
+		
+		$mhs_ids = [];
+		if($mhs_source->isNotEmpty()){
+			foreach($mhs_source as $m){
+				$mhs_ids[] = $m->id_mahasiswa;
+			}
+		}
+		
+		$mhs = Mhs_orm::whereIn('jalur', $jalur)
+						->whereIn('gel', $gel)
+						->whereIn('tahun', $tahun)
+						->get();
+		
+		$mhs_ids_before = [];
+		if($mhs->isNotEmpty()){
+			foreach($mhs as $m){
+				$mhs_ids_before[] = $m->id_mahasiswa;
+			}
+		}
+		
+		$mhs_ids_insert = array_diff($mhs_ids, $mhs_ids_before);
+		$mhs_ids_delete = array_diff($mhs_ids_before, $mhs_ids);
+		
+		$data['jml_tambah'] = count($mhs_ids_insert);
+		$data['jml_hapus'] = count($mhs_ids_delete);
+		
+		$this->_json($data);
+	}
+	
+	protected function _proses_sync(){
+		ini_set('max_execution_time', 0);
+		$jalur = $this->input->post('jalur[]');
+		$gel = $this->input->post('gel[]');
+		$tahun = $this->input->post('tahun[]');
+		
+		$mhs_source = Mhs_source_orm::whereIn('jalur', $jalur)
+										->whereIn('gel', $gel)
+										->whereIn('tahun', $tahun)
+										->get();
+		
+		$mhs_ids = [];
+		if($mhs_source->isNotEmpty()){
+			foreach($mhs_source as $m){
+				$mhs_ids[] = $m->id_mahasiswa;
+			}
+		}
+		
+		$mhs = Mhs_orm::whereIn('jalur', $jalur)
+						->whereIn('gel', $gel)
+						->whereIn('tahun', $tahun)
+						->get();
+		
+		$mhs_ids_before = [];
+		if($mhs->isNotEmpty()){
+			foreach($mhs as $m){
+				$mhs_ids_before[] = $m->id_mahasiswa;
+			}
+		}
+		
+		$mhs_ids_insert = array_diff($mhs_ids, $mhs_ids_before);
+		$mhs_ids_delete = array_diff($mhs_ids_before, $mhs_ids);
+		try {
+			begin_db_trx();
+			if(!empty($mhs_ids_delete)) {
+				foreach ($mhs_ids_delete as $mhs_id) {
+					$mhs = Mhs_orm::find($mhs_id);
+					$mhs->delete();
+				}
+			}
+			
+			if(!empty($mhs_ids_insert)) {
+				foreach ($mhs_ids_insert as $mhs_id) {
+					$mhs_source = Mhs_source_orm::find($mhs_id);
+					$mhs = new Mhs_orm;
+					$mhs->nim = $mhs_source->nim;
+					$mhs->nama = $mhs_source->nama;
+					$mhs->nik = $mhs_source->nik;
+					$mhs->tmp_lahir = $mhs_source->tmp_lahir;
+					$mhs->tgl_lahir = $mhs_source->tgl_lahir;
+					$mhs->email = $mhs_source->email;
+					$mhs->foto = $mhs_source->foto;
+					$mhs->jenis_kelamin = $mhs_source->jenis_kelamin;
+					$mhs->no_billkey = $mhs_source->no_billkey;
+					$mhs->kodeps = $mhs_source->kodeps;
+					$mhs->prodi = $mhs_source->prodi;
+					$mhs->gel = $mhs_source->gel;
+					$mhs->jalur = $mhs_source->jalur;
+					$mhs->tahun = $mhs_source->tahun;
+					$mhs_orm->save();
+					
+					
+					// MENDAFTARKAN SBG USER
+					$nama       = explode(' ', $mhs->nama, 2);
+					$first_name = $nama[0];
+					$last_name  = end($nama);
+					$full_name  = $mhs->nama;
+					
+					$username        = $mhs->nim;
+					$password        = $mhs->no_billkey;
+					$email           = $mhs->email;
+					$additional_data = [
+						'first_name' => $first_name,
+						'last_name'  => $last_name,
+						'full_name'  => $full_name,
+						'no_billkey'  => $mhs->no_billkey,
+					];
+					$group           = [ MHS_GROUP_ID ]; // Sets user to mhs.
+					$this->ion_auth->register($username, $password, $email, $additional_data, $group);
+					
+				}
+			}
+			commit_db_trx();
+			$action = true;
+		
+		} catch(\Illuminate\Database\QueryException $e){
+			rollback_db_trx();
+			$action = false;
+	    }
+		
+		$this->_json(['status' => $action]);
 	}
 }

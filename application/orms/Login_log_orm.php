@@ -10,6 +10,6 @@ class Login_log_orm extends Eloquent
     
     public function users()
     {
-        return $this->belongsTo('Orm\Groups_orm');
+        return $this->belongsTo('Orm\Users_orm');
     }
 }

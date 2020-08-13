@@ -19,6 +19,7 @@
 {{--<script src="{{ asset('assets/template/robust/app-assets/vendors/js/tables/datatable/dataTables.responsive.min.js') }}"></script>--}}
 {{--<script src="{{ asset('assets/template/robust/app-assets/vendors/js/tables/datatable/dataTables.rowReorder.min.js') }}"></script>--}}
 <script src="{{ asset('assets/template/robust/app-assets/vendors/js/forms/select/select2.full.min.js') }}"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/5.0.3/jquery.inputmask.min.js"></script>
 <!-- END PAGE VENDOR -->
 @endpush
 
@@ -28,6 +29,17 @@
 
 function init_page_level(){
     $('.select2').select2();
+
+    $(".inp_decimal").inputmask("decimal",{
+        digits: 2,
+        digitsOptional: false,
+        radixPoint: ".",
+        groupSeparator: ",",
+        allowPlus: false,
+        allowMinus: false,
+        rightAlign: false,
+        autoUnmask: true,
+    });
 }
 
 </script>
@@ -90,7 +102,7 @@ function init_page_level(){
                             </td>
                             <td  width="150">
                             <div class="form-group">
-                                <input autocomplete="off" type="number" name="poin_topik[<?=$i?>]" class="form-control" value="<?=$row->poin_topik?>">
+                                <input autocomplete="off" type="text" class="form-control inp_decimal" name="poin_topik[<?=$i?>]" value="<?=$row->poin_topik?>">
                                 <span class="d-none">DON'T DELETE THIS</span>
                                 <small class="help-block text-right"></small>
                             </div>

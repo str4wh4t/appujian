@@ -84,7 +84,7 @@ class Topik extends MY_Controller
 			$poin_topik 	= 'poin_topik[' . $i . ']';
 			$this->form_validation->set_rules($nama_topik, 'Topik', 'required');
 			$this->form_validation->set_rules($matkul_id, 'Matkul', 'required');
-			$this->form_validation->set_rules($poin_topik, 'Poin', 'required|is_natural_no_zero');
+			$this->form_validation->set_rules($poin_topik, 'Poin', 'required|decimal|greater_than[0]');
 			$this->form_validation->set_message('required', '{field} Wajib diisi');
 
 			if ($this->form_validation->run() === FALSE) {

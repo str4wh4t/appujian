@@ -406,7 +406,7 @@ class Soal extends MY_Controller {
 		if($this->input->post()) {
 			$this->form_validation->set_rules('method', 'Method', 'required');
 			$this->form_validation->set_rules('bobot', 'Bobot', 'required');
-			$this->form_validation->set_rules('nilai', 'Nilai', 'required|is_natural');
+			$this->form_validation->set_rules('nilai', 'Nilai', 'required|decimal|greater_than[0]');
 			if($this->form_validation->run() === FALSE){
         	    // VALIDASI SALAH
 				$data = [

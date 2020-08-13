@@ -19,6 +19,7 @@
 {{--<script src="{{ asset('assets/template/robust/app-assets/vendors/js/tables/datatable/dataTables.responsive.min.js') }}"></script>--}}
 {{--<script src="{{ asset('assets/template/robust/app-assets/vendors/js/tables/datatable/dataTables.rowReorder.min.js') }}"></script>--}}
 <script src="{{ asset('assets/template/robust/app-assets/vendors/js/forms/select/select2.full.min.js') }}"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/5.0.3/jquery.inputmask.min.js"></script>
 <!-- END PAGE VENDOR -->
 @endpush
 
@@ -28,7 +29,20 @@
 
 function init_page_level(){
     // $('#matkul').select2({placeholder: "Pilih Matkul"});
+
+    $(".inp_decimal").inputmask("decimal",{
+        digits: 2,
+        digitsOptional: false,
+        radixPoint: ".",
+        groupSeparator: ",",
+        allowPlus: false,
+        allowMinus: false,
+        rightAlign: false,
+        autoUnmask: true,
+    });
 }
+
+
 
 </script>
 <script src="{{ asset('assets/dist/js/app/soal/add_bobot_soal.js') }}"></script>
@@ -60,7 +74,7 @@ function init_page_level(){
                     </div>
                     <div class="form-group">
                         <label for="nama_dosen">Nilai</label>
-                        <input type="number" class="form-control" value="{{ $bobot_soal->nilai }}" name="nilai" placeholder="nilai">
+                        <input type="text" class="form-control inp_decimal" value="{{ $bobot_soal->nilai }}" name="nilai" placeholder="nilai">
                         <small class="help-block"></small>
                     </div>
                     <div class="form-group pull-right">

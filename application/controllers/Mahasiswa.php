@@ -102,7 +102,7 @@ class Mahasiswa extends MY_Controller
 			$u_nik		= $dbdata->nik === $nik ? "" : "|is_unique[mahasiswa.nik]";
 			$u_email	= $dbdata->email === $email ? "" : "|is_unique[mahasiswa.email]|is_unique[users.email]";
 		}
-		$this->form_validation->set_rules('nim', 'No Peserta', 'required|is_natural_no_zero|trim|exact_length['. MHS_ID_LENGTH .']' . $u_nim);
+		$this->form_validation->set_rules('nim', 'No Peserta', 'required|is_natural_no_zero|trim|max_length['. MHS_ID_LENGTH .']' . $u_nim);
 		$this->form_validation->set_rules('nama', 'Nama', 'required|trim|min_length[3]|max_length[250]');
 		// UNTUK SELANJUTNY USER DGN NIK DAN EMAIL YG SAMA DAPAT MENDAFTAR UJIAN KEMBALI
 		// $this->form_validation->set_rules('nik', 'NIK', 'required|is_natural_no_zero|trim|exact_length['.NIK_LENGTH.']' . $u_nik);
@@ -127,7 +127,8 @@ class Mahasiswa extends MY_Controller
 		$this->form_validation->set_rules('no_billkey', 'No Billkey', 'required|trim|max_length['. NO_BILLKEY_LENGTH .']');
 		$this->form_validation->set_rules('foto', 'Foto', ['required','trim', ['check_valid_img_url', function($foto){
 			if(!empty($foto)) {
-				if ($size = @getimagesize($foto)){
+				$size = @getimagesize($foto);
+				if ($size){
 					if (strtolower(substr($size['mime'], 0, 5)) == 'image') {
 						return TRUE;
 					} else {
@@ -135,7 +136,7 @@ class Mahasiswa extends MY_Controller
 						return FALSE;
 					}
 				}else{
-					$this->form_validation->set_message('check_valid_img_url', 'Kolom foto salah');
+					$this->form_validation->set_message('check_valid_img_url', 'Kolom foto salah - size');
 					return FALSE;
 				}
 			}
@@ -481,7 +482,7 @@ class Mahasiswa extends MY_Controller
 				}
 				
 				$nim = strval($sheetData[$i][0]);
-				if(strlen($nim) != MHS_ID_LENGTH || !ctype_digit($nim)) {
+				if(strlen($nim) > MHS_ID_LENGTH || !ctype_digit($nim)) {
 					$nim = '!! ERROR !!';
 				}
 				if(Mhs_orm::where('nim',$nim)->first() != null){
@@ -629,7 +630,7 @@ class Mahasiswa extends MY_Controller
 		$msg = null;
 		foreach ($input as $d) {
 			$nim = strval($d->nim);
-			if(strlen($nim) != MHS_ID_LENGTH || !ctype_digit($nim)) {
+			if(strlen($nim) > MHS_ID_LENGTH || !ctype_digit($nim)) {
 				$allow = false;
 				$msg = 'NIM salah, nim : '. $nim ;
 				break;
@@ -871,7 +872,7 @@ class Mahasiswa extends MY_Controller
 		$i = 1;
 		foreach ($input as $d) {
 			$nim = strval($d[0]);
-			if(strlen($nim) != MHS_ID_LENGTH || !ctype_digit($nim)) {
+			if(strlen($nim) > MHS_ID_LENGTH || !ctype_digit($nim)) {
 				$allow = false;
 				$msg = 'Row : '. $i .', NIM salah, nim : ' . $nim  ;
 				break;
@@ -1364,7 +1365,6 @@ class Mahasiswa extends MY_Controller
 					$mhs->tahun = $mhs_source->tahun;
 					$mhs->save();
 					
-					
 					// MENDAFTARKAN SBG USER
 					$nama       = explode(' ', $mhs->nama, 2);
 					$first_name = $nama[0];
@@ -1383,7 +1383,6 @@ class Mahasiswa extends MY_Controller
 					];
 					$group           = [ MHS_GROUP_ID ]; // Sets user to mhs.
 					$this->ion_auth->register($username, $password, $email, $additional_data, $group);
-					
 				}
 			}
 			commit_db_trx();
@@ -1394,7 +1393,6 @@ class Mahasiswa extends MY_Controller
 			vdebug($e->getMessage());
 			$action = false;
 	    }
-		
 		$this->_json(['status' => $action]);
 	}
 }

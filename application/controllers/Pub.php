@@ -151,7 +151,7 @@ class Pub extends MY_Controller {
 		if(!is_cli()) show_404();
 		$mhs_list = Mhs_orm::whereNotNull('no_billkey')->get();
 		$i = 0;
-		$matkul_id = 25; 
+		$matkul_id = 25;
 		$ujian_id = 54;
 		foreach($mhs_list as $m){
 			$mhs_matkul = Mhs_matkul_orm::where(['mahasiswa_id' => $m->id_mahasiswa, 'matkul_id' => $matkul_id])->first();
@@ -176,7 +176,7 @@ class Pub extends MY_Controller {
 	}
 	
 	
-	public function socket(){
+	public function socket_ujian(){
 		if(!is_cli()) show_404();
 		$server = IoServer::factory(
 		    new HttpServer(
@@ -190,8 +190,24 @@ class Pub extends MY_Controller {
 		$server->run();
 	}
 	
-	public function cron_auto_close(){
+	public function socket_cat(){
 		if(!is_cli()) show_404();
+		$server = IoServer::factory(
+		    new HttpServer(
+		        new WsServer(
+		            new Chat()
+		        )
+		    ),
+		    8081
+		);
+		
+		$server->run();
+	}
+	
+	public function cron_auto_close($app_id = 'ujian'){
+		if(!is_cli()) show_404();
+		if($app_id == 'ujian')
+			//
 		$cron_end = date("Y-m-d H:i:s", strtotime("+1 minutes"));
 		$h_ujian_list = Hujian_orm::where('ujian_selesai', 'N')->get();
 		if($h_ujian_list->isNotEmpty()){

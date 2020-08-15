@@ -10,12 +10,12 @@ class Daftar_hadir_orm extends Eloquent
 	
     public function pengawas()
     {
-        return $this->hasOne('Orm\Users_groups_orm','id','absen_by');
+        return $this->belongsTo('Orm\Users_groups_orm','id','absen_by');
     }
     
     public function mhs_ujian()
     {
-        return $this->belongsTo('Orm\Mhs_ujian_orm','mahasiswa_ujian_id');
+        return $this->hasOne('Orm\Mhs_ujian_orm', 'id', 'mahasiswa_ujian_id');
     }
     
 }

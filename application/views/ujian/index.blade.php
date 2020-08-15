@@ -228,29 +228,6 @@ $i=1;
 
 let curr_date;
 
-let close_ujian = () => {
-    ajx_overlay(true);
-    $.ajax({
-        type: "POST",
-        url: "{{ site_url('ujian/ajax/close_ujian') }}",
-        data: {
-            'id': id_ujian,
-            'key': key
-        },
-        success: function (r) {
-            if (r.status) {
-                conn.send(JSON.stringify({
-                    'nim':'{{ get_logged_user()->username }}',
-                    'as':'{{ get_selected_role()->name }}',
-                    'cmd':'MHS_STOP_UJIAN',
-                    'app_id': '{{ APP_ID }}',
-                }));
-                window.location.href = '{{ site_url('ujian/list') }}';
-            }
-        }
-    });
-};
-
 let update_time = () => {
     moment.locale('id');
     /**
@@ -296,7 +273,7 @@ let update_time = () => {
                 }else{
                    duration_text = "0:0:0";
                    $('#btn_lanjut_ujian').removeClass('btn-success').addClass('btn-danger');
-                   close_ujian();
+                   selesai();
                    clearInterval(refreshIntervalId);
 
                 }
@@ -533,41 +510,6 @@ window.onfocus = function () {
     }));
 };
 
-function selesai() {
-    simpan();
-    ajaxcsrf();
-    ajx_overlay(true);
-    $.ajax({
-        type: "POST",
-        // url: base_url + "ujian/simpan_akhir",
-        url: base_url + "ujian/ajax/close_ujian",
-        // data: { id: id_tes },
-        data: {
-            'id': id_ujian,
-            'key': key
-        },
-        beforeSend: function () {
-            simpan();
-            // $('.ajax-loading').show();
-        },
-        success: function (r) {
-            // console.log(r);
-            if (r.status) {
-                conn.send(JSON.stringify({
-                    'nim':'{{ get_logged_user()->username }}',
-                    'as':'{{ get_selected_role()->name }}',
-                    'cmd':'MHS_STOP_UJIAN',
-                    'app_id': '{{ APP_ID }}',
-                }));
-
-                setTimeout(function() {
-                  window.location.href = base_url + 'ujian/list';
-                }, 1000);
-            }
-        }
-    });
-}
-
 function update_status_ujian(){
     setTimeout(function() {
       //your code to be executed after 1 second
@@ -579,6 +521,41 @@ function update_status_ujian(){
         }));
     }, 1000);
 }
+
+let ended_by = '{{ get_logged_user()->username }}';
+
+/** [START] FUNGSI SELESAI UJIAN */
+function selesai() {
+    simpan();
+    ajaxcsrf();
+    ajx_overlay(true);
+    $.ajax({
+        type: "POST",
+        url: "{{ url('ujian/ajax/close_ujian') }}",
+        data: {
+            'id': id_ujian,
+            'key': key,
+            'ended_by': ended_by,
+        },
+        beforeSend: function () {
+            simpan();
+        },
+        success: function (r) {
+            if (r.status) {
+                conn.send(JSON.stringify({
+                    'nim':'{{ get_logged_user()->username }}',
+                    'as':'{{ get_selected_role()->name }}',
+                    'cmd':'MHS_STOP_UJIAN',
+                    'app_id': '{{ APP_ID }}',
+                }));
+                setTimeout(function() {
+                  window.location.href = '{{ url('ujian/list') }}';
+                }, 1000);
+            }
+        }
+    });
+}
+/** [END] FUNGSI SELESAI UJIAN */
 
 </script>
 <script src="{{ asset('assets/dist/js/app/ujian/index.js') }}"></script>

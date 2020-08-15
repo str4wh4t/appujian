@@ -1197,6 +1197,7 @@ class Ujian extends MY_Controller {
 	
 	protected function _close_ujian()
 	{
+		$ended_by = $this->input->post('ended_by', true);
 		$key = $this->input->post('key', true);
 		$one_time_token = $this->session->userdata('one_time_token');
 		
@@ -1270,7 +1271,9 @@ class Ujian extends MY_Controller {
 				'nilai_bobot_benar'       => $nilai_bobot_benar,
 				'detail_bobot_benar'       => json_encode($topik_ujian_nilai_bobot),
 				'total_bobot'       => $total_bobot,
-				'ujian_selesai'      => 'Y'
+				'tgl_selesai'   => date('Y-m-d H:i:s'),
+				'ujian_selesai'      => 'Y',
+				'ended_by' => $ended_by,
 			];
 			
 			$action = $this->master->update('h_ujian', $d_update, 'id', $id_h_ujian);

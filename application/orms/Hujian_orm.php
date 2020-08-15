@@ -28,4 +28,9 @@ class Hujian_orm extends Eloquent
         return $this->belongsToMany('Orm\Soal_orm','jawaban_ujian','ujian_id','soal_id');
     }
     
+    public function mhs_ujian()
+    {
+        return $this->hasOne('Orm\Mhs_ujian_orm','ujian_id', 'mahasiswa_ujian_id' );
+    }
+    
 }

@@ -193,8 +193,8 @@ class Chat implements MessageComponentInterface {
 		    }
 	    }elseif($req->cmd == 'DO_KICK'){
 	    	$res = [
-			    'cmd'             => $req->cmd,
-			    'nim'             => $req->nim,
+			    'cmd'         => $req->cmd,
+			    'nim'         => $req->nim,
 			    'app_id'      => $req->app_id,
 		    ];
 	        foreach ($this->clients as $client) {

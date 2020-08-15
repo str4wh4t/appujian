@@ -224,7 +224,7 @@ html body {
                             <div class="alert bg-danger">
                                 <p>Perhatian :</p>
                                 <ul class="">
-                                    <li>Data No Peserta tepat {{ MHS_ID_LENGTH }} karakter</li>
+                                    <li>Data No Peserta maks. {{ MHS_ID_LENGTH }} karakter</li>
                                     <li>Data No Billkey maks. {{ NO_BILLKEY_LENGTH }} karakter</li>
                                     <li>Data Nama min. 3 karakter dan maks. 250 karakter</li>
                                     <li>Data Email maks. 250 karakter</li>

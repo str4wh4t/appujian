@@ -347,7 +347,8 @@ class Ujian_model extends CI_Model {
 			        foreach ($hasil_ujian_per_topik as $t => $v) {
 				        $tpk    = $topik->findOrFail($t);
 				        $return .= '<dt class="col-md-8">' . $tpk->nama_topik . '</dt>';
-				        //	        	    $return .= '<dd class="col-md-4">' . $v . '</dd>';
+				        if(APP_ID == 'cat.undip.ac.id')
+	                            $return .= '<dd class="col-md-4">' . $v . '</dd>';
 			        }
 		        }
 	        	$return .= '</dl>';

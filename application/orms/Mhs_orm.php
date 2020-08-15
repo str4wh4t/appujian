@@ -16,7 +16,7 @@ class Mhs_orm extends Eloquent
     
     public function h_ujian()
     {
-        return $this->hasMany('Orm\Hujian_orm','ujian_id');
+        return $this->hasMany('Orm\Hujian_orm','mahasiswa_id');
     }
     
     public function mhs_matkul()

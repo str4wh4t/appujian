@@ -228,6 +228,7 @@ body {
                         $('#badge_ip_' + nim).text(data.mhs_online_ips[nim]).show();
                     });
                     $('#jml_mhs_online').text(list_mhs_online.length);
+                    console.log('list_mhs_online', list_mhs_online);
                 } else if (data.cmd == 'MHS_ONLINE') {
                     push_mhs_online(data.nim);
                     $('#badge_koneksi_' + data.nim).text('ONLINE').removeClass('bg-danger').removeClass('bg-warning').addClass('bg-success');
@@ -441,15 +442,16 @@ body {
             confirmButtonText: "Akhiri"
         }).then(result => {
             if (result.value) {
-                {{--let mahasiswa_ujian_id = $(this).data('id');--}}
-                {{--let nim = $(this).data('nim');--}}
-                {{--conn.send(JSON.stringify({--}}
-                {{--    'mahasiswa_ujian_id': mahasiswa_ujian_id,--}}
-                {{--    'user_id':'{{ get_logged_user()->id }}',--}}
-                {{--    'as':'{{ get_selected_role()->name }}',--}}
-                {{--    'nim': nim,--}}
-                {{--    'cmd':'DO_KICK'--}}
-                {{--}));--}}
+                let mahasiswa_ujian_id = $(this).data('id');
+                let nim = $(this).data('nim');
+                conn.send(JSON.stringify({
+                    'mahasiswa_ujian_id': mahasiswa_ujian_id,
+                    'user_id':'{{ get_logged_user()->id }}',
+                    'as':'{{ get_selected_role()->name }}',
+                    'nim': nim,
+                    'cmd':'DO_KICK',
+                    'app_id': '{{ APP_ID }}',
+                }));
             }
         });
     });

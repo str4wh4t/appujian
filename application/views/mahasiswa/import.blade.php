@@ -90,7 +90,7 @@ function init_page_level(){
                         <p>Perhatian :</p>
                         <ul class="">
                             <li>Apabila ditemukan data !! ERROR !! , silahkan perbaiki data terlebih dahulu sebelum bisa diimpor.</li>
-                            <li>Data No Peserta tepat {{ MHS_ID_LENGTH }} karakter</li>
+                            <li>Data No Peserta maks. {{ MHS_ID_LENGTH }} karakter</li>
                             <li>Data Nama min. 3 karakter dan maks. 250 karakter</li>
                             <li>Data Email maks. 250 karakter</li>
                             <li>Data No Billkey tepat {{ NO_BILLKEY_LENGTH }} karakter</li>

@@ -69,36 +69,37 @@ class HasilUjian extends MY_Controller {
 		$action = true;
 		try {
 			begin_db_trx();
-			$h_ujian_deleted = new Hujian_deleted_orm();
-			$h_ujian_deleted->ujian_id = $h_ujian->ujian_id;
-			$h_ujian_deleted->mahasiswa_id = $h_ujian->mahasiswa_id;
-			$h_ujian_deleted->mahasiswa_ujian_id = $h_ujian->mahasiswa_ujian_id;
-			$h_ujian_deleted->jml_soal = $h_ujian->jml_soal;
-			$h_ujian_deleted->jml_benar = $h_ujian->jml_benar;
-			$h_ujian_deleted->jml_salah = $h_ujian->jml_salah;
-			$h_ujian_deleted->nilai = $h_ujian->nilai;
-			$h_ujian_deleted->nilai_bobot_benar = $h_ujian->nilai_bobot_benar;
-			$h_ujian_deleted->total_bobot = $h_ujian->total_bobot;
-			$h_ujian_deleted->nilai_bobot = $h_ujian->nilai_bobot;
-			$h_ujian_deleted->detail_bobot_benar = $h_ujian->detail_bobot_benar;
-			$h_ujian_deleted->tgl_mulai = $h_ujian->tgl_mulai;
-			$h_ujian_deleted->tgl_selesai = $h_ujian->tgl_selesai;
-			$h_ujian_deleted->ujian_selesai = $h_ujian->ujian_selesai;
-			$h_ujian_deleted->save();
-	
-			foreach($h_ujian->jawaban_ujian as $jawaban_ujian) {
-//				vdebug($jawaban_ujian);
-				$jawaban_ujian_deleted_orm           = new Jawaban_ujian_deleted_orm();
-				$jawaban_ujian_deleted_orm->ujian_id = $h_ujian_deleted->id;
-				$jawaban_ujian_deleted_orm->soal_id  = $jawaban_ujian->soal_id;
-				$jawaban_ujian_deleted_orm->jawaban  = $jawaban_ujian->jawaban;
-				$jawaban_ujian_deleted_orm->status_jawaban  = $jawaban_ujian->status_jawaban;
-				$jawaban_ujian_deleted_orm->save();
-			}
+//			$h_ujian_deleted = new Hujian_deleted_orm();
+//			$h_ujian_deleted->ujian_id = $h_ujian->ujian_id;
+//			$h_ujian_deleted->mahasiswa_id = $h_ujian->mahasiswa_id;
+//			$h_ujian_deleted->mahasiswa_ujian_id = $h_ujian->mahasiswa_ujian_id;
+//			$h_ujian_deleted->jml_soal = $h_ujian->jml_soal;
+//			$h_ujian_deleted->jml_benar = $h_ujian->jml_benar;
+//			$h_ujian_deleted->jml_salah = $h_ujian->jml_salah;
+//			$h_ujian_deleted->nilai = $h_ujian->nilai;
+//			$h_ujian_deleted->nilai_bobot_benar = $h_ujian->nilai_bobot_benar;
+//			$h_ujian_deleted->total_bobot = $h_ujian->total_bobot;
+//			$h_ujian_deleted->nilai_bobot = $h_ujian->nilai_bobot;
+//			$h_ujian_deleted->detail_bobot_benar = $h_ujian->detail_bobot_benar;
+//			$h_ujian_deleted->tgl_mulai = $h_ujian->tgl_mulai;
+//			$h_ujian_deleted->tgl_selesai = $h_ujian->tgl_selesai;
+//			$h_ujian_deleted->ujian_selesai = $h_ujian->ujian_selesai;
+//			$h_ujian_deleted->save();
+//
+//			foreach($h_ujian->jawaban_ujian as $jawaban_ujian) {
+////				vdebug($jawaban_ujian);
+//				$jawaban_ujian_deleted_orm           = new Jawaban_ujian_deleted_orm();
+//				$jawaban_ujian_deleted_orm->ujian_id = $h_ujian_deleted->id;
+//				$jawaban_ujian_deleted_orm->soal_id  = $jawaban_ujian->soal_id;
+//				$jawaban_ujian_deleted_orm->jawaban  = $jawaban_ujian->jawaban;
+//				$jawaban_ujian_deleted_orm->status_jawaban  = $jawaban_ujian->status_jawaban;
+//				$jawaban_ujian_deleted_orm->save();
+//			}
 			$h_ujian->delete();
 			commit_db_trx();
 		} catch(\Illuminate\Database\QueryException $e){
 			rollback_db_trx();
+			show_error($e->getMessage(), 500, 'Perhatian');
 			$action = false;
 	    }
 		
@@ -204,8 +205,9 @@ class HasilUjian extends MY_Controller {
 	            foreach ($hasil_ujian_per_topik as $t => $v) {
 		            $return .= '<tr>';
 		            $tpk    = Topik_orm::findOrFail($t);
-		            $return .= '<td width="100%">' . $tpk->nama_topik . '</td>';
-		            //                $return .= '<td width="20%">' . $v . '</td>';
+		            $return .= '<td width="80%">' . $tpk->nama_topik . '</td>';
+		            if(APP_ID == 'cat.undip.ac.id')
+                        $return .= '<td width="20%">' . $v . '</td>';
 		            $return .= '</tr>';
 	            }
             }

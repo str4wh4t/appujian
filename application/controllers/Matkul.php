@@ -219,6 +219,7 @@ class Matkul extends MY_Controller
 		$id = $this->input->post('id', true);
 		$ujian_id = $this->input->post('ujian_id', true);
 		$matkul = Matkul_orm::findOrFail($id);
+		$mhs_matkul = $matkul->mhs;
 		if(empty($ujian_id)){
 			$mhs_ujian = [];
 		}else {
@@ -228,7 +229,27 @@ class Matkul extends MY_Controller
 			                    })
 			                    ->get();
 		}
-		$this->_json(['mhs_matkul' => $matkul->mhs,'mhs_ujian' => $mhs_ujian]);
+		$this->_json(['mhs_matkul' => $mhs_matkul,'mhs_ujian' => $mhs_ujian]);
+	}
+	
+	protected function _get_peserta_ujian_matkul_not_ujian(){
+		$id = $this->input->post('id', true);
+		$ujian_id = $this->input->post('ujian_id', true);
+		$matkul = Matkul_orm::findOrFail($id);
+		$mhs_matkul = $matkul->mhs()->whereDoesntHave('h_ujian', function (Builder $query) use($ujian_id){
+			                    	$query->where('ujian_id', $ujian_id);
+			                    })->get();
+		if(empty($ujian_id)){
+			$mhs_ujian = [];
+		}else {
+			$mhs_ujian = $matkul->mhs_matkul()
+			                    ->whereHas('mhs_ujian', function (Builder $query) use($ujian_id){
+				                    $query->where('ujian_id', $ujian_id);
+			                    })
+			                    ->get();
+		}
+		
+		$this->_json(['mhs_matkul' => $mhs_matkul, 'mhs_ujian' => $mhs_ujian]);
 	}
 	
 	public function peserta($matkul_id)

@@ -38,7 +38,7 @@ $(document).on('click','.btn_reset_hasil',function(){
         showCancelButton: true,
         confirmButtonColor: "#37bc9b",
         cancelButtonColor: "#f6bb42",
-        confirmButtonText: "Mulai"
+        confirmButtonText: "Reset"
     }).then(result => {
         if (result.value) {
             $.ajax({

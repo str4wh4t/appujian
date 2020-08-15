@@ -23,4 +23,9 @@ class Mhs_ujian_orm extends Eloquent
         return $this->hasOne('Orm\Daftar_hadir_orm', 'mahasiswa_ujian_id');
     }
     
+    public function h_ujian()
+    {
+        return $this->hasOne('Orm\Hujian_orm','mahasiswa_ujian_id', 'ujian_id');
+    }
+    
 }

@@ -176,7 +176,7 @@ class Pub extends MY_Controller {
 	}
 	
 	
-	public function socket_ujian(){
+	public function socket(){
 		if(!is_cli()) show_404();
 		$server = IoServer::factory(
 		    new HttpServer(
@@ -185,20 +185,6 @@ class Pub extends MY_Controller {
 		        )
 		    ),
 		    8080
-		);
-		
-		$server->run();
-	}
-	
-	public function socket_cat(){
-		if(!is_cli()) show_404();
-		$server = IoServer::factory(
-		    new HttpServer(
-		        new WsServer(
-		            new Chat()
-		        )
-		    ),
-		    8081
 		);
 		
 		$server->run();

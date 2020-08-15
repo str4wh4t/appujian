@@ -17,8 +17,8 @@ class Chat implements MessageComponentInterface {
     public function __construct() {
         $this->clients = new \SplObjectStorage;
         $this->data_absensi = [];
-        $this->data_clients_mhs = [];
-        $this->data_clients_mhs_ips = [];
+        $this->data_clients_mhs = ['ujian.undip.ac.id' => [], 'cat.undip.ac.id' => []];
+        $this->data_clients_mhs_ips = ['ujian.undip.ac.id' => [], 'cat.undip.ac.id' => []];
     }
 
     public function onOpen(ConnectionInterface $conn) {
@@ -58,8 +58,8 @@ class Chat implements MessageComponentInterface {
 //			    }
 			    $res = [
 				    'cmd'             => $req->cmd,
-				    'mhs_online' => $this->data_clients_mhs,
-				    'mhs_online_ips' => $this->data_clients_mhs_ips,
+				    'mhs_online' => $this->data_clients_mhs[$req->app_id],
+				    'mhs_online_ips' => $this->data_clients_mhs_ips[$req->app_id],
 				    'absensi'         => $absensi,
 				    'absensi_by_self' => $absensi_by_self,
 				    'user_id'     => $req->user_id,
@@ -81,8 +81,8 @@ class Chat implements MessageComponentInterface {
 //			    }
 		    	$res = [
 				    'cmd'             => $req->cmd,
-				    'mhs_online' => $this->data_clients_mhs,
-				    'mhs_online_ips' => $this->data_clients_mhs_ips,
+				    'mhs_online' => $this->data_clients_mhs[$req->app_id],
+				    'mhs_online_ips' => $this->data_clients_mhs_ips[$req->app_id],
 				    'absensi'         => $absensi,
 				    'absensi_by_self' => [],
 				    'user_id'     => $req->user_id,
@@ -154,8 +154,8 @@ class Chat implements MessageComponentInterface {
 			    }
 		    }
 	    }elseif($req->cmd == 'MHS_ONLINE'){
-            $this->data_clients_mhs[$req->nim] = $from->resourceId;
-            $this->data_clients_mhs_ips[$req->nim] = $req->ip;
+            $this->data_clients_mhs[$req->app_id][$req->nim] = $from->resourceId;
+            $this->data_clients_mhs_ips[$req->app_id][$req->nim] = $req->ip;
 //            $users = Users_orm::where('username', $req->nim)->first();
             $ok = true ;
 //	        if(!empty($users)){
@@ -218,7 +218,20 @@ class Chat implements MessageComponentInterface {
 	        foreach ($this->clients as $client) {
 			    $client->send(json_encode($res));
 		    }
+	    }elseif($req->cmd == 'PING'){
+	    	$res = [
+			    'cmd'             => $req->cmd,
+			    'nim'             => $req->nim,
+			    'app_id'      => $req->app_id,
+			    'ip'             => $req->ip,
+//			    'latency'     => round((round(microtime(true), 3) * 1000 - intval($req->mctime)) / 1000),
+			    'latency' => $req->latency,
+		    ];
+	        foreach ($this->clients as $client) {
+			    $client->send(json_encode($res));
+		    }
 	    }
+	    
 //	    elseif($req->cmd == 'MHS_OFFLINE'){
 //            unset($this->data_clients_mhs[$req->nim]);
 //	    	$res = [
@@ -267,31 +280,28 @@ class Chat implements MessageComponentInterface {
     public function onClose(ConnectionInterface $conn) {
         // The connection is closed, remove it, as we can no longer send it messages
         $this->clients->detach($conn);
-        $nim = null;
-        $res = [];
-        foreach($this->data_clients_mhs as $cnim => $resourceId){
-        	if($resourceId == $conn->resourceId){
-        		$nim = $cnim;
-        		break;
-	        }
-        }
-        if(!empty($nim)) {
-	        unset($this->data_clients_mhs[$nim]);
-//	        $users = Users_orm::where('username', $nim)->first();
-//	        if(!empty($users)){
-//		        $users->is_online = 0;
-//		        $users->save();
-//	        }
-	        $res = [
-		        'cmd' => 'MHS_OFFLINE',
-		        'nim' => $nim,
-	        ];
-	        foreach ($this->clients as $client) {
-		        $client->send(json_encode($res));
+        foreach($this->data_clients_mhs as $app_id => $array) {
+	        foreach ($array as $nim => $resourceId) {
+		        if ($resourceId == $conn->resourceId) {
+//		        	echo $app_id . "||" . $nim ;
+		        	if(isset($this->data_clients_mhs[$app_id][$nim])) {
+				        unset($this->data_clients_mhs[$app_id][$nim]);
+				        unset($this->data_clients_mhs_ips[$app_id][$nim]);
+				        $res = [
+					        'cmd' => 'MHS_OFFLINE',
+					        'nim' => $nim,
+				        ];
+				        foreach ($this->clients as $client) {
+					        $client->send(json_encode($res));
+				        }
+				        break;
+				        break;
+			        }
+		        }
 	        }
         }
         
-        echo "Connection {$conn->resourceId} has disconnected, with {". json_encode($res) ."}\n";
+        // echo "Connection {$conn->resourceId} has disconnected, with {". json_encode($res) ."}\n";
         
 //        if(isset($this->data_clients[$conn->resourceId])) {
 //	        $username = $this->data_clients[$conn->resourceId];

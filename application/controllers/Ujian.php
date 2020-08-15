@@ -1403,7 +1403,9 @@ class Ujian extends MY_Controller {
         });
         
         $dt->edit('koneksi', function ($data) {
-			return '<span class="badge bg-danger" id="badge_koneksi_'. $data['nim'] .'">'. $data['koneksi'] .'</span><span class="badge bg-info" id="badge_ip_'. $data['nim'] .'" style="display: none">-</span>';
+			return '<span class="badge bg-danger" id="badge_koneksi_'. $data['nim'] .'">'. $data['koneksi'] .'</span>
+					<span class="badge bg-info" id="badge_ip_'. $data['nim'] .'" style="display: none">-</span>
+					<span class="badge bg-primary" id="badge_latency_'. $data['nim'] .'" style="display: none">-</span>';
 		});
         
         $dt->edit('status', function ($data){

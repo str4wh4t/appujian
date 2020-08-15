@@ -228,7 +228,7 @@ body {
                         $('#badge_ip_' + nim).text(data.mhs_online_ips[nim]).show();
                     });
                     $('#jml_mhs_online').text(list_mhs_online.length);
-                    console.log('list_mhs_online', list_mhs_online);
+                    // console.log('list_mhs_online', list_mhs_online);
                 } else if (data.cmd == 'MHS_ONLINE') {
                     push_mhs_online(data.nim);
                     $('#badge_koneksi_' + data.nim).text('ONLINE').removeClass('bg-danger').removeClass('bg-warning').addClass('bg-success');
@@ -285,11 +285,16 @@ body {
                             });
                         }
                     }
+                } else if (data.cmd == 'PING') {
+                    $('#badge_koneksi_' + data.nim).text('ONLINE').removeClass('bg-danger').removeClass('bg-warning').addClass('bg-success');
+                    $('#badge_ip_' + data.nim).text(data.ip).show();
+                    $('#badge_latency_' + data.nim).text(data.latency + 'ms').show();
                 }
             }else if (data.cmd == 'MHS_OFFLINE') {
                 pop_mhs_online(data.nim);
                 $('#badge_koneksi_' + data.nim).text('OFFLINE').removeClass('bg-success').removeClass('bg-warning').addClass('bg-danger');
-                $('#badge_ip_' + data.nim).text(data.ip).hide();
+                $('#badge_ip_' + data.nim).hide();
+                $('#badge_latency_' + data.nim).hide();
                 $('#jml_mhs_online').text(list_mhs_online.length);
             }
         };

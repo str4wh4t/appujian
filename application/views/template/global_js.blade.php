@@ -8,6 +8,9 @@
 <script src="{{ asset('assets/bower_components/sweetalert2/sweetalert2.all.min.js') }}"></script>
 <script src="https://cdn.jsdelivr.net/npm/gasparesganga-jquery-loading-overlay@2.1.7/dist/loadingoverlay.min.js"></script>
 <script src="{{ asset('assets/plugins/ifvisible.js') }}"></script>
+{{--<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/moment-with-locales.min.js" integrity="sha512-qSnlnyh7EcD3vTqRoSP4LYsy2yVuqqmnkM9tW4dWo6xvAoxuVXyM36qZK54fyCmHoY1iKi9FJAUZrlPqmGNXFw==" crossorigin="anonymous"></script>--}}
+{{--<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/locale/id.min.js" integrity="sha512-he8U4ic6kf3kustvJfiERUpojM8barHoz0WYpAUDWQVn61efpm3aVAD8RWL8OloaDDzMZ1gZiubF9OSdYBqHfQ==" crossorigin="anonymous"></script>--}}
+<script src="{{ asset('assets/plugins/ping.min.js') }}"></script>
 <!-- END PAGE VENDOR JS (GLOBAL)-->
 
 <!-- BEGIN PAGE VENDOR JS (PAGE LEVEL)-->
@@ -118,6 +121,36 @@ $(document).ready(function(){
                 'app_id': '{{ APP_ID }}',
             }));
         };
+
+        let p ;
+        setInterval(function() {
+            // let mctime = moment().valueOf();
+            p = new Ping();
+            p.ping("https://{{ APP_ID }}", function(err, data) {
+                // console.log('ping', data);
+                conn.send(JSON.stringify({
+                    'nim':'{{ get_logged_user()->username }}',
+                    'as':'{{ get_selected_role()->name }}',
+                    'cmd':'PING',
+                    'ip': '{{ $ip }}',
+                    'app_id': '{{ APP_ID }}',
+                    'latency': data ,
+                }));
+            });
+        },5000);
+
+
+          // Also display error if err is returned.
+          // let mctime = moment().valueOf();
+          {{--  conn.send(JSON.stringify({--}}
+          {{--      'nim':'{{ get_logged_user()->username }}',--}}
+          {{--      'as':'{{ get_selected_role()->name }}',--}}
+          {{--      'cmd':'PING',--}}
+          {{--      'app_id': '{{ APP_ID }}',--}}
+          {{--      'mctime': mctime ,--}}
+          {{--  }));--}}
+
+
     @endif
     /* [END] WEBSOCKET BOOTSTRAP */
 

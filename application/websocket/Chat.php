@@ -195,6 +195,7 @@ class Chat implements MessageComponentInterface {
 	    	$res = [
 			    'cmd'         => $req->cmd,
 			    'nim'         => $req->nim,
+			    'username'      => $req->username,
 			    'app_id'      => $req->app_id,
 		    ];
 	        foreach ($this->clients as $client) {

@@ -192,10 +192,15 @@ class Pub extends MY_Controller {
 	
 	public function cron_auto_close($app_id = 'ujian'){
 		if(!is_cli()) show_404();
+		
+		$h_ujian_list = new Hujian_orm;
 		if($app_id == 'ujian')
+	        $h_ujian_list->setConnection('ujian');
+        else
+	        $h_ujian_list->setConnection('cat');
 			//
 		$cron_end = date("Y-m-d H:i:s", strtotime("+1 minutes"));
-		$h_ujian_list = Hujian_orm::where('ujian_selesai', 'N')->get();
+		$h_ujian_list = $h_ujian_list->where('ujian_selesai', 'N')->get();
 		if($h_ujian_list->isNotEmpty()){
 			foreach($h_ujian_list as $h_ujian){
 				$today = date('Y-m-d H:i:s');
@@ -208,73 +213,69 @@ class Pub extends MY_Controller {
 				if ($today >= $date_end){
 					echo $h_ujian->id . "\n";
 					echo $h_ujian->mhs->nama . "\n";
-				    echo $this->submit_ujian($h_ujian->id) ? "DONE" : "ERROR" ;
+				    echo $this->submit_ujian($h_ujian) ? "DONE" : "ERROR" ;
 				}
 			}
 		}
 		return;
 	}
 	
-	public function submit_ujian($id_h_ujian){
+	public function submit_ujian($h_ujian){
 		if(!is_cli()) show_404();
-		$h_ujian = Hujian_orm::findOrFail($id_h_ujian);
 		$this->load->model('Ujian_model', 'ujian');
 		$this->load->model('Master_model', 'master');
+		// $id_h_ujian = $h_ujian->id;
+		
 		// Get Jawaban
-		$list_jawaban = $this->ujian->getJawaban($id_h_ujian);
+		// $list_jawaban = $this->ujian->getJawaban($id_h_ujian);
 		
 		// Pecah Jawaban
 		$pc_jawaban = $h_ujian->jawaban_ujian;
 		
 		$jumlah_benar = 0;
 		$jumlah_salah = 0;
-		//			$jumlah_ragu  = 0;
-		//			$nilai_bobot  = 0;
-		$total_bobot       = 0;
-		$total_bobot_benar = 0;
-		$jumlah_soal       = count($pc_jawaban);
+//			$jumlah_ragu  = 0;
+//			$nilai_bobot  = 0;
+		$total_bobot  = 0;
+		$total_bobot_benar  = 0;
+		$jumlah_soal  = count($pc_jawaban);
 		
 		$topik_ujian_nilai_bobot = [];
 		
 		foreach ($pc_jawaban as $jwb) {
-			if (!isset($topik_ujian_nilai_bobot[$jwb->soal->topik_id])) {
-				$topik_ujian_nilai_bobot[$jwb->soal->topik_id] = 0;
+			if(!isset($topik_ujian_nilai_bobot[$jwb->soal->topik_id])){
+				$topik_ujian_nilai_bobot[$jwb->soal->topik_id] = 0 ;
 			}
 			$total_bobot = $total_bobot + ($jwb->soal->bobot_soal->nilai * $jwb->soal->topik->poin_topik);
-			if ($jwb->jawaban == $jwb->soal->jawaban) {
+			if($jwb->jawaban == $jwb->soal->jawaban){
 				$jumlah_benar++;
-				$bobot_poin        = ($jwb->soal->bobot_soal->nilai * $jwb->soal->topik->poin_topik);
+				$bobot_poin = ($jwb->soal->bobot_soal->nilai * $jwb->soal->topik->poin_topik);
 				$total_bobot_benar = $total_bobot_benar + $bobot_poin;
-				//					foreach ($topik_ujian_nilai_bobot as $t => $v){
-				//						if($t == $jwb->soal->topik_id){
-				//
-				//						}
-				//					}
 				$topik_ujian_nilai_bobot[$jwb->soal->topik_id] = $topik_ujian_nilai_bobot[$jwb->soal->topik_id] + $bobot_poin;
-			} else {
+			}else{
 				$jumlah_salah++;
 			}
 		}
 		
-		$nilai             = ($jumlah_benar / $jumlah_soal) * 100;
+		$nilai       = ($jumlah_benar / $jumlah_soal) * 100;
 		$nilai_bobot_benar = $total_bobot_benar;
-		//			$total_bobot_benar = $total_bobot;
+//			$total_bobot_benar = $total_bobot;
 		$nilai_bobot = ($total_bobot / $jumlah_soal) * 100;
 		
-		$d_update = [
-			'jml_benar'          => $jumlah_benar,
-			'jml_salah'          => $jumlah_salah,
-			'jml_soal'           => $jumlah_soal,
-			'nilai'              => number_format(floor($nilai), 0),
-			//				'nilai_bobot' => number_format(floor($nilai_bobot), 0),
-			'nilai_bobot'        => 0,
-			'nilai_bobot_benar'  => $nilai_bobot_benar,
-			'detail_bobot_benar' => json_encode($topik_ujian_nilai_bobot),
-			'total_bobot'        => $total_bobot,
-			'ujian_selesai'      => 'Y'
-		];
 		
-		$action = $this->master->update('h_ujian', $d_update, 'id', $id_h_ujian);
+		$h_ujian->jml_benar =  $jumlah_benar;
+		$h_ujian->jml_salah =  $jumlah_salah;
+		$h_ujian->jml_soal =  $jumlah_soal;
+		$h_ujian->nilai     =  number_format(floor($nilai), 0);
+//		$h_ujian->nilai_bobot = $nilai_bobot;
+		$h_ujian->nilai_bobot = 0;
+		$h_ujian->nilai_bobot_benar     =  $nilai_bobot_benar;
+		$h_ujian->detail_bobot_benar     =  json_encode($topik_ujian_nilai_bobot);
+		$h_ujian->total_bobot     =  $total_bobot;
+		$h_ujian->tgl_selesai =  date('Y-m-d H:i:s');
+		$h_ujian->ujian_selesai    =  'Y';
+		$h_ujian->ended_by =  'cron';
+		$action = $h_ujian->save();
 		
 		return $action;
 		

@@ -7,7 +7,7 @@ $(document).ready(function () {
     // }
 
     buka(1);
-    simpan_sementara();
+    simpan_view();
 
     widget = $(".step");
     btnnext = $(".next");
@@ -50,7 +50,6 @@ function buka(id_widget) {
     $("#widget_" + id_widget).show();
     $("#widget_jawaban_" + id_widget).show();
 
-    // simpan();
 }
 
 function next() {
@@ -89,7 +88,7 @@ function next() {
         $(".back").show();
     }
 
-    simpan();
+    simpan_view();
 }
 
 function back() {
@@ -128,7 +127,7 @@ function back() {
         $(".back").show();
     }
 
-    simpan();
+    simpan_view();
 }
 
 function tidak_jawab() {
@@ -140,22 +139,26 @@ function tidak_jawab() {
     }
 
     var status_ragu = $("#rg_" + id_step).val();
+    let ragu = null ;
 
     if (status_ragu == "N") {
         $("#rg_" + id_step).val('Y');
         $("#btn_soal_" + id_step).removeClass('btn-success');
         $("#btn_soal_" + id_step).addClass('btn-warning');
+        ragu = 'Y';
 
     } else {
         $("#rg_" + id_step).val('N');
         $("#btn_soal_" + id_step).removeClass('btn-warning');
         $("#btn_soal_" + id_step).addClass('btn-success');
+        ragu = 'N';
     }
 
     cek_status_ragu(id_step);
 
-    // simpan();
-    do_save();
+    let sid = $('input[name="id_soal_'+ id_step +'"]').val();
+    let answer = $('input[name="opsi_'+ id_step +'"]:checked').val();
+    simpan_jawaban_satu(sid, answer, ragu);
 }
 
 function cek_status_ragu(id_soal) {
@@ -189,7 +192,7 @@ function cek_terakhir(id_soal) {
     }
 }
 
-function simpan_sementara() {
+function simpan_view() {
     var f_asal = $("#ujian");
     var form = getFormData(f_asal);
     //form = JSON.stringify(form);
@@ -251,55 +254,74 @@ function simpan_sementara() {
 
 
     wrap_navigasi();
-
-
-
-    // do_save();
 }
 
-function do_save(){
-    var form = $("#ujian");
+function simpan_jawaban_all() {
+    let form = $("#ujian");
     ajx_overlay(true);
     $.ajax({
         type: "POST",
-        url: base_url + "ujian/ajax/simpan_satu",
+        url: base_url + "ujian/ajax/simpan_jawaban_all",
         data: form.serialize(),
         dataType: 'json',
         success: function (data) {
-            if(!data.status){
-                Swal({
-                    title: "Perhatian",
-                    text: "Terjadi kesalahan, window akan mereload",
-                    type: "warning",
-                    confirmButtonColor: "#37bc9b",
-                    cancelButtonColor: "#f6bb42",
-                    confirmButtonText: "Reload"
-                }).then(result => {
-                    if (result.value) {
-                        location.href = base_url + "ujian/index";
-                    }else{
-                        location.href = base_url + "ujian/index";
-                    }
-                });
-            }
+
+        },
+        error: function () {
+            Swal({
+                title: "Perhatian",
+                text: "Terjadi kesalahan, halaman akan di-reload",
+                type: "warning",
+                confirmButtonColor: "#37bc9b",
+                confirmButtonText: "Reload"
+            }).then(result => {
+                if (result.value) {
+                    location.href = base_url + "ujian/list";
+                }
+            });
+        },
+        complete: function () {
             ajx_overlay(false);
-            // $('.ajax-loading').show();
-            // console.log(data);
         }
     });
 }
 
-function simpan() {
-    simpan_sementara();
-}
+function simpan_jawaban_satu(sid, answer, ragu) {
+    ajx_overlay(true);
+    $.ajax({
+        type: "POST",
+        url: base_url + "ujian/ajax/simpan_jawaban_satu",
+        data: {
+            'sid': sid,
+            'answer': answer,
+            'id': id_ujian,
+            'key': key,
+            'ragu': ragu,
+        },
+        dataType: 'json',
+        success: function (data) {
 
-function waktuHabis() {
-    selesai();
-    alert('Waktu ujian telah habis!');
+        },
+        error: function () {
+            Swal({
+                title: "Perhatian",
+                text: "Terjadi kesalahan, halaman akan di-reload",
+                type: "warning",
+                confirmButtonColor: "#37bc9b",
+                confirmButtonText: "Reload"
+            }).then(result => {
+                if (result.value) {
+                    location.href = base_url + "ujian/list";
+                }
+            });
+        },
+        complete: function () {
+            ajx_overlay(false);
+        }
+    });
 }
 
 function simpan_akhir() {
-    simpan();
     Swal({
         title: "Akhiri Ujian",
         text: "Ujian yang sudah diakhiri tidak dapat diulangi.",
@@ -313,15 +335,16 @@ function simpan_akhir() {
             selesai();
         }
     });
-
 }
 
-///
 $(document).on('click','input[type="radio"]',function(){
     if($(this).prop("checked", true)){
-        simpan_sementara();
-        do_save();
-        // $('.ragu_ragu').removeAttr('disabled');
+        simpan_view();
+        let sid = $(this).data('sid');
+        let answer = $(this).val();
+        let id_step = $(this).attr('rel');
+        let ragu = $("#rg_" + id_step).val() ;
+        simpan_jawaban_satu(sid, answer, ragu);
         $('.ragu_ragu').show();
     }
 });

@@ -522,11 +522,11 @@ function update_status_ujian(){
     }, 1000);
 }
 
-let ended_by = '{{ get_logged_user()->username }}';
-
 /** [START] FUNGSI SELESAI UJIAN */
-function selesai() {
-    simpan();
+function selesai(ended_by = '') {
+    if(ended_by == ''){
+        ended_by = '{{ get_logged_user()->username }}';
+    }
     ajaxcsrf();
     ajx_overlay(true);
     $.ajax({
@@ -537,9 +537,6 @@ function selesai() {
             'key': key,
             'ended_by': ended_by,
         },
-        beforeSend: function () {
-            simpan();
-        },
         success: function (r) {
             if (r.status) {
                 conn.send(JSON.stringify({
@@ -548,10 +545,28 @@ function selesai() {
                     'cmd':'MHS_STOP_UJIAN',
                     'app_id': '{{ APP_ID }}',
                 }));
+                Swal({
+                    title: "Perhatian",
+                    text: "Ujian telah selesai, anda akan keluar ujian dalam 3 detik",
+                    type: "success"
+                });
                 setTimeout(function() {
-                  window.location.href = '{{ url('ujian/list') }}';
-                }, 1000);
+                    window.location.href = '{{ url('ujian/list') }}';
+                }, 3000);
             }
+        },
+        error: function () {
+            Swal({
+                title: "Perhatian",
+                text: "Anda akan keluar ujian dalam 3 detik",
+                type: "warning"
+            });
+            setTimeout(function() {
+                window.location.href = '{{ url('ujian/list') }}';
+            }, 3000);
+        },
+        complete: function () {
+            ajx_overlay(false);
         }
     });
 }

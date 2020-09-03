@@ -235,9 +235,9 @@ body {
                     $('#badge_ip_' + data.nim).text(data.ip).show();
                     $('#jml_mhs_online').text(list_mhs_online.length);
                 } else if (data.cmd == 'MHS_LOST_FOCUS') {
-                    $('#badge_koneksi_' + data.nim).text('BUKA PAGE LAIN').removeClass('bg-danger').removeClass('bg-success').addClass('bg-warning');
+                    $('#badge_focus_' + data.nim).show();
                 } else if (data.cmd == 'MHS_GET_FOCUS') {
-                    $('#badge_koneksi_' + data.nim).text('ONLINE').removeClass('bg-danger').removeClass('bg-warning').addClass('bg-success');
+                    $('#badge_focus_' + data.nim).hide();
                 } else if (data.cmd == 'MHS_START_UJIAN') {
                     $('#badge_status_' + data.nim).text('SEDANG UJIAN').removeClass('bg-secondary').removeClass('bg-success').addClass('bg-info');
                 } else if (data.cmd == 'MHS_STOP_UJIAN') {
@@ -449,14 +449,47 @@ body {
             if (result.value) {
                 let mahasiswa_ujian_id = $(this).data('id');
                 let nim = $(this).data('nim');
-                conn.send(JSON.stringify({
-                    'mahasiswa_ujian_id': mahasiswa_ujian_id,
-                    'user_id':'{{ get_logged_user()->id }}',
-                    'as':'{{ get_selected_role()->name }}',
-                    'nim': nim,
-                    'cmd':'DO_KICK',
-                    'app_id': '{{ APP_ID }}',
-                }));
+
+                ajaxcsrf();
+                ajx_overlay(true);
+                $.ajax({
+                    type: "POST",
+                    url: "{{ url('ujian/ajax/force_close_ujian') }}",
+                    data: {
+                        'id': mahasiswa_ujian_id,
+                        'ended_by': '{{ get_logged_user()->username }}',
+                    },
+                    success: function (r) {
+                        if (r.status) {
+                            Swal({
+                                title: "Perhatian",
+                                text: "Ujian peserta tsb telah diakhiri",
+                                type: "success"
+                            });
+                        }
+                    },
+                    error: function () {
+                        Swal({
+                            title: "Perhatian",
+                            text: "Ujian peserta tsb telah berakhir",
+                            type: "warning"
+                        });
+                    },
+                    complete: function () {
+                        conn.send(JSON.stringify({
+                            'mahasiswa_ujian_id': mahasiswa_ujian_id,
+                            'user_id': '{{ get_logged_user()->id }}',
+                            'username': '{{ get_logged_user()->username }}',
+                            'as':'{{ get_selected_role()->name }}',
+                            'nim': nim,
+                            'cmd':'DO_KICK',
+                            'app_id': '{{ APP_ID }}',
+                        }));
+                        $('#badge_status_' + nim).text('SUDAH UJIAN').removeClass('bg-secondary').removeClass('bg-info').addClass('bg-success');
+                        $('#badge_focus_' + nim).hide();
+                        ajx_overlay(false);
+                    }
+                });
             }
         });
     });

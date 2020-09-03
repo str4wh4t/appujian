@@ -95,19 +95,20 @@ $(document).ready(function(){
 
         conn.onmessage = function(e) {
             let data = jQuery.parseJSON(e.data);
-            if (data.cmd == 'MHS_ONLINE') {
-                if(data.nim == '{{ get_logged_user()->username }}'){
-                    if (data.identifier != '{{ $identifier }}') {
-                        // JIKA YANG MENGAKSES BERBEDA DENGAN MHS YG ONLINE
-                        location.href = '{{ url('auth/not_valid_login') }}';
+            if(data.app_id == '{{ APP_ID }}') {
+                if (data.cmd == 'MHS_ONLINE') {
+                    if (data.nim == '{{ get_logged_user()->username }}') {
+                        if (data.identifier != '{{ $identifier }}') {
+                            // JIKA YANG MENGAKSES BERBEDA DENGAN MHS YG ONLINE
+                            location.href = '{{ url('auth/not_valid_login') }}';
+                        }
                     }
-                }
-            }else if (data.cmd == 'DO_KICK') {
-                if(data.nim == '{{ get_logged_user()->username }}'){
-                    // location.href = '{{ url('ujian/not_valid_login') }}';
-                    if (typeof selesai == 'function') {
-                        ended_by = '{{ get_logged_user()->username }}';
-                        selesai();
+                } else if (data.cmd == 'DO_KICK') {
+                    if (data.nim == '{{ get_logged_user()->username }}') {
+                        if (typeof selesai == 'function') {
+                            ended_by = data.username;
+                            selesai(ended_by);
+                        }
                     }
                 }
             }
@@ -137,7 +138,7 @@ $(document).ready(function(){
                     'latency': data ,
                 }));
             });
-        },5000);
+        },10000);
 
 
           // Also display error if err is returned.

@@ -182,6 +182,7 @@ $(document).on('click','#btn_proses_sync_mhs',function(){
                         <h4 class="form-section">Gelombang</h4>
                         <label><input type="checkbox" name="gel[]" value="1"> 1</label>&nbsp;
                         <label><input type="checkbox" name="gel[]" value="2"> 2</label>&nbsp;
+                        <label><input type="checkbox" name="gel[]" value="3"> 3</label>&nbsp;
                         <h4 class="form-section">Tahun</h4>
                         <label><input type="checkbox" name="tahun[]" value="2020"> 2020</label>&nbsp;
                     </div>

@@ -791,15 +791,12 @@ class Ujian extends MY_Controller {
 		 * [END]CHEK VALID TIME H_UJIAN
 		 */
 		
-//		$q_soal = $h_ujian->row();
-		
 		$list_jawaban = '';
 		foreach($h_ujian->jawaban_ujian as $jwb){
 			$list_jawaban .= $jwb->soal_id .":". $jwb->jawaban .":". $jwb->status_jawaban .",";
 		}
 		$list_jawaban 	= substr($list_jawaban, 0, -1);
 		
-//		$urut_soal 		= explode(",", $q_soal->list_jawaban);
 		$urut_soal 		= explode(",", $list_jawaban);
 		$soal_urut_ok	= [];
 		for ($i = 0; $i < sizeof($urut_soal); $i++) {
@@ -852,7 +849,7 @@ class Ujian extends MY_Controller {
 					$tampil_media_opsi = (is_file(base_url().$path.$s->$file) || $s->$file != "") ? tampil_media($path.$s->$file) : "";
 					
 					$html .= '<div class="funkyradio-success"">
-						<input type="radio" id="opsi_'.strtolower($arr_opsi[$j]).'_'.$s->id_soal.'" name="opsi_'.$no.'" value="'.strtoupper($arr_opsi[$j]).'" rel="'.$no.'" '.$checked.'>
+						<input type="radio" id="opsi_'.strtolower($arr_opsi[$j]).'_'.$s->id_soal.'" name="opsi_'.$no.'" data-sid="'.$s->id_soal.'" value="'.strtoupper($arr_opsi[$j]).'" rel="'.$no.'" '.$checked.'>
 						<label for="opsi_'.strtolower($arr_opsi[$j]).'_'.$s->id_soal.'" class="label_pilihan">
 							<div class="huruf_opsi">'.$urutan_jawaban_huruf[$i].'</div> <div>'.$pilihan_opsi.'</div><div class="w-25">'.$tampil_media_opsi.'</div>
 						</label></div>';
@@ -1084,7 +1081,7 @@ class Ujian extends MY_Controller {
 //
 //	}
 
-	protected function _simpan_satu()
+	protected function _simpan_jawaban_all()
 	{
 		$key = $this->input->post('key', true);
 		$one_time_token = $this->session->userdata('one_time_token');
@@ -1098,26 +1095,13 @@ class Ujian extends MY_Controller {
 		}
 		
 		// Decrypt Id
-		$id_tes = $this->input->post('id', true);
-//		$id_tes = $this->encryption->decrypt($id_tes);
-		$id_tes = integer_read_from_uuid($id_tes);
+		$id = $this->input->post('id', true);
+		$id = integer_read_from_uuid($id);
 		
-//		$input 	= $this->input->post(null, true);
-//		$list_jawaban 	= "";
-//		for ($i = 1; $i < $input['jml_soal']; $i++) {
-//			$_tjawab 	= "opsi_".$i;
-//			$_tidsoal 	= "id_soal_".$i;
-//			$_ragu 		= "rg_".$i;
-//			$jawaban_ 	= empty($input[$_tjawab]) ? "" : $input[$_tjawab];
-//			$list_jawaban	.= "".$input[$_tidsoal].":".$jawaban_.":".$input[$_ragu].",";
-//		}
-//		$list_jawaban	= substr($list_jawaban, 0, -1);
-//		$d_simpan = [
-//			'list_jawaban' => $list_jawaban
-//		];
-//
-//		// Simpan jawaban
-//		$this->master->update('h_ujian', $d_simpan, 'id', $id_tes);
+		$h_ujian = Hujian_orm::findOrFail($id);
+		if($h_ujian->ujian_selesai == 'Y'){
+			show_error('Ujian sudah diakhiri.', 500, 'Perhatian');
+		}
 		
 		$input 	= $this->input->post(null, true);
 		try {
@@ -1126,10 +1110,7 @@ class Ujian extends MY_Controller {
 				$_tjawab 	= "opsi_".$i;
 				$_tidsoal 	= "id_soal_".$i;
 				$_ragu 		= "rg_".$i;
-				$jawaban_ujian = Jawaban_ujian_orm::where('ujian_id',$id_tes)->where('soal_id',$input[$_tidsoal])->firstOrFail();
-				if($jawaban_ujian->h_ujian->ujian_selesai == 'Y'){
-					throw new Exception();
-				}
+				$jawaban_ujian = Jawaban_ujian_orm::where('ujian_id',$h_ujian->id)->where('soal_id',$input[$_tidsoal])->firstOrFail();
 				
 				if(!empty($input[$_tjawab]))
 					 $jawaban_ujian->jawaban = $input[$_tjawab];
@@ -1140,13 +1121,49 @@ class Ujian extends MY_Controller {
 			}
 			commit_db_trx();
 			$action = true;
+			$this->_json(['status'=>$action]);
 		
 		} catch(Exception $e){
 			rollback_db_trx();
-			$action = false;
+			show_error('Terjadi kesalahan saat menyimpan.', 500, 'Perhatian');
 	    }
 
-		$this->_json(['status'=>$action]);
+	}
+	
+	protected function _simpan_jawaban_satu()
+	{
+		$key = $this->input->post('key', true);
+		$one_time_token = $this->session->userdata('one_time_token');
+		
+		if(empty($one_time_token)){
+			show_404();
+		}
+
+		if($one_time_token != $key){
+			show_404();
+		}
+		
+		$sid = $this->input->post('sid', true);
+		$answer = $this->input->post('answer', true);
+		$ragu = $this->input->post('ragu', true);
+		// Decrypt Id
+		$id = $this->input->post('id', true);
+		$id = integer_read_from_uuid($id);
+		
+		$h_ujian = Hujian_orm::findOrFail($id);
+		if($h_ujian->ujian_selesai == 'Y'){
+			show_error('Ujian sudah diakhiri.', 500, 'Perhatian');
+		}
+		
+		$input 	= $this->input->post(null, true);
+
+			$jawaban_ujian = Jawaban_ujian_orm::where('ujian_id',$h_ujian->id)->where('soal_id',$sid)->firstOrFail();
+			$jawaban_ujian->jawaban = $answer;
+			$jawaban_ujian->status_jawaban = $ragu;
+			
+		    $action = $jawaban_ujian->save();
+			$this->_json(['status'=>$action]);
+
 	}
 
 //	protected function _simpan_akhir()
@@ -1197,7 +1214,7 @@ class Ujian extends MY_Controller {
 	
 	protected function _close_ujian()
 	{
-		$ended_by = $this->input->post('ended_by', true);
+		
 		$key = $this->input->post('key', true);
 		$one_time_token = $this->session->userdata('one_time_token');
 		
@@ -1212,16 +1229,55 @@ class Ujian extends MY_Controller {
 		
 		$this->session->unset_userdata('one_time_token');
 		
-		// Decrypt Id
-		$id = $this->input->post('id', true);
-		$id_h_ujian = integer_read_from_uuid($id);
+		if(!$allow){
+			show_error('Token akhiri salah.', 500, 'Perhatian');
+		}else{
+			$ended_by = $this->input->post('ended_by', true);
+			// Decrypt Id
+			$id = $this->input->post('id', true);
+			$id_h_ujian = integer_read_from_uuid($id);
+			
+			$action = $this->_akhiri_ujian($id_h_ujian, $ended_by);
+			
+			$message_rootpage = [
+				'header' => 'Perhatian',
+				'content' => 'Ujian telah selesai.',
+				'type' => 'success'
+			];
+			$this->session->set_flashdata('message_rootpage', $message_rootpage);
+			$this->_json(['status'=>$action]);
+		}
+	}
+	
+	protected function _force_close_ujian()
+	{
+		if (!$this->ion_auth->in_group('admin')
+			&& !$this->ion_auth->in_group('pengawas'))
+		{
+			show_404();
+		}
 		
-		$h_ujian = Hujian_orm::findOrFail($id_h_ujian);
-//		$m_ujian = Hujian_orm::findOrFail($h_ujian->ujian_id);
+		$mhs_ujian_id = $this->input->post('id', true);
+		$ended_by = $this->input->post('ended_by', true);
+		$h_ujian = Hujian_orm::where('mahasiswa_ujian_id', $mhs_ujian_id)->firstOrFail();
 		
-		if($allow) {
+		$action = $this->_akhiri_ujian($h_ujian->id, $ended_by);
+		
+		$data = [
+			'status' => $action,
+		];
+		$this->_json($data);
+	}
+	
+	private function _akhiri_ujian($id_h_ujian, $ended_by){
+			$h_ujian = Hujian_orm::findOrFail($id_h_ujian);
+			if($h_ujian->ujian_selesai == 'Y'){
+				// JIKA UJIAN SUDAH PERNAH DIAKHIRI
+				show_error('Ujian sudah diakhiri.', 500, 'Perhatian');
+			}
+			
 			// Get Jawaban
-			$list_jawaban = $this->ujian->getJawaban($id_h_ujian);
+			// $list_jawaban = $this->ujian->getJawaban($id_h_ujian);
 			
 			// Pecah Jawaban
 			$pc_jawaban = $h_ujian->jawaban_ujian;
@@ -1245,11 +1301,6 @@ class Ujian extends MY_Controller {
 					$jumlah_benar++;
 					$bobot_poin = ($jwb->soal->bobot_soal->nilai * $jwb->soal->topik->poin_topik);
 					$total_bobot_benar = $total_bobot_benar + $bobot_poin;
-//					foreach ($topik_ujian_nilai_bobot as $t => $v){
-//						if($t == $jwb->soal->topik_id){
-//
-//						}
-//					}
 					$topik_ujian_nilai_bobot[$jwb->soal->topik_id] = $topik_ujian_nilai_bobot[$jwb->soal->topik_id] + $bobot_poin;
 				}else{
 					$jumlah_salah++;
@@ -1261,38 +1312,21 @@ class Ujian extends MY_Controller {
 //			$total_bobot_benar = $total_bobot;
 			$nilai_bobot = ($total_bobot / $jumlah_soal) * 100;
 			
-			$d_update = [
-				'jml_benar'   => $jumlah_benar,
-				'jml_salah'   => $jumlah_salah,
-				'jml_soal'   => $jumlah_soal,
-				'nilai'       => number_format(floor($nilai), 0),
-//				'nilai_bobot' => number_format(floor($nilai_bobot), 0),
-				'nilai_bobot' => 0,
-				'nilai_bobot_benar'       => $nilai_bobot_benar,
-				'detail_bobot_benar'       => json_encode($topik_ujian_nilai_bobot),
-				'total_bobot'       => $total_bobot,
-				'tgl_selesai'   => date('Y-m-d H:i:s'),
-				'ujian_selesai'      => 'Y',
-				'ended_by' => $ended_by,
-			];
+			$h_ujian->jml_benar =  $jumlah_benar;
+			$h_ujian->jml_salah =  $jumlah_salah;
+			$h_ujian->jml_soal =  $jumlah_soal;
+			$h_ujian->nilai     =  number_format(floor($nilai), 0);
+	//		$h_ujian->nilai_bobot = $nilai_bobot;
+			$h_ujian->nilai_bobot = 0;
+			$h_ujian->nilai_bobot_benar     =  $nilai_bobot_benar;
+			$h_ujian->detail_bobot_benar     =  json_encode($topik_ujian_nilai_bobot);
+			$h_ujian->total_bobot     =  $total_bobot;
+			$h_ujian->tgl_selesai =  date('Y-m-d H:i:s');
+			$h_ujian->ujian_selesai    =  'Y';
+			$h_ujian->ended_by =  $ended_by;
+			$action = $h_ujian->save();
 			
-			$action = $this->master->update('h_ujian', $d_update, 'id', $id_h_ujian);
-			
-			$data = [
-				'status' => $action,
-				'data'   => $d_update,
-				'id'     => $id_h_ujian
-			];
-			
-			$message_rootpage = [
-				'header' => 'Perhatian',
-				'content' => 'Ujian telah selesai.',
-				'type' => 'success'
-			];
-			$this->session->set_flashdata('message_rootpage', $message_rootpage);
-		}
-
-		$this->_json($data);
+			return $action;
 	}
 	
 	public function monitor($id_ujian){
@@ -1422,7 +1456,8 @@ class Ujian extends MY_Controller {
         	    // $status_badge = 'secondary' ;
 	        }
         	
-            return '<span class="badge bg-'. $status_badge .'" id="badge_status_'. $data['nim'] .'">'. $status .'</span>';
+            return '<span class="badge bg-'. $status_badge .'" id="badge_status_'. $data['nim'] .'">'. $status .'</span>
+					<span class="badge bg-warning" id="badge_focus_'. $data['nim'] .'" style="display: none">BUKA PAGE LAIN</span>';
         });
         
         $dt->add('absensi', function ($data) {

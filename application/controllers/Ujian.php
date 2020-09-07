@@ -394,13 +394,16 @@ class Ujian extends MY_Controller {
 						}
 					}
 					
-					$mhs_ujian = Mhs_ujian_orm::where(['ujian_id' => $m_ujian_orm->id_ujian])->get();
+					$mhs_ujian = Mhs_ujian_orm::where(['ujian_id' => $m_ujian_orm->id_ujian])
+												->whereDoesntHave('h_ujian')
+					                            ->get();
 					$peserta_ujian_before = [];
 					if($mhs_ujian->isNotEmpty()){
 						foreach($mhs_ujian as $mu){
 							$peserta_ujian_before[] = $mu->mhs_matkul->mahasiswa_id;
 						}
 					}
+					
 					$mhs_ids_insert = array_diff($peserta, $peserta_ujian_before);
 					$mhs_ids_delete = array_diff($peserta_ujian_before, $peserta);
 					
@@ -410,12 +413,12 @@ class Ujian extends MY_Controller {
 								'mahasiswa_id' => $mhs_id,
 								'matkul_id'    => $m_ujian_orm->matkul_id
 							])->firstOrFail();
-							
+
 							$mhs_ujian_orm = Mhs_ujian_orm::where([
 								'mahasiswa_matkul_id' => $mhs_matkul->id,
 								'ujian_id'            => $m_ujian_orm->id_ujian
 							])->firstOrFail();
-							
+
 							$mhs_ujian_orm->delete();
 						}
 					}
@@ -439,6 +442,7 @@ class Ujian extends MY_Controller {
 				
 				} catch(\Illuminate\Database\QueryException $e){
 					rollback_db_trx();
+					vdebug($e);
 					$action = false;
 			    }
 				

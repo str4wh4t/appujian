@@ -178,14 +178,17 @@ class Pub extends MY_Controller {
 	
 	public function socket(){
 		if(!is_cli()) show_404();
+		
+		$wsServer = new WsServer(new Chat());
+		
 		$server = IoServer::factory(
 		    new HttpServer(
-		        new WsServer(
-		            new Chat()
-		        )
+		        $wsServer
 		    ),
 		    8080
 		);
+		
+		$wsServer->enableKeepAlive($server->loop, 30);
 		
 		$server->run();
 	}
@@ -213,7 +216,15 @@ class Pub extends MY_Controller {
 				if ($today >= $date_end){
 					echo $h_ujian->id . "\n";
 					echo $h_ujian->mhs->nama . "\n";
-				    echo $this->submit_ujian($h_ujian) ? "DONE" : "ERROR" ;
+					if($this->submit_ujian($h_ujian)){
+//						$ws = new Chat();
+//						$ws->send_msg_stop_ujian($h_ujian->mhs->nim, $app_id . '.undip.ac.id');
+						$cmd = 'wscat -c '. ws_url() .' -x  {\"cmd\":\"MHS_STOP_UJIAN\",\"nim\":\"'. $h_ujian->mhs->nim .'\",\"app_id\":\"'. $app_id . '.undip.ac.id' .'\"}';
+						exec($cmd);
+						echo "DONE" ;
+					}else{
+						echo "ERROR" ;
+					}
 				}
 			}
 		}

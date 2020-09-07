@@ -76,6 +76,11 @@ $(document).ready(function () {
                         });
                     }
                 }
+            },
+            error: function () {
+
+            },
+            complete: function () {
                 ajx_overlay(false);
             }
         });

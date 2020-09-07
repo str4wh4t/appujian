@@ -13,25 +13,30 @@ class Chat implements MessageComponentInterface {
     protected $clients;
     protected $data_clients_mhs;
     protected $data_clients_mhs_ips;
+    private $_is_debug ;
 
     public function __construct() {
         $this->clients = new \SplObjectStorage;
         $this->data_absensi = [];
         $this->data_clients_mhs = ['ujian.undip.ac.id' => [], 'cat.undip.ac.id' => []];
         $this->data_clients_mhs_ips = ['ujian.undip.ac.id' => [], 'cat.undip.ac.id' => []];
+        
+        $this->_is_debug = false ;
     }
 
     public function onOpen(ConnectionInterface $conn) {
         // Store the new connection to send messages to later
         $this->clients->attach($conn);
-        echo "New connection! ({$conn->resourceId})\n";
-        
+	    $this->_debug_msg("New connection! ({$conn->resourceId})");
+    
     }
 
     public function onMessage(ConnectionInterface $from, $req) {
         $numRecv = count($this->clients) - 1;
-//        echo sprintf('Connection %d sending req "%s" to %d other connection%s' . "\n"
-//            , $from->resourceId, $req, $numRecv, $numRecv == 1 ? '' : 's');
+        
+		$msg = sprintf('Connection %d sending req "%s" to %d other connection%s' . "\n"
+            , $from->resourceId, $req, $numRecv, $numRecv == 1 ? '' : 's');
+	    $this->_debug_msg($msg);
 
 	    $req = json_decode($req);
 	    $absensi         = [];
@@ -280,6 +285,7 @@ class Chat implements MessageComponentInterface {
 
     public function onClose(ConnectionInterface $conn) {
         // The connection is closed, remove it, as we can no longer send it messages
+	    $this->_debug_msg("Conn ID ({$conn->resourceId}) has disconnected");
         $this->clients->detach($conn);
         foreach($this->data_clients_mhs as $app_id => $array) {
 	        foreach ($array as $nim => $resourceId) {
@@ -324,8 +330,7 @@ class Chat implements MessageComponentInterface {
     }
 
     public function onError(ConnectionInterface $conn, \Exception $e) {
-        echo "An error has occurred: {$e->getMessage()}\n";
-
+	    $this->_debug_msg("An error has occurred: {$e->getMessage()}");
         $conn->close();
     }
     
@@ -337,4 +342,10 @@ class Chat implements MessageComponentInterface {
 //            }
 //        }
 //	}
+	
+	private function _debug_msg($msg){
+    	if($this->_is_debug){
+    		echo $msg."\n";
+	    }
+	}
 }

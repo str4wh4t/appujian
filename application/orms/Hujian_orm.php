@@ -30,7 +30,7 @@ class Hujian_orm extends Eloquent
     
     public function mhs_ujian()
     {
-        return $this->hasOne('Orm\Mhs_ujian_orm','ujian_id', 'mahasiswa_ujian_id' );
+        return $this->hasOne('Orm\Mhs_ujian_orm','id', 'mahasiswa_ujian_id' );
     }
     
 }

@@ -108,10 +108,15 @@ function init_page_level(){
                                 <td>NIK</td>
                                 <td>Tmp Lahir</td>
                                 <td>Tgl Lahir</td>
+                                <td>Jk</td>
                                 <td>Email</td>
                                 <td>No Billkey</td>
                                 <td>Foto</td>
-                                <td>Jk</td>
+                                <td>Kode PS</td>
+                                <td>Prodi</td>
+                                <td>Jalur</td>
+                                <td>Gel</td>
+                                <td>Tahun</td>
                                 <td>Materi Ujian</td>
                             </tr>
                         </thead>
@@ -141,6 +146,9 @@ function init_page_level(){
                                         <td class="<?= ($data['tgl_lahir'] == null || $data['tgl_lahir'] == '!! ERROR !!') ? 'bg-danger text-white' : ''; ?>">
                                             <?= ($data['tgl_lahir'] == null || $data['tgl_lahir'] == '!! ERROR !!') ? '!! ERROR !!' : $data['tgl_lahir']; ?>
                                         </td>
+                                        <td class="<?= ($data['jenis_kelamin'] == null || $data['jenis_kelamin'] == '!! ERROR !!') ? 'bg-danger text-white' : ''; ?>">
+                                            <?= ($data['jenis_kelamin'] == null || $data['jenis_kelamin'] == '!! ERROR !!') ? '!! ERROR !!' : $data['jenis_kelamin']; ?>
+                                        </td>
                                         <td class="<?= ($data['email'] == null || $data['email'] == '!! ERROR !!') ? 'bg-danger text-white' : ''; ?>">
                                             <?= ($data['email'] == null || $data['email'] == '!! ERROR !!') ? '!! ERROR !!' : $data['email']; ?>
                                         </td>
@@ -149,9 +157,6 @@ function init_page_level(){
                                         </td>
                                         <td class="<?= ($data['foto'] == null || $data['foto'] == '!! ERROR !!') ? 'bg-danger text-white' : ''; ?>">
                                             <?= ($data['foto'] == null || $data['foto'] == '!! ERROR !!') ? '!! ERROR !!' : '<img style="width:80px; height:100px;" src="' . $data['foto'] . '" />'; ?>
-                                        </td>
-                                        <td class="<?= ($data['jenis_kelamin'] == null || $data['jenis_kelamin'] == '!! ERROR !!') ? 'bg-danger text-white' : ''; ?>">
-                                            <?= ($data['jenis_kelamin'] == null || $data['jenis_kelamin'] == '!! ERROR !!') ? '!! ERROR !!' : $data['jenis_kelamin']; ?>
                                         </td>
                                         <td class="<?= ($data['kodeps'] == null || $data['kodeps'] == '!! ERROR !!') ? 'bg-danger text-white' : ''; ?>">
                                             <?= ($data['kodeps'] == null || $data['kodeps'] == '!! ERROR !!') ? '!! ERROR !!' : $data['kodeps']; ?>
@@ -168,7 +173,7 @@ function init_page_level(){
                                         <td class="<?= ($data['tahun'] == null || $data['tahun'] == '!! ERROR !!') ? 'bg-danger text-white' : ''; ?>">
                                             <?= ($data['tahun'] == null || $data['tahun'] == '!! ERROR !!') ? '!! ERROR !!' : $data['tahun']; ?>
                                         </td>
-                                        <td class="<?= ($data['matkul'] == null || $data['matkul'] == '!! ERROR !!') ? 'bg-danger text-white' : ''; ?>">
+                                        <td class="<?= (empty($data['matkul'])) ? 'bg-danger text-white' : ''; ?>">
                                             @forelse($data['matkul'] as $matkul)
                                                 <span class="badge bg-success">{{ $matkul->nama_matkul }}</span>
                                             @empty

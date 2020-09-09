@@ -38,8 +38,8 @@
         ];
 
         function isEmail(email) {
-          let regex = /^([a-zA-Z0-9_.+-])+\@(([a-zA-Z0-9-])+\.)+([a-zA-Z0-9]{2,4})+$/;
-          return regex.test(email);
+            let regex = /^([a-zA-Z0-9_.+-])+\@(([a-zA-Z0-9-])+\.)+([a-zA-Z0-9]{2,4})+$/;
+            return regex.test(email);
         }
 
         let emailValidator = function (value, callback) {
@@ -81,7 +81,7 @@
                 data: data,
                 rowHeaders: true,
                 // colHeaders: true,
-                colHeaders:  ['NO PESERTA','NAMA','NIK','TMP LAHIR','TGL LAHIR<br>(YYYY-MM-DD)','EMAIL','NO BILLKEY','FOTO','L/P','KODEPS','PRODI','JALUR','GEL','TAHUN','ID MATERI UJIAN'],
+                colHeaders:  ['NO PESERTA','NAMA','NIK','TMP LAHIR','TGL LAHIR<br>(YYYY-MM-DD)','L/P','EMAIL','NO BILLKEY','FOTO','KODEPS','PRODI','JALUR','GEL','TAHUN','ID MATERI UJIAN'],
                 filters: true,
                 dropdownMenu: true,
                 // minRows: 50,
@@ -99,8 +99,8 @@
                     {},
                     {},
                     {validator: isValidDate, allowInvalid: false},
-                    {validator: emailValidator, allowInvalid: false},
                     {},
+                    {validator: emailValidator, allowInvalid: false},
                     {},
                     {},
                     {},
@@ -123,6 +123,7 @@
         {{--});--}}
 
         $(document).on('click', '#btn_import', function(){
+            ajx_overlay(true);
             let data = hot.getData();
             let allow = true ;
             let row_number = 0;
@@ -161,6 +162,7 @@
                     });
                     hot.updateSettings({data : [['','','','','','','','','','','','','','','']]});
                 }
+                ajx_overlay(false);
               });
             }
 

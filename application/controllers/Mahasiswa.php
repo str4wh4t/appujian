@@ -475,8 +475,7 @@ class Mahasiswa extends MY_Controller
 			$sheetData = $spreadsheet->getActiveSheet()->toArray();
 			$data = [];
 			for ($i = 1; $i < count($sheetData); $i++) {
-				
-				if(count($sheetData[$i]) < 9){
+				if(count($sheetData[$i]) < JML_KOLOM_EXCEL_IMPOR_PESERTA){
 					unlink($file);
 					show_error('Isian file tidak sesuai',500,'Perhatian');
 				}
@@ -520,7 +519,12 @@ class Mahasiswa extends MY_Controller
 				   }
 				}
 				
-				$email = $sheetData[$i][5] ;
+				$jk = $sheetData[$i][5];
+				if(!in_array($jk,['L','P'])){
+					$jk = '!! ERROR !!';
+				}
+				
+				$email = $sheetData[$i][6] ;
 				if(filter_var($email, FILTER_VALIDATE_EMAIL)){
 					if(Mhs_orm::where('email',$email)->first() != null){
 						$email = '!! ERROR !!';
@@ -532,7 +536,7 @@ class Mahasiswa extends MY_Controller
 					$email = '!! ERROR !!';
 				}
 				
-				$no_billkey = strval($sheetData[$i][6]);
+				$no_billkey = strval($sheetData[$i][7]);
 				$no_billkey = str_replace("'" ,"", $no_billkey);
 				if(strlen($no_billkey)> NO_BILLKEY_LENGTH || !ctype_digit($no_billkey)) {
 					$no_billkey = '!! ERROR !!';
@@ -541,7 +545,7 @@ class Mahasiswa extends MY_Controller
 					$no_billkey = '!! ERROR !!';
 				}
 				
-				$foto = $sheetData[$i][7];
+				$foto = $sheetData[$i][8];
 				if(!empty($foto)) {
 					if ($size = @getimagesize($foto)){
 						if (strtolower(substr($size['mime'], 0, 5)) != 'image') {
@@ -550,11 +554,6 @@ class Mahasiswa extends MY_Controller
 					}else{
 						$foto = '!! ERROR !!';
 					}
-				}
-				
-				$jk = $sheetData[$i][8];
-				if(!in_array($jk,['L','P'])){
-					$jk = '!! ERROR !!';
 				}
 				
 				$kodeps = $sheetData[$i][9];
@@ -572,8 +571,8 @@ class Mahasiswa extends MY_Controller
 					$jalur = '!! ERROR !!';
 				}
 				
-				$gel = $sheetData[$i][12];
-				if(strlen($gel) > 250 || strlen($gel) < 3){
+				$gel = strval($sheetData[$i][12]);
+				if(!ctype_digit($gel)){
 					$gel = '!! ERROR !!';
 				}
 				
@@ -582,18 +581,20 @@ class Mahasiswa extends MY_Controller
 					$tahun = '!! ERROR !!';
 				}
 				
+				
 				$matkul = $sheetData[$i][14];
-				$sd = explode(',',$sheetData[$i][9]);
+				$sd = explode(',', $matkul);
+				$matkul = [];
 				if(!empty($sd)){
 					foreach($sd as $s){
 						$m = Matkul_orm::find($s);
 						if($m == null){
-							$m = '!! ERROR !!';
+							$matkul = [];
+							break;
+						}else{
+							$matkul[] = $m;
 						}
-						$matkul[] = $m;
 					}
-				}else{
-					$matkul[] = '!! ERROR !!';
 				}
 				
 				$data[] = [
@@ -683,6 +684,13 @@ class Mahasiswa extends MY_Controller
 			   }
 			}
 			
+			$jk = $d->jenis_kelamin;
+			if(!in_array($jk,['L','P'])){
+				$allow = false;
+				$msg = 'Jenis kelamin bermasalah, jenis kelamin : '. $jk ;
+				break;
+			}
+			
 			$email = $d->email;
 			if(filter_var($email, FILTER_VALIDATE_EMAIL)){
 				if(Mhs_orm::where('email',$email)->first() != null){
@@ -728,12 +736,6 @@ class Mahasiswa extends MY_Controller
 				}
 			}
 			
-			$jk = $d->jenis_kelamin;
-			if(!in_array($jk,['L','P'])){
-				$allow = false;
-				$msg = 'Jenis kelamin bermasalah, jenis kelamin : '. $jk ;
-				break;
-			}
 			
 			$kodeps = $d->kodeps;
 			if(!ctype_digit($kodeps)){
@@ -756,8 +758,8 @@ class Mahasiswa extends MY_Controller
 				break;
 			}
 			
-			$gel = $d->gel;
-			if(strlen($gel) > 250 || strlen($gel) < 3){
+			$gel = strval($d->gel);
+			if(!ctype_digit($gel)){
 				$allow = false;
 				$msg = 'Gel salah, gel : '. $gel ;
 				break;
@@ -891,6 +893,7 @@ class Mahasiswa extends MY_Controller
 			}
 			
 			$nik = strval($d[2]);
+			$nik = str_replace("'" ,"", $nik);
 			if(strlen($nik) != NIK_LENGTH || !ctype_digit($nik)) {
 				$allow = false;
 				$msg = 'Row : '. $i .', NIK salah, nik : ' . $nik  ;
@@ -925,7 +928,14 @@ class Mahasiswa extends MY_Controller
 			   }
 			}
 			
-			$email = $d[5];
+			$jk = $d[5];
+			if(!in_array($jk,['L','P'])){
+				$allow = false;
+				$msg = 'Row : '. $i .', Jenis kelamin bermasalah, jenis kelamin : '. $jk ;
+				break;
+			}
+			
+			$email = $d[6];
 			if(filter_var($email, FILTER_VALIDATE_EMAIL)){
 				if(Mhs_orm::where('email',$email)->first() != null){
 					$allow = false;
@@ -943,7 +953,8 @@ class Mahasiswa extends MY_Controller
 				break;
 			}
 			
-			$no_billkey = $d[6];
+			$no_billkey = strval($d[7]);
+			$no_billkey = str_replace("'" ,"", $no_billkey);
 			if(strlen($no_billkey) > NO_BILLKEY_LENGTH || !ctype_digit($no_billkey)) {
 				$allow = false;
 				$msg = 'Row : '. $i .', No Billkey salah, no_billkey : ' . $no_billkey  ;
@@ -955,7 +966,7 @@ class Mahasiswa extends MY_Controller
 				break;
 			}
 			
-			$foto = $d[7];
+			$foto = $d[8];
 			if(!empty($foto)) {
 				if ($size = @getimagesize($foto)){
 					if (strtolower(substr($size['mime'], 0, 5)) != 'image') {
@@ -970,12 +981,6 @@ class Mahasiswa extends MY_Controller
 				}
 			}
 			
-			$jk = $d[8];
-			if(!in_array($jk,['L','P'])){
-				$allow = false;
-				$msg = 'Row : '. $i .', Jenis kelamin bermasalah, jenis kelamin : '. $jk ;
-				break;
-			}
 			
 			$kodeps = $d[9];
 			if(!ctype_digit($kodeps)){
@@ -998,8 +1003,8 @@ class Mahasiswa extends MY_Controller
 				break;
 			}
 			
-			$gel = $d[12];
-			if(strlen($gel) > 250 || strlen($gel) < 3){
+			$gel = strval($d[12]);
+			if(!ctype_digit($gel)) {
 				$allow = false;
 				$msg = 'Row : '. $i .', Gel bermasalah, gel : '. $gel ;
 				break;

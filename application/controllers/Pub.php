@@ -11,6 +11,7 @@ use Ratchet\Server\IoServer;
 use Ratchet\Http\HttpServer;
 use Ratchet\WebSocket\WsServer;
 use Wsock\Chat;
+use Ratchet\Client;
 
 
 class Pub extends MY_Controller {
@@ -219,8 +220,10 @@ class Pub extends MY_Controller {
 					if($this->submit_ujian($h_ujian)){
 //						$ws = new Chat();
 //						$ws->send_msg_stop_ujian($h_ujian->mhs->nim, $app_id . '.undip.ac.id');
-						$cmd = 'wscat -c '. ws_url() .' -x  {\"cmd\":\"MHS_STOP_UJIAN\",\"nim\":\"'. $h_ujian->mhs->nim .'\",\"app_id\":\"'. $app_id . '.undip.ac.id' .'\"}';
-						exec($cmd);
+//						$cmd = 'wscat -c '. ws_url() .' -x  {\"cmd\":\"MHS_STOP_UJIAN\",\"nim\":\"'. $h_ujian->mhs->nim .'\",\"app_id\":\"'. $app_id . '.undip.ac.id' .'\"}';
+//						exec($cmd);
+						$cmd = '{"cmd":"MHS_STOP_UJIAN","nim":"'. $h_ujian->mhs->nim .'","app_id":"'. $app_id . '.undip.ac.id' .'"}';
+						$this->_notif_ws($cmd);
 						echo "DONE" ;
 					}else{
 						echo "ERROR" ;
@@ -229,6 +232,23 @@ class Pub extends MY_Controller {
 			}
 		}
 		return;
+	}
+	
+//	public function coba(){
+//		$cmd = '{"cmd":"MHS_STOP_UJIAN","nim":"22020090007","app_id":"cat.undip.ac.id"}';
+//		$this->_notif_ws($cmd);
+//	}
+	
+	private function _notif_ws($send_msg = ''){
+		Client\connect(ws_url())->then(function($conn) use ($send_msg){
+	        $conn->on('message', function($msg) use ($conn, $send_msg) {
+	            echo "Received: {$msg}\n";
+	            $conn->close();
+	        });
+	        $conn->send($send_msg);
+	    }, function ($e) {
+	        echo "Could not connect: {$e->getMessage()}\n";
+	    });
 	}
 	
 	public function submit_ujian($h_ujian){
@@ -291,5 +311,5 @@ class Pub extends MY_Controller {
 		return $action;
 		
 	}
-
+	
 }

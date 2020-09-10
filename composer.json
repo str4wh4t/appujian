@@ -18,7 +18,8 @@
         "ramsey/uuid": "^4.0",
         "ozdemir/datatables": "^2.3",
         "codeitnowin/barcode": "^3.0",
-        "cboden/ratchet": "^0.4.3"
+        "cboden/ratchet": "^0.4.3",
+        "ratchet/pawl": "^0.3.5"
     },
     "suggest": {
         "paragonie/random_compat": "Provides better randomness in PHP 5.x"

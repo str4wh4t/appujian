@@ -558,7 +558,7 @@ function selesai(ended_by = '') {
         error: function () {
             Swal({
                 title: "Perhatian",
-                text: "Anda akan keluar ujian dalam 3 detik",
+                text: "Ujian telah selesai, Anda akan keluar ujian dalam 3 detik", // INI TERJADI JIKA TELAH FINISH OLEH CRON TP FUNGSI SELESAI TELAT DITRIGER PESERTA
                 type: "warning"
             });
             setTimeout(function() {

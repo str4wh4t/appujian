@@ -79,8 +79,8 @@ $(document).ready(function(){
 
     /* [START] WEBSOCKET BOOTSTRAP */
     @if(in_group('mahasiswa'))
-        @php($identifier = mt_rand())
-        @php($ip = get_client_ip())
+    @php($identifier = mt_rand())
+    @php($ip = get_client_ip())
         conn = new WebSocket('{{ ws_url() }}');
         conn.onopen = function(e) {
             conn.send(JSON.stringify({
@@ -123,10 +123,9 @@ $(document).ready(function(){
             }));
         };
 
-        let p ;
         setInterval(function() {
             // let mctime = moment().valueOf();
-            p = new Ping();
+            let p = new Ping();
             p.ping("https://{{ APP_ID }}", function(err, data) {
                 // console.log('ping', data);
                 conn.send(JSON.stringify({

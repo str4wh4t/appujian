@@ -21,7 +21,7 @@ class Chat implements MessageComponentInterface {
         $this->data_clients_mhs = ['ujian.undip.ac.id' => [], 'cat.undip.ac.id' => []];
         $this->data_clients_mhs_ips = ['ujian.undip.ac.id' => [], 'cat.undip.ac.id' => []];
         
-        $this->_is_debug = true ;
+        $this->_is_debug = false ;
     }
 
     public function onOpen(ConnectionInterface $conn) {

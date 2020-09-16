@@ -498,9 +498,11 @@ class Mahasiswa extends MY_Controller
 				if(strlen($nik) != NIK_LENGTH || !ctype_digit($nik)) {
 					$nik = '!! ERROR !!';
 				}
-				if(Mhs_orm::where('nik',$nik)->first() != null){
-					$nik = '!! ERROR !!';
-				}
+				
+				/** NIK SEKARANG BOLEH SAMA JD DIMATIKAN DULU LOGIC NYA **/
+//				if(Mhs_orm::where('nik',$nik)->first() != null){
+//					$nik = '!! ERROR !!';
+//				}
 				
 				$tmp_lahir = $sheetData[$i][3];
 				if(strlen($tmp_lahir) > 250 || strlen($tmp_lahir) < 3){
@@ -526,9 +528,12 @@ class Mahasiswa extends MY_Controller
 				
 				$email = $sheetData[$i][6] ;
 				if(filter_var($email, FILTER_VALIDATE_EMAIL)){
-					if(Mhs_orm::where('email',$email)->first() != null){
-						$email = '!! ERROR !!';
-					}
+					
+					/** EMAIL SEKARANG BOLEH SAMA JD DIMATIKAN DULU LOGIC NYA **/
+//					if(Mhs_orm::where('email',$email)->first() != null){
+//						$email = '!! ERROR !!';
+//					}
+					
 					if(strlen($email) > 250){
 						$email = '!! ERROR !!';
 					}
@@ -576,13 +581,18 @@ class Mahasiswa extends MY_Controller
 					$gel = '!! ERROR !!';
 				}
 				
-				$tahun = $sheetData[$i][13];
+				$smt = strval($sheetData[$i][13]);
+				if(!ctype_digit($smt)){
+					$smt = '!! ERROR !!';
+				}
+				
+				$tahun = $sheetData[$i][14];
 				if(strlen($tahun) != 4 || !ctype_digit($tahun)){
 					$tahun = '!! ERROR !!';
 				}
 				
 				
-				$matkul = $sheetData[$i][14];
+				$matkul = $sheetData[$i][15];
 				$sd = explode(',', $matkul);
 				$matkul = [];
 				if(!empty($sd)){
@@ -611,6 +621,7 @@ class Mahasiswa extends MY_Controller
 					'prodi'   => $prodi,
 					'jalur'   => $jalur,
 					'gel'   => $gel,
+					'smt'   => $smt,
 					'tahun'   => $tahun,
 					'matkul' => $matkul
 				];
@@ -655,11 +666,13 @@ class Mahasiswa extends MY_Controller
 				$msg = 'NIK salah, nik : '. $nik ;
 				break;
 			}
-			if(Mhs_orm::where('nik',$nik)->first() != null){
-				$allow = false;
-				$msg = 'NIK sudah terdaftar, nik : '. $nik ;
-				break;
-			}
+			
+			/** NIK SEKARANG BOLEH SAMA JD DIMATIKAN DULU LOGIC NYA **/
+//			if(Mhs_orm::where('nik',$nik)->first() != null){
+//				$allow = false;
+//				$msg = 'NIK sudah terdaftar, nik : '. $nik ;
+//				break;
+//			}
 			
 			$tmp_lahir = $d->tmp_lahir;
 			if(strlen($tmp_lahir) > 250 || strlen($tmp_lahir) < 3){
@@ -693,11 +706,14 @@ class Mahasiswa extends MY_Controller
 			
 			$email = $d->email;
 			if(filter_var($email, FILTER_VALIDATE_EMAIL)){
-				if(Mhs_orm::where('email',$email)->first() != null){
-					$allow = false;
-					$msg = 'Email sudah terdaftar, email : '. $email ;
-					break;
-				}
+				
+				/** EMAIL SEKARANG BOLEH SAMA JD DIMATIKAN DULU LOGIC NYA **/
+//				if(Mhs_orm::where('email',$email)->first() != null){
+//					$allow = false;
+//					$msg = 'Email sudah terdaftar, email : '. $email ;
+//					break;
+//				}
+				
 				if(strlen($email) > 250){
 					$allow = false;
 					$msg = 'Email bermasalah, email : '. $email ;
@@ -765,6 +781,13 @@ class Mahasiswa extends MY_Controller
 				break;
 			}
 			
+			$smt = strval($d->smt);
+			if(!ctype_digit($smt)){
+				$allow = false;
+				$msg = 'Smt salah, smt : '. $smt ;
+				break;
+			}
+			
 			$tahun = $d->tahun;
 			if(strlen($tahun) != 4 || !ctype_digit($tahun)){
 				$allow = false;
@@ -807,6 +830,7 @@ class Mahasiswa extends MY_Controller
 			$mhs->prodi         = $prodi;
 			$mhs->jalur         = $jalur;
 			$mhs->gel         = $gel;
+			$mhs->smt         = $smt;
 			$mhs->tahun         = $tahun;
 			$mhs->save();
 			
@@ -899,11 +923,13 @@ class Mahasiswa extends MY_Controller
 				$msg = 'Row : '. $i .', NIK salah, nik : ' . $nik  ;
 				break;
 			}
-			if(Mhs_orm::where('nik',$nik)->first() != null){
-				$allow = false;
-				$msg = 'Row : '. $i .', NIK sudah terdaftar, nik : '. $nik ;
-				break;
-			}
+			
+			/** NIK SEKARANG BOLEH SAMA JD DIMATIKAN DULU LOGIC NYA **/
+//			if(Mhs_orm::where('nik',$nik)->first() != null){
+//				$allow = false;
+//				$msg = 'Row : '. $i .', NIK sudah terdaftar, nik : '. $nik ;
+//				break;
+//			}
 			
 			$tmp_lahir = $d[3];
 			if(strlen($tmp_lahir) > 50 || strlen($tmp_lahir) < 3){
@@ -937,11 +963,14 @@ class Mahasiswa extends MY_Controller
 			
 			$email = $d[6];
 			if(filter_var($email, FILTER_VALIDATE_EMAIL)){
-				if(Mhs_orm::where('email',$email)->first() != null){
-					$allow = false;
-					$msg = 'Row : '. $i .', Email sudah terdaftar, email : '. $email ;
-					break;
-				}
+				
+				/** EMAIL SEKARANG BOLEH SAMA JD DIMATIKAN DULU LOGIC NYA **/
+//				if(Mhs_orm::where('email',$email)->first() != null){
+//					$allow = false;
+//					$msg = 'Row : '. $i .', Email sudah terdaftar, email : '. $email ;
+//					break;
+//				}
+				
 				if(strlen($email) > 250){
 					$allow = false;
 					$msg = 'Row : '. $i .', Email bermasalah, email : '. $email ;
@@ -1010,7 +1039,14 @@ class Mahasiswa extends MY_Controller
 				break;
 			}
 			
-			$tahun = $d[13];
+			$smt = strval($d[13]);
+			if(!ctype_digit($smt)) {
+				$allow = false;
+				$msg = 'Row : '. $i .', Smt bermasalah, smt : '. $smt ;
+				break;
+			}
+			
+			$tahun = $d[14];
 			if(strlen($tahun) != 4 || !ctype_digit($tahun)){
 				$allow = false;
 				$msg = 'Row : '. $i .', Tahun bermasalah, tahun : '. $tahun ;
@@ -1018,7 +1054,7 @@ class Mahasiswa extends MY_Controller
 			}
 			
 			$matkul_list = [];
-			$sd = explode(',',$d[14]);
+			$sd = explode(',',$d[15]);
 			if(!empty($sd)){
 				foreach($sd as $s){
 					$m = Matkul_orm::find($s);
@@ -1052,6 +1088,7 @@ class Mahasiswa extends MY_Controller
 			$mhs->prodi         = $prodi;
 			$mhs->jalur         = $jalur;
 			$mhs->gel         = $gel;
+			$mhs->smt         = $smt;
 			$mhs->tahun         = $tahun;
 			$mhs->save();
 			
@@ -1199,6 +1236,7 @@ class Mahasiswa extends MY_Controller
 					$mhs->kodeps = $mhs_source->kodeps;
 					$mhs->jalur = $mhs_source->jalur;
 					$mhs->gel = $mhs_source->gel;
+					$mhs->smt = $mhs_source->smt;
 					$mhs->tahun = $mhs_source->tahun;
 					$mhs->save();
 					
@@ -1273,10 +1311,12 @@ class Mahasiswa extends MY_Controller
 	protected function _check_sync(){
 		$jalur = $this->input->post('jalur[]');
 		$gel = $this->input->post('gel[]');
+		$smt = $this->input->post('smt[]');
 		$tahun = $this->input->post('tahun[]');
 		
 		$mhs_source = Mhs_source_orm::whereIn('jalur', $jalur)
 										->whereIn('gel', $gel)
+										->whereIn('smt', $smt)
 										->whereIn('tahun', $tahun)
 										->get();
 		
@@ -1289,6 +1329,7 @@ class Mahasiswa extends MY_Controller
 		
 		$mhs = Mhs_orm::whereIn('jalur', $jalur)
 						->whereIn('gel', $gel)
+						->whereIn('smt', $smt)
 						->whereIn('tahun', $tahun)
 						->get();
 		
@@ -1312,10 +1353,12 @@ class Mahasiswa extends MY_Controller
 		ini_set('max_execution_time', 0);
 		$jalur = $this->input->post('jalur[]');
 		$gel = $this->input->post('gel[]');
+		$smt = $this->input->post('smt[]');
 		$tahun = $this->input->post('tahun[]');
 		
 		$mhs_source = Mhs_source_orm::whereIn('jalur', $jalur)
 										->whereIn('gel', $gel)
+										->whereIn('smt', $smt)
 										->whereIn('tahun', $tahun)
 										->get();
 		
@@ -1328,6 +1371,7 @@ class Mahasiswa extends MY_Controller
 		
 		$mhs = Mhs_orm::whereIn('jalur', $jalur)
 						->whereIn('gel', $gel)
+						->whereIn('smt', $smt)
 						->whereIn('tahun', $tahun)
 						->get();
 		
@@ -1366,6 +1410,7 @@ class Mahasiswa extends MY_Controller
 					$mhs->kodeps = $mhs_source->kodeps;
 					$mhs->prodi = $mhs_source->prodi;
 					$mhs->gel = $mhs_source->gel;
+					$mhs->smt = $mhs_source->smt;
 					$mhs->jalur = $mhs_source->jalur;
 					$mhs->tahun = $mhs_source->tahun;
 					$mhs->save();

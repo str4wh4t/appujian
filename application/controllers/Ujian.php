@@ -110,13 +110,16 @@ class Ujian extends MY_Controller {
         
         $matkul_id = $this->input->get('m');
         $data['matkul_dipilih'] = $matkul_id;
+        $topik = [];
         if(null != $matkul_id){
 	        /**
 	         * LOGIC INI SUDAH TIDAK DIGUNAKAN KRN TOPIK DIABIL VIA AJAX
 	         */
         	$matkul = Matkul_orm::findOrFail($matkul_id);
-        	$data['topik'] = $matkul->topik;
+        	$topik = $matkul->topik;
         }
+
+        $data['topik'] = $topik;
         
         $data['bobot_soal'] = Bobot_soal_orm::all();
         $data['peserta_avail'] = [];
@@ -224,6 +227,7 @@ class Ujian extends MY_Controller {
 		$this->form_validation->set_rules('tgl_mulai', 'Tanggal Mulai', 'required');
 		$this->form_validation->set_rules('tgl_selesai', 'Tanggal Selesai', 'required');
 		$this->form_validation->set_rules('waktu', 'Waktu', 'required|integer|max_length[4]|greater_than[0]');
+		$this->form_validation->set_rules('masa_berlaku_sert', 'Masa Berlaku Sertifikat', 'required|is_natural');
 //		$this->form_validation->set_rules('pakai_token', 'Pakai Token', 'required|in_list[Y,N]');
 		$this->form_validation->set_rules('jenis', 'Acak Soal', 'required|in_list[acak,urut]');
 		$this->form_validation->set_rules('jenis_jawaban', 'Acak Jawaban', 'required|in_list[acak,urut]');
@@ -248,6 +252,7 @@ class Ujian extends MY_Controller {
 				'tgl_mulai' 	=> form_error('tgl_mulai'),
 				'tgl_selesai' 	=> form_error('tgl_selesai'),
 				'waktu' 		=> form_error('waktu'),
+				'masa_berlaku_sert' 		=> form_error('masa_berlaku_sert'),
 //				'pakai_token' 		=> form_error('pakai_token'),
 				'jenis' 		=> form_error('jenis'),
 				'jenis_jawaban' 		=> form_error('jenis_jawaban'),
@@ -284,6 +289,7 @@ class Ujian extends MY_Controller {
 			$tgl_mulai 		= $this->input->post('tgl_mulai', true);
 			$tgl_selesai	= $this->input->post('tgl_selesai', true);
 			$waktu			= $this->input->post('waktu', true);
+			$masa_berlaku_sert			= $this->input->post('masa_berlaku_sert', true);
 			$pakai_token			= $this->input->post('pakai_token', true) == 'on' ? '1' : '0';
 			$tampilkan_hasil			= $this->input->post('tampilkan_hasil', true) == 'on' ? '1' : '0';
 			$tampilkan_tutorial			= $this->input->post('tampilkan_tutorial', true) == 'on' ? '1' : '0';
@@ -299,6 +305,7 @@ class Ujian extends MY_Controller {
 				'tgl_mulai' 	=> $tgl_mulai,
 				'terlambat' 	=> $tgl_selesai,
 				'waktu' 		=> $waktu,
+				'masa_berlaku_sert' 		=> $masa_berlaku_sert,
 				'pakai_token' 		=> $pakai_token,
 				'tampilkan_hasil' 		=> $tampilkan_hasil,
 				'tampilkan_tutorial' 		=> $tampilkan_tutorial,
@@ -320,6 +327,7 @@ class Ujian extends MY_Controller {
 					$m_ujian_orm->tgl_mulai = $input['tgl_mulai'];
 					$m_ujian_orm->terlambat = $input['terlambat'];
 					$m_ujian_orm->waktu = $input['waktu'];
+					$m_ujian_orm->masa_berlaku_sert = $input['masa_berlaku_sert'];
 					$m_ujian_orm->jenis = $input['jenis'];
 					$m_ujian_orm->jenis_jawaban = $input['jenis_jawaban'];
 					$m_ujian_orm->token		= strtoupper(random_string('alpha', 5));
@@ -372,6 +380,7 @@ class Ujian extends MY_Controller {
 					$m_ujian_orm->tgl_mulai = $input['tgl_mulai'];
 					$m_ujian_orm->terlambat = $input['terlambat'];
 					$m_ujian_orm->waktu = $input['waktu'];
+					$m_ujian_orm->masa_berlaku_sert = $input['masa_berlaku_sert'];
 					$m_ujian_orm->jenis = $input['jenis'];
 					$m_ujian_orm->jenis_jawaban = $input['jenis_jawaban'];
 	//				$m_ujian_orm->token = $input['token'];
@@ -442,12 +451,12 @@ class Ujian extends MY_Controller {
 				
 				} catch(\Illuminate\Database\QueryException $e){
 					rollback_db_trx();
-					vdebug($e);
+					show_error($e->getMessage(), 500, 'Perhatian');
 					$action = false;
 			    }
 				
 			}
-			$data['status'] = $action ? TRUE : FALSE;
+			$data['status'] = $action;
 		}
 		$this->_json($data);
 	}

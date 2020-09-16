@@ -411,6 +411,11 @@ $(document).on('click','#btn_submit_search',function () {
                     <small class="help-block"></small>
                 </div>
                 <div class="form-group">
+                    <label for="waktu">Masa Berlaku Sertifikat</label> <small class="help-block text-danger"><b>***</b> Dalam satuan tahun, jika tidak perlu sertifikat silahkan beri angka 0</small>
+                    <input placeholder="Masa berlaku sertifikat" type="number" value="<?=$ujian->masa_berlaku_sert?>" class="form-control" name="masa_berlaku_sert">
+                    <small class="help-block"></small>
+                </div>
+                <div class="form-group">
                     <label for="pakai_token">Pakai Token</label>
                     <div>
                         <input type="radio" class="switchBootstrap" id="pakai_token" name="pakai_token" data-on-text="Pakai" data-off-text="Tidak" data-radio-all-off="true" data-on-color="success" data-off-color="danger" {!! $ujian->pakai_token == 1 ? 'checked="checked"' : '' !!} />

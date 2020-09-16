@@ -25,6 +25,7 @@
 <!-- BEGIN PAGE LEVEL JS-->
 <script type="text/javascript">
 $(document).on('click','#btn_sync_pendaftaran',function() {
+    $('#form_sync_mhs').trigger("reset");
     $('#modal_sync_mahasiswa').modal('show');
 });
 
@@ -183,6 +184,9 @@ $(document).on('click','#btn_proses_sync_mhs',function(){
                         <label><input type="checkbox" name="gel[]" value="1"> 1</label>&nbsp;
                         <label><input type="checkbox" name="gel[]" value="2"> 2</label>&nbsp;
                         <label><input type="checkbox" name="gel[]" value="3"> 3</label>&nbsp;
+                        <h4 class="form-section">Semester</h4>
+                        <label><input type="checkbox" name="smt[]" value="1"> 1</label>&nbsp;
+                        <label><input type="checkbox" name="smt[]" value="2"> 2</label>&nbsp;
                         <h4 class="form-section">Tahun</h4>
                         <label><input type="checkbox" name="tahun[]" value="2020"> 2020</label>&nbsp;
                     </div>

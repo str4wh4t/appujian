@@ -313,9 +313,10 @@ class Ujian_model extends CI_Model {
     public function HslUjianById($id, $dt=false)
     {
     	
-    	$this->db->select('d.id, a.nim, a.nama, d.detail_bobot_benar, d.nilai, d.nilai_bobot_benar');
+    	$this->db->select('d.id, a.nim, a.nama, d.detail_bobot_benar, d.nilai, d.nilai_bobot_benar, b.masa_berlaku_sert');
         $this->db->from('h_ujian d');
 		$this->db->join('mahasiswa a', 'a.id_mahasiswa = d.mahasiswa_id');
+		$this->db->join('m_ujian b', 'd.ujian_id = b.id_ujian');
         $this->db->where([ 'd.ujian_id' => $id, 'd.ujian_selesai' => 'Y']);
         $this->db->group_by('a.id_mahasiswa');
         $this->db->order_by('d.nilai_bobot_benar','desc');
@@ -369,8 +370,10 @@ class Ujian_model extends CI_Model {
 	        	if(is_admin()){
 	        	    $return = '<div class="btn-group">';
 	        	    $return .= '<button class="btn btn-sm btn-danger btn_reset_hasil" type="button" title="Reset ujian" data-id="'. $data['id'] .'"><i class="fa fa-times-circle"></i></button>';
-	        	    if(APP_ID == 'cat.undip.ac.id')
-		                $return .= '<a class="btn btn-sm btn-info btn_cetak_hasil" target="_blank" href="'. url('pub/cetak_sertifikat/' . $data['nim'] . '/' . uuid_create_from_integer($id)) .'" title="Cetak hasil"><i class="fa fa-print"></i></a>';
+	        	    if(APP_ID == 'cat.undip.ac.id'){
+	        	    	if($data['masa_berlaku_sert'] > 0)
+		                    $return .= '<a class="btn btn-sm btn-info btn_cetak_hasil" target="_blank" href="'. url('pub/cetak_sertifikat/' . $data['nim'] . '/' . uuid_create_from_integer($id)) .'" title="Cetak hasil"><i class="fa fa-print"></i></a>';
+		            }
 		            $return .= '</div>';
 		        }else{
 	        		$return = '-';

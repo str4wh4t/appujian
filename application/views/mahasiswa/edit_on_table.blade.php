@@ -34,7 +34,7 @@
     <!-- BEGIN PAGE LEVEL JS-->
     <script type="text/javascript">
         let data = [
-          ['','','','','','','','','','','','','','',''],
+          ['','','','','','','','','','','','','','','',''],
         ];
 
         function isEmail(email) {
@@ -81,14 +81,14 @@
                 data: data,
                 rowHeaders: true,
                 // colHeaders: true,
-                colHeaders:  ['NO PESERTA','NAMA','NIK','TMP LAHIR','TGL LAHIR<br>(YYYY-MM-DD)','L/P','EMAIL','NO BILLKEY','FOTO','KODEPS','PRODI','JALUR','GEL','TAHUN','ID MATERI UJIAN'],
+                colHeaders:  ['NO PESERTA','NAMA','NIK','TMP LAHIR','TGL LAHIR<br>(YYYY-MM-DD)','L/P','EMAIL','NO BILLKEY','FOTO','KODEPS','PRODI','JALUR','GEL','SMT','TAHUN','ID MATERI UJIAN'],
                 filters: true,
                 dropdownMenu: true,
                 // minRows: 50,
                 // maxRows: 50,
                 width: 925,
                 height: 500,
-                colWidths: [150, 200, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150],
+                colWidths: [150, 200, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150],
                 // rowHeights: [50, 40, 100],
                 manualColumnResize: false,
                 manualRowResize: true,
@@ -101,6 +101,7 @@
                     {validator: isValidDate, allowInvalid: false},
                     {},
                     {validator: emailValidator, allowInvalid: false},
+                    {},
                     {},
                     {},
                     {},
@@ -123,7 +124,7 @@
         {{--});--}}
 
         $(document).on('click', '#btn_import', function(){
-            ajx_overlay(true);
+
             let data = hot.getData();
             let allow = true ;
             let row_number = 0;
@@ -144,26 +145,25 @@
                 alert('Data ada yang kosong pada row : ' + (row_number + 1) + ', col : ' + (col_number + 1) + ', silahkan diperbaiki dahulu');
                 hot.selectCell(row_number,col_number);
             }else{
-                // console.log(JSON.stringify(data));
+                ajx_overlay(true);
                 ajaxcsrf();
-              $.post('{{ site_url('mahasiswa/ajax/table_import') }}',{'data' : JSON.stringify(data)}, function (res) {
-                // let res = JSON.parse(result);
-                if(!res.status){
-                    swal({
-                       title: "Perhatian",
-                       text: res.msg,
-                       type: "warning"
-                    });
-                }else{
-                    swal({
-                       title: "Perhatian",
-                       text: "Data berhasil di impor.",
-                       type: "success"
-                    });
-                    hot.updateSettings({data : [['','','','','','','','','','','','','','','']]});
-                }
-                ajx_overlay(false);
-              });
+                $.post('{{ site_url('mahasiswa/ajax/table_import') }}', {'data': JSON.stringify(data)}, function (res) {
+                    if (!res.status) {
+                        swal({
+                            title: "Perhatian",
+                            text: res.msg,
+                            type: "warning"
+                        });
+                    } else {
+                        swal({
+                            title: "Perhatian",
+                            text: "Data berhasil di impor.",
+                            type: "success"
+                        });
+                        hot.updateSettings({data: [['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '']]});
+                    }
+                    ajx_overlay(false);
+                });
             }
 
             // console.log(data);

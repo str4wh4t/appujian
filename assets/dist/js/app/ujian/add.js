@@ -24,10 +24,9 @@ $(document).ready(function () {
     $('#formujian').on('submit', function (e) {
         e.preventDefault();
         e.stopImmediatePropagation();
-
         let btn = $('#submit');
         btn.attr('disabled', 'disabled').text('Proses...');
-
+        ajx_overlay(true);
         $.ajax({
             url: $(this).attr('action'),
             data: $(this).serialize(),
@@ -55,6 +54,16 @@ $(document).ready(function () {
                         });
                     }
                 }
+            },
+            error: function () {
+                Swal({
+                    "title": "Perhatian",
+                    "type": "warning",
+                    "text": "Terdapat kesalahan pada data"
+                });
+            },
+            complete: function () {
+                ajx_overlay(false);
             }
         });
     });

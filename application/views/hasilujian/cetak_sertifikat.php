@@ -1,6 +1,8 @@
 <?php
 // Extend the TCPDF class to create custom Header and Footer
 class MYPDF extends TCPDF {
+	
+	private $_masa_berlaku_sert ;
     
     public function Header() {
 //        $image_file = K_PATH_IMAGES.'logo_example.jpg';
@@ -20,7 +22,11 @@ class MYPDF extends TCPDF {
     public function Footer() {
         $this->SetY(-15);
         $this->SetFont('helvetica', 'I', 8);
-        $this->Cell(0, 10, 'Sertifikat berlaku selama 1 tahun sejak saat tes dilakukan', 0, false, 'R', 0, '', 0, false, 'T', 'M');
+        $this->Cell(0, 10, 'Sertifikat berlaku selama '. $this->_masa_berlaku_sert .' tahun sejak saat tes dilakukan', 0, false, 'R', 0, '', 0, false, 'T', 'M');
+    }
+    
+    public function set_masa_berlaku_sert($masa_berlaku_sert){
+    	$this->_masa_berlaku_sert = $masa_berlaku_sert;
     }
 }
 
@@ -66,6 +72,8 @@ $pdf->SetFont('helvetica', '', 10);
 
 // add a page
 $pdf->AddPage('L', 'A4');
+
+$pdf->set_masa_berlaku_sert($ujian->masa_berlaku_sert);
 
 $tmp_lahir =  strtoupper($mhs->tmp_lahir);
 

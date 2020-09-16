@@ -324,9 +324,10 @@ $(document).on('click','#btn_submit_search',function () {
                 <div class="form-group">
                     <label>Topik</label>
                     <select name="topik_id" id="topik_id" class="form-control" style="width:100% !important" multiple="multiple">
-                        @foreach($topik as $d)
+                        @forelse($topik as $d)
                             <option value="{{ $d->id }}">{{ $d->nama_topik }}</option>
-                        @endforeach
+                        @empty
+                        @endforelse
                     </select> <small class="help-block" style="color: #dc3545"><?=form_error('topik_id')?></small>
                 </div>
                 <div>
@@ -383,7 +384,12 @@ $(document).on('click','#btn_submit_search',function () {
                 </div>
                 <div class="form-group">
                     <label for="waktu">Waktu</label>
-                    <input placeholder="menit" type="number" class="form-control" name="waktu">
+                    <input placeholder="Menit" type="number" class="form-control" name="waktu">
+                    <small class="help-block"></small>
+                </div>
+                <div class="form-group">
+                    <label for="waktu">Masa Berlaku Sertifikat</label> <small class="help-block text-danger"><b>***</b> Dalam satuan tahun, jika tidak perlu sertifikat silahkan beri angka 0</small>
+                    <input placeholder="Masa berlaku sertifikat" type="number" value="0" class="form-control" name="masa_berlaku_sert">
                     <small class="help-block"></small>
                 </div>
                 <div class="form-group">

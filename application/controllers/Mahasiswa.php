@@ -1440,7 +1440,7 @@ class Mahasiswa extends MY_Controller
 		
 		} catch(\Illuminate\Database\QueryException $e){
 			rollback_db_trx();
-			vdebug($e->getMessage());
+			show_error($e->getMessage(), 500, 'Perhatian');
 			$action = false;
 	    }
 		$this->_json(['status' => $action]);

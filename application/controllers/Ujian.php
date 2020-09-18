@@ -1395,15 +1395,20 @@ class Ujian extends MY_Controller {
 		$id = $this->input->post('id');
 		$as = $this->input->post('as');
 		
+		$pengawas_id = 'ALL';
+		
 		if($as == 'pengawas'){
 			$user_id = $this->input->post('user_id');
-			$users_groups    = Users_groups_orm::where([
-			    'user_id'  => $user_id,
-			    'group_id' => PENGAWAS_GROUP_ID
-		    ])->firstOrFail();
-			
-			$pengawas_id = $users_groups->id;
+			if($user_id != 'ALL'){
+				$users_groups    = Users_groups_orm::where([
+				    'user_id'  => $user_id,
+				    'group_id' => PENGAWAS_GROUP_ID
+			    ])->firstOrFail();
+				
+				$pengawas_id = $users_groups->id;
+			}
 		}
+		
 		
 		$m_ujian = Mujian_orm::findOrFail($id);
 		$config = [
@@ -1422,7 +1427,10 @@ class Ujian extends MY_Controller {
 		$this->db->join('h_ujian AS e', 'a.id = e.mahasiswa_ujian_id', 'left');
         $this->db->where([ 'a.ujian_id' => $m_ujian->id_ujian]);
 		if($as == 'pengawas'){
-			$this->db->where('d.absen_by', $pengawas_id);
+			if($pengawas_id != 'ALL')
+				$this->db->where('d.absen_by', $pengawas_id);
+			else
+				$this->db->where('d.absen_by IS NOT NULL', NULL, FALSE);
 		}
         $this->db->group_by('a.id');
         $this->db->order_by('c.nim');

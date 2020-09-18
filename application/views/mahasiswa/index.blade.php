@@ -67,20 +67,27 @@ $(document).on('click','#btn_proses_sync_mhs',function(){
                                 });
                             }
                             reload_ajax();
+                        }, error: function () {
+                            Swal({
+                                title: "Gagal",
+                                text: "Terjadi kesalahan",
+                                type: "error"
+                            });
+                        },complete: function(){
                             ajx_overlay(false);
-                        }
+                        },
                     });
                 }
             });
-            ajx_overlay(false);
         }, error: function () {
             Swal({
                 title: "Gagal",
                 text: "Terjadi kesalahan",
                 type: "error"
             });
+        },complete: function(){
             ajx_overlay(false);
-        }
+        },
     });
 });
 </script>

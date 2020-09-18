@@ -96,19 +96,19 @@ body {
           "<'row'<'col-sm-5'i><'col-sm-7'p>>",
         buttons: [
           @if(in_group('pengawas'))
-          {
-              text: '<i class="fa fa-save"></i> Tampilkan Absensi Anda',
-              className: 'btn btn-info btn-glow',
-              action: function ( e, dt, node, config ) {
-                  load_absen_pengawas();
-              }
-          },
+          // {
+          //     text: '<i class="fa fa-save"></i> Tampilkan Absensi Anda',
+          //     className: 'btn btn-info btn-glow',
+          //     action: function ( e, dt, node, config ) {
+          //         load_absen_pengawas();
+          //     }
+          // },
           @endif
             {
-                  text: '<i class="fa fa-th"></i> Tampilkan Absensi Semua',
+                  text: '<i class="fa fa-th"></i> Tampilkan Semua Daftar Peserta',
                   className: 'btn btn-success btn-glow ml-1',
                   action: function ( e, dt, node, config ) {
-                      load_absen_semua();
+                      reset_filter_dt();
                   }
             }
       ],
@@ -309,6 +309,7 @@ body {
         let mahasiswa_ujian_id = $(this).data('id');
         let nim = $(this).data('nim');
 
+        ajx_overlay(true);
         $.post('{{ url('ujian/ajax/absen_pengawas') }}', {'mahasiswa_ujian_id' : mahasiswa_ujian_id, 'nim' : nim}, function (res){
             if(res.ok) {
                 conn.send(JSON.stringify({
@@ -320,6 +321,8 @@ body {
                     'app_id': '{{ APP_ID }}',
                 }));
             }
+        }).always(function() {
+            ajx_overlay(false);
         });
 
     });
@@ -337,6 +340,7 @@ body {
             if (result.value) {
                 let mahasiswa_ujian_id = $(this).data('id');
                 let nim = $(this).data('nim');
+                ajx_overlay(true);
                 $.post('{{ url('ujian/ajax/absen_pengawas') }}', {'mahasiswa_ujian_id' : mahasiswa_ujian_id, 'nim' : nim, 'aksi' : 'batal'}, function (res){
                     if(res.ok) {
                         conn.send(JSON.stringify({
@@ -347,8 +351,16 @@ body {
                             'cmd': 'DO_ABSENSI_BATAL',
                             'app_id': '{{ APP_ID }}',
                         }));
+                    }else{
+                        Swal({
+                            title: "Perhatian",
+                            text: "Kesalahan pada absen",
+                            type: "warning"
+                        });
                     }
-                });
+                }).always(function() {
+                    ajx_overlay(false);
+            });
 
 
             }
@@ -429,11 +441,17 @@ body {
     }
 
     function load_absen_semua(){
-        as = null;
-        user_id = null;
+        as = 'pengawas';
+        user_id = 'ALL';
 
         // table.ajax.url('{!! url('ujian/ajax/data_daftar_hadir') !!}') .load()
         table.ajax.reload();
+    }
+
+    function reset_filter_dt(){
+        as = null;
+        user_id = null;
+        table.search('').columns().search('').draw();
     }
 
     $(document).on('click','.btn_kick',function(){
@@ -556,6 +574,14 @@ $(document).on('click','#btn_reload_foto',function(){
     );
 });
 
+$(document).on('click','#btn_absensi_pengawas',function(){
+    load_absen_pengawas();
+});
+
+$(document).on('click','#btn_absensi_semua',function(){
+    load_absen_semua();
+});
+
 
 </script>
 <!-- END PAGE LEVEL JS-->
@@ -586,12 +612,12 @@ $(document).on('click','#btn_reload_foto',function(){
                 </button>
 
                 @if(in_group('pengawas'))
-                <button type="button" class="btn btn-outline-primary btn-glow">
+                <button type="button" class="btn btn-outline-primary btn-glow" id="btn_absensi_pengawas">
                     JUMLAH MHS ABSEN OLEH ANDA : <span id="jml_mhs_absen_by_self">0</span>
                 </button>
                 @endif
 
-                <button type="button" class="btn btn-outline-danger btn-glow">
+                <button type="button" class="btn btn-outline-danger btn-glow" id="btn_absensi_semua">
                     JUMLAH MHS SUDAH ABSEN TOTAL : <span id="jml_mhs_absen">0</span>
                 </button>
         </div>

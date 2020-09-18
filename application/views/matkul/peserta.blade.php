@@ -125,13 +125,14 @@ function init_peserta_table_value(){
                         $('<td>').text(item.prodi),
                         $('<td>').text(item.jalur),
                         $('<td>').text(item.gel),
+                        $('<td>').text(item.smt),
                         $('<td>').text(item.tahun),
                         $('<td>').css('text-align', 'center').append(chkbox)
                     ).appendTo('#tbody_tb_peserta');
                 });
             }else{
                 $('<tr>').append(
-                        $('<td>').text('Tidak ada peserta tersedia').attr('colspan', '5').css('text-align', 'center')
+                        $('<td>').text('Tidak ada peserta tersedia').attr('colspan', '9').css('text-align', 'center')
                     ).appendTo('#tbody_tb_peserta');
             }
             $('#peserta_hidden').val(JSON.stringify(mhs_matkul_existing));
@@ -159,6 +160,7 @@ $(document).on('click','#btn_reset_search',function () {
     $('#search_prodi_pes').val('');
     $('#search_jalur_pes').val('');
     $('#search_gel_pes').val('');
+    $('#search_smt_pes').val('');
     $('#search_tahun_pes').val('');
     $('#btn_submit_search').trigger('click');
 });
@@ -169,6 +171,7 @@ $(document).on('click','#btn_submit_search',function () {
     let prodi_pes = $('#search_prodi_pes').val();
     let jalur_pes = $('#search_jalur_pes').val();
     let gel_pes = $('#search_gel_pes').val();
+    let smt_pes = $('#search_smt_pes').val();
     let tahun_pes = $('#search_tahun_pes').val();
 
     let found = false ;
@@ -181,13 +184,15 @@ $(document).on('click','#btn_submit_search',function () {
         let td_prodi_pes = row.find("td:nth-child(4)").text() ;
         let td_jalur_pes = row.find("td:nth-child(5)").text() ;
         let td_gel_pes = row.find("td:nth-child(6)").text() ;
-        let td_tahun_pes = row.find("td:nth-child(7)").text() ;
+        let td_smt_pes = row.find("td:nth-child(7)").text() ;
+        let td_tahun_pes = row.find("td:nth-child(8)").text() ;
 
         if (td_nama_pes.includes(nama_pes.trim().toUpperCase())
             && td_no_pes.includes(no_pes.trim().toUpperCase())
             && td_prodi_pes.includes(prodi_pes.trim().toUpperCase())
             && td_jalur_pes.includes(jalur_pes.trim().toUpperCase())
             && td_gel_pes.includes(gel_pes.trim().toUpperCase())
+            && td_smt_pes.includes(smt_pes.trim().toUpperCase())
             && td_tahun_pes.includes(tahun_pes.trim().toUpperCase())){
             row.show();
             found = true;
@@ -198,7 +203,7 @@ $(document).on('click','#btn_submit_search',function () {
 
     if(!found){
         $('<tr id="tr_search_not_found">').append(
-                        $('<td>').text('Tidak ada peserta tersedia').attr('colspan', '8').css('text-align', 'center')
+                        $('<td>').text('Tidak ada peserta tersedia').attr('colspan', '9').css('text-align', 'center')
                     ).appendTo('#tbody_tb_peserta');
     }
 });
@@ -267,6 +272,7 @@ $(document).on('click','#btn_submit_search',function () {
                                 <th>Prodi</th>
                                 <th>Jalur</th>
                                 <th>Gel</th>
+                                <th>Smt</th>
                                 <th>Tahun</th>
                                 <th style="text-align: center"><input type="checkbox" id="chkbox_pilih_semua_peserta"></th>
                             </tr>
@@ -277,6 +283,7 @@ $(document).on('click','#btn_submit_search',function () {
                                 <th><input class="form-control search_pes" id="search_prodi_pes"></th>
                                 <th><input class="form-control search_pes" id="search_jalur_pes"></th>
                                 <th><input class="form-control search_pes" id="search_gel_pes"></th>
+                                <th><input class="form-control search_pes" id="search_smt_pes"></th>
                                 <th><input class="form-control search_pes" id="search_tahun_pes"></th>
                                 <th style="text-align: center">
                                     <button id="btn_submit_search" class="btn btn-info" type="button"><i class="fa fa-search"></i></button>
@@ -285,7 +292,7 @@ $(document).on('click','#btn_submit_search',function () {
                         </thead>
                         <tbody id="tbody_tb_peserta">
                             <tr>
-                                <td colspan="8" style="text-align: center">Tidak ada peserta tersedia</td>
+                                <td colspan="9" style="text-align: center">Tidak ada peserta tersedia</td>
                             </tr>
                         </tbody>
                     </table>

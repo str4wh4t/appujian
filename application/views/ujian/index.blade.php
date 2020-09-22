@@ -1,13 +1,13 @@
 @extends('template.main')
 
 @push('page_level_css')
-    <!-- BEGIN PAGE LEVEL JS-->
-    {{--<link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/vendors/css/tables/datatable/datatables.min.css') }}">--}}
-    {{--<link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/vendors/css/tables/datatable/dataTables.bootstrap4.min.css') }}">--}}
-    {{--<link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/vendors/css/tables/extensions/rowReorder.dataTables.min.css') }}">--}}
-    {{--<link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/vendors/css/tables/extensions/responsive.dataTables.min.css') }}">--}}
-    <link rel="stylesheet" type="text/css" href="{{ asset('assets/plugins/enjoyhint/enjoyhint.css') }}" rel="stylesheet">
-    <!-- END PAGE LEVEL JS-->
+<!-- BEGIN PAGE LEVEL JS-->
+{{--<link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/vendors/css/tables/datatable/datatables.min.css') }}">--}}
+{{--<link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/vendors/css/tables/datatable/dataTables.bootstrap4.min.css') }}">--}}
+{{--<link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/vendors/css/tables/extensions/rowReorder.dataTables.min.css') }}">--}}
+{{--<link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/vendors/css/tables/extensions/responsive.dataTables.min.css') }}">--}}
+<link rel="stylesheet" type="text/css" href="{{ asset('assets/plugins/enjoyhint/enjoyhint.css') }}" rel="stylesheet">
+<!-- END PAGE LEVEL JS-->
 @endpush
 
 @push('page_custom_css')
@@ -181,21 +181,22 @@ legend{
 @endpush
 
 @push('page_vendor_level_js')
-    <!-- BEGIN PAGE VENDOR JS-->
+<!-- BEGIN PAGE VENDOR JS-->
 {{--    <script src="{{ asset('assets/template/robust/app-assets/vendors/js/tables/datatable/datatables.min.js') }}"></script>--}}
-    {{--<script src="{{ asset('assets/template/robust/app-assets/vendors/js/tables/jquery.dataTables.min.js') }}"></script>--}}
-    {{--<script src="{{ asset('assets/template/robust/app-assets/vendors/js/tables/datatable/dataTables.bootstrap4.min.js') }}"></script>--}}
-    {{--<script src="{{ asset('assets/template/robust/app-assets/vendors/js/tables/datatable/dataTables.responsive.min.js') }}"></script>--}}
-    {{--<script src="{{ asset('assets/template/robust/app-assets/vendors/js/tables/datatable/dataTables.rowReorder.min.js') }}"></script>--}}
-    <script src="{{ asset('assets/bower_components/moment/min/moment.min.js') }}"></script>
-    <script src="https://momentjs.com/downloads/moment-with-locales.js"></script>
+{{--<script src="{{ asset('assets/template/robust/app-assets/vendors/js/tables/jquery.dataTables.min.js') }}"></script>--}}
+{{--<script src="{{ asset('assets/template/robust/app-assets/vendors/js/tables/datatable/dataTables.bootstrap4.min.js') }}"></script>--}}
+{{--<script src="{{ asset('assets/template/robust/app-assets/vendors/js/tables/datatable/dataTables.responsive.min.js') }}"></script>--}}
+{{--<script src="{{ asset('assets/template/robust/app-assets/vendors/js/tables/datatable/dataTables.rowReorder.min.js') }}"></script>--}}
+<script src="{{ asset('assets/yarn/node_modules/moment/min/moment.min.js') }}"></script>
+{{--    <script src="https://momentjs.com/downloads/moment-with-locales.js"></script>--}}
+<script src="{{ asset('assets/yarn/node_modules/moment/min/moment-with-locales.min.js') }}"></script>
 {{--     <script src="https://cdnjs.cloudflare.com/ajax/libs/screenfull.js/5.0.2/screenfull.min.js"></script>--}}
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/kineticjs/5.2.0/kinetic.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-scrollTo/2.1.2/jquery.scrollTo.min.js"></script>
-    <script src="{{ asset('assets/plugins/enjoyhint/enjoyhint.min.js') }}"></script>
-
-    <!-- END PAGE VENDOR JS -->
+{{--<script src="https://cdnjs.cloudflare.com/ajax/libs/kineticjs/5.2.0/kinetic.js"></script>--}}
+<script src="{{ asset('assets/yarn/node_modules/kinetic/kinetic.min.js') }}"></script>
+{{--<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-scrollTo/2.1.2/jquery.scrollTo.min.js"></script>--}}
+<script src="{{ asset('assets/yarn/node_modules/jquery.scrollto/jquery.scrollTo.min.js') }}"></script>
+<script src="{{ asset('assets/plugins/enjoyhint/enjoyhint.min.js') }}"></script>
+<!-- END PAGE VENDOR JS -->
 @endpush
 
 @push('page_level_js')
@@ -263,10 +264,10 @@ let update_time = () => {
                     $('#btn_lanjut_ujian').removeClass('btn-danger').addClass('btn-success');
                     if(duration.as('milliseconds') == 599000){
                         // JIKA WAKTU KURANG 10 MENIT
-                        Swal({
+                        Swal.fire({
                           title: "Perhatian",
                           text: "Waktu ujian kurang dari 10 menit",
-                          type: "warning"
+                          icon: "warning"
                         });
                         // alert("Waktu ujian kurang dari 10 menit");
                     }
@@ -296,7 +297,7 @@ let update_time = () => {
 
 $(document).on('click','#btn_lanjut_ujian',function(){
     if($(this).hasClass('btn-danger')){
-        Swal('Perhatian', 'Anda berada diluar jadwal ujian', 'error');
+        Swal.fire('Perhatian', 'Anda berada diluar jadwal ujian', 'error');
         return false;
     }else{
         location.href = '{!! site_url('ujian/?key='. $one_time_token .'&id='. $id_tes ) !!}';
@@ -488,10 +489,10 @@ $(document).on('click','#nav_opener',function() {
 });
 
 window.onblur = function () {
-    Swal({
+    Swal.fire({
         title: "Perhatian",
         text: "Anda diperingatkan tidak boleh membuka halaman lain, semua aktifitas anda direkam oleh sistem untuk penilaian",
-        type: "warning"
+        icon: "warning"
     });
     conn.send(JSON.stringify({
         'nim':'{{ get_logged_user()->username }}',
@@ -545,10 +546,10 @@ function selesai(ended_by = '') {
                     'cmd':'MHS_STOP_UJIAN',
                     'app_id': '{{ APP_ID }}',
                 }));
-                Swal({
+                Swal.fire({
                     title: "Perhatian",
                     text: "Ujian telah selesai, anda akan keluar ujian dalam 3 detik",
-                    type: "success"
+                    icon: "success"
                 });
                 setTimeout(function() {
                     window.location.href = '{{ url('ujian/list') }}';
@@ -556,10 +557,10 @@ function selesai(ended_by = '') {
             }
         },
         error: function () {
-            Swal({
+            Swal.fire({
                 title: "Perhatian",
                 text: "Ujian telah selesai, Anda akan keluar ujian dalam 3 detik", // INI TERJADI JIKA TELAH FINISH OLEH CRON TP FUNGSI SELESAI TELAT DITRIGER PESERTA
-                type: "warning"
+                icon: "warning"
             });
             setTimeout(function() {
                 window.location.href = '{{ url('ujian/list') }}';

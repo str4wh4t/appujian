@@ -24,7 +24,7 @@
         $('#truncate').on('click', function(e){
             e.preventDefault();
             
-            Swal({
+            Swal.fire({
                 text: "Kosongkan Table",
                 title: "Anda yakin?",
                 type: "question",
@@ -35,7 +35,7 @@
                     $(this).attr('disabled', 'disabled').text('Proses...');
                     var jqxhr = $.getJSON('<?=base_url()?>settings/truncate', function(response){
                         if(response.status){
-                            Swal({
+                            Swal.fire({
                                 title: "Berhasil",
                                 text: "Semua table sudah dikosongkan, kecuali akun Admin pada table user.",
                                 type: "success",

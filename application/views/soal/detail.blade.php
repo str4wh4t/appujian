@@ -7,15 +7,6 @@
 {{--<link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/vendors/css/tables/extensions/rowReorder.dataTables.min.css') }}">--}}
 {{--<link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/vendors/css/tables/extensions/responsive.dataTables.min.css') }}">--}}
 <link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/vendors/css/forms/selects/select2.min.css') }}">
-<!-- Include TUI CSS. -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tui-image-editor@3.2.2/dist/tui-image-editor.css">
-<link rel="stylesheet" href="https://uicdn.toast.com/tui-color-picker/latest/tui-color-picker.css">
-<!-- textarea editor -->
-<link rel="stylesheet" href="{{ asset('assets/bower_components/codemirror/lib/codemirror.min.css') }}">
-<link rel="stylesheet" href="{{ asset('assets/bower_components/froala_editor/css/froala_editor.pkgd.min.css') }}">
-<link rel="stylesheet" href="{{ asset('assets/bower_components/froala_editor/css/froala_style.min.css') }}">
-<link rel="stylesheet" href="{{ asset('assets/bower_components/froala_editor/css/themes/royal.min.css') }}">
-<link rel="stylesheet" href="{{ asset('assets/bower_components/froala_editor/css/third_party/image_tui.min.css') }}">
 <!-- END PAGE LEVEL JS-->
 @endpush
 
@@ -28,16 +19,6 @@
 {{--<script src="{{ asset('assets/template/robust/app-assets/vendors/js/tables/datatable/dataTables.responsive.min.js') }}"></script>--}}
 {{--<script src="{{ asset('assets/template/robust/app-assets/vendors/js/tables/datatable/dataTables.rowReorder.min.js') }}"></script>--}}
 <script src="{{ asset('assets/template/robust/app-assets/vendors/js/forms/select/select2.full.min.js') }}"></script>
-<!-- Include TUI JS. -->
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/1.6.7/fabric.min.js"></script>
-<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/tui-code-snippet@1.4.0/dist/tui-code-snippet.min.js"></script>
-<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/tui-image-editor@3.2.2/dist/tui-image-editor.min.js"></script>
-<!-- Textarea editor -->
-<script src="{{ asset('assets/bower_components/codemirror/lib/codemirror.min.js') }}"></script>
-<script src="{{ asset('assets/bower_components/codemirror/mode/xml.min.js') }}"></script>
-<script src="{{ asset('assets/bower_components/froala_editor/js/froala_editor.pkgd.min.js') }}"></script>
-<script src="{{ asset('assets/bower_components/froala_editor/js/third_party/image_tui.min.js') }}"></script>
-{{--<script src="{{ asset('assets/assets/plugins/froala_wiris/wiris.js') }}"></script>--}}
 <!-- END PAGE VENDOR -->
 @endpush
 

@@ -5,11 +5,11 @@
 <!-- BEGIN PAGE VENDOR JS (GLOBAL)-->
 {{--<script src="{{ asset('assets/template/robust/app-assets/vendors/js/forms/icheck/icheck.min.js') }}"></script>--}}
 {{--<script src="{{ asset('assets/template/robust/app-assets/vendors/js/extensions/sweetalert.min.js') }}"></script>--}}
-<script src="{{ asset('assets/bower_components/sweetalert2/sweetalert2.all.min.js') }}"></script>
-<script src="https://cdn.jsdelivr.net/npm/gasparesganga-jquery-loading-overlay@2.1.7/dist/loadingoverlay.min.js"></script>
+{{--<script src="{{ asset('assets/bower_components/sweetalert2/sweetalert2.all.min.js') }}"></script>--}}
+<script src="{{ asset('assets/yarn/node_modules/sweetalert2/dist/sweetalert2.all.min.js') }}"></script>
+{{--<script src="{{ asset('assets/yarn/node_modules/sweetalert/dist/sweetalert.min.js') }}"></script>--}}
+<script src="{{ asset('assets/yarn/node_modules/gasparesganga-jquery-loading-overlay/dist/loadingoverlay.min.js') }}"></script>
 <script src="{{ asset('assets/plugins/ifvisible.js') }}"></script>
-{{--<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/moment-with-locales.min.js" integrity="sha512-qSnlnyh7EcD3vTqRoSP4LYsy2yVuqqmnkM9tW4dWo6xvAoxuVXyM36qZK54fyCmHoY1iKi9FJAUZrlPqmGNXFw==" crossorigin="anonymous"></script>--}}
-{{--<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/locale/id.min.js" integrity="sha512-he8U4ic6kf3kustvJfiERUpojM8barHoz0WYpAUDWQVn61efpm3aVAD8RWL8OloaDDzMZ1gZiubF9OSdYBqHfQ==" crossorigin="anonymous"></script>--}}
 <script src="{{ asset('assets/plugins/ping.min.js') }}"></script>
 <!-- END PAGE VENDOR JS (GLOBAL)-->
 
@@ -154,7 +154,7 @@ $(document).ready(function(){
     @endif
     /* [END] WEBSOCKET BOOTSTRAP */
 
-    swal.setDefaults({ heightAuto : false }); // remove heightAuto in swal2 because broken the height of page when appeaer
+    // swal.setDefaults({ heightAuto : false }); // remove heightAuto in swal2 because broken the height of page when appeaer
 
     if (typeof init_page_level == 'function') {
 		/**
@@ -165,10 +165,10 @@ $(document).ready(function(){
 
     @if(flash_data('message_rootpage'))
         @php($msg = flash_data('message_rootpage'))
-        swal({
+        Swal.fire({
            title: "{{ $msg['header'] }}",
            text: "{{ $msg['content'] }}",
-           type: "{{ $msg['type'] }}"
+           icon: "{{ $msg['type'] }}"
         });
     @endif
 

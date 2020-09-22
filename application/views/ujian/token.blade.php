@@ -1,13 +1,13 @@
 @extends('template.main')
 
 @push('page_level_css')
-    <!-- BEGIN PAGE LEVEL JS-->
-    {{--<link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/vendors/css/tables/datatable/datatables.min.css') }}">--}}
-    {{--<link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/vendors/css/tables/datatable/dataTables.bootstrap4.min.css') }}">--}}
-    {{--<link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/vendors/css/tables/extensions/rowReorder.dataTables.min.css') }}">--}}
-    {{--<link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/vendors/css/tables/extensions/responsive.dataTables.min.css') }}">--}}
-    <link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/css/plugins/animate/animate.css') }}">
-    <!-- END PAGE LEVEL JS-->
+<!-- BEGIN PAGE LEVEL JS-->
+{{--<link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/vendors/css/tables/datatable/datatables.min.css') }}">--}}
+{{--<link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/vendors/css/tables/datatable/dataTables.bootstrap4.min.css') }}">--}}
+{{--<link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/vendors/css/tables/extensions/rowReorder.dataTables.min.css') }}">--}}
+{{--<link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/vendors/css/tables/extensions/responsive.dataTables.min.css') }}">--}}
+<link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/css/plugins/animate/animate.css') }}">
+<!-- END PAGE LEVEL JS-->
 @endpush
 
 @push('page_custom_css')
@@ -24,15 +24,15 @@
 @endpush
 
 @push('page_vendor_level_js')
-    <!-- BEGIN PAGE VENDOR JS-->
+<!-- BEGIN PAGE VENDOR JS-->
 {{--    <script src="{{ asset('assets/template/robust/app-assets/vendors/js/tables/datatable/datatables.min.js') }}"></script>--}}
-    {{--<script src="{{ asset('assets/template/robust/app-assets/vendors/js/tables/jquery.dataTables.min.js') }}"></script>--}}
-    {{--<script src="{{ asset('assets/template/robust/app-assets/vendors/js/tables/datatable/dataTables.bootstrap4.min.js') }}"></script>--}}
-    {{--<script src="{{ asset('assets/template/robust/app-assets/vendors/js/tables/datatable/dataTables.responsive.min.js') }}"></script>--}}
-    {{--<script src="{{ asset('assets/template/robust/app-assets/vendors/js/tables/datatable/dataTables.rowReorder.min.js') }}"></script>--}}
-    <script src="{{ asset('assets/bower_components/moment/min/moment.min.js') }}"></script>
-    <script src="https://momentjs.com/downloads/moment-with-locales.js"></script>
-    <!-- END PAGE VENDOR -->
+{{--<script src="{{ asset('assets/template/robust/app-assets/vendors/js/tables/jquery.dataTables.min.js') }}"></script>--}}
+{{--<script src="{{ asset('assets/template/robust/app-assets/vendors/js/tables/datatable/dataTables.bootstrap4.min.js') }}"></script>--}}
+{{--<script src="{{ asset('assets/template/robust/app-assets/vendors/js/tables/datatable/dataTables.responsive.min.js') }}"></script>--}}
+{{--<script src="{{ asset('assets/template/robust/app-assets/vendors/js/tables/datatable/dataTables.rowReorder.min.js') }}"></script>--}}
+<script src="{{ asset('assets/yarn/node_modules/moment/min/moment.min.js') }}"></script>
+<script src="{{ asset('assets/yarn/node_modules/moment/min/moment-with-locales.min.js') }}"></script>
+<!-- END PAGE VENDOR -->
 @endpush
 
 @push('page_level_js')
@@ -141,7 +141,7 @@
 
         $(document).on('click','#btn_lanjut_ujian',function(){
             if($(this).hasClass('btn-danger')){
-                Swal('Perhatian', 'Anda berada diluar jadwal ujian', 'error');
+                Swal.fire('Perhatian', 'Anda berada diluar jadwal ujian', 'error');
                 return false;
             }else{
                 location.href = '{!! site_url('ujian/?key='. $one_time_token .'&id='. $encrypted_id .'&token='. $token ) !!}';
@@ -151,10 +151,10 @@
         $(document).on('click','#btn_lanjut_modal_tata_tertib',function(){
             let setuju = $('#chk_setuju_tata_tertib').is(":checked");
             if(setuju){
-                 Swal({
+                 Swal.fire({
                     title: "Mulai Ujian",
                     text: "Ujian yang sudah dimulai tidak dapat dibatalkan.",
-                    type: "warning",
+                    icon: "warning",
                     showCancelButton: true,
                     confirmButtonColor: "#37bc9b",
                     cancelButtonColor: "#f6bb42",
@@ -168,10 +168,10 @@
                         }
                     });
             }else{
-                Swal({
+                Swal.fire({
                     title: "Perhatian",
                     text: "Anda belum menyetujui tata tertib ujian.",
-                    type: "warning"
+                    icon: "warning"
                 }).then(result => {
                     if (result.value) {
                         $('#div_setuju_tata_tertib').addClass('blink');

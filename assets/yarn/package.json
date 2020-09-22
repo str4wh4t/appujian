@@ -1,0 +1,21 @@
+{
+  "name": "yarn",
+  "version": "1.0.0",
+  "description": "app ujian",
+  "main": "index.js",
+  "author": "idrez.mochamad@gmail.com",
+  "license": "MIT",
+  "dependencies": {
+    "bootstrap4-datetimepicker": "^5.2.3",
+    "datatables.net-plugins": "^1.10.20",
+    "gasparesganga-jquery-loading-overlay": "^2.1.7",
+    "inputmask": "^5.0.5",
+    "jquery-validation": "^1.19.2",
+    "jquery.scrollto": "^2.1.2",
+    "kinetic": "^5.2.0",
+    "moment": "^2.29.0",
+    "summernote": "^0.8.18",
+    "sweetalert": "^2.1.2",
+    "sweetalert2": "^10.3.1"
+  }
+}

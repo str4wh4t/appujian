@@ -151,8 +151,10 @@
     <!-- END ROBUST JS-->
     <!-- BEGIN PAGE LEVEL JS-->
     <script src="{{ asset('assets/template/robust/app-assets/js/scripts/forms/form-login-register.js') }}"></script>
-    <script src="https://rawgit.com/RobinHerbots/Inputmask/5.x/dist/jquery.inputmask.js"></script>
-    <script src="https://cdn.jsdelivr.net/jquery.validation/1.16.0/jquery.validate.min.js"></script>
+{{--    <script src="https://rawgit.com/RobinHerbots/Inputmask/5.x/dist/jquery.inputmask.js"></script>--}}
+    <script src="{{ asset('assets/yarn/node_modules/inputmask/dist/jquery.inputmask.min.js') }}"></script>
+{{--    <script src="https://cdn.jsdelivr.net/jquery.validation/1.16.0/jquery.validate.min.js"></script>--}}
+    <script src="{{ asset('assets/yarn/node_modules/jquery-validation/dist/jquery.validate.min.js') }}"></script>
     <!-- END PAGE LEVEL JS-->
     <script type="text/javascript">
         function init_login_super(){
@@ -186,7 +188,7 @@
         // $("#identity").inputmask("email");
 
         let validator = $("#form_login").validate({
-            debug: true,
+            debug: false,
             ignore: [],
             rules: {
                 // 'identity': {required: true, email: true},

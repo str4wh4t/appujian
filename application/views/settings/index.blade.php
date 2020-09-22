@@ -12,8 +12,7 @@
 @push('page_vendor_level_js')
 <!-- BEGIN PAGE VENDOR JS-->
 <script src="{{ asset('assets/template/robust/app-assets/vendors/js/tables/datatable/datatables.min.js') }}"></script>
-<script src="//cdn.datatables.net/plug-ins/1.10.21/api/fnPagingInfo.js"></script>
-
+<script src="{{ asset('assets/yarn/node_modules/datatables.net-plugins/api/fnPagingInfo.js') }}"></script>
 {{--<script src="{{ asset('assets/template/robust/app-assets/vendors/js/tables/jquery.dataTables.min.js') }}"></script>--}}
 {{--<script src="{{ asset('assets/template/robust/app-assets/vendors/js/tables/datatable/dataTables.bootstrap4.min.js') }}"></script>--}}
 {{--<script src="{{ asset('assets/template/robust/app-assets/vendors/js/tables/datatable/dataTables.responsive.min.js') }}"></script>--}}
@@ -27,11 +26,11 @@
         $(document).on('click','#truncate', function(e){
             e.preventDefault();
 
-            Swal({
+            Swal.fire({
                 // heightAuto : false,
                 text: "Kosongkan Table",
                 title: "Anda yakin?",
-                type: "question",
+                icon: "question",
                 showCancelButton: true,
                 cancelButtonColor: '#dd4b39'
             }).then((result) => {
@@ -39,10 +38,10 @@
                     $(this).attr('disabled', 'disabled').text('Proses...');
                     var jqxhr = $.getJSON('{{ site_url('settings/ajax/truncate') }}', function(response){
                         if(response.status){
-                            Swal({
+                            Swal.fire({
                                 title: "Berhasil",
                                 text: "Semua table sudah dikosongkan, kecuali akun Admin pada table user.",
-                                type: "success",
+                                icon: "success",
                             });
                         }
                     });

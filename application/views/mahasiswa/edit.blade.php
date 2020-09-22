@@ -7,7 +7,7 @@
 {{--<link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/vendors/css/tables/extensions/rowReorder.dataTables.min.css') }}">--}}
 {{--<link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/vendors/css/tables/extensions/responsive.dataTables.min.css') }}">--}}
 <link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/vendors/css/forms/selects/select2.min.css') }}">
-<link rel="stylesheet" type="text/css" href="{{ asset('assets/bower_components/bootstrap4-datetimepicker/build/css/bootstrap-datetimepicker.css') }}">
+<link rel="stylesheet" type="text/css" href="{{ asset('assets/yarn/node_modules/bootstrap4-datetimepicker/build/css/bootstrap-datetimepicker.css') }}">
 <link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/vendors/css/forms/toggle/bootstrap-switch.min.css') }}">
 <!-- END PAGE LEVEL JS-->
 @endpush
@@ -21,8 +21,8 @@
 {{--<script src="{{ asset('assets/template/robust/app-assets/vendors/js/tables/datatable/dataTables.responsive.min.js') }}"></script>--}}
 {{--<script src="{{ asset('assets/template/robust/app-assets/vendors/js/tables/datatable/dataTables.rowReorder.min.js') }}"></script>--}}
 <script src="{{ asset('assets/template/robust/app-assets/vendors/js/forms/select/select2.full.min.js') }}"></script>
-<script src="{{ asset('assets/bower_components/moment/min/moment.min.js') }}"></script>
-<script src="{{ asset('assets/bower_components/bootstrap4-datetimepicker/build/js/bootstrap-datetimepicker.min.js') }}"></script>
+<script src="{{ asset('assets/yarn/node_modules/moment/min/moment.min.js') }}"></script>
+<script src="{{ asset('assets/yarn/node_modules/bootstrap4-datetimepicker/build/js/bootstrap-datetimepicker.min.js') }}"></script>
 <script src="{{ asset('assets/template/robust/app-assets/vendors/js/forms/toggle/bootstrap-switch.min.js') }}"></script>
 <!-- END PAGE VENDOR -->
 @endpush
@@ -96,10 +96,10 @@ function readURL(input) {
 $("#imgInp").change(function(e) {
   let ok = readURL(this);
   if(!ok){
-      swal({
+      Swal.fire({
            title: "Perhatian",
            text: "File foto tidak didukung",
-           type: "warning"
+           icon: "warning"
         });
       $(this).val('');
   }
@@ -131,10 +131,10 @@ $(document).on('keyup','input[name="foto"]',function(){
 $(document).on('click','#btn_set_materi',function(){
     let val = $('#matkul').val();
     if(!val.length){
-        Swal({
-            "title": "Perhatian",
-            "text": "Materi ujian tidak boleh kosong",
-            "type": "warning"
+        Swal.fire({
+            title: "Perhatian",
+            text: "Materi ujian tidak boleh kosong",
+            icon: "warning"
         });
         return false;
     }
@@ -143,17 +143,17 @@ $(document).on('click','#btn_set_materi',function(){
         type: 'POST',
         data: {'matkul' : JSON.stringify(val), 'mhs_id' : '{{ $mahasiswa->id_mahasiswa }}'},
         success: function (data) {
-            Swal({
-                "title": "Sukses",
-                "text": "Data berhasil disimpan",
-                "type": "success"
+            Swal.fire({
+                title: "Sukses",
+                text: "Data berhasil disimpan",
+                icon: "success"
             });
         },
         error: function(){
-            Swal({
-                "title": "Perhatian",
-                "text": "Simpan gagal",
-                "type": "warning"
+            Swal.fire({
+                title: "Perhatian",
+                text: "Simpan gagal",
+                icon: "warning"
             });
         }
     });

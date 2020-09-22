@@ -12,7 +12,7 @@
 @push('page_vendor_level_js')
 <!-- BEGIN PAGE VENDOR JS-->
 <script src="{{ asset('assets/template/robust/app-assets/vendors/js/tables/datatable/datatables.min.js') }}"></script>
-<script src="//cdn.datatables.net/plug-ins/1.10.21/api/fnPagingInfo.js"></script>
+<script src="{{ asset('assets/yarn/node_modules/datatables.net-plugins/api/fnPagingInfo.js') }}"></script>
 
 {{--<script src="{{ asset('assets/template/robust/app-assets/vendors/js/tables/jquery.dataTables.min.js') }}"></script>--}}
 {{--<script src="{{ asset('assets/template/robust/app-assets/vendors/js/tables/datatable/dataTables.bootstrap4.min.js') }}"></script>--}}
@@ -39,10 +39,10 @@ $(document).on('click','#btn_proses_sync_mhs',function(){
         data: $('#form_sync_mhs').serialize(),
         type: "POST",
         success: function (respon) {
-            Swal({
+            Swal.fire({
                 title: "Perhatian",
                 text: "Data akan di-tambah : " + respon.jml_tambah , // + ", dan di-hapus : " + respon.jml_hapus,
-                type: "warning",
+                icon: "warning",
                 showCancelButton: true,
                 confirmButtonText: "Proses"
             }).then(result => {
@@ -54,24 +54,24 @@ $(document).on('click','#btn_proses_sync_mhs',function(){
                         type: "POST",
                         success: function (respon) {
                             if (respon.status) {
-                                Swal({
+                                Swal.fire({
                                     title: "Berhasil",
                                     text: "Data berhasil di-sync",
-                                    type: "success"
+                                    icon: "success"
                                 });
                             } else {
-                                Swal({
+                                Swal.fire({
                                     title: "Gagal",
                                     text: "Tidak ada data yg di sync",
-                                    type: "error"
+                                    icon: "error"
                                 });
                             }
                             reload_ajax();
                         }, error: function () {
-                            Swal({
+                            Swal.fire({
                                 title: "Gagal",
                                 text: "Terjadi kesalahan",
-                                type: "error"
+                                icon: "error"
                             });
                         },complete: function(){
                             ajx_overlay(false);
@@ -80,10 +80,10 @@ $(document).on('click','#btn_proses_sync_mhs',function(){
                 }
             });
         }, error: function () {
-            Swal({
+            Swal.fire({
                 title: "Gagal",
                 text: "Terjadi kesalahan",
-                type: "error"
+                icon: "error"
             });
         },complete: function(){
             ajx_overlay(false);
@@ -91,7 +91,7 @@ $(document).on('click','#btn_proses_sync_mhs',function(){
     });
 });
 </script>
-<script src="{{ asset('assets/dist/js/app/master/mahasiswa/index.js?u=') . mt_rand() }}"></script>
+<script src="{{ asset('assets/dist/js/app/master/mahasiswa/index.js') }}"></script>
 <!-- END PAGE LEVEL JS-->
 @endpush
 

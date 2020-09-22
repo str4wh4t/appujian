@@ -18,7 +18,7 @@
 <!-- Include TUI Froala Editor CSS. -->
 {{--<link rel="stylesheet" href="{{ asset('assets/bower_components/froala_editor/css/third_party/image_tui.min.css') }}">--}}
 
-<link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-bs4.min.css" rel="stylesheet">
+<link href="{{ asset('assets/yarn/node_modules/summernote/dist/summernote-bs4.min.css') }}" rel="stylesheet">
 <link href="{{ asset('assets/plugins/summernote_plugins/summernote-audio.css') }}" rel="stylesheet">
 
 <!-- END PAGE LEVEL JS-->
@@ -45,7 +45,7 @@
 <!-- Include TUI plugin. -->
 {{--<script src="{{ asset('assets/bower_components/froala_editor/js/third_party/image_tui.min.js') }}"></script>--}}
 
-<script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-bs4.min.js"></script>
+<script src="{{ asset('assets/yarn/node_modules/summernote/dist/summernote-bs4.min.js') }}"></script>
 
 <script src="{{ asset('assets/plugins/select2-cascade.js') }}"></script>
 <script src="{{ asset('assets/plugins/summernote_plugins/summernote-cleaner.js') }}"></script>

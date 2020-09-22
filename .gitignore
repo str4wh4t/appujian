@@ -6,3 +6,4 @@
 composer.phar
 /.idea
 application/config/constants.php
+/assets/yarn/node_modules/*

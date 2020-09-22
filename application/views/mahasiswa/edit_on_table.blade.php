@@ -1,21 +1,21 @@
 @extends('template.main')
 
 @push('page_vendor_level_css')
-    <!-- BEGIN PAGE VENDOR LEVEL JS-->
-    <link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/vendors/css/tables/handsontable/handsontable.full.min.css') }}">
-    <link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/vendors/css/tables/handsontable/jsgrid-theme.min.css') }}">
-    <link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/vendors/css/tables/handsontable/jsgrid.min.css') }}">
-    <!-- END PAGE VENDOR LEVEL JS-->
+<!-- BEGIN PAGE VENDOR LEVEL JS-->
+<link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/vendors/css/tables/handsontable/handsontable.full.min.css') }}">
+<link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/vendors/css/tables/handsontable/jsgrid-theme.min.css') }}">
+<link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/vendors/css/tables/handsontable/jsgrid.min.css') }}">
+<!-- END PAGE VENDOR LEVEL JS-->
 @endpush
 
 @push('page_level_css')
-    <!-- BEGIN PAGE LEVEL JS-->
-    {{-- <link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/vendors/css/tables/datatable/datatables.min.css') }}">--}}
-    {{-- <link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/vendors/css/tables/datatable/dataTables.bootstrap4.min.css') }}">--}}
-    {{-- <link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/vendors/css/tables/extensions/rowReorder.dataTables.min.css') }}">--}}
-    {{-- <link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/vendors/css/tables/extensions/responsive.dataTables.min.css') }}">--}}
-    <link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/css/plugins/tables/handsontable.css') }}">
-    <!-- END PAGE LEVEL JS-->
+<!-- BEGIN PAGE LEVEL JS-->
+{{-- <link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/vendors/css/tables/datatable/datatables.min.css') }}">--}}
+{{-- <link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/vendors/css/tables/datatable/dataTables.bootstrap4.min.css') }}">--}}
+{{-- <link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/vendors/css/tables/extensions/rowReorder.dataTables.min.css') }}">--}}
+{{-- <link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/vendors/css/tables/extensions/responsive.dataTables.min.css') }}">--}}
+<link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/css/plugins/tables/handsontable.css') }}">
+<!-- END PAGE LEVEL JS-->
 @endpush
 
 @push('page_custom_css')
@@ -23,7 +23,7 @@
 
 @push('page_vendor_level_js')
 <!-- BEGIN PAGE VENDOR JS-->
-<script src="{{ asset('assets/bower_components/moment/min/moment.min.js') }}"></script>
+<script src="{{ asset('assets/yarn/node_modules/moment/min/moment.min.js') }}"></script>
 <script src="{{ asset('assets/template/robust/app-assets/vendors/js/tables/handsontable/handsontable.full.js') }}"></script>
 <script src="{{ asset('assets/template/robust/app-assets/vendors/js/tables/handsontable/jsgrid.min.js') }}"></script>
 <script src="{{ asset('assets/template/robust/app-assets/vendors/js/tables/handsontable/languages.min.js') }}"></script>
@@ -149,16 +149,16 @@
                 ajaxcsrf();
                 $.post('{{ site_url('mahasiswa/ajax/table_import') }}', {'data': JSON.stringify(data)}, function (res) {
                     if (!res.status) {
-                        swal({
+                        Swal.fire({
                             title: "Perhatian",
                             text: res.msg,
-                            type: "warning"
+                            icon: "warning"
                         });
                     } else {
-                        swal({
+                        Swal.fire({
                             title: "Perhatian",
                             text: "Data berhasil di impor.",
-                            type: "success"
+                            icon: "success"
                         });
                         hot.updateSettings({data: [['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '']]});
                     }

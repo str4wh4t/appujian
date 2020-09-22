@@ -12,7 +12,7 @@
 @push('page_vendor_level_js')
 <!-- BEGIN PAGE VENDOR JS-->
 <script src="{{ asset('assets/template/robust/app-assets/vendors/js/tables/datatable/datatables.min.js') }}"></script>
-<script src="//cdn.datatables.net/plug-ins/1.10.21/api/fnPagingInfo.js"></script>
+<script src="{{ asset('assets/yarn/node_modules/datatables.net-plugins/api/fnPagingInfo.js') }}"></script>
 {{--<script src="{{ asset('assets/template/robust/app-assets/vendors/js/tables/jquery.dataTables.min.js') }}"></script>--}}
 {{--<script src="{{ asset('assets/template/robust/app-assets/vendors/js/tables/datatable/dataTables.bootstrap4.min.js') }}"></script>--}}
 {{--<script src="{{ asset('assets/template/robust/app-assets/vendors/js/tables/datatable/dataTables.responsive.min.js') }}"></script>--}}
@@ -277,10 +277,10 @@ body {
                         $('#badge_absensi_' + data.nim).text('BELUM').removeClass('success').removeClass('border-success').addClass('border-danger').addClass('danger');
                     } else {
                         if (data.user_id == '{{ get_logged_user()->id }}') {
-                            Swal({
+                            Swal.fire({
                                 title: "Perhatian",
                                 text: "Bukan absensi anda",
-                                type: "error",
+                                icon: "error",
                                 confirmButtonText: "Tutup"
                             });
                         }
@@ -328,10 +328,10 @@ body {
     });
 
     $(document).on('click','.btn_absensi_batal',function(){
-        Swal({
+        Swal.fire({
             title: "Anda yakin",
             text: "Absensi peserta tsb akan dihapus",
-            type: "warning",
+            icon: "warning",
             showCancelButton: true,
             confirmButtonColor: "#3085d6",
             cancelButtonColor: "#d33",
@@ -352,10 +352,10 @@ body {
                             'app_id': '{{ APP_ID }}',
                         }));
                     }else{
-                        Swal({
+                        Swal.fire({
                             title: "Perhatian",
                             text: "Kesalahan pada absen",
-                            type: "warning"
+                            icon: "warning"
                         });
                     }
                 }).always(function() {
@@ -455,10 +455,10 @@ body {
     }
 
     $(document).on('click','.btn_kick',function(){
-        Swal({
+        Swal.fire({
             title: "Anda yakin",
             text: "Sesi ujian peserta tsb akan diakhiri",
-            type: "warning",
+            icon: "warning",
             showCancelButton: true,
             confirmButtonColor: "#3085d6",
             cancelButtonColor: "#d33",
@@ -479,32 +479,34 @@ body {
                     },
                     success: function (r) {
                         if (r.status) {
-                            Swal({
+                            conn.send(JSON.stringify({
+                                'mahasiswa_ujian_id': mahasiswa_ujian_id,
+                                'user_id': '{{ get_logged_user()->id }}',
+                                'username': '{{ get_logged_user()->username }}',
+                                'as':'{{ get_selected_role()->name }}',
+                                'nim': nim,
+                                'cmd':'DO_KICK',
+                                'app_id': '{{ APP_ID }}',
+                            }));
+                            $('#badge_status_' + nim).text('SUDAH UJIAN').removeClass('bg-secondary').removeClass('bg-info').addClass('bg-success');
+                            $('#badge_focus_' + nim).hide();
+
+                            Swal.fire({
                                 title: "Perhatian",
                                 text: "Ujian peserta tsb telah diakhiri",
-                                type: "success"
+                                icon: "success"
                             });
+
                         }
                     },
                     error: function () {
-                        Swal({
+                        Swal.fire({
                             title: "Perhatian",
-                            text: "Ujian peserta tsb telah berakhir",
-                            type: "warning"
+                            text: "Maaf, terjadi kesalahan",
+                            icon: "warning"
                         });
                     },
                     complete: function () {
-                        conn.send(JSON.stringify({
-                            'mahasiswa_ujian_id': mahasiswa_ujian_id,
-                            'user_id': '{{ get_logged_user()->id }}',
-                            'username': '{{ get_logged_user()->username }}',
-                            'as':'{{ get_selected_role()->name }}',
-                            'nim': nim,
-                            'cmd':'DO_KICK',
-                            'app_id': '{{ APP_ID }}',
-                        }));
-                        $('#badge_status_' + nim).text('SUDAH UJIAN').removeClass('bg-secondary').removeClass('bg-info').addClass('bg-success');
-                        $('#badge_focus_' + nim).hide();
                         ajx_overlay(false);
                     }
                 });
@@ -521,10 +523,10 @@ body {
                 txt = "Telah Diabsen Oleh : " + res.nama_pengabsen;
                 type = "success";
             }
-            Swal({
+            Swal.fire({
                 title: "Info Absen",
                 text: txt,
-                type: type,
+                icon: type,
                 confirmButtonColor: "#3085d6",
                 confirmButtonText: "Tutup"
             });

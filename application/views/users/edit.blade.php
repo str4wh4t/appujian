@@ -49,10 +49,10 @@ $('form#form_reset_password_by_admin').on('submit', function (e) {
         e.preventDefault();
         e.stopImmediatePropagation();
 
-    Swal({
+    Swal.fire({
         title: "Anda yakin?",
         text: "Password akan direset!",
-        type: "warning",
+        icon: "warning",
         showCancelButton: true,
         confirmButtonColor: "#3085d6",
         cancelButtonColor: "#d33",
@@ -71,17 +71,17 @@ $('form#form_reset_password_by_admin').on('submit', function (e) {
                 type: 'POST',
                 success: function (response) {
                     if (response.status) {
-                        Swal({
-                            "title": "Berhasil",
-                            "text": msg,
-                            "type": "success"
+                        Swal.fire({
+                            title: "Berhasil",
+                            text: msg,
+                            icon: "success"
                         });
                     } else {
                         if (response.msg) {
-                            Swal({
-                                "title": "Gagal",
-                                "text": "Password lama tidak benar",
-                                "type": "error"
+                            Swal.fire({
+                                title: "Gagal",
+                                text: "Password lama tidak benar",
+                                icon: "error"
                             });
                         }
                     }

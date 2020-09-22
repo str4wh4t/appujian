@@ -12,8 +12,7 @@
 @push('page_vendor_level_js')
 <!-- BEGIN PAGE VENDOR JS-->
 <script src="{{ asset('assets/template/robust/app-assets/vendors/js/tables/datatable/datatables.min.js') }}"></script>
-<script src="//cdn.datatables.net/plug-ins/1.10.21/api/fnPagingInfo.js"></script>
-
+<script src="{{ asset('assets/yarn/node_modules/datatables.net-plugins/api/fnPagingInfo.js') }}"></script>
 {{--<script src="{{ asset('assets/template/robust/app-assets/vendors/js/tables/jquery.dataTables.min.js') }}"></script>--}}
 {{--<script src="{{ asset('assets/template/robust/app-assets/vendors/js/tables/datatable/dataTables.bootstrap4.min.js') }}"></script>--}}
 {{--<script src="{{ asset('assets/template/robust/app-assets/vendors/js/tables/datatable/dataTables.responsive.min.js') }}"></script>--}}
@@ -56,10 +55,10 @@ $(document).on('click','#btn_cari_pegawai',function(){
                 // res = $.parseJSON(res);
                 let r = res.record;
                 if ($.isEmptyObject(r)) {
-                    Swal({
+                    Swal.fire({
                         title: "Perhatian",
                         text: "Pegawai tidak ditemukan",
-                        type: "warning"
+                        icon: "warning"
                     });
                     ok_submit_pengawas = false;
                 } else {
@@ -71,10 +70,10 @@ $(document).on('click','#btn_cari_pegawai',function(){
                 }
             },
         error: function () {
-            Swal({
+            Swal.fire({
                 title: "Perhatian",
                 text: "Terjadi kesalahan",
-                type: "warning"
+                icon: "warning"
             });
             ok_submit_pengawas = false;
         }
@@ -90,32 +89,32 @@ $(document).on('click','#btn_simpan_pengawas',function(){
             success: function (res) {
                 if(res.status){
                     $('#modal_tambah_pengawas').modal('hide');
-                    Swal({
+                    Swal.fire({
                         title: "Perhatian",
                         text: "Pengawas telah ditambahkan",
-                        type: "success"
+                        icon: "success"
                     });
                 }else{
-                    Swal({
+                    Swal.fire({
                         title: "Perhatian",
                         text: "Terjadi kesalahan",
-                        type: "warning"
+                        icon: "warning"
                     });
                 }
             },
             error: function () {
-                Swal({
+                Swal.fire({
                     title: "Perhatian",
                     text: "Terjadi kesalahan",
-                    type: "warning"
+                    icon: "warning"
                 });
             }
         });
     }else{
-        Swal({
+        Swal.fire({
                 title: "Perhatian",
                 text: "Pegawai tidak ditemukan",
-                type: "warning"
+                icon: "warning"
               });
 
     }

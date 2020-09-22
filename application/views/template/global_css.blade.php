@@ -2,7 +2,8 @@
 <link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/css/vendors.css') }}">
 {{--<link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/vendors/css/forms/icheck/icheck.css') }}">--}}
 {{--<link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/vendors/css/forms/icheck/custom.css') }}">--}}
-<link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/vendors/css/extensions/sweetalert.css') }}">
+{{--<link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/vendors/css/extensions/sweetalert.css') }}">--}}
+{{--<link rel="stylesheet" type="text/css" href="{{ asset('assets/yarn/node_modules/sweetalert2/dist/sweetalert2.min.css') }}">--}}
 @stack('page_vendor_level_css')
 <!-- END VENDOR CSS-->
 

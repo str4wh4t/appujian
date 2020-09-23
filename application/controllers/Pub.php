@@ -213,7 +213,7 @@ class Pub extends MY_Controller {
 					break;
 				}
 				// $date_end = date('Y-m-d H:i:s', strtotime($h_ujian->m_ujian->terlambat));
-				$date_end = date('Y-m-d H:i:s', strtotime($h_ujian->tgl_selesai));
+				$date_end = date('Y-m-d H:i:s', strtotime($h_ujian->m_ujian->terlambat));
 				if ($today >= $date_end){
 					echo $h_ujian->id . "\n";
 					echo $h_ujian->mhs->nama . "\n";

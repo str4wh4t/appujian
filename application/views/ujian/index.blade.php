@@ -489,26 +489,27 @@ $(document).on('click','#nav_opener',function() {
 });
 
 window.onblur = function () {
-    {{--Swal.fire({--}}
-    {{--    title: "Perhatian",--}}
-    {{--    text: "Anda diperingatkan tidak boleh membuka halaman lain, semua aktifitas anda direkam oleh sistem untuk penilaian",--}}
-    {{--    icon: "warning"--}}
-    {{--});--}}
-    {{--conn.send(JSON.stringify({--}}
-    {{--    'nim':'{{ get_logged_user()->username }}',--}}
-    {{--    'as':'{{ get_selected_role()->name }}',--}}
-    {{--    'cmd':'MHS_LOST_FOCUS',--}}
-    {{--    'app_id': '{{ APP_ID }}',--}}
-    {{--}));--}}
+    /** SEMENTARA DIMATIKAN **/
+    // Swal.fire({
+    //     title: "Perhatian",
+    //     text: "Anda diperingatkan tidak boleh membuka halaman lain, semua aktifitas anda direkam oleh sistem untuk penilaian",
+    //     icon: "warning"
+    // });
+    conn.send(JSON.stringify({
+        'nim':'{{ get_logged_user()->username }}',
+        'as':'{{ get_selected_role()->name }}',
+        'cmd':'MHS_LOST_FOCUS',
+        'app_id': '{{ APP_ID }}',
+    }));
 };
 
 window.onfocus = function () {
-    {{--conn.send(JSON.stringify({--}}
-    {{--    'nim':'{{ get_logged_user()->username }}',--}}
-    {{--    'as':'{{ get_selected_role()->name }}',--}}
-    {{--    'cmd':'MHS_GET_FOCUS',--}}
-    {{--    'app_id': '{{ APP_ID }}',--}}
-    {{--}));--}}
+    conn.send(JSON.stringify({
+        'nim':'{{ get_logged_user()->username }}',
+        'as':'{{ get_selected_role()->name }}',
+        'cmd':'MHS_GET_FOCUS',
+        'app_id': '{{ APP_ID }}',
+    }));
 };
 
 function update_status_ujian(){

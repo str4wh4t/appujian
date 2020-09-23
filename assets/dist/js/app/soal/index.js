@@ -181,25 +181,25 @@ $(document).ready(function() {
         type: "POST",
         success: function (respon) {
           if (respon.status) {
-            Swal({
+            Swal.fire({
               title: "Berhasil",
               text: respon.total + " data berhasil dihapus",
-              type: "success"
+              icon:"success"
             });
           } else {
-            Swal({
+            Swal.fire({
               title: "Perhatian",
               text: "Anda bukan pembuat soal.",
-              type: "warning"
+              icon:"warning"
             });
           }
           reload_ajax();
         },
         error: function () {
-          Swal({
+          Swal.fire({
             title: "Gagal",
             text: "Ada data yang sedang digunakan",
-            type: "error"
+            icon:"error"
           });
         }
       });
@@ -211,17 +211,17 @@ function bulk_delete() {
   // console.log("$('#bulk').serialize()", $('#bulk').serialize());
   // if ($('#ujian tbody tr .check:checked').length == 0) {
   if ($('.DTFC_LeftBodyLiner table .check:checked').length == 0) {
-    Swal({
+    Swal.fire({
       title: "Gagal",
       text: "Tidak ada data yang dipilih",
-      type: "error"
+      icon:"error"
     });
   } else {
     $("#bulk").attr("action", base_url + "soal/ajax/delete");
-    Swal({
+    Swal.fire({
       title: "Anda yakin?",
       text: "Data akan dihapus!",
-      type: "warning",
+      icon:"warning",
       showCancelButton: true,
       confirmButtonColor: "#3085d6",
       cancelButtonColor: "#d33",

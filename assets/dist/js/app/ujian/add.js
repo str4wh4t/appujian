@@ -35,10 +35,10 @@ $(document).ready(function () {
                 btn.removeAttr('disabled').html('<i class="fa fa-save"></i> Simpan');
 
                 if (data.status) {
-                    Swal({
-                        "title": "Berhasil",
-                        "type": "success",
-                        "text": "Data berhasil disimpan"
+                    Swal.fire({
+                        title: "Berhasil",
+                        icon:"success",
+                        text: "Data berhasil disimpan"
                     }).then(result => {
                         window.location = "master";
                     });
@@ -56,10 +56,10 @@ $(document).ready(function () {
                 }
             },
             error: function () {
-                Swal({
-                    "title": "Perhatian",
-                    "type": "warning",
-                    "text": "Terdapat kesalahan pada data"
+                Swal.fire({
+                    title: "Perhatian",
+                    icon: "warning",
+                    text: "Terdapat kesalahan pada data"
                 });
             },
             complete: function () {

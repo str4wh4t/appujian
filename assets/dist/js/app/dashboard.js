@@ -39,10 +39,10 @@ $(document).ready(function(){
 	$('#logout').on('click', function(e){
 		e.preventDefault();
 
-		Swal({
+		Swal.fire({
 			title: "Logout",
 			text: "Anda yakin ingin logout?",
-			type: "question",
+			icon: "question",
 			showCancelButton: true,
 			confirmButtonColor: '#3085d6',
 			cancelButtonColor: '#d33',

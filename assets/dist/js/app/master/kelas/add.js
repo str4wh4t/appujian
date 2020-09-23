@@ -25,10 +25,10 @@ $(document).ready(function () {
                 btn.removeAttr('disabled').text('Simpan');
                 //console.log(data);
                 if (data.status) {
-                    Swal({
-                        "title": "Sukses",
-                        "text": "Data Berhasil disimpan",
-                        "type": "success"
+                    Swal.fire({
+                        title: "Sukses",
+                        text: "Data Berhasil disimpan",
+                        icon: "success"
                     }).then((result) => {
                         if (result.value) {
                             window.location.href = base_url+'kelas';

@@ -6,10 +6,10 @@ function submitajax(url, data, msg, btn) {
         type: 'POST',
         success: function (response) {
             if (response.status) {
-                Swal({
-                    "title": "Berhasil",
-                    "text": msg,
-                    "type": "success"
+                Swal.fire({
+                    title: "Berhasil",
+                    text: msg,
+                    icon:"success"
                 });
                 $('form#change_password').trigger('reset');
             } else {
@@ -24,10 +24,10 @@ function submitajax(url, data, msg, btn) {
                     });
                 }
                 if (response.msg) {
-                    Swal({
-                        "title": "Gagal",
-                        "text": "Password lama tidak benar",
-                        "type": "error"
+                    Swal.fire({
+                        title: "Gagal",
+                        text: "Password lama tidak benar",
+                        icon: "error"
                     });
                 }
             }

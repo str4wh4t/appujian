@@ -3,13 +3,13 @@ $(document).ready(function () {
 
     $('#btncek').on('click', function () {
         if($(this).hasClass('btn-danger')){
-            Swal('Perhatian', 'Anda berada diluar jadwal ujian', 'error');
+            Swal.fire('Perhatian', 'Anda berada diluar jadwal ujian', 'error');
             return false;
         }
         var idUjian = $(this).data('id');
         let token = $('#token').length ? $('#token').val() : 'XXX';
         if (token == '') {
-            Swal('Gagal', 'Token harus diisi', 'error');
+            Swal.fire('Gagal', 'Token harus diisi', 'error');
         } else {
             // var key = $('#id_ujian').data('key');
             ajx_overlay(true);
@@ -24,16 +24,16 @@ $(document).ready(function () {
                 success: function (result) {
                     ajx_overlay(false);
                     if(!result.status){
-                        Swal({
-                            "type": "error",
-                            "title": "Gagal",
-                            "text": "Token Salah"
+                        Swal.fire({
+                            icon: "error",
+                            title: "Gagal",
+                            text: "Token Salah"
                         })
                     }else{
-                        // Swal({
+                        // Swal.fire({
                         //     title: "Mulai Ujian",
                         //     text: "Ujian yang sudah dimulai tidak dapat dibatalkan.",
-                        //     type: "warning",
+                        //     icon:"warning",
                         //     showCancelButton: true,
                         //     confirmButtonColor: "#37bc9b",
                         //     cancelButtonColor: "#f6bb42",
@@ -50,10 +50,10 @@ $(document).ready(function () {
                 },
                 error: function (result) {
                     ajx_overlay(false);
-                    Swal({
-                        "type": "error",
-                        "title": "Gagal",
-                        "text": "Terjadi kesalahan"
+                    Swal.fire({
+                        icon:"error",
+                        title: "Gagal",
+                        icon: "Terjadi kesalahan"
                     });
                 }
             });

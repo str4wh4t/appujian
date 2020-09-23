@@ -210,10 +210,10 @@ $(document).ready(function () {
             dataType: 'json',
             success: function (data) {
                 if (!data.status) {
-                    Swal({
-                        "title": "Perhatian",
-                        "text": "Anda bukan pembuat ujian.",
-                        "type": "warning"
+                    Swal.fire({
+                        title: "Perhatian",
+                        text: "Anda bukan pembuat ujian.",
+                        icon: "warning"
                     });
                 }
                 reload_ajax();
@@ -233,25 +233,25 @@ $(document).ready(function () {
             type: 'POST',
             success: function (respon) {
                 if (respon.status) {
-                    Swal({
-                        "title": "Berhasil",
-                        "text": respon.total + " data berhasil dihapus",
-                        "type": "success"
+                    Swal.fire({
+                        title: "Berhasil",
+                        text: respon.total + " data berhasil dihapus",
+                        icon:"success"
                     });
                 } else {
-                    Swal({
-                        "title": "Perhatian",
-                        "text": "Anda bukan pembuat ujian.",
-                        "type": "warning"
+                    Swal.fire({
+                        title: "Perhatian",
+                        text: "Anda bukan pembuat ujian.",
+                        icon: "warning"
                     });
                 }
                 reload_ajax();
             },
             error: function () {
-                Swal({
-                    "title": "Gagal",
-                    "text": "Ada data yang sedang digunakan",
-                    "type": "error"
+                Swal.fire({
+                    title: "Gagal",
+                    text: "Ada data yang sedang digunakan",
+                    icon: "error"
                 });
             }
         });
@@ -264,16 +264,16 @@ function bulk_delete() {
     // console.log("$('#bulk').serialize()", $('#bulk').serialize());
     // if ($('#ujian tbody tr .check:checked').length == 0) {
     if ($('.DTFC_LeftBodyLiner table .check:checked').length == 0) {
-        Swal({
+        Swal.fire({
             title: "Gagal",
             text: 'Tidak ada data yang dipilih',
-            type: 'error'
+            icon: 'error'
         });
     } else {
-        Swal({
+        Swal.fire({
             title: 'Anda yakin?',
             text: "Data akan dihapus!",
-            type: 'warning',
+            icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#3085d6',
             cancelButtonColor: '#d33',

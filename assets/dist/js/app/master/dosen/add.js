@@ -13,7 +13,7 @@ $(document).ready(function () {
             success: function (response) {
                 btn.removeAttr('disabled').text('Simpan');
                 if (response.status) {
-                    Swal('Sukses', 'Data Berhasil disimpan', 'success')
+                    Swal.fire('Sukses', 'Data Berhasil disimpan', 'success')
                         .then((result) => {
                             if (result.value) {
                                 window.location.href = base_url+'dosen';

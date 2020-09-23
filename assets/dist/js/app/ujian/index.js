@@ -268,10 +268,10 @@ function simpan_jawaban_all() {
 
         },
         error: function () {
-            Swal({
+            Swal.fire({
                 title: "Perhatian",
                 text: "Terjadi kesalahan, halaman akan di-reload",
-                type: "warning",
+                icon: "warning",
                 confirmButtonColor: "#37bc9b",
                 confirmButtonText: "Reload"
             }).then(result => {
@@ -303,10 +303,10 @@ function simpan_jawaban_satu(sid, answer, ragu) {
 
         },
         error: function () {
-            Swal({
+            Swal.fire({
                 title: "Perhatian",
                 text: "Terjadi kesalahan, halaman akan di-reload",
-                type: "warning",
+                icon: "warning",
                 confirmButtonColor: "#37bc9b",
                 confirmButtonText: "Reload"
             }).then(result => {
@@ -322,10 +322,10 @@ function simpan_jawaban_satu(sid, answer, ragu) {
 }
 
 function simpan_akhir() {
-    Swal({
+    Swal.fire({
         title: "Akhiri Ujian",
         text: "Ujian yang sudah diakhiri tidak dapat diulangi.",
-        type: "warning",
+        icon: "warning",
         showCancelButton: true,
         confirmButtonColor: "#37bc9b",
         cancelButtonColor: "#f6bb42",

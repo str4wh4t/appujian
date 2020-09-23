@@ -13,7 +13,7 @@ $(document).ready(function () {
             success: function (response) {
                 btn.removeAttr('disabled').text('Update');
                 if (response.status) {
-                    Swal('Sukses', 'Data Berhasil diupdate', 'success')
+                    Swal.fire('Sukses', 'Data Berhasil diupdate', 'success')
                         .then((result) => {
                             if (result.value) {
                                 window.location.href = base_url+'dosen';

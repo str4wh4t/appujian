@@ -574,7 +574,7 @@ function selesai(ended_by = '') {
 /** [END] FUNGSI SELESAI UJIAN */
 
 </script>
-<script src="{{ asset('assets/dist/js/app/ujian/index.js') }}"></script>
+<script src="{{ asset('assets/dist/js/app/ujian/index.js?u=' . mt_rand()) }}"></script>
 <!-- END PAGE LEVEL JS-->
 @endpush
 

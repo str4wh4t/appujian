@@ -67,10 +67,10 @@ $(document).ready(function () {
             success: function (data) {
                 btn.removeAttr('disabled').text('Simpan');
                 if (data.status) {
-                    Swal({
-                        "title": "Sukses",
-                        "text": "Data Berhasil disimpan",
-                        "type": "success"
+                    Swal.fire({
+                        title: "Sukses",
+                        text: "Data Berhasil disimpan",
+                        icon: "success"
                     }).then((result) => {
                         if (result.value) {
                             window.location.href = base_url+'mahasiswa';

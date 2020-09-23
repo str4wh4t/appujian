@@ -129,10 +129,10 @@ $(document).ready(function() {
 });
 
 function hapus(id) {
-    Swal({
+    Swal.fire({
         title: "Anda yakin?",
         text: "Data akan dihapus.",
-        type: "question",
+        icon:"question",
         showCancelButton: true,
         confirmButtonColor: "#3085d6",
         cancelButtonColor: "#d33",
@@ -140,12 +140,12 @@ function hapus(id) {
     }).then(result => {
         if (result.value) {
             $.getJSON(base_url + "users/delete/" + id, function(data) {
-                Swal({
+                Swal.fire({
                     title: data.status ? "Berhasil" : "Gagal",
                     text: data.status
                         ? "User berhasil dihapus"
                         : "User gagal dihapus",
-                    type: data.status ? "success" : "error"
+                    icon: data.status ? "success" : "error"
                 });
                 reload_ajax();
             });

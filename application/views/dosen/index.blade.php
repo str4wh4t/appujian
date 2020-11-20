@@ -53,7 +53,8 @@
             </div>
 		</div>
         <?= form_open('', array('id' => 'bulk')) ?>
-        <table id="dosen" class="table table-striped table-bordered table-hover pb-3">
+        <div class="table-responsive pb-3" style="border: 0">
+        <table id="dosen" class="table table-striped table-bordered table-hover">
             <thead>
                 <tr>
                     <th>No.</th>
@@ -67,21 +68,22 @@
                     </th>
                 </tr>
             </thead>
-            <tbody></tbody>
-            <tfoot>
-                <tr>
-                    <th>No.</th>
-                    <th>NIP</th>
-                    <th>Nama Dosen</th>
-                    <th>Email</th>
-                    <th>Materi Ujian</th>
-                    <th>Aksi</th>
-                    <th class="text-center">
-                        <input type="checkbox" class="select_all">
-                    </th>
-                </tr>
-            </tfoot>
+{{--            <tbody></tbody>--}}
+{{--            <tfoot>--}}
+{{--                <tr>--}}
+{{--                    <th>No.</th>--}}
+{{--                    <th>NIP</th>--}}
+{{--                    <th>Nama Dosen</th>--}}
+{{--                    <th>Email</th>--}}
+{{--                    <th>Materi Ujian</th>--}}
+{{--                    <th>Aksi</th>--}}
+{{--                    <th class="text-center">--}}
+{{--                        <input type="checkbox" class="select_all">--}}
+{{--                    </th>--}}
+{{--                </tr>--}}
+{{--            </tfoot>--}}
         </table>
+        </div>
         <?= form_close() ?>
     </div>
 </div>

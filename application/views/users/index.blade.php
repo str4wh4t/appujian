@@ -152,7 +152,7 @@ $(document).on('click','#btn_simpan_pengawas',function(){
         </div>
     </div>
     <div class="table-responsive pb-3" style="">
-        <table id="users" class="table table-striped table-bordered table-hover">
+        <table id="users" class="table table-striped table-bordered table-hover w-100">
             <thead>
                 <tr>
                     <th>No.</th>
@@ -161,7 +161,7 @@ $(document).on('click','#btn_simpan_pengawas',function(){
                     <th>Email</th>
                     <th>Level</th>
                     <th>Created On</th>
-                    <th class="text-center">Status</th>
+                    <th class="text-center">Stts</th>
                     <th class="text-center">Action</th>
                 </tr>
             </thead>

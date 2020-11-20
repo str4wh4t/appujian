@@ -642,101 +642,111 @@ class Soal extends MY_Controller {
 	{
 		$input = json_decode($this->input->post('data', true));
 //		$data = [];
-		begin_db_trx();
-		$allow = true;
-		$msg = null;
-//		vdebug($input);
-		foreach ($input as $d) {
-			$topik_id = $d->topik_id;
-			if(Topik_orm::find($topik_id) == null){
-				$allow = false;
-				$msg = 'Topik ID bermasalah, topik_id : '. $topik_id ;
-				break;
+		try {
+			begin_db_trx();
+			$allow = TRUE;
+			$msg   = NULL;
+			//		vdebug($input);
+			foreach ($input as $d) {
+				$topik_id = $d->topik_id;
+				if (Topik_orm::find($topik_id) == NULL) {
+					$allow = FALSE;
+					$msg   = 'Topik ID bermasalah, topik_id : ' . $topik_id;
+					break;
+				}
+				
+				$isi_soal = $d->soal;
+				if (empty($isi_soal)) {
+					$allow = FALSE;
+					$msg   = 'Soal salah, soal : ' . $isi_soal;
+					break;
+				}
+				
+				$opsi_a = $d->opsi_a;
+				if (empty($opsi_a)) {
+					$allow = FALSE;
+					$msg   = 'Opsi A salah, opsi_a : ' . $opsi_a;
+					break;
+				}
+				
+				$opsi_b = $d->opsi_b;
+				if (empty($opsi_b)) {
+					$allow = FALSE;
+					$msg   = 'Opsi B salah, opsi_b : ' . $opsi_b;
+					break;
+				}
+				
+				$opsi_c = $d->opsi_c;
+				if (empty($opsi_c)) {
+					$allow = FALSE;
+					$msg   = 'Opsi C salah, opsi_c : ' . $opsi_c;
+					break;
+				}
+				
+				$opsi_d = $d->opsi_d;
+				if (empty($opsi_d)) {
+					$allow = FALSE;
+					$msg   = 'Opsi D salah, opsi_d : ' . $opsi_d;
+					break;
+				}
+				
+				$opsi_e = $d->opsi_e;
+				if (empty($opsi_e)) {
+					$allow = FALSE;
+					$msg   = 'Opsi E salah, opsi_e : ' . $opsi_e;
+					break;
+				}
+				
+				$jawaban = $d->jawaban;
+				if (!in_array($jawaban, [
+					'A',
+					'B',
+					'C',
+					'D',
+					'E'
+				])) {
+					$allow = FALSE;
+					$msg   = 'Jawaban bermasalah, jawaban : ' . $jawaban;
+					break;
+				}
+				
+				$bobot_soal_id = $d->bobot_soal_id;
+				if (Bobot_soal_orm::find($bobot_soal_id) == NULL) {
+					$allow = FALSE;
+					$msg   = 'Bobot soal ID bermasalah, bobot_soal_id : ' . $bobot_soal_id;
+					break;
+				}
+
+				$soal                = new Soal_orm();
+				$soal->topik_id      = $topik_id;
+				$soal->soal          = '<p>' . $isi_soal . '</p>';
+				$soal->opsi_a        = '<p>' . $opsi_a . '</p>';
+				$soal->opsi_b        = '<p>' . $opsi_b . '</p>';
+				$soal->opsi_c        = '<p>' . $opsi_c . '</p>';
+				$soal->opsi_d        = '<p>' . $opsi_d . '</p>';
+				$soal->opsi_e        = '<p>' . $opsi_e . '</p>';
+				$soal->jawaban       = $jawaban;
+				$soal->bobot_soal_id = $bobot_soal_id;
+				$soal->created_by    = $this->ion_auth->user()
+				                                      ->row()->username;
+				$soal->save();
 			}
 			
-			$isi_soal = $d->soal;
-			if(empty($isi_soal)){
-				$allow = false;
-				$msg = 'Soal salah, soal : '. $isi_soal ;
-				break;
+			if (!$allow) {
+				throw new Exception($msg);
+			} else {
+				commit_db_trx();
+				$message_rootpage = [
+					'header'  => 'Perhatian',
+					'content' => 'Data berhasil di impor.',
+					'type'    => 'success'
+				];
+				$this->session->set_flashdata('message_rootpage', $message_rootpage);
+				redirect('soal/import');
 			}
-			
-			$opsi_a = $d->opsi_a;
-			if(empty($opsi_a)){
-				$allow = false;
-				$msg = 'Opsi A salah, opsi_a : '. $opsi_a ;
-				break;
-			}
-			
-			$opsi_b = $d->opsi_b;
-			if(empty($opsi_b)){
-				$allow = false;
-				$msg = 'Opsi B salah, opsi_b : '. $opsi_b ;
-				break;
-			}
-			
-			$opsi_c = $d->opsi_c;
-			if(empty($opsi_c)){
-				$allow = false;
-				$msg = 'Opsi C salah, opsi_c : '. $opsi_c ;
-				break;
-			}
-			
-			$opsi_d = $d->opsi_d;
-			if(empty($opsi_d)){
-				$allow = false;
-				$msg = 'Opsi D salah, opsi_d : '. $opsi_d ;
-				break;
-			}
-			
-			$opsi_e = $d->opsi_e;
-			if(empty($opsi_e)){
-				$allow = false;
-				$msg = 'Opsi E salah, opsi_e : '. $opsi_e ;
-				break;
-			}
-			
-			$jawaban = $d->jawaban;
-			if(!in_array($jawaban,['A','B','C','D','E'])){
-				$allow = false;
-				$msg = 'Jawaban bermasalah, jawaban : '. $jawaban ;
-				break;
-			}
-			
-			$bobot_soal_id = $d->bobot_soal_id;
-			if(Bobot_soal_orm::find($bobot_soal_id) == null){
-				$allow = false;
-				$msg = 'Bobot soal ID bermasalah, bobot_soal_id : '. $bobot_soal_id ;
-				break;
-			}
-			
-			$soal = new Soal_orm();
-			$soal->topik_id = $topik_id;
-			$soal->soal = '<p>'. $isi_soal . '</p>';
-			$soal->opsi_a = '<p>'. $opsi_a . '</p>';
-			$soal->opsi_b = '<p>'. $opsi_b . '</p>';
-			$soal->opsi_c = '<p>'. $opsi_c . '</p>';
-			$soal->opsi_d = '<p>'. $opsi_d . '</p>';
-			$soal->opsi_e = '<p>'. $opsi_e . '</p>';
-			$soal->jawaban = $jawaban;
-			$soal->bobot_soal_id = $bobot_soal_id;
-			$soal->created_by = $this->ion_auth->user()->row()->username;
-			$soal->save();
-		}
-		
-		if (!$allow){
+		}catch(Exception $e){
 			rollback_db_trx();
-			show_error($msg,500,'Perhatian');
-		}
-		else{
-			commit_db_trx();
-			$message_rootpage = [
-				'header' => 'Perhatian',
-				'content' => 'Data berhasil di impor.',
-				'type' => 'success'
-			];
-			$this->session->set_flashdata('message_rootpage', $message_rootpage);
-			redirect('soal/import');
+			show_error($e->getMessage(), 500, 'Perhatian');
 		}
 		
 	}

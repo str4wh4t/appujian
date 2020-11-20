@@ -339,8 +339,17 @@ class Users extends MY_Controller {
 				];
 				
 				$group           = [ PENGAWAS_GROUP_ID ]; // Sets user to pengawas
-				$status = $this->ion_auth->register($username, $password, $email, $additional_data, $group);
-				$this->_json(['status' => $status]);
+				$msg = null;
+				try {
+					begin_db_trx();
+					$status = $this->ion_auth->register($username, $password, $email, $additional_data, $group);
+					commit_db_trx();
+				}catch(Exception $e){
+					rollback_db_trx();
+					$msg = $e->getMessage();
+					$status = false ;
+				}
+				$this->_json(['status' => $status, 'msg' => $msg]);
 			}else{
 				show_error('Terjadi kesalahan, status : ' . $response->getStatusCode(), 500, 'Perhatian');
 			}

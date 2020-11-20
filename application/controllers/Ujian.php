@@ -710,12 +710,14 @@ class Ujian extends MY_Controller {
 					}
 				}
 				
-				$ujian->jenis == 'acak' ? shuffle($soal_topik) : null;
+				if($ujian->jenis == 'acak'){
+					shuffle($soal_topik);
+				}
+				
 				$soal[$topik_ujian->topik_id][$topik_ujian->bobot_soal_id] = $soal_topik;
 				$soal_topik = [];
 				$i = 0;
 			}
-			
 			
 		    $waktu_selesai 	= date('Y-m-d H:i:s', strtotime("+{$ujian->waktu} minute"));
 			
@@ -759,7 +761,7 @@ class Ujian extends MY_Controller {
 				$h_ujian->tgl_selesai = $input['tgl_selesai'];
 				$h_ujian->ujian_selesai = $input['ujian_selesai'];
 				$h_ujian->save();
-				
+
 				foreach($soal as $topik_id => $t){
 					foreach($t as $bobot_soal_id => $d) {
 						foreach ($d as $s) {
@@ -770,6 +772,7 @@ class Ujian extends MY_Controller {
 						}
 					}
 				}
+				
 				commit_db_trx();
 				$action = true;
 				
@@ -805,7 +808,7 @@ class Ujian extends MY_Controller {
 		 */
 		
 		$list_jawaban = '';
-		foreach($h_ujian->jawaban_ujian as $jwb){
+		foreach($h_ujian->jawaban_ujian->sortBy('id') as $jwb){
 			$list_jawaban .= $jwb->soal_id .":". $jwb->jawaban .":". $jwb->status_jawaban .",";
 		}
 		$list_jawaban 	= substr($list_jawaban, 0, -1);

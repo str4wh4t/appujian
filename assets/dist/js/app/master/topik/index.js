@@ -9,8 +9,11 @@ $(document).ready(function() {
       var api = this.api();
       $("#topik_filter input")
         .off(".DT")
-        .on("keyup.DT", function(e) {
-          api.search(this.value).draw();
+        .on("keypress.DT", function(e) {
+          if(e.which == 13) {
+            api.search(this.value).draw();
+            return false;
+          }
         });
     },
     lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
@@ -83,7 +86,11 @@ $(document).ready(function() {
       { data: "nama_matkul" },
       { data: "nama_topik" },
       { data: "poin_topik" },
-      { data: "jml_soal" },
+      {
+        data: "jml_soal",
+        orderable: false,
+        searchable: false,
+      },
       {
         data: "bulk_select",
         orderable: false,

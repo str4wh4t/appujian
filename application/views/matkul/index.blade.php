@@ -24,6 +24,9 @@
 <!-- BEGIN PAGE LEVEL JS-->
 <script type="text/javascript">
 
+
+	input.form-control:nth-child(1)
+
 </script>
 <script src="{{ asset('assets/dist/js/app/master/matkul/index.js') }}"></script>
 <!-- END PAGE LEVEL JS-->

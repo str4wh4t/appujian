@@ -9,8 +9,11 @@ $(document).ready(function () {
             var api = this.api();
             $('#ujian_filter input')
                 .off('.DT')
-                .on('keyup.DT', function (e) {
+                .on("keypress.DT", function(e) {
+                  if(e.which == 13) {
                     api.search(this.value).draw();
+                    return false;
+                  }
                 });
         },
         lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],

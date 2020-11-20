@@ -8,8 +8,11 @@ $(document).ready(function() {
       var api = this.api();
       $("#dosen_filter input")
         .off(".DT")
-        .on("keyup.DT", function(e) {
-          api.search(this.value).draw();
+        .on("keypress.DT", function(e) {
+          if(e.which == 13) {
+            api.search(this.value).draw();
+            return false;
+          }
         });
     },
     lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
@@ -97,12 +100,12 @@ $(document).ready(function() {
             btn = "";
           } else {
             btn = `<button type="button" class="btn btn-aktif btn-primary btn-sm" data-id="${data.id_dosen}">
-								<i class="fa fa-user-plus"></i> Aktif
+								<i class="fa fa-user-plus"></i>
 							</button>`;
           }
           return `<div class="btn-group btn-group-sm" role="group" aria-label="">
 							<a href="${base_url}dosen/edit/${data.id_dosen}" class="btn btn-sm btn-warning">
-								<i class="fa fa-pencil"></i> Edit
+								<i class="fa fa-pencil"></i>
 							</a>
 							${btn}
 						</div>`;
@@ -145,7 +148,8 @@ $(document).ready(function() {
       var length = info.iLength;
       var index = page * length + (iDisplayIndex + 1);
       $("td:eq(0)", row).html(index);
-    }
+    },
+    scrollX:        true,
   });
 
   // table

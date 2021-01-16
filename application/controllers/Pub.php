@@ -218,11 +218,11 @@ class Pub extends MY_Controller {
 		$mhs_ujian_list = $mhs_ujian_orm->whereDoesntHave('h_ujian')->orderBy('id')->get();
 		
 		if($mhs_ujian_list->isNotEmpty()) {
+			$cron_end = date("Y-m-d H:i:s", strtotime("+1 minutes"));
 			foreach ($mhs_ujian_list as $mu) {
 				$m_ujian = $m_ujian_orm->find($mu->ujian_id);
 				
 				$today = date('Y-m-d H:i:s');
-				$cron_end = date("Y-m-d H:i:s", strtotime("+1 minutes"));
 				if($today > $cron_end){
 					echo 'break';
 					break;
@@ -307,9 +307,10 @@ class Pub extends MY_Controller {
 					
 					commit_db_trx();
 					$action = true;
-				} catch(\Illuminate\Database\QueryException $e){
+				} catch(Exception $e){
 					rollback_db_trx();
 					$action = false;
+					die($e);
 			    }
 			}
 		}

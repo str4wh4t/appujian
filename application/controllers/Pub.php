@@ -200,18 +200,26 @@ class Pub extends MY_Controller {
 	public function cron_auto_start_ujian_for_unstarted_participants($app_id = 'ujian'){
 		if(!is_cli()) show_404();
 		
-		$mhs_ujian = new Mhs_ujian_orm();
-		if($app_id == 'ujian')
-	        $mhs_ujian->setConnection('ujian');
-        else
-	        $mhs_ujian->setConnection('cat');
+		$mhs_ujian_orm = new Mhs_ujian_orm();
+		$m_ujian_orm = new Mujian_orm();
+		$soal_orm = new Soal_orm();
+		if($app_id == 'ujian'){
+	        $mhs_ujian_orm->setConnection('ujian');
+	        $m_ujian_orm->setConnection('ujian');
+	        $soal_orm->setConnection('ujian');
+		}
+        else{
+	        $mhs_ujian_orm->setConnection('cat');
+	        $m_ujian_orm->setConnection('cat');
+	        $soal_orm->setConnection('cat');
 			//
+	    }
 		
-		$mhs_ujian_list = $mhs_ujian->whereDoesntHave('h_ujian')->get();
+		$mhs_ujian_list = $mhs_ujian_orm->whereDoesntHave('h_ujian')->orderBy('id')->get();
 		
 		if($mhs_ujian_list->isNotEmpty()) {
 			foreach ($mhs_ujian_list as $mu) {
-				$m_ujian = Mujian_orm::find($mu->ujian_id);
+				$m_ujian = $m_ujian_orm->find($mu->ujian_id);
 				
 				$today = date('Y-m-d H:i:s');
 				$cron_end = date("Y-m-d H:i:s", strtotime("+1 minutes"));
@@ -224,13 +232,16 @@ class Pub extends MY_Controller {
 				if ($today < $date_end){
 					continue;
 				}
+				echo 'mu->id : ' . $mu->id . "\n";
+				echo 'today : ' . $today . "\n";
+				echo 'date_end : ' . $date_end . "\n";
 				try {
 					$soal 		= [];
 					$soal_topik = [];
 					$i = 0;
 					foreach($m_ujian->topik_ujian as $topik_ujian){
 						$jumlah_soal_diset = $topik_ujian->jumlah_soal;
-						$soal_avail = Soal_orm::where('topik_id',$topik_ujian->topik_id)
+						$soal_avail = $soal_orm->where('topik_id',$topik_ujian->topik_id)
 						                            ->where('bobot_soal_id',$topik_ujian->bobot_soal_id)
 													->get();
 						if($jumlah_soal_diset > $soal_avail->count()){
@@ -256,27 +267,38 @@ class Pub extends MY_Controller {
 					}
 					
 					begin_db_trx();
-					$h_ujian = new Hujian_orm();
-					$h_ujian->ujian_id = $m_ujian->id_ujian;
-					$h_ujian->mahasiswa_id = $mu->mhs_matkul->mahasiswa_id;
-					$h_ujian->mahasiswa_ujian_id = $mu->id;
-					$h_ujian->jml_soal = $m_ujian->jumlah_soal;
-					$h_ujian->jml_benar = 0;
-					$h_ujian->jml_salah = 0;
-					$h_ujian->nilai = 0;
-					$h_ujian->nilai_bobot_benar = 0;
-					$h_ujian->total_bobot = 0;
-					$h_ujian->nilai_bobot = 0;
-					$h_ujian->tgl_mulai = $m_ujian->terlambat;
-					$h_ujian->tgl_selesai = $m_ujian->terlambat;
-					$h_ujian->ujian_selesai = 'N';
-					$h_ujian->save();
+					$h_ujian_orm = new Hujian_orm();
+					if($app_id == 'ujian')
+				        $h_ujian_orm->setConnection('ujian');
+			        else
+				        $h_ujian_orm->setConnection('cat');
+						//
+				  
+					$h_ujian_orm->ujian_id = $m_ujian->id_ujian;
+					$h_ujian_orm->mahasiswa_id = $mu->mhs_matkul->mahasiswa_id;
+					$h_ujian_orm->mahasiswa_ujian_id = $mu->id;
+					$h_ujian_orm->jml_soal = $m_ujian->jumlah_soal;
+					$h_ujian_orm->jml_benar = 0;
+					$h_ujian_orm->jml_salah = 0;
+					$h_ujian_orm->nilai = 0;
+					$h_ujian_orm->nilai_bobot_benar = 0;
+					$h_ujian_orm->total_bobot = 0;
+					$h_ujian_orm->nilai_bobot = 0;
+					$h_ujian_orm->tgl_mulai = $m_ujian->terlambat;
+					$h_ujian_orm->tgl_selesai = $m_ujian->terlambat;
+					$h_ujian_orm->ujian_selesai = 'N';
+					$h_ujian_orm->save();
 	
 					foreach($soal as $topik_id => $t){
 						foreach($t as $bobot_soal_id => $d) {
 							foreach ($d as $s) {
-								$jawaban_ujian_orm           = new Jawaban_ujian_orm();
-								$jawaban_ujian_orm->ujian_id = $h_ujian->id;
+								$jawaban_ujian_orm = new Jawaban_ujian_orm();
+								if($app_id == 'ujian')
+							        $jawaban_ujian_orm->setConnection('ujian');
+						        else
+							        $jawaban_ujian_orm->setConnection('cat');
+							    
+								$jawaban_ujian_orm->ujian_id = $h_ujian_orm->id;
 								$jawaban_ujian_orm->soal_id  = $s->id_soal;
 								$jawaban_ujian_orm->save();
 							}
@@ -285,7 +307,6 @@ class Pub extends MY_Controller {
 					
 					commit_db_trx();
 					$action = true;
-					
 				} catch(\Illuminate\Database\QueryException $e){
 					rollback_db_trx();
 					$action = false;

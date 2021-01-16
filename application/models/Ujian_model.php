@@ -357,8 +357,8 @@ class Ujian_model extends CI_Model {
 	        });
 	        
 	        $dt->edit('nilai_bobot_benar', function ($data){
-//	            return number_format($data['nilai_bobot_benar'] / 3,2,'.', '') ;
-	            return number_format($data['nilai_bobot_benar'] / 3 ,2,'.', '') ;
+//	             return number_format($data['nilai_bobot_benar'] / 3 ,2,'.', '') ;
+		        return number_format($data['nilai_bobot_benar'],2,'.', '') ;
 	        });
 	        
 	        $dt->edit('nilai', function ($data){

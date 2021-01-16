@@ -196,6 +196,7 @@ $(document).on('click','#btn_proses_sync_mhs',function(){
                         <label><input type="checkbox" name="smt[]" value="2"> 2</label>&nbsp;
                         <h4 class="form-section">Tahun</h4>
                         <label><input type="checkbox" name="tahun[]" value="2020"> 2020</label>&nbsp;
+                        <label><input type="checkbox" name="tahun[]" value="2021"> 2021</label>&nbsp;
                     </div>
                     <?= form_close() ?>
             </div>

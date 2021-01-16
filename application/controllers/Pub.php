@@ -6,7 +6,10 @@ use Orm\Mhs_source_orm;
 use Orm\Mhs_ujian_orm;
 use Orm\Mhs_matkul_orm;
 use Orm\Hujian_orm;
+use Orm\Mujian_orm;
 use Orm\Topik_orm;
+use Orm\Soal_orm;
+use Orm\Jawaban_ujian_orm;
 use Ratchet\Server\IoServer;
 use Ratchet\Http\HttpServer;
 use Ratchet\WebSocket\WsServer;
@@ -194,10 +197,107 @@ class Pub extends MY_Controller {
 		$server->run();
 	}
 	
+	public function cron_auto_start_ujian_for_unstarted_participants($app_id = 'ujian'){
+		if(!is_cli()) show_404();
+		
+		$mhs_ujian = new Mhs_ujian_orm();
+		if($app_id == 'ujian')
+	        $mhs_ujian->setConnection('ujian');
+        else
+	        $mhs_ujian->setConnection('cat');
+			//
+		
+		$mhs_ujian_list = $mhs_ujian->whereDoesntHave('h_ujian')->get();
+		
+		if($mhs_ujian_list->isNotEmpty()) {
+			foreach ($mhs_ujian_list as $mu) {
+				$m_ujian = Mujian_orm::find($mu->ujian_id);
+				
+				$today = date('Y-m-d H:i:s');
+				$cron_end = date("Y-m-d H:i:s", strtotime("+1 minutes"));
+				if($today > $cron_end){
+					echo 'break';
+					break;
+				}
+				
+				$date_end = date('Y-m-d H:i:s', strtotime($m_ujian->terlambat));
+				if ($today < $date_end){
+					continue;
+				}
+				try {
+					$soal 		= [];
+					$soal_topik = [];
+					$i = 0;
+					foreach($m_ujian->topik_ujian as $topik_ujian){
+						$jumlah_soal_diset = $topik_ujian->jumlah_soal;
+						$soal_avail = Soal_orm::where('topik_id',$topik_ujian->topik_id)
+						                            ->where('bobot_soal_id',$topik_ujian->bobot_soal_id)
+													->get();
+						if($jumlah_soal_diset > $soal_avail->count()){
+							die('Jumlah soal tidak memenuhi untuk ujian');
+						}
+		
+						foreach($soal_avail as $s){
+							if($i < $jumlah_soal_diset){
+								$soal_topik[] = $s;
+								$i++;
+							}else{
+								break;
+							}
+						}
+						
+						if($m_ujian->jenis == 'acak'){
+							shuffle($soal_topik);
+						}
+						
+						$soal[$topik_ujian->topik_id][$topik_ujian->bobot_soal_id] = $soal_topik;
+						$soal_topik = [];
+						$i = 0;
+					}
+					
+					begin_db_trx();
+					$h_ujian = new Hujian_orm();
+					$h_ujian->ujian_id = $m_ujian->id_ujian;
+					$h_ujian->mahasiswa_id = $mu->mhs_matkul->mahasiswa_id;
+					$h_ujian->mahasiswa_ujian_id = $mu->id;
+					$h_ujian->jml_soal = $m_ujian->jumlah_soal;
+					$h_ujian->jml_benar = 0;
+					$h_ujian->jml_salah = 0;
+					$h_ujian->nilai = 0;
+					$h_ujian->nilai_bobot_benar = 0;
+					$h_ujian->total_bobot = 0;
+					$h_ujian->nilai_bobot = 0;
+					$h_ujian->tgl_mulai = $m_ujian->terlambat;
+					$h_ujian->tgl_selesai = $m_ujian->terlambat;
+					$h_ujian->ujian_selesai = 'N';
+					$h_ujian->save();
+	
+					foreach($soal as $topik_id => $t){
+						foreach($t as $bobot_soal_id => $d) {
+							foreach ($d as $s) {
+								$jawaban_ujian_orm           = new Jawaban_ujian_orm();
+								$jawaban_ujian_orm->ujian_id = $h_ujian->id;
+								$jawaban_ujian_orm->soal_id  = $s->id_soal;
+								$jawaban_ujian_orm->save();
+							}
+						}
+					}
+					
+					commit_db_trx();
+					$action = true;
+					
+				} catch(\Illuminate\Database\QueryException $e){
+					rollback_db_trx();
+					$action = false;
+			    }
+			}
+		}
+	}
+	
 	public function cron_auto_close($app_id = 'ujian'){
 		if(!is_cli()) show_404();
 		
-		$h_ujian_list = new Hujian_orm;
+		$h_ujian_list = new Hujian_orm();
 		if($app_id == 'ujian')
 	        $h_ujian_list->setConnection('ujian');
         else

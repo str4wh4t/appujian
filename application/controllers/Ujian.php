@@ -692,7 +692,6 @@ class Ujian extends MY_Controller {
 			$soal_topik = [];
 			$i = 0;
 			foreach($ujian->topik_ujian as $topik_ujian){
-//				$jumlah_soal_diset = $ujian->topik_ujian()->where('topik_id',$topik->id)->first()->jumlah_soal;
 				$jumlah_soal_diset = $topik_ujian->jumlah_soal;
 				$soal_avail = Soal_orm::where('topik_id',$topik_ujian->topik_id)
 				                            ->where('bobot_soal_id',$topik_ujian->bobot_soal_id)
@@ -1171,14 +1170,12 @@ class Ujian extends MY_Controller {
 			show_error('Ujian sudah diakhiri.', 500, 'Perhatian');
 		}
 		
-		$input 	= $this->input->post(null, true);
-
-			$jawaban_ujian = Jawaban_ujian_orm::where('ujian_id',$h_ujian->id)->where('soal_id',$sid)->firstOrFail();
-			$jawaban_ujian->jawaban = $answer;
-			$jawaban_ujian->status_jawaban = $ragu;
-			
-		    $action = $jawaban_ujian->save();
-			$this->_json(['status'=>$action]);
+		$jawaban_ujian = Jawaban_ujian_orm::where('ujian_id',$h_ujian->id)->where('soal_id',$sid)->firstOrFail();
+		$jawaban_ujian->jawaban = $answer;
+		$jawaban_ujian->status_jawaban = $ragu;
+		
+	    $action = $jawaban_ujian->save();
+		$this->_json(['status'=>$action]);
 
 	}
 

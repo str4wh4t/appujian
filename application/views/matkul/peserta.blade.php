@@ -7,7 +7,7 @@
 {{--<link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/vendors/css/tables/extensions/rowReorder.dataTables.min.css') }}">--}}
 {{--<link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/vendors/css/tables/extensions/responsive.dataTables.min.css') }}">--}}
 <link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/vendors/css/forms/selects/select2.min.css') }}">
-<link rel="stylesheet" type="text/css" href="{{ asset('assets/bower_components/bootstrap4-datetimepicker/build/css/bootstrap-datetimepicker.css') }}">
+{{--<link rel="stylesheet" type="text/css" href="{{ asset('assets/bower_components/bootstrap4-datetimepicker/build/css/bootstrap-datetimepicker.css') }}">--}}
 <link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/vendors/css/forms/toggle/bootstrap-switch.min.css') }}">
 <!-- END PAGE LEVEL JS-->
 @endpush
@@ -110,7 +110,8 @@ function init_peserta_table_value(){
             let mhs_matkul_existing = [];
             if(!$.isEmptyObject(response.mhs_matkul)) {
                 $.each(response.mhs_matkul, function (i, item) {
-                    mhs_matkul_existing.push(item.id_mahasiswa);
+                    // mhs_matkul_existing.push(item.id_mahasiswa);
+                    mhs_matkul_existing.push(item.mahasiswa_id);
                 });
             }
             if(!$.isEmptyObject(response.mhs)) {
@@ -118,8 +119,9 @@ function init_peserta_table_value(){
                     let chkbox = $('<input>').attr('class', 'chkbox_pilih_peserta').attr('type', 'checkbox').attr('name', 'peserta[]').attr('value', item.id_mahasiswa);
                     if(mhs_matkul_existing.includes(item.id_mahasiswa))
                         chkbox.prop('checked', true);
-                    $('<tr>').append(
-                        $('<td>').text(i + 1),
+                    $('<tr data-urut="'+ (i + 1) +'">').append(
+                        // $('<td>').text(i + 1),
+                        $('<td>').css('text-align', 'center').append(chkbox),
                         $('<td>').text(item.nama),
                         $('<td>').text(item.nim),
                         $('<td>').text(item.prodi),
@@ -127,12 +129,11 @@ function init_peserta_table_value(){
                         $('<td>').text(item.gel),
                         $('<td>').text(item.smt),
                         $('<td>').text(item.tahun),
-                        $('<td>').css('text-align', 'center').append(chkbox)
                     ).appendTo('#tbody_tb_peserta');
                 });
             }else{
                 $('<tr>').append(
-                        $('<td>').text('Tidak ada peserta tersedia').attr('colspan', '9').css('text-align', 'center')
+                        $('<td>').text('Tidak ada peserta tersedia').attr('colspan', '8').css('text-align', 'center')
                     ).appendTo('#tbody_tb_peserta');
             }
             $('#peserta_hidden').val(JSON.stringify(mhs_matkul_existing));
@@ -262,11 +263,14 @@ $(document).on('click','#btn_submit_search',function () {
                 <div class="form-group">
                     <label for="status_ujian">Peserta Ujian</label>  <small class="help-block text-danger"><b>***</b> Pilih peserta yg akan di-asign ke materi ujian dipilih</small>
                     <input type="hidden" name="peserta_hidden" class="form-control" id="peserta_hidden">
-                    <div class="alert bg-success">Jumlah mhs yang di-asign : <span id="span_jml_mhs"><b>0</b></span> mhs</div>
+                    <div class="alert bg-success">Jumlah mhs yang di-asign : <span id="span_jml_mhs"><b>0</b></span> mhs ( Belum diasign ke ujian )</div>
+                    <div style="overflow-x: scroll">
                     <table class="table table-bordered">
                         <thead>
                             <tr>
-                                <th>No</th>
+                                <th style="text-align: center">
+                                    <input type="checkbox" id="chkbox_pilih_semua_peserta">
+                                </th>
                                 <th>Nama</th>
                                 <th>No Peserta</th>
                                 <th>Prodi</th>
@@ -274,28 +278,29 @@ $(document).on('click','#btn_submit_search',function () {
                                 <th>Gel</th>
                                 <th>Smt</th>
                                 <th>Tahun</th>
-                                <th style="text-align: center"><input type="checkbox" id="chkbox_pilih_semua_peserta"></th>
+
                             </tr>
                             <tr>
-                                <th><button id="btn_reset_search" class="btn btn-danger" type="button"><i class="fa fa-refresh"></i></button></th>
-                                <th><input class="form-control search_pes" id="search_nama_pes"></th>
-                                <th><input class="form-control search_pes" id="search_no_pes"></th>
-                                <th><input class="form-control search_pes" id="search_prodi_pes"></th>
-                                <th><input class="form-control search_pes" id="search_jalur_pes"></th>
-                                <th><input class="form-control search_pes" id="search_gel_pes"></th>
-                                <th><input class="form-control search_pes" id="search_smt_pes"></th>
-                                <th><input class="form-control search_pes" id="search_tahun_pes"></th>
                                 <th style="text-align: center">
-                                    <button id="btn_submit_search" class="btn btn-info" type="button"><i class="fa fa-search"></i></button>
+                                    <button id="btn_reset_search" class="btn btn-danger btn-sm" type="button"><i class="fa fa-refresh"></i></button>
+                                    <button id="btn_submit_search" class="btn btn-info btn-sm" type="button"><i class="fa fa-search"></i></button>
                                 </th>
+                                <th><input class="search_pes" style="width: 150px" id="search_nama_pes"></th>
+                                <th><input class="search_pes" style="width: 100px" id="search_no_pes"></th>
+                                <th><input class="search_pes" style="width: 150px" id="search_prodi_pes"></th>
+                                <th><input class="search_pes" style="width: 50px" id="search_jalur_pes"></th>
+                                <th><input class="search_pes" style="width: 25px" id="search_gel_pes"></th>
+                                <th><input class="search_pes" style="width: 25px" id="search_smt_pes"></th>
+                                <th><input class="search_pes" style="width: 50px" id="search_tahun_pes"></th>
                             </tr>
                         </thead>
                         <tbody id="tbody_tb_peserta">
                             <tr>
-                                <td colspan="9" style="text-align: center">Tidak ada peserta tersedia</td>
+                                <td colspan="8" style="text-align: center">Tidak ada peserta tersedia</td>
                             </tr>
                         </tbody>
                     </table>
+                    </div>
                     <small class="help-block"></small>
                 </div>
                 <div class="form-group pull-right">

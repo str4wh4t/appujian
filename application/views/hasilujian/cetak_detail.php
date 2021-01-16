@@ -133,7 +133,8 @@ EOD;
 
 $no = 1;
 foreach($hasil as $row) {
-$nilai_bobot_benar = number_format($row['nilai_bobot_benar'] / 3,2,'.', '') ;
+// $nilai_bobot_benar = number_format($row['nilai_bobot_benar'] / 3,2,'.', '') ;
+$nilai_bobot_benar = number_format($row['nilai_bobot_benar'],2,'.', '') ;
 $hasil = number_format($row['nilai'],2,'.', '') ;
 $html .= <<<EOD
     <tr>

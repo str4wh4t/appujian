@@ -419,12 +419,13 @@ class Pub extends MY_Controller {
 		$h_ujian->jml_benar =  $jumlah_benar;
 		$h_ujian->jml_salah =  $jumlah_salah;
 		$h_ujian->jml_soal =  $jumlah_soal;
-		$h_ujian->nilai     =  number_format(floor($nilai), 0);
+//		$h_ujian->nilai     =  number_format(floor($nilai), 0);
+		$h_ujian->nilai     =  round($nilai, 2);
 //		$h_ujian->nilai_bobot = $nilai_bobot;
 		$h_ujian->nilai_bobot = 0;
-		$h_ujian->nilai_bobot_benar     =  $nilai_bobot_benar;
+		$h_ujian->nilai_bobot_benar     =  round($nilai_bobot_benar, 2);
+		$h_ujian->total_bobot     =  round($total_bobot, 2);
 		$h_ujian->detail_bobot_benar     =  json_encode($topik_ujian_nilai_bobot);
-		$h_ujian->total_bobot     =  $total_bobot;
 		$h_ujian->tgl_selesai =  date('Y-m-d H:i:s');
 		$h_ujian->ujian_selesai    =  'Y';
 		$h_ujian->ended_by =  'cron';

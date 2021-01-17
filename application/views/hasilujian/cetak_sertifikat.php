@@ -87,7 +87,7 @@ $dt = DateTime::createFromFormat('Y-m-d H:i:s', $d);
 // $tgl_ujian_format = $dt->format('l, d F Y');
 $tgl_ujian_format = strftime("%A, %d %B %Y", $dt->getTimestamp());
 
-$hasil_akhir = number_format($hasil['nilai_bobot_benar'] / 3,2,'.', '') ;
+$hasil_akhir = number_format($hasil['nilai_bobot_benar'],2,'.', '') ;
 
 // create some HTML content
 $html = <<<EOD

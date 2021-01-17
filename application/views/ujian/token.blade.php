@@ -49,7 +49,8 @@
                 url: "{{ site_url('ujian/ajax/close_ujian') }}",
                 data: {
                     'id': '{{  uuid_create_from_integer($h_ujian->id) }}',
-                    'key': '{{ $one_time_token }}'
+                    'key': '{{ $one_time_token }}',
+                    'ended_by': 'cron',
                 },
                 success: function (r) {
                     if (r.status) {

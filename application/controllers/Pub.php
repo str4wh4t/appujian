@@ -446,19 +446,17 @@ class Pub extends MY_Controller {
         else
 	        $h_ujian_list->setConnection('cat');
 
-		$h_ujian_list = $h_ujian_list->where('ujian_selesai', 'Y')->orderBy('id')->get();
+		$h_ujian_list = $h_ujian_list->where('ujian_selesai', 'Y')->where('fixed_nilai', '0')->orderBy('id')->get();
 		
 		if($h_ujian_list->isNotEmpty()) {
 			foreach ($h_ujian_list as $h_ujian) {
+			
+//				if( $h_ujian->id != '47'){
+//					continue;
+//				}
 				
-				
-				if( $h_ujian->id != '47'){
-					continue;
-				}
-				
-				echo $h_ujian->id . "\n";
-				echo $h_ujian->mhs->nama . "\n";
-				
+				echo $h_ujian->id ;
+//				echo $h_ujian->mhs->nama . "\n";
 				
 				$this->load->model('Ujian_model', 'ujian');
 				$this->load->model('Master_model', 'master');
@@ -514,11 +512,12 @@ class Pub extends MY_Controller {
 //				$h_ujian->tgl_selesai        = date('Y-m-d H:i:s');
 //				$h_ujian->ujian_selesai      = 'Y';
 //				$h_ujian->ended_by           = 'cron';
+				$h_ujian->fixed_nilai        = 1;
 				$action                      = $h_ujian->save();
 				
-				return $action;
+				echo 'done' . "\n";
 				
-				die;
+				return $action;
 			}
 		}
 		

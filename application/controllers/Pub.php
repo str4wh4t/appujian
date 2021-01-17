@@ -517,7 +517,7 @@ class Pub extends MY_Controller {
 				
 				echo 'done' . "\n";
 				
-				return $action;
+				// return $action;
 			}
 		}
 		

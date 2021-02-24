@@ -241,10 +241,30 @@ class Pub extends MY_Controller {
 					$i = 0;
 					foreach($m_ujian->topik_ujian as $topik_ujian){
 						$jumlah_soal_diset = $topik_ujian->jumlah_soal;
-						$soal_avail = $soal_orm->where('topik_id',$topik_ujian->topik_id)
-						                            ->where('bobot_soal_id',$topik_ujian->bobot_soal_id)
-													->get();
-						if($jumlah_soal_diset > $soal_avail->count()){
+						$soal_avail = $soal_orm->where('topik_id', $topik_ujian->topik_id)
+												->where('bobot_soal_id', $topik_ujian->bobot_soal_id);
+
+						$filter_data = [
+							'gel' 		=> $m_ujian->soal_gel,
+							'smt' 		=> $m_ujian->soal_smt,
+							'tahun' 	=> $m_ujian->soal_tahun,
+						];
+			
+						$filter = [];
+		
+						foreach ($filter_data as $key => $v) {
+							if (!empty($v)) {
+								$filter[$key] = $v;
+							}
+						}
+						
+						if (!empty($filter)){
+							$soal_avail->where($filter);
+						}
+
+						$soal_avail = $soal_avail->get();
+
+						if ($jumlah_soal_diset > $soal_avail->count()) {
 							die('Jumlah soal tidak memenuhi untuk ujian');
 						}
 		

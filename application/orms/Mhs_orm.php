@@ -2,6 +2,7 @@
 namespace Orm;
 
 use Illuminate\Database\Eloquent\Model as Eloquent;
+use Orm\Tahun;
 
 class Mhs_orm extends Eloquent
 {
@@ -23,5 +24,17 @@ class Mhs_orm extends Eloquent
     {
         return $this->hasMany('Orm\Mhs_matkul_orm','mahasiswa_id');
     }
+
+    // public static function boot(){
+	// 	parent::boot();
+
+	// 	static::saving(function ($model) {
+	// 		$model->tahun = Tahun::get_tahun_aktif();
+	// 	});
+	// }
+
+    protected static function booted(){
+		static::addGlobalScope(new Tahun);
+	}
     
 }

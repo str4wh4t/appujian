@@ -1,3 +1,6 @@
+@php
+    use Illuminate\Database\Eloquent\Builder;
+@endphp
 @extends('template.main')
 
 @push('page_level_css')
@@ -93,7 +96,7 @@ $(document).on('click','.btn_reset_hasil',function(){
         @if(is_admin())
         <div class="pull-right">
             <a target="_blank" href="{{ site_url('hasilujian/cetak_detail/' . segment(3)) }}" class="btn btn-danger btn-flat btn-sm">
-                <i class="fa fa-print"></i> Print
+                <i class="fa fa-print"></i> Cetak Hasil Ujian
             </a>
         </div>
         @endif
@@ -155,9 +158,23 @@ $(document).on('click','.btn_reset_hasil',function(){
 </div>
 <div class="row">
     @if(in_group('mahasiswa'))
+
 {{--    <div class="col-md-12 mt-2" style="text-align: center">--}}
 {{--        <a class="btn btn-info btn_cetak_hasil" target="_blank" href="{{ url('pub/cetak_sertifikat/' . $user->username . '/' . uuid_create_from_integer($ujian->id_ujian)) }}" title="Cetak hasil"><i class="fa fa-print"></i> Cetak Sertifikat</a>--}}
 {{--    </div>--}}
+
+        @if($ujian->tampilkan_jawaban)
+            <?php 
+            $h_ujian = $ujian->h_ujian()->where('mahasiswa_id', $mhs->id_mahasiswa)->first();
+            ?>
+            <div class="col-md-12 mt-2" style="text-align: center">
+                <a class="btn btn-danger btn-lg" href="{{ url('hasilujian/history/' . uuid_create_from_integer($h_ujian->mahasiswa_ujian_id)) }}" title="Lihat Jawaban">
+                    <i class="fa fa-list-alt"></i> Jawaban Ujian
+                </a>
+            </div>
+        @endif
+        
+        
     @endif
     <div class="col-md-12 mb-4 mt-2">
         <div class="table-responsive pb-3" style="border: 0">

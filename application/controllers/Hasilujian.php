@@ -2,11 +2,14 @@
 defined('BASEPATH') OR exit('No direct script access allowed');
 
 use Orm\Hujian_orm;
+use Orm\Hujian_history_orm;
 use Orm\Mujian_orm;
 use Orm\Topik_orm;
 use Orm\Hujian_deleted_orm;
 use Orm\Jawaban_ujian_deleted_orm;
-
+use Orm\Mhs_orm;
+use Orm\Mhs_ujian_orm;
+use Illuminate\Database\Capsule\Manager as DB;
 
 class HasilUjian extends MY_Controller {
 	
@@ -123,8 +126,11 @@ class HasilUjian extends MY_Controller {
 	public function detail($id)
 	{
 //		vdebug($this->ion_auth->in_group('mahasiswa'));
+		$mhs = null ;
 		if(in_group('mahasiswa')){
 			$id = integer_read_from_uuid($id);
+			$user = $this->ion_auth->user()->row();
+			$mhs = Mhs_orm::where('nim', $user->username)->firstOrFail();
 		}
 		
 		$ujian = Mujian_orm::findOrFail($id);
@@ -144,7 +150,8 @@ class HasilUjian extends MY_Controller {
 			'judul'	=> 'Ujian',
 			'subjudul'=> 'Detail Hasil Ujian',
 			'ujian'	=> $ujian,
-			'nilai'	=> $nilai
+			'nilai'	=> $nilai,
+			'mhs'	=> $mhs,
 		];
 
 //		$this->load->view('_templates/dashboard/_header.php', $data);
@@ -224,6 +231,136 @@ class HasilUjian extends MY_Controller {
 		$data['hasil'] = $new_hasil;
 
 		$this->load->view('hasilujian/cetak_detail', $data);
+	}
+
+	public function jawaban($id, $nomor = '')
+	{
+		if(in_group('mahasiswa')){
+			$id = integer_read_from_uuid($id);
+		}
+
+		$h_ujian = Hujian_orm::find($id);
+
+		if(empty($h_ujian)){
+			$h_ujian = Hujian_history_orm::findorFail($id);
+			$mhs = $h_ujian->mhs;
+			$h_ujian_all = Hujian_history_orm::select('*', DB::raw('TIMESTAMPDIFF(SECOND, tgl_mulai, tgl_selesai) AS lama_pengerjaan'))
+							->where(['ujian_id' => $h_ujian->ujian_id])
+							->orderBy('nilai_bobot_benar', 'desc')
+							->orderBy('lama_pengerjaan', 'asc')
+							->get();
+			$peringkat = $h_ujian->peringkat;
+			$jml_peserta = $h_ujian->jml_peserta ;
+
+		}else{
+			$mhs = $h_ujian->mhs;
+			$h_ujian_all = Hujian_orm::select('*', DB::raw('TIMESTAMPDIFF(SECOND, tgl_mulai, tgl_selesai) AS lama_pengerjaan'))
+							->where(['ujian_id' => $h_ujian->ujian_id])
+							->orderBy('nilai_bobot_benar', 'desc')
+							->orderBy('lama_pengerjaan', 'asc')
+							->get();
+			$jml_peserta = $h_ujian_all->count();
+
+			$peringkat = 1;
+			foreach($h_ujian_all as $ujian){
+				if($ujian->mahasiswa_id == $mhs->id_mahasiswa){
+					break;
+				}
+				$peringkat++;
+			}
+		}
+
+		if(in_group('mahasiswa')){
+			if(!$h_ujian->m_ujian->tampilkan_jawaban){
+				show_404();
+			}
+		}
+
+		$data = [
+			'judul'	=> 'Hasil Ujian',
+			'subjudul' => 'Jawaban'
+		];
+
+
+		
+
+		$data['h_ujian'] = $h_ujian;
+
+		$date1 = new DateTime($h_ujian->tgl_mulai);
+		$date2 = new DateTime($h_ujian->tgl_selesai);
+		$interval = $date1->diff($date2);
+
+		$waktu_mengerjakan = $interval->h  . ' jam ' . $interval->i . ' mnt ' . $interval->s . ' dtk' ;
+		$data['waktu_mengerjakan'] = $waktu_mengerjakan;
+
+		$data['mhs'] = $mhs;
+		$data['peringkat'] = $peringkat;
+		$data['jml_peserta'] = $jml_peserta;
+
+		view('hasilujian/jawaban', $data);
+
+	}
+
+	public function history($mahasiswa_ujian_id_uuid){
+
+		$this->_akses_mahasiswa();
+
+		$data = [
+			'judul'	=> 'Ujian',
+			'subjudul' => 'History Ujian'
+		];
+		
+		if(in_group('mahasiswa')){
+			$mahasiswa_ujian_id = integer_read_from_uuid($mahasiswa_ujian_id_uuid);
+		}
+		
+		$mhs_ujian = Mhs_ujian_orm::findOrFail($mahasiswa_ujian_id);
+		
+		if(!($mhs_ujian->m_ujian->tampilkan_hasil && $mhs_ujian->m_ujian->tampilkan_jawaban)){ // CHECK JIKA BOLEH MENAMPILKAN HASIL DAN JAWABAN
+			show_404();
+		}
+		
+		$h_ujian = $mhs_ujian->h_ujian()->where('ujian_selesai', 'Y')->first(); // RELASI 1 - 1
+		$h_ujian_history = $mhs_ujian->h_ujian_history; // RELASI 1 - N
+		
+		if(empty($h_ujian) && $h_ujian_history->isEmpty()){ // CHECK JIKA MEMANG SUDAH MEMILIKI HASIL UJIAN
+			show_404();
+		}
+
+		$data['mhs'] = $mhs_ujian->mhs_matkul->mhs;
+		$data['m_ujian'] = $mhs_ujian->m_ujian;
+		$data['h_ujian'] = $h_ujian;
+		$data['h_ujian_history'] = $h_ujian_history;
+
+		/**[START] PREPARE DATA FOR CHART*/
+		$label_and_data = collect();
+
+		if($h_ujian_history->isNotEmpty()){
+			$label_and_data = $h_ujian_history->pluck('nilai_bobot_benar', 'ujian_ke');
+		}
+
+		
+		if(!empty($h_ujian)){
+			$label_and_data->put($label_and_data->count() + 1, $h_ujian->nilai_bobot_benar);
+		}
+		
+		
+		$chart_label_and_data_array = [];
+		$label_and_data->each(function ($item, $key) use(&$chart_label_and_data_array){
+			$data = [
+				'ujian_ke' => $key,
+				'nilai_bobot_benar' => $item,
+			];
+			$chart_label_and_data_array[] = $data;
+		});
+		
+		$chart_label_and_data = collect($chart_label_and_data_array);
+		$data['chart_label_and_data'] = $chart_label_and_data;
+		
+		/**[START] PREPARE DATA FOR CHART*/
+
+		view('hasilujian/history', $data);
+
 	}
 	
 }

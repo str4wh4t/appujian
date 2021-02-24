@@ -27,5 +27,10 @@ class Mhs_ujian_orm extends Eloquent
     {
         return $this->hasOne('Orm\Hujian_orm','mahasiswa_ujian_id', 'id');
     }
+
+    public function h_ujian_history()
+    {
+        return $this->hasMany('Orm\Hujian_history_orm','mahasiswa_ujian_id', 'id');
+    }
     
 }

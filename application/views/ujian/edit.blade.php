@@ -37,13 +37,24 @@ let topik_jumlah_soal = {};
 let topik_jumlah_soal_asli = {};
 let topik_avail = {};
 
+let filter = {
+		gel: null,
+		smt: null,
+		tahun: null,
+	};
+
 function init_page_level(){
     ajaxcsrf();
     $('.select2').select2();
     $('#matkul_id').select2();
     $('#topik_id').select2({placeholder : 'Pilih Topik'});
 
+    filter.gel      = $('#gel').val();
+    filter.smt      = $('#smt').val();
+    filter.tahun    = $('#tahun').val();
+
     let options = {};
+    ajx_overlay(true);
     cascadLoading = new Select2Cascade($('#matkul_id'), $('#topik_id'), '{{ site_url('soal/ajax/get_topic_by_matkul/') }}?id=:parentId:', options);
     cascadLoading.then( function(parent, child, items) {
         topik_id_dipilih = [];
@@ -76,8 +87,16 @@ function init_page_level(){
         child.val(topik_id_dipilih_baru);
         // child.trigger('select2:select');
         child.trigger('change');
-        init_topik_table_value();
-        init_peserta_table_value();
+        // init_topik_table_value();
+        // init_peserta_table_value();
+        
+        init_topik_table_value().then(
+            function(){
+                init_peserta_table_value().then(function(){
+                    ajx_overlay(false);
+                });
+            }
+        ); // TO RESET ALL DATA TABLE JML SOAL
 
     });
 
@@ -86,16 +105,17 @@ function init_page_level(){
     $(".switchBootstrap").bootstrapSwitch();
 }
 
-// $('#matkul_id').on('select2:select', function (e) {
-//     init_topik_table_value();
-// });
+$('#matkul_id').on('select2:select', function (e) {
+    // init_topik_table_value();
+    ajx_overlay(true);
+});
 
 $('#topik_id').on('select2:select', function (e) {
     let data = e.params.data;
     if(data.id == 'ALL'){
         $(this).val(null).trigger('change');
         $(this).val('ALL').trigger('change');
-        init_topik_table_value();
+        // init_topik_table_value();
     }else{
         let values = $(this).val();
         if (values) {
@@ -105,11 +125,26 @@ $('#topik_id').on('select2:select', function (e) {
                 $(this).val(values).change();
             }
         }
-        init_topik_table_value();
+        // init_topik_table_value();
     }
+    ajx_overlay(true);
+    init_topik_table_value().then(function(){
+        ajx_overlay(false);
+    });
 });
 
-function init_topik_table_value(){
+const get_jml_soal_per_topik = (selected_ids) => {
+    return $.ajax({
+        url: "{{ site_url('soal/ajax/get_jml_soal_per_topik') }}",
+        data: { 'topik_ids' : JSON.stringify(selected_ids), 'filter' : filter },
+        type: 'POST',
+        success: function (response) {
+            data_jml_soal = response;
+        }
+    });
+};
+
+async function init_topik_table_value(){
     let selected_ids = $('#topik_id').val();
     if($.inArray('ALL', selected_ids) !== -1){
         selected_ids = [];
@@ -118,15 +153,7 @@ function init_topik_table_value(){
         });
     }
     data_jml_soal = {};
-    $.ajax({
-        url: "{{ site_url('soal/ajax/get_jml_soal_per_topik') }}",
-        data: { 'topik_ids' : JSON.stringify(selected_ids) },
-        type: 'POST',
-        async: false,
-        success: function (response) {
-            data_jml_soal = response;
-        }
-    });
+    await get_jml_soal_per_topik(selected_ids);
     $('.tr-cloned-topik').remove();
     $('#jumlah_soal_total').text('0');
     $('input[name="jumlah_soal_total"]').val('0');
@@ -168,7 +195,11 @@ $('#topik_id').on('select2:unselect', function (e) {
     }else{
         topik_jumlah_soal[data.id] = topik_jumlah_soal_asli[data.id];
     }
-    init_topik_table_value();
+    // init_topik_table_value();
+    ajx_overlay(true);
+    init_topik_table_value().then(function(){
+        ajx_overlay(false);
+    });
 
 });
 
@@ -193,12 +224,11 @@ function sum_input_jumlah_soal(){
 let tgl_mulai = '{{ $ujian->tgl_mulai }}';
 let terlambat = '{{ $ujian->terlambat }}';
 
-function init_peserta_table_value(){
-    $.ajax({
+const init_peserta_table_value = () => {
+    return $.ajax({
         url: "{{ site_url('matkul/ajax/get_peserta_ujian_matkul_not_ujian') }}",
         data: { 'id' : $('#matkul_id').val(), 'ujian_id': '{{ $ujian->id_ujian }}' },
         type: 'POST',
-        async: false,
         success: function (response) {
             $('#tbody_tb_peserta').html('');
             let mhs_ujian_existing = [];
@@ -225,14 +255,14 @@ function init_peserta_table_value(){
                 });
             }else{
                 $('<tr>').append(
-                        $('<td>').text('Tidak ada peserta tersedia').attr('colspan', '9').css('text-align', 'center')
+                        $('<td>').text('Tidak ada peserta tersedia').attr('colspan', '8').css('text-align', 'center')
                     ).appendTo('#tbody_tb_peserta');
             }
             $('#peserta_hidden').val(JSON.stringify(mhs_ujian_existing));
             $('#chkbox_pilih_semua_peserta').prop('checked', false);
         }
     });
-}
+};
 
 $(document).on('change','#chkbox_pilih_semua_peserta',function () {
     if($(this).is(':checked')){
@@ -308,8 +338,47 @@ $(document).on('click','#btn_submit_search',function () {
 
     if(!found){
         $('<tr id="tr_search_not_found">').append(
-                        $('<td>').text('Tidak ada peserta tersedia').attr('colspan', '9').css('text-align', 'center')
+                        $('<td>').text('Tidak ada peserta tersedia').attr('colspan', '8').css('text-align', 'center')
                     ).appendTo('#tbody_tb_peserta');
+    }
+});
+
+$(document).on('change','#gel', function(){
+    let gel = $(this).val();
+    filter.gel = gel;
+    ajx_overlay(true);
+    init_topik_table_value().then(function(){
+        ajx_overlay(false);
+    });
+});
+
+$(document).on('change','#smt', function(){
+    let smt = $(this).val();
+    filter.smt = smt;
+    ajx_overlay(true);
+    init_topik_table_value().then(function(){
+        ajx_overlay(false);
+    });
+});
+
+$(document).on('change','#tahun', function(){
+    let tahun = $(this).val();
+    filter.tahun = tahun;
+    ajx_overlay(true);
+    init_topik_table_value().then(function(){
+        ajx_overlay(false);
+    });
+});
+
+$('#tampilkan_hasil').on('switchChange.bootstrapSwitch', function(event, state) {
+    if(!event.target.checked){ // DETEKSI JIKA FALSE MAKA JUGA MENON-AKTIFKAN TAMPILKAN JAWABAN
+        $('#tampilkan_jawaban').bootstrapSwitch('state', false, false);
+    }
+});
+
+$('#tampilkan_jawaban').on('switchChange.bootstrapSwitch', function(event, state) {
+    if(event.target.checked){ // DETEKSI JIKA TRUE MAKA JUGA MENGAKTIFKAN TAMPILKAN HASIL
+        $('#tampilkan_hasil').bootstrapSwitch('state', true, true);
     }
 });
 
@@ -357,6 +426,42 @@ $(document).on('click','#btn_submit_search',function () {
                         @endforeach
                     </select> <small class="help-block" style="color: #dc3545"><?=form_error('topik_id')?></small>
                 </div>
+                <fieldset class="form-group" style="padding: 10px; border: 1px solid #ccc;">
+                    <legend class="col-form-label col-sm-2" style="border: 1px solid #ccc; background-color: #d4fdff;">Cluster Soal</legend>
+                    <div class="form-group">
+                        <label for="gel" class="control-label">Gel</label>
+                        <select name="gel" id="gel" class="form-control select2"
+                            style="width:100%!important">
+                            <option value="null" {{ empty($ujian->soal_gel) ? 'selected' : '' }}>Semua Gel</option>
+                            @foreach (GEL_AVAIL as $gel)
+                            <option value="{{ $gel }}" {{ $gel == $ujian->soal_gel ? 'selected' : '' }} >GEL-{{ $gel }}</option>    
+                            @endforeach
+                        </select>
+                        <small class="help-block" style="color: #dc3545"><?=form_error('gel')?></small>
+                    </div>
+                    <div class="form-group">
+                        <label for="smt" class="control-label">Smt</label>
+                        <select name="smt" id="smt" class="form-control select2"
+                            style="width:100%!important">
+                            <option value="null" {{ empty($ujian->soal_smt) ? 'selected' : '' }}>Semua Smt</option>
+                            @foreach (SMT_AVAIL as $smt)
+                            <option value="{{ $smt }}" {{ $smt == $ujian->soal_smt ? 'selected' : '' }}>SMT-{{ $smt }}</option>    
+                            @endforeach
+                        </select>
+                        <small class="help-block" style="color: #dc3545"><?=form_error('smt')?></small>
+                    </div>
+                    <div class="form-group">
+                        <label for="tahun" class="control-label">Tahun</label>
+                        <select name="tahun" id="tahun" class="form-control select2"
+                            style="width:100%!important">
+                            <option value="null" {{ empty($ujian->soal_smt) ? 'selected' : '' }}>Semua Tahun</option>
+                            @foreach (TAHUN_AVAIL as $tahun)
+                            <option value="{{ $tahun }}" {{ $tahun == $ujian->soal_tahun ? 'selected' : '' }}>{{ $tahun }}</option>    
+                            @endforeach
+                        </select>
+                        <small class="help-block" style="color: #dc3545"><?=form_error('tahun')?></small>
+                    </div>
+                </fieldset>
                 <div>
                     <label for="jumlah_soal">
                         <span>Jumlah Soal</span>
@@ -427,9 +532,16 @@ $(document).on('click','#btn_submit_search',function () {
                     <small class="help-block"></small>
                 </div>
                 <div class="form-group">
-                    <label for="pakai_token">Tampilkah Hasil</label> <small class="help-block text-danger"><b>***</b> Tampilkan hasil ujian ke peserta</small>
+                    <label for="tampilkan_hasil">Tampilkah Hasil</label> <small class="help-block text-danger"><b>***</b> Tampilkan hasil ujian ke peserta</small>
                     <div>
                         <input type="radio" class="switchBootstrap" id="tampilkan_hasil" name="tampilkan_hasil" data-on-text="Tampilkan" data-off-text="Tidak" data-radio-all-off="true" data-on-color="success" data-off-color="danger" {!! $ujian->tampilkan_hasil == 1 ? 'checked="checked"' : '' !!} />
+                    </div>
+                    <small class="help-block"></small>
+                </div>
+                <div class="form-group">
+                    <label for="tampilkan_jawaban">Tampilkah Jawaban</label> <small class="help-block text-danger"><b>***</b> Tampilkan jawaban ujian ke peserta (jika ditampilkan otomatis juga menampilkan hasil)</small>
+                    <div>
+                        <input type="radio" class="switchBootstrap" id="tampilkan_jawaban" name="tampilkan_jawaban" data-on-text="Tampilkan" data-off-text="Tidak" data-radio-all-off="true" data-on-color="success" data-off-color="danger" {!! $ujian->tampilkan_jawaban == 1 ? 'checked="checked"' : '' !!} />
                     </div>
                     <small class="help-block"></small>
                 </div>
@@ -455,6 +567,13 @@ $(document).on('click','#btn_submit_search',function () {
                     <label for="tampilkan_tutorial">Tampilkan Tutorial</label> <small class="help-block text-danger"><b>***</b> Tampilkan tutorial ujian sebelum memulai</small>
                     <div>
                         <input type="radio" class="switchBootstrap" id="tampilkan_tutorial" name="tampilkan_tutorial" data-on-text="Tampilkan" data-off-text="Tidak" data-radio-all-off="true" data-on-color="success" data-off-color="danger" {!! $ujian->tampilkan_tutorial == 1 ? 'checked="checked"' : '' !!} />
+                    </div>
+                    <small class="help-block"></small>
+                </div>
+                <div class="form-group">
+                    <label for="repeatable">Repeatable</label> <small class="help-block text-danger"><b>***</b> Apakah ujian dapat diulang</small>
+                    <div>
+                        <input type="radio" class="switchBootstrap" id="repeatable" name="repeatable" data-on-text="Ya" data-off-text="Tidak" data-radio-all-off="true" data-on-color="success" data-off-color="danger" {!! $ujian->repeatable == 1 ? 'checked="checked"' : '' !!} />
                     </div>
                     <small class="help-block"></small>
                 </div>

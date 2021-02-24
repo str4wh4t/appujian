@@ -6,7 +6,8 @@
 {{--<link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/vendors/css/tables/datatable/dataTables.bootstrap4.min.css') }}">--}}
 {{--<link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/vendors/css/tables/extensions/rowReorder.dataTables.min.css') }}">--}}
 {{--<link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/vendors/css/tables/extensions/responsive.dataTables.min.css') }}">--}}
-<link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/vendors/css/forms/selects/select2.min.css') }}">
+<link rel="stylesheet" type="text/css"
+    href="{{ asset('assets/template/robust/app-assets/vendors/css/forms/selects/select2.min.css') }}">
 
 <!-- Include TUI CSS. -->
 {{--<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tui-image-editor@3.2.2/dist/tui-image-editor.css">--}}
@@ -28,12 +29,17 @@
 
 @push('page_vendor_level_js')
 <!-- BEGIN PAGE VENDOR JS-->
-{{--<script src="{{ asset('assets/template/robust/app-assets/vendors/js/tables/datatable/datatables.min.js') }}"></script>--}}
+{{--<script src="{{ asset('assets/template/robust/app-assets/vendors/js/tables/datatable/datatables.min.js') }}">
+</script>--}}
 {{--<script src="//cdn.datatables.net/plug-ins/1.10.21/api/fnPagingInfo.js"></script>--}}
-{{--<script src="{{ asset('assets/template/robust/app-assets/vendors/js/tables/jquery.dataTables.min.js') }}"></script>--}}
-{{--<script src="{{ asset('assets/template/robust/app-assets/vendors/js/tables/datatable/dataTables.bootstrap4.min.js') }}"></script>--}}
-{{--<script src="{{ asset('assets/template/robust/app-assets/vendors/js/tables/datatable/dataTables.responsive.min.js') }}"></script>--}}
-{{--<script src="{{ asset('assets/template/robust/app-assets/vendors/js/tables/datatable/dataTables.rowReorder.min.js') }}"></script>--}}
+{{--<script src="{{ asset('assets/template/robust/app-assets/vendors/js/tables/jquery.dataTables.min.js') }}"></script>
+--}}
+{{--<script src="{{ asset('assets/template/robust/app-assets/vendors/js/tables/datatable/dataTables.bootstrap4.min.js') }}">
+</script>--}}
+{{--<script src="{{ asset('assets/template/robust/app-assets/vendors/js/tables/datatable/dataTables.responsive.min.js') }}">
+</script>--}}
+{{--<script src="{{ asset('assets/template/robust/app-assets/vendors/js/tables/datatable/dataTables.rowReorder.min.js') }}">
+</script>--}}
 <script src="{{ asset('assets/template/robust/app-assets/vendors/js/forms/select/select2.full.min.js') }}"></script>
 
 <!-- Include TUI JS. -->
@@ -59,7 +65,7 @@
 @endpush
 
 @push('page_level_js')
-<!-- BEGIN PAGE LEVEL JS-->
+<!-- BEGIN PAGE LEVEL JS -->
 <script type="text/javascript">
 
 function init_page_level(){
@@ -117,7 +123,7 @@ function init_page_level(){
         },
         placeholder: 'Ketik disini ...',
         followingToolbar: false,
-
+        height: 150,
     });
     $('.note-btn').attr('title', '').attr('data-original-title', ''); // DISABLED SUMMERNOTE TOOLTIP
 
@@ -135,21 +141,21 @@ function init_page_level(){
         @endif
     });
 
-    {{--$('#topik_id').select2({--}}
-    {{--    placeholder: "Silahkan pilih mata kuliah dahulu",--}}
-    {{--    ajax: {--}}
-    {{--        url: '{{ site_url('topik/ajax/get_topic_by_matkul/') }}',--}}
-    {{--        dataType: 'json',--}}
-    {{--        method: "POST",--}}
-    {{--        data: {'id' : '3'},--}}
-    {{--        processResults: function (data) {--}}
-    {{--            // Transforms the top-level key of the response object from 'items' to 'results'--}}
-    {{--            return {--}}
-    {{--                results: data--}}
-    {{--            };--}}
-    {{--        }--}}
-    {{--    }--}}
-    {{--});--}}
+    // {{-- $('#topik_id').select2({ --}}
+    // {{--     placeholder: "Silahkan pilih mata kuliah dahulu", --}}
+    // {{--     ajax: { --}}
+    // {{--         url: '{{ site_url('topik/ajax/get_topic_by_matkul/') }}', --}}
+    // {{--         dataType: 'json', --}}
+    // {{--         method: "POST", --}}
+    // {{--         data: {'id' : '3'}, --}}
+    // {{--         processResults: function (data) { --}}
+    // {{--             // Transforms the top-level key of the response object from 'items' to 'results' --}}
+    // {{--             return { --}}
+    // {{--                 results: data --}}
+    // {{--             }; --}}
+    // {{--         } --}}
+    // {{--     } --}}
+    // {{-- }); --}}
 
     @if(!empty(set_value('matkul_id')))
         $('select[name="matkul_id"]').val("{{ set_value('matkul_id') }}");
@@ -180,138 +186,186 @@ function init_page_level(){
         $('#bobot_soal_id').parent('.form-group').addClass('has-error');
      @endif
 
-{{--    @if(!empty(form_error('bobot')))--}}
-{{--        $('#bobot').parent('.form-group').addClass('has-error');--}}
-{{--    @endif--}}
-
-
+// {{-- @if(!empty(form_error('bobot'))) --}}
+// {{--     $('#bobot').parent('.form-group').addClass('has-error'); --}}
+// {{-- @endif --}}
 
 }
-
 </script>
-<!-- END PAGE LEVEL JS-->
+<!-- END PAGE LEVEL JS -->
 @endpush
 
 @section('content')
-    <div id="tui-image-editor-container"></div>
+<div id="tui-image-editor-container"></div>
 <section class="row">
     <div class="col-12">
         <div class="card">
             <div class="card-header">
-            	<h4 class="card-title"><?=$subjudul?></h4>
-            	<a class="heading-elements-toggle"><i class="ft-ellipsis-h font-medium-3"></i></a>
+                <h4 class="card-title"><?=$subjudul?></h4>
+                <a class="heading-elements-toggle"><i class="ft-ellipsis-h font-medium-3"></i></a>
             </div>
             <div class="card-content">
                 <div class="card-body">
+                    <!---- --->
+                    <div class="row">
+                        <div class="col-md-8">
+                            <?=form_open_multipart('soal/save', array('id'=>'formsoal'), array('method'=>'add'));?>
+
+                            <label>Materi Ujian</label>
+                            <div class="form-group">
+                                <select name="matkul_id" id="matkul_id" class="select2 form-group"
+                                    style="width:100% !important">
+                                    <option value="" disabled selected>Pilih Materi Ujian</option>
+                                    <?php foreach ($matkul as $d) : ?>
+                                    <option value="<?=$d->id_matkul?>"><?=$d->nama_matkul?></option>
+                                    <?php endforeach; ?>
+                                </select> <small class="help-block"
+                                    style="color: #dc3545"><?=form_error('matkul_id')?></small>
+                            </div>
+                            <label>
+                                <span>Topik</span>
+                                <small class="help-block text-info"><span class="text-danger"><b>***</b> Sebelum
+                                    memilh topik, silahkan pilih matkul dahulu</span></small>
+                            </label>
+                            <div class="form-group">
+                                <select name="topik_id" id="topik_id" class="select2 form-group"
+                                    style="width:100% !important">
+                                    <option value="" disabled selected>Pilih Topik</option>
+                                </select> <small class="help-block"
+                                    style="color: #dc3545"><?=form_error('topik_id')?></small>
+                            </div>
+
+                            <div class="alert bg-info mb-2" role="alert">
+                                <strong>Pertanyaan</strong>
+                            </div>
+
+                            {{--                    <div class="form-group">--}}
+                            {{--                        <input type="file" name="file_soal" class="form-control">--}}
+                            {{--                        <small class="help-block" style="color: #dc3545"><?=form_error('file_soal')?></small>--}}
+                            {{--                    </div>--}}
+
+                            <div class="form-group">
+                                <textarea name="soal" id="soal"
+                                    class="form-control froala-editor t_editor"><?=set_value('soal')?></textarea>
+                                <small class="help-block" style="color: #dc3545"><?=form_error('soal')?></small>
+                            </div>
+
+                            <div class="alert bg-danger mb-2" role="alert">
+                                <strong>Jawaban</strong>
+                            </div>
+                            {{-- Membuat perulangan A-E --}}
+                            <?php  
+                            $abjad = ['a', 'b', 'c', 'd', 'e'];
+                            foreach ($abjad as $abj) :
+                                $ABJ = strtoupper($abj); // Abjad Kapital
+                            ?>
+
+                            <label for="jawaban_<?= $abj; ?>">Opsi : <strong class="text-danger"><?= $ABJ; ?></strong></label>
+                            {{--                    <div class="form-group">--}}
+                            {{--                        <input type="file" name="file_<?= $abj; ?>" class="form-control">--}}
+                            {{--                        <small class="help-block" style="color: #dc3545"><?=form_error('file_'.$abj)?></small>--}}
+                            {{--                    </div>--}}
+                            <div class="form-group">
+                                <textarea name="jawaban_<?= $abj; ?>" id="jawaban_<?= $abj; ?>"
+                                    class="form-control froala-editor t_editor"><?=set_value('jawaban_'.$abj)?></textarea>
+                                <small class="help-block"
+                                    style="color: #dc3545"><?=form_error('jawaban_'.$abj)?></small>
+                            </div>
 
 
-<!---- --->
-<div class="row">
-        <div class="col-md-8">
-        <?=form_open_multipart('soal/save', array('id'=>'formsoal'), array('method'=>'add'));?>
-
-                    <label>Materi Ujian</label>
-                    <div class="form-group">
-                        <select name="matkul_id" id="matkul_id" class="select2 form-group" style="width:100% !important">
-                            <option value="" disabled selected>Pilih Materi Ujian</option>
-                            <?php foreach ($matkul as $d) : ?>
-                            <option value="<?=$d->id_matkul?>"><?=$d->nama_matkul?></option>
                             <?php endforeach; ?>
-                        </select> <small class="help-block" style="color: #dc3545"><?=form_error('matkul_id')?></small>
+
+                            <div class="form-group">
+                                <label for="jawaban" class="control-label">Kunci Jawaban</label>
+                                <select name="jawaban" id="jawaban" class="form-control select2"
+                                    style="width:100%!important">
+                                    <option value="" disabled selected>Pilih Kunci Jawaban</option>
+                                    <option value="A">A</option>
+                                    <option value="B">B</option>
+                                    <option value="C">C</option>
+                                    <option value="D">D</option>
+                                    <option value="E">E</option>
+                                </select>
+                                <small class="help-block" style="color: #dc3545"><?=form_error('jawaban')?></small>
+                            </div>
+
+                            {{--                <div class="form-group" >--}}
+                            {{--                    <label for="bobot" class="control-label">Bobot Soal</label>--}}
+                            {{--                    <input value="{{ set_value('bobot', '1') }}" type="number"
+                            name="bobot" placeholder="Bobot Soal" id="bobot" class="form-control">--}}
+                            {{--                    <small class="help-block" style="color: #dc3545"><?=form_error('bobot')?></small>--}}
+                            {{--                </div>--}}
+
+                            <div class="form-group">
+                                <label for="bobot_soal_id" class="control-label">Bobot Soal</label>
+                                <select name="bobot_soal_id" id="bobot_soal_id" class="form-control select2"
+                                    style="width:100%!important">
+                                    <option value="" disabled selected>Pilih Bobot</option>
+                                    @forelse($bobot_soal as $d)
+                                    <option value="{{ $d->id }}">{{ $d->bobot }}</option>
+                                    @empty
+
+                                    @endforelse
+                                </select>
+                                <small class="help-block"
+                                    style="color: #dc3545"><?=form_error('bobot_soal_id')?></small>
+                            </div>
+
+                            <fieldset class="form-group" style="padding: 10px; border: 1px solid #ccc;">
+                                <legend class="col-form-label col-sm-2" style="border: 1px solid #ccc; background-color: #d4fdff;">Cluster Soal</legend>
+                                <div class="form-group">
+                                    <label for="gel" class="control-label">Gel</label>
+                                    <select name="gel" id="gel" class="form-control select2"
+                                        style="width:100%!important">
+                                        @foreach (GEL_AVAIL as $gel)
+                                        <option value="{{ $gel }}" {{ $gel == get_selected_gel() ? "selected" : "" }}>GEL-{{ $gel }}</option>    
+                                        @endforeach
+                                    </select>
+                                    <small class="help-block" style="color: #dc3545"><?=form_error('gel')?></small>
+                                </div>
+                                <div class="form-group">
+                                    <label for="smt" class="control-label">Smt</label>
+                                    <select name="smt" id="smt" class="form-control select2"
+                                        style="width:100%!important">
+                                        @foreach (SMT_AVAIL as $smt)
+                                        <option value="{{ $smt }}" {{ $smt == get_selected_smt() ? "selected" : "" }}>SMT-{{ $smt }}</option>    
+                                        @endforeach
+                                    </select>
+                                    <small class="help-block" style="color: #dc3545"><?=form_error('smt')?></small>
+                                </div>
+                                <div class="form-group">
+                                    <label for="tahun" class="control-label">Tahun</label>
+                                    <select name="tahun" id="tahun" class="form-control select2"
+                                        style="width:100%!important">
+                                        @foreach (TAHUN_AVAIL as $tahun)
+                                        <option value="{{ $tahun }}" {{ $tahun == get_selected_tahun() ? "selected" : "" }}>{{ $tahun }}</option>    
+                                        @endforeach
+                                    </select>
+                                    <small class="help-block" style="color: #dc3545"><?=form_error('tahun')?></small>
+                                </div>
+                            </fieldset>
+
+                            <fieldset class="form-group" style="padding: 10px; border: 1px solid #ccc;">
+                                <legend class="col-form-label col-sm-2" style="border: 1px solid #ccc; background-color: #f6ffd4;">Penjelasan</legend>
+                                <label for="penjelasan"><small class="help-block text-info"><span class="text-danger"><b>***</b> Penjelasan mengenai jawaban pada soal yang tertera</span></small></label>
+                                <div class="form-group">
+                                    <textarea name="penjelasan" id="penjelasan" class="form-control froala-editor t_editor"></textarea>
+                                    <small class="help-block" style="color: #dc3545"><?=form_error('penjelasan')?></small>
+                                </div>
+                            </fieldset>
+
+                            <div class="form-group pull-right">
+                                <a href="{{ site_url('soal') }}" class="btn btn-flat btn-warning">
+                                    <i class="fa fa-arrow-left"></i> Kembali
+                                </a>
+                                <button type="submit" id="submit" class="btn btn-flat btn-outline-primary"><i
+                                        class="fa fa-save"></i> Simpan</button>
+                            </div>
+                            <?=form_close();?>
+                        </div>
                     </div>
-                    <label>
-                        <span>Topik</span>
-                        <small class="help-block text-info"><span class="text-danger"><b>***</b></span> Sebelum memilh topik, silahkan pilih matkul dahulu</small>
-                    </label>
-                    <div class="form-group">
-                        <select name="topik_id" id="topik_id" class="select2 form-group" style="width:100% !important">
-                            <option value="" disabled selected>Pilih Topik</option>
-                        </select> <small class="help-block" style="color: #dc3545"><?=form_error('topik_id')?></small>
-                    </div>
-
-
-                    <div class="alert bg-info mb-2" role="alert">
-                        <strong>Pertanyaan</strong>
-                    </div>
-
-{{--                    <div class="form-group">--}}
-{{--                        <input type="file" name="file_soal" class="form-control">--}}
-{{--                        <small class="help-block" style="color: #dc3545"><?=form_error('file_soal')?></small>--}}
-{{--                    </div>--}}
-
-                    <div class="form-group">
-                        <textarea name="soal" id="soal" class="form-control froala-editor t_editor"><?=set_value('soal')?></textarea>
-                        <small class="help-block" style="color: #dc3545"><?=form_error('soal')?></small>
-                    </div>
-
-                    <div class="alert bg-danger mb-2" role="alert">
-                        <strong>Jawaban</strong>
-                    </div>
-                <!--
-                    Membuat perulangan A-E
-                -->
-                <?php  $abjad = ['a', 'b', 'c', 'd', 'e'];
-                foreach ($abjad as $abj) :
-                    $ABJ = strtoupper($abj); // Abjad Kapital
-                ?>
-
-                    <label for="opsi">Opsi : <strong class="text-danger"><?= $ABJ; ?></strong></label>
-{{--                    <div class="form-group">--}}
-{{--                        <input type="file" name="file_<?= $abj; ?>" class="form-control">--}}
-{{--                        <small class="help-block" style="color: #dc3545"><?=form_error('file_'.$abj)?></small>--}}
-{{--                    </div>--}}
-                    <div class="form-group">
-                        <textarea name="jawaban_<?= $abj; ?>" id="jawaban_<?= $abj; ?>" class="form-control froala-editor t_editor"><?=set_value('jawaban_'.$abj)?></textarea>
-                        <small class="help-block" style="color: #dc3545"><?=form_error('jawaban_'.$abj)?></small>
-                    </div>
-
-
-                <?php endforeach; ?>
-
-                <div class="form-group">
-                    <label for="jawaban" class="control-label">Kunci Jawaban</label>
-                    <select name="jawaban" id="jawaban" class="form-control select2" style="width:100%!important">
-                        <option value="" disabled selected>Pilih Kunci Jawaban</option>
-                        <option value="A">A</option>
-                        <option value="B">B</option>
-                        <option value="C">C</option>
-                        <option value="D">D</option>
-                        <option value="E">E</option>
-                    </select>
-                    <small class="help-block" style="color: #dc3545"><?=form_error('jawaban')?></small>
+                    <!---- --->
                 </div>
-
-{{--                <div class="form-group" >--}}
-{{--                    <label for="bobot" class="control-label">Bobot Soal</label>--}}
-{{--                    <input value="{{ set_value('bobot', '1') }}" type="number" name="bobot" placeholder="Bobot Soal" id="bobot" class="form-control">--}}
-{{--                    <small class="help-block" style="color: #dc3545"><?=form_error('bobot')?></small>--}}
-{{--                </div>--}}
-
-                <div class="form-group" >
-                    <label for="bobot_soal_id" class="control-label">Bobot Soal</label>
-                    <select name="bobot_soal_id" id="bobot_soal_id" class="form-control select2" style="width:100%!important">
-                        <option value="" disabled selected>Pilih Bobot</option>
-                        @forelse($bobot_soal as $d)
-                            <option value="{{ $d->id }}">{{ $d->bobot }}</option>
-                        @empty
-
-                        @endforelse
-                    </select>
-                    <small class="help-block" style="color: #dc3545"><?=form_error('bobot_soal_id')?></small>
-                </div>
-
-                <div class="form-group pull-right">
-                    <a href="{{ site_url('soal') }}" class="btn btn-flat btn-warning">
-                        <i class="fa fa-arrow-left"></i> Kembali
-                    </a>
-                    <button type="submit" id="submit" class="btn btn-flat btn-outline-primary"><i class="fa fa-save"></i> Simpan</button>
-                </div>
-        <?=form_close();?>
-</div>
-</div>
-<!---- --->
-
-				</div>
             </div>
         </div>
     </div>

@@ -123,7 +123,7 @@ $('form#form_reset_password_by_admin').on('submit', function (e) {
                 </a>
             </div>
             <div class="col-md-10">
-                <div class="alert bg-info"><b>User :</b> {{ $users->full_name }} , <b>Level :</b> {{ strtoupper($level->name) }}</div>
+                <div class="alert bg-info"><b>User :</b> {{ $users->full_name }} ( {{ $users->username }} ), <b>Level :</b> {{ strtoupper($level->name) }}</div>
             </div>
         </div>
         @endif

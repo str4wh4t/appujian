@@ -37,11 +37,21 @@ let topik_jumlah_soal = [];
 let topik_jumlah_soal_asli = [];
 let topik_avail = [];
 
+let filter = {
+		gel: null,
+		smt: null,
+		tahun: null,
+	};
+
 function init_page_level(){
     ajaxcsrf();
     $('.select2').select2();
     $('#matkul_id').select2();
     $('#topik_id').select2({placeholder : 'Pilih Topik'});
+
+    filter.gel      = $('#gel').val();
+    filter.smt      = $('#smt').val();
+    filter.tahun    = $('#tahun').val();
 
     let options = {};
     cascadLoading = new Select2Cascade($('#matkul_id'), $('#topik_id'), '{{ site_url('soal/ajax/get_topic_by_matkul/') }}?id=:parentId:', options);
@@ -55,23 +65,30 @@ function init_page_level(){
         child.prepend('<option value="ALL">Semua Topik</option>');
         // child.val('ALL');
         // child.trigger('change');
-        init_topik_table_value(); // TO RESET ALL DATA TABLE JML SOAL
-        init_peserta_table_value();
+        // ajx_overlay(true);
+        init_topik_table_value().then(
+            function(){
+                init_peserta_table_value().then(function(){
+                    ajx_overlay(false);
+                });
+            }
+        ); // TO RESET ALL DATA TABLE JML SOAL
     });
 
     $(".switchBootstrap").bootstrapSwitch();
 }
 
-// $('#matkul_id').on('select2:select', function (e) {
-//     init_topik_table_value();
-// });
+$('#matkul_id').on('select2:select', function (e) {
+    // init_topik_table_value();
+    ajx_overlay(true);
+});
 
 $('#topik_id').on('select2:select', function (e) {
     let data = e.params.data;
     if(data.id == 'ALL'){
         $(this).val(null).trigger('change');
         $(this).val('ALL').trigger('change');
-        init_topik_table_value();
+        // init_topik_table_value();
     }else{
         let values = $(this).val();
         if (values) {
@@ -81,28 +98,35 @@ $('#topik_id').on('select2:select', function (e) {
                 $(this).val(values).change();
             }
         }
-        init_topik_table_value();
+        // init_topik_table_value();
     }
+    ajx_overlay(true);
+    init_topik_table_value().then(function(){
+        ajx_overlay(false);
+    });
 });
 
-function init_topik_table_value(){
-    let selected_ids = $('#topik_id').val();
-    if($.inArray('ALL', selected_ids) !== -1){
-        selected_ids = [];
-        $.each(topik_avail,function(i,v){
-            selected_ids.push(i);
-        });
-    }
-    data_jml_soal = [];
-    $.ajax({
+const get_jml_soal_per_topik = (selected_ids) => {
+    return $.ajax({
         url: "{{ site_url('soal/ajax/get_jml_soal_per_topik') }}",
-        data: { 'topik_ids' : JSON.stringify(selected_ids) },
+        data: { 'topik_ids' : JSON.stringify(selected_ids), 'filter' : filter },
         type: 'POST',
-        async: false,
         success: function (response) {
             data_jml_soal = response;
         }
     });
+};
+
+async function init_topik_table_value(){
+    let selected_ids = $('#topik_id').val();
+    if($.inArray('ALL', selected_ids) !== -1){
+        selected_ids = [];
+        $.each(topik_avail, function(i,v){
+            selected_ids.push(i);
+        });
+    }
+    data_jml_soal = [];
+    await get_jml_soal_per_topik(selected_ids);
     $('.tr-cloned-topik').remove();
     $('#jumlah_soal_total').text('0');
     $('input[name="jumlah_soal_total"]').val('0');
@@ -145,8 +169,10 @@ $('#topik_id').on('select2:unselect', function (e) {
         topik_jumlah_soal[data.id] = [];
         // topik_jumlah_soal[data.id] = topik_jumlah_soal_asli[data.id];
     }
-    init_topik_table_value();
-
+    ajx_overlay(true);
+    init_topik_table_value().then(function(){
+        ajx_overlay(false);
+    });
 });
 
 $(document).on('keyup','.input_jumlah_soal',function () {
@@ -167,19 +193,18 @@ function sum_input_jumlah_soal(){
     $('input[name="jumlah_soal_total"]').val(jumlah_soal_total);
 }
 
-function init_peserta_table_value(){
-    $.ajax({
+const init_peserta_table_value = () => {
+    return $.ajax({
         url: "{{ site_url('matkul/ajax/get_peserta_ujian_matkul') }}",
         data: { 'id' : $('#matkul_id').val() },
         type: 'POST',
-        async: false,
         success: function (response) {
             $('#tbody_tb_peserta').html('');
             if(!$.isEmptyObject(response.mhs_matkul)) {
                 $.each(response.mhs_matkul, function (i, item) {
                     let chkbox = $('<input>').attr('class', 'chkbox_pilih_peserta').attr('type', 'checkbox').attr('name', 'peserta[]').attr('value', item.id_mahasiswa);
                     $('<tr>').append(
-                        $('<td>').text(i + 1),
+                        $('<td>').css('text-align', 'center').append(chkbox),
                         $('<td>').text(item.nama),
                         $('<td>').text(item.nim),
                         $('<td>').text(item.prodi),
@@ -187,18 +212,17 @@ function init_peserta_table_value(){
                         $('<td>').text(item.gel),
                         $('<td>').text(item.smt),
                         $('<td>').text(item.tahun),
-                        $('<td>').css('text-align', 'center').append(chkbox)
                     ).appendTo('#tbody_tb_peserta');
                 });
             }else{
                 $('<tr>').append(
-                        $('<td>').text('Tidak ada peserta tersedia').attr('colspan', '9').css('text-align', 'center')
+                        $('<td>').text('Tidak ada peserta tersedia').attr('colspan', '8').css('text-align', 'center')
                     ).appendTo('#tbody_tb_peserta');
             }
             $('#chkbox_pilih_semua_peserta').prop('checked', false);
         }
     });
-}
+};
 
 $(document).on('change','#chkbox_pilih_semua_peserta',function () {
     if($(this).is(':checked')){
@@ -273,8 +297,47 @@ $(document).on('click','#btn_submit_search',function () {
 
     if(!found){
         $('<tr id="tr_search_not_found">').append(
-                        $('<td>').text('Tidak ada peserta tersedia').attr('colspan', '9').css('text-align', 'center')
+                        $('<td>').text('Tidak ada peserta tersedia').attr('colspan', '8').css('text-align', 'center')
                     ).appendTo('#tbody_tb_peserta');
+    }
+});
+
+$(document).on('change','#gel', function(){
+    let gel = $(this).val();
+    filter.gel = gel;
+    ajx_overlay(true);
+    init_topik_table_value().then(function(){
+        ajx_overlay(false);
+    });
+});
+
+$(document).on('change','#smt', function(){
+    let smt = $(this).val();
+    filter.smt = smt;
+    ajx_overlay(true);
+    init_topik_table_value().then(function(){
+        ajx_overlay(false);
+    });
+});
+
+$(document).on('change','#tahun', function(){
+    let tahun = $(this).val();
+    filter.tahun = tahun;
+    ajx_overlay(true);
+    init_topik_table_value().then(function(){
+        ajx_overlay(false);
+    });
+});
+
+$('#tampilkan_hasil').on('switchChange.bootstrapSwitch', function(event, state) {
+    if(!event.target.checked){ // DETEKSI JIKA FALSE MAKA JUGA MENON-AKTIFKAN TAMPILKAN JAWABAN
+        $('#tampilkan_jawaban').bootstrapSwitch('state', false, false);
+    }
+});
+
+$('#tampilkan_jawaban').on('switchChange.bootstrapSwitch', function(event, state) {
+    if(event.target.checked){ // DETEKSI JIKA TRUE MAKA JUGA MENGAKTIFKAN TAMPILKAN HASIL
+        $('#tampilkan_hasil').bootstrapSwitch('state', true, true);
     }
 });
 
@@ -335,6 +398,42 @@ $(document).on('click','#btn_submit_search',function () {
                         @endforelse
                     </select> <small class="help-block" style="color: #dc3545"><?=form_error('topik_id')?></small>
                 </div>
+                <fieldset class="form-group" style="padding: 10px; border: 1px solid #ccc;">
+                    <legend class="col-form-label col-sm-2" style="border: 1px solid #ccc; background-color: #d4fdff;">Cluster Soal</legend>
+                    <div class="form-group">
+                        <label for="gel" class="control-label">Gel</label>
+                        <select name="gel" id="gel" class="form-control select2"
+                            style="width:100%!important">
+                            <option value="null">Semua Gel</option>
+                            @foreach (GEL_AVAIL as $gel)
+                            <option value="{{ $gel }}">GEL-{{ $gel }}</option>    
+                            @endforeach
+                        </select>
+                        <small class="help-block" style="color: #dc3545"><?=form_error('gel')?></small>
+                    </div>
+                    <div class="form-group">
+                        <label for="smt" class="control-label">Smt</label>
+                        <select name="smt" id="smt" class="form-control select2"
+                            style="width:100%!important">
+                            <option value="null">Semua Smt</option>
+                            @foreach (SMT_AVAIL as $smt)
+                            <option value="{{ $smt }}">SMT-{{ $smt }}</option>    
+                            @endforeach
+                        </select>
+                        <small class="help-block" style="color: #dc3545"><?=form_error('smt')?></small>
+                    </div>
+                    <div class="form-group">
+                        <label for="tahun" class="control-label">Tahun</label>
+                        <select name="tahun" id="tahun" class="form-control select2"
+                            style="width:100%!important">
+                            <option value="null">Semua Tahun</option>
+                            @foreach (TAHUN_AVAIL as $tahun)
+                            <option value="{{ $tahun }}" {{ $tahun == get_selected_tahun() ? "selected" : "" }}>{{ $tahun }}</option>    
+                            @endforeach
+                        </select>
+                        <small class="help-block" style="color: #dc3545"><?=form_error('tahun')?></small>
+                    </div>
+                </fieldset>
                 <div>
                     <label for="jumlah_soal">
                         <span>Jumlah Soal</span>
@@ -405,9 +504,16 @@ $(document).on('click','#btn_submit_search',function () {
                     <small class="help-block"></small>
                 </div>
                 <div class="form-group">
-                    <label for="pakai_token">Tampilkah Hasil</label> <small class="help-block text-danger"><b>***</b> Tampilkan hasil ujian ke peserta</small>
+                    <label for="tampilkan_hasil">Tampilkah Hasil</label> <small class="help-block text-danger"><b>***</b> Tampilkan hasil ujian ke peserta</small>
                     <div>
                         <input type="radio" class="switchBootstrap" id="tampilkan_hasil" name="tampilkan_hasil" data-on-text="Tampilkan" data-off-text="Tidak" data-radio-all-off="true" data-on-color="success" data-off-color="danger" />
+                    </div>
+                    <small class="help-block"></small>
+                </div>
+                <div class="form-group">
+                    <label for="tampilkan_jawaban">Tampilkah Jawaban</label> <small class="help-block text-danger"><b>***</b> Tampilkan jawaban ujian ke peserta (jika ditampilkan otomatis juga menampilkan hasil)</small>
+                    <div>
+                        <input type="radio" class="switchBootstrap" id="tampilkan_jawaban" name="tampilkan_jawaban" data-on-text="Tampilkan" data-off-text="Tidak" data-radio-all-off="true" data-on-color="success" data-off-color="danger" />
                     </div>
                     <small class="help-block"></small>
                 </div>
@@ -437,41 +543,49 @@ $(document).on('click','#btn_submit_search',function () {
                     <small class="help-block"></small>
                 </div>
                 <div class="form-group">
+                    <label for="repeatable">Repeatable</label> <small class="help-block text-danger"><b>***</b> Apakah ujian dapat diulang</small>
+                    <div>
+                        <input type="radio" class="switchBootstrap" id="repeatable" name="repeatable" data-on-text="Ya" data-off-text="Tidak" data-radio-all-off="true" data-on-color="success" data-off-color="danger" />
+                    </div>
+                    <small class="help-block"></small>
+                </div>
+                <div class="form-group">
                     <label for="status_ujian">Peserta Ujian</label>  <small class="help-block text-danger"><b>***</b> Pilih peserta yg akan dienroll ke ujian</small>
                     <input type="hidden" name="peserta_hidden" class="form-control" id="peserta_hidden">
-                    <table class="table table-bordered">
-                        <thead>
-                            <tr>
-                                <th>No</th>
-                                <th>Nama</th>
-                                <th>No Peserta</th>
-                                <th>Prodi</th>
-                                <th>Jalur</th>
-                                <th>Gel</th>
-                                <th>Smt</th>
-                                <th>Tahun</th>
-                                <th style="text-align: center"><input type="checkbox" id="chkbox_pilih_semua_peserta"></th>
-                            </tr>
-                            <tr>
-                                <th><button id="btn_reset_search" class="btn btn-danger" type="button"><i class="fa fa-refresh"></i></button></th>
-                                <th><input class="form-control search_pes" id="search_nama_pes"></th>
-                                <th><input class="form-control search_pes" id="search_no_pes"></th>
-                                <th><input class="form-control search_pes" id="search_prodi_pes"></th>
-                                <th><input class="form-control search_pes" id="search_jalur_pes"></th>
-                                <th><input class="form-control search_pes" id="search_gel_pes"></th>
-                                <th><input class="form-control search_pes" id="search_smt_pes"></th>
-                                <th><input class="form-control search_pes" id="search_tahun_pes"></th>
-                                <th style="text-align: center">
-                                    <button id="btn_submit_search" class="btn btn-info" type="button"><i class="fa fa-search"></i></button>
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody id="tbody_tb_peserta">
-                            <tr>
-                                <td colspan="9" style="text-align: center">Tidak ada peserta tersedia</td>
-                            </tr>
-                        </tbody>
-                    </table>
+                    <div style="overflow-x: scroll">
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th style="text-align: center"><input type="checkbox" id="chkbox_pilih_semua_peserta"></th>
+                                    <th>Nama</th>
+                                    <th>No Peserta</th>
+                                    <th>Prodi</th>
+                                    <th>Jalur</th>
+                                    <th>Gel</th>
+                                    <th>Smt</th>
+                                    <th>Tahun</th>
+                                </tr>
+                                <tr>
+                                    <th style="text-align: center">
+                                        <button id="btn_reset_search" class="btn btn-danger btn-sm" type="button"><i class="fa fa-refresh"></i></button>
+                                        <button id="btn_submit_search" class="btn btn-info btn-sm" type="button"><i class="fa fa-search"></i></button>
+                                    </th>
+                                    <th><input class="search_pes" style="width: 150px" id="search_nama_pes"></th>
+                                    <th><input class="search_pes" style="width: 100px" id="search_no_pes"></th>
+                                    <th><input class="search_pes" style="width: 150px" id="search_prodi_pes"></th>
+                                    <th><input class="search_pes" style="width: 50px" id="search_jalur_pes"></th>
+                                    <th><input class="search_pes" style="width: 25px" id="search_gel_pes"></th>
+                                    <th><input class="search_pes" style="width: 25px" id="search_smt_pes"></th>
+                                    <th><input class="search_pes" style="width: 50px" id="search_tahun_pes"></th>
+                                </tr>
+                            </thead>
+                            <tbody id="tbody_tb_peserta">
+                                <tr>
+                                    <td colspan="8" style="text-align: center">Tidak ada peserta tersedia</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                     <small class="help-block"></small>
                 </div>
                 <div class="form-group pull-right">

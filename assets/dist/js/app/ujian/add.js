@@ -25,7 +25,6 @@ $(document).ready(function () {
         e.preventDefault();
         e.stopImmediatePropagation();
         let btn = $('#submit');
-        btn.attr('disabled', 'disabled').text('Proses...');
         ajx_overlay(true);
         $.ajax({
             url: $(this).attr('action'),
@@ -43,6 +42,11 @@ $(document).ready(function () {
                         window.location = "master";
                     });
                 } else {
+                    Swal.fire({
+                        title: "Perhatian",
+                        icon: "warning",
+                        text: "Terdapat kesalahan pada data"
+                    });
                     if (data.errors) {
                         $.each(data.errors, function (key, val) {
                             $('[name="' + key + '"]').closest('.form-group').eq(0).addClass('has-error');
@@ -57,7 +61,7 @@ $(document).ready(function () {
             },
             error: function () {
                 Swal.fire({
-                    title: "Perhatian",
+                    title: "Error",
                     icon: "warning",
                     text: "Terdapat kesalahan pada data"
                 });

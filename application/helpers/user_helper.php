@@ -1,6 +1,8 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
+use Orm\Tahun;
+
 function get_nama_lengkap_user($user = null){
 	if(null == $user){
 		$nama_lengkap = null ;
@@ -62,4 +64,16 @@ function get_client_ip() {
     else
         $ipaddress = 'UNKNOWN';
     return $ipaddress;
+}
+
+function get_selected_gel(){
+	return 1;
+}
+
+function get_selected_smt(){
+	return 1;
+}
+
+function get_selected_tahun(){
+	return Tahun::get_tahun_aktif();
 }

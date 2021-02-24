@@ -61,22 +61,22 @@
 function init_page_level(){
     ajaxcsrf();
 
-    // $('.froala-editor').froalaEditor({
-	// 	theme: 'royal',
-	// 	toolbarButtons: ['fullscreen', '|', 'bold', 'italic', 'strikeThrough', 'underline', 'color','fontSize','fontFamily','|', 'align', 'insertTable', 'insertLink','formatOL', 'formatUL', '|', 'html','insertImage'],
-	// });
-    //
-    // $('.froala-editor').on('froalaEditor.image.beforeUpload', function (e, editor, images) {
-    //     if (images.length) {
-    //         let reader = new FileReader();
-    //         reader.onload = function (e) {
-    //             let result = e.target.result;
-    //             editor.image.insert(result, null, null, editor.image.get());
-    //         };
-    //         reader.readAsDataURL(images[0]);
-    //     }
-    //     return false
-    // });
+    // {{-- $('.froala-editor').froalaEditor({ --}}
+	// {{-- 	theme: 'royal', --}}
+	// {{-- 	toolbarButtons: ['fullscreen', '|', 'bold', 'italic', 'strikeThrough', 'underline', 'color','fontSize','fontFamily','|', 'align', 'insertTable', 'insertLink','formatOL', 'formatUL', '|', 'html','insertImage'], --}}
+	// {{-- }); --}}
+    // {{-- --}}
+    // {{-- $('.froala-editor').on('froalaEditor.image.beforeUpload', function (e, editor, images) { --}}
+    // {{--     if (images.length) { --}}
+    // {{--         let reader = new FileReader(); --}}
+    // {{--         reader.onload = function (e) { --}}
+    // {{--             let result = e.target.result; --}}
+    // {{--             editor.image.insert(result, null, null, editor.image.get()); --}}
+    // {{--         }; --}}
+    // {{--         reader.readAsDataURL(images[0]); --}}
+    // {{--     } --}}
+    // {{--     return false --}}
+    // {{-- }); --}}
 
     $('.t_editor').summernote({
         toolbar: [
@@ -108,7 +108,7 @@ function init_page_level(){
         },
         placeholder: 'Ketik disini ...',
         followingToolbar: false,
-
+        height: 150,
     });
     $('.note-btn').attr('title', '').attr('data-original-title', ''); // DISABLED SUMMERNOTE TOOLTIP
 
@@ -159,9 +159,9 @@ function init_page_level(){
         $('#bobot_soal_id').parent('.form-group').addClass('has-error');
      @endif
 
-{{--    @if(!empty(form_error('bobot')))--}}
-{{--        $('#bobot').parent('.form-group').addClass('has-error');--}}
-{{--    @endif--}}
+// {{--    @if(!empty(form_error('bobot')))  --}}
+// {{--        $('#bobot').parent('.form-group').addClass('has-error');  --}}
+// {{--    @endif  --}}
 
 }
 
@@ -197,7 +197,7 @@ function init_page_level(){
             </div>
             <label>
                 <span>Topik</span>
-                <small class="help-block text-info"><span class="text-danger"><b>***</b></span> Sebelum memilh topik, silahkan pilih matkul dahulu</small>
+                <small class="help-block text-info"><span class="text-danger"><b>***</b> Sebelum memilh topik, silahkan pilih matkul dahulu</span></small>
             </label>
             <div class="form-group">
                 <select name="topik_id" id="topik_id" class="select2 form-group" style="width:100% !important">
@@ -236,7 +236,7 @@ function init_page_level(){
             $opsi = 'opsi_'.$abj;
         ?>
 
-            <label for="opsi">Opsi : <strong class="text-danger"><?= $ABJ; ?></strong></label>
+            <label for="jawaban_<?= $abj; ?>">Opsi : <strong class="text-danger"><?= $ABJ; ?></strong></label>
 {{--                                    <div class="form-group col-sm-3">--}}
 {{--                                        <input type="file" name="<?= $file; ?>" class="form-control">--}}
 {{--                                        <small class="help-block" style="color: #dc3545"><?=form_error($file)?></small>--}}
@@ -280,6 +280,49 @@ function init_page_level(){
             </select>
             <small class="help-block" style="color: #dc3545"><?=form_error('bobot_soal_id')?></small>
         </div>
+
+        <fieldset class="form-group" style="padding: 10px; border: 1px solid #ccc;">
+            <legend class="col-form-label col-sm-2" style="border: 1px solid #ccc; background-color: #d4fdff;">Cluster Soal</legend>
+            <div class="form-group">
+                <label for="gel" class="control-label">Gel</label>
+                <select name="gel" id="gel" class="form-control select2"
+                    style="width:100%!important">
+                    @foreach (GEL_AVAIL as $gel)
+                    <option value="{{ $gel }}" {{ $gel == $soal->gel ? "selected" : "" }}>GEL-{{ $gel }}</option>    
+                    @endforeach
+                </select>
+                <small class="help-block" style="color: #dc3545"><?=form_error('gel')?></small>
+            </div>
+            <div class="form-group">
+                <label for="smt" class="control-label">Smt</label>
+                <select name="smt" id="smt" class="form-control select2"
+                    style="width:100%!important">
+                    @foreach (SMT_AVAIL as $smt)
+                    <option value="{{ $smt }}" {{ $smt == $soal->smt ? "selected" : "" }}>SMT-{{ $smt }}</option>    
+                    @endforeach
+                </select>
+                <small class="help-block" style="color: #dc3545"><?=form_error('smt')?></small>
+            </div>
+            <div class="form-group">
+                <label for="tahun" class="control-label">Tahun</label>
+                <select name="tahun" id="tahun" class="form-control select2"
+                    style="width:100%!important">
+                    @foreach (TAHUN_AVAIL as $tahun)
+                    <option value="{{ $tahun }}" {{ $tahun == $soal->tahun ? "selected" : "" }}>{{ $tahun }}</option>    
+                    @endforeach
+                </select>
+                <small class="help-block" style="color: #dc3545"><?=form_error('tahun')?></small>
+            </div>
+        </fieldset>
+
+        <fieldset class="form-group" style="padding: 10px; border: 1px solid #ccc;">
+            <legend class="col-form-label col-sm-2" style="border: 1px solid #ccc; background-color: #f6ffd4;">Penjelasan</legend>
+            <label for="penjelasan"><small class="help-block text-info"><span class="text-danger"><b>***</b> Penjelasan mengenai jawaban pada soal yang tertera</span></small></label>
+            <div class="form-group">
+                <textarea name="penjelasan" id="penjelasan" class="form-control froala-editor t_editor"><?=$soal->penjelasan?></textarea>
+                <small class="help-block" style="color: #dc3545"><?=form_error('penjelasan')?></small>
+            </div>
+        </fieldset>
 
         <div class="form-group pull-right">
             <a href="{{ site_url('soal') }}" class="btn btn-flat btn-warning">

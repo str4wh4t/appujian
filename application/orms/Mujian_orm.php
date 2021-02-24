@@ -28,6 +28,11 @@ class Mujian_orm extends Eloquent
     {
         return $this->hasMany('Orm\Hujian_orm','ujian_id');
     }
+
+    public function h_ujian_history()
+    {
+        return $this->hasMany('Orm\Hujian_history_orm','ujian_id');
+    }
     
     public function mhs_ujian()
     {

@@ -8,7 +8,7 @@ use Orm\Dosen_orm;
 
 class Soal_model extends CI_Model {
     
-    public function getDataSoal($id = null, $username = null)
+    public function getDataSoal($data_filter = null, $username = null)
     {
         
         $config = [
@@ -27,8 +27,22 @@ class Soal_model extends CI_Model {
         $this->db->join('matkul c', 'c.id_matkul = b.matkul_id');
         $this->db->join('bobot_soal d', 'd.id = a.bobot_soal_id');
 
-		if ($id !== null) {
-             $this->db->where('b.matkul_id', $id);
+		if (!empty($data_filter)) {
+            // foreach($data_filter as $filter => $val){
+            //     $this->db->where('b.matkul_id', $id);
+            // }
+            if(!empty($data_filter['matkul_id'])){
+                $this->db->where('b.matkul_id', $data_filter['matkul_id']);
+            }
+            if(!empty($data_filter['gel'])){
+                $this->db->where('a.gel', $data_filter['gel']);
+            }
+            if(!empty($data_filter['smt'])){
+                $this->db->where('a.smt', $data_filter['smt']);
+            }
+            if(!empty($data_filter['tahun'])){
+                $this->db->where('a.tahun', $data_filter['tahun']);
+            }
         }
         
         if ($username != null) {

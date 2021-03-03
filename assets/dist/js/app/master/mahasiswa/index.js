@@ -78,8 +78,10 @@ $(document).ready(function() {
     serverSide: true,
     ajax: {
       url: base_url + "mahasiswa/ajax/data",
-      type: "POST"
-      //data: csrf
+      type: "POST",
+      data: function (d) {
+        d.tahun_dipilih = tahun_dipilih;
+      },
     },
     columns: [
       {

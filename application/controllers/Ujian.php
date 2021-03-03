@@ -433,7 +433,6 @@ class Ujian extends MY_Controller
 			$pakai_token			= $this->input->post('pakai_token', true) == 'on' ? '1' : '0';
 			$tampilkan_hasil			= $this->input->post('tampilkan_hasil', true) == 'on' ? '1' : '0';
 			$tampilkan_jawaban			= $this->input->post('tampilkan_jawaban', true) == 'on' ? '1' : '0';
-			$tampilkan_tutorial			= $this->input->post('tampilkan_tutorial', true) == 'on' ? '1' : '0';
 			$repeatable			= $this->input->post('repeatable', true) == 'on' ? '1' : '0';
 			$jenis			= $this->input->post('jenis', true);
 			$jenis_jawaban			= $this->input->post('jenis_jawaban', true);
@@ -459,7 +458,6 @@ class Ujian extends MY_Controller
 				'pakai_token' 				=> $pakai_token,
 				'tampilkan_hasil' 			=> $tampilkan_hasil,
 				'tampilkan_jawaban' 		=> $tampilkan_jawaban,
-				'tampilkan_tutorial' 		=> $tampilkan_tutorial,
 				'repeatable' 				=> $repeatable,
 				'jenis' 					=> $jenis,
 				'jenis_jawaban' 			=> $jenis_jawaban,
@@ -502,7 +500,6 @@ class Ujian extends MY_Controller
 					$m_ujian_orm->pakai_token = $input['pakai_token'];
 					$m_ujian_orm->tampilkan_hasil = $input['tampilkan_hasil'];
 					$m_ujian_orm->tampilkan_jawaban = $input['tampilkan_jawaban'];
-					$m_ujian_orm->tampilkan_tutorial = $input['tampilkan_tutorial'];
 					$m_ujian_orm->repeatable = $input['repeatable'];
 					$m_ujian_orm->status_ujian = $input['status_ujian'];
 					$m_ujian_orm->soal_gel = $gel == 'null' ? null : $gel;
@@ -559,7 +556,6 @@ class Ujian extends MY_Controller
 					$m_ujian_orm->pakai_token = $input['pakai_token'];
 					$m_ujian_orm->tampilkan_hasil = $input['tampilkan_hasil'];
 					$m_ujian_orm->tampilkan_jawaban = $input['tampilkan_jawaban'];
-					$m_ujian_orm->tampilkan_tutorial = $input['tampilkan_tutorial'];
 					$m_ujian_orm->repeatable = $input['repeatable'];
 					$m_ujian_orm->status_ujian = $this->input->post('status_ujian', true) == 'on' ? '1' : '0';
 					$m_ujian_orm->soal_gel = $gel == 'null' ? null : $gel;
@@ -1106,7 +1102,7 @@ class Ujian extends MY_Controller
 					$pilihan_opsi 	= !empty($s->$opsi) ? $s->$opsi : "";
 					$tampil_media_opsi = (is_file(base_url() . $path . $s->$file) || $s->$file != "") ? tampil_media($path . $s->$file) : "";
 
-					$html .= '<div class="funkyradio-success"">
+					$html .= '<div class="funkyradio-success">
 						<input type="radio" id="opsi_' . strtolower($arr_opsi[$j]) . '_' . $s->id_soal . '" name="opsi_' . $no . '" data-sid="' . $s->id_soal . '" value="' . strtoupper($arr_opsi[$j]) . '" rel="' . $no . '" ' . $checked . '>
 						<label for="opsi_' . strtolower($arr_opsi[$j]) . '_' . $s->id_soal . '" class="label_pilihan">
 							<div class="huruf_opsi">' . $urutan_jawaban_huruf[$i] . '</div> <div>' . $pilihan_opsi . '</div><div class="w-25">' . $tampil_media_opsi . '</div>
@@ -1906,6 +1902,13 @@ class Ujian extends MY_Controller
 			show_error($e->getMessage(), 500, 'Perhatian');
 		}
 
+	}
+
+	public function tutorial(){
+		$user = $this->ion_auth->user()->row();
+		$data['user'] = $user;
+
+		view('ujian/tutorial', $data);
 	}
 
 	//	function c(){

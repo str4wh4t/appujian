@@ -6,7 +6,6 @@
 {{--<link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/vendors/css/tables/datatable/dataTables.bootstrap4.min.css') }}">--}}
 {{--<link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/vendors/css/tables/extensions/rowReorder.dataTables.min.css') }}">--}}
 {{--<link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/vendors/css/tables/extensions/responsive.dataTables.min.css') }}">--}}
-<link rel="stylesheet" type="text/css" href="{{ asset('assets/plugins/enjoyhint/enjoyhint.css') }}" rel="stylesheet">
 <!-- END PAGE LEVEL JS-->
 @endpush
 
@@ -168,15 +167,10 @@ legend{
 .card.card-fullscreen{
     z-index: 9995 !important;
 }
-.enjoyhint{
-    z-index: 9996 !important;
-}
 .swal2-container{
     z-index: 9997 !important;
 }
-.enjoyhint_close_btn{
-    display: none;
-}
+
 </style>
 @endpush
 
@@ -195,7 +189,6 @@ legend{
 <script src="{{ asset('assets/yarn/node_modules/kinetic/kinetic.min.js') }}"></script>
 {{--<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-scrollTo/2.1.2/jquery.scrollTo.min.js"></script>--}}
 <script src="{{ asset('assets/yarn/node_modules/jquery.scrollto/jquery.scrollTo.min.js') }}"></script>
-<script src="{{ asset('assets/plugins/enjoyhint/enjoyhint.min.js') }}"></script>
 <!-- END PAGE VENDOR JS -->
 @endpush
 
@@ -209,15 +202,11 @@ let key = '{{ $one_time_token }}';
 let topik = [];
 let topik_nama = [];
 @php
-$i=1;
 @endphp
 @foreach($h_ujian->soal as $s)
     @php
-        if(!isset($topik_ujian_jml[$s->topik_id]))
-            $i = 1;
-        $topik_ujian_jml[$s->topik_id] = $i;
+        $topik_ujian_jml[$s->topik_id] = !isset($topik_ujian_jml[$s->topik_id]) ? 1 : $topik_ujian_jml[$s->topik_id] + 1;
         $topik_ujian_nama[$s->topik_id] = $s->topik->nama_topik;
-        $i++;
     @endphp
 @endforeach
 @foreach($topik_ujian_jml as $topik_id => $jml_topik)
@@ -230,7 +219,9 @@ $i=1;
 let curr_date;
 
 let update_time = () => {
+
     moment.locale('id');
+
     /**
      * date from server
      */
@@ -242,7 +233,7 @@ let update_time = () => {
 
     $.ajax({
         success: function (date_ajax) {
-            moment.locale('id');
+
             curr_date = moment(date_ajax, "YYYY-MM-DD HH:mm:ss");
 
             let interval = 1000;
@@ -319,125 +310,9 @@ let total_widget    = widget.length;
 
 let ofs = 0;
 
-let enjoyhint_instance = null;
-
-let enjoyhint_script_steps = [
-    {
-        'next #tb_identitas_peserta': 'Selamat datang di ujian CAT UNDIP. <br>Sebelum memulai ujian pastikan identitas anda benar',
-        "nextButton" : {className: "black border-amber btn-amber", text: "Lanjut"},
-        'showSkip': false,
-    },
-    {
-        'next #sisa_waktu': 'Perhatikan sisa waktu ujian anda',
-        "nextButton" : {className: "black border-amber btn-amber", text: "Lanjut"},
-        'showSkip': false,
-    },
-    {
-        'next #nav_opener': 'Anda dapat "BUKA" / "TUTUP" navigasi untuk melihat pertanyaan yg tersedia',
-        "nextButton" : {className: "black border-amber btn-amber", text: "Lanjut"},
-        'showSkip': false,
-        'shape': 'circle',
-        'radius': 50,
-        'onBeforeStart': function () {
-            $('#lembar_ujian').animate({
-                scrollTop: $("#lembar_ujian").offset().top
-            }, 100, 'swing', function(){
-                setTimeout(function(){
-                    $('#nav_content').slideDown();
-                    $('#nav_opener').text('TUTUP');
-                    nav_is_open = true;
-                }, 100);
-            });
-        },
-        'timeout': 100,
-    },
-    {
-        'next #btn_soal_2': 'Pilih soal yang ingin dikerjakan, contoh : kita pilih soal nomer 2',
-        "nextButton" : {className: "black border-amber btn-amber", text: "Lanjut"},
-        'showSkip': false,
-        'onBeforeStart': function () {
-            $('#lembar_ujian').animate({
-                scrollTop: $("#lembar_ujian").offset().top
-            }, 100, 'swing', function(){
-                setTimeout(function(){
-                    $('#nav_content').slideDown();
-                    $('#nav_opener').text('TUTUP');
-                    nav_is_open = true;
-                }, 100);
-            });
-        },
-        'timeout': 100,
-    },
-    {
-        'next #isi_pertanyaan': 'Pertanyaan yang ditampilkan',
-        "nextButton" : {className: "black border-amber btn-amber", text: "Lanjut"},
-        'showSkip': false,
-        'onBeforeStart': function () {
-            $('#btn_soal_2').trigger('click');
-            $('#lembar_ujian').scrollTo('#isi_pertanyaan');
-            // setTimeout(function(){
-            //     $('#lembar_ujian').animate({
-            //         scrollTop: $("#isi_pertanyaan").offset().top
-            //     }, 100);
-            // }, 100);
-        },
-        // 'timeout': 100,
-    },
-    {
-        'next .funkyradio-success:visible:nth-child(2)': 'Terdiri 5 (lima) opsi jawaban (a, b, c, d, dan e), contoh : kita pilih jawaban "b"',
-        "nextButton" : {className: "black border-amber btn-amber", text: "Lanjut"},
-        'showSkip': false,
-        'onBeforeStart': function () {
-            $('#lembar_ujian').scrollTo('#pil_jawaban');
-            setTimeout(function(){
-               $(".funkyradio-success:visible:nth-child(2) > input").trigger('click');
-            },1000);
-        },
-    },
-    {
-        'next #next_prev_pertanyaan': 'Anda dapat men-skip atau kembali ke pertanyaan sebelumnya, dan juga dapat menandai "RAGU" pada pilihan jawaban anda',
-        "nextButton" : {className: "black border-amber btn-amber", text: "Lanjut"},
-        'showSkip': false,
-        'onBeforeStart': function () {
-            $('#lembar_ujian').scrollTo('#next_prev_pertanyaan');
-        },
-    },
-    {
-        'skip #btn_akhiri_ujian': 'Tombol ini untuk mengakhiri ujian apabila anda ingin menyelesaikan ujian lebih awal',
-        'showNext': false,
-        'skipButton' : {className: "white border-white bg-transparent width-200", text: "Sudahi petunjuk."},
-        'onBeforeStart': function () {
-            $('#lembar_ujian').scrollTo('#tb_identitas_peserta');
-        },
-    }
-];
-
-function setup_hint(){
-    enjoyhint_instance = new EnjoyHint({
-        onSkip: function(){
-            $('#lembar_ujian').animate({
-                scrollTop: $("#lembar_ujian").offset().top
-            }, 1000, 'swing', function(){
-                setTimeout(function(){
-                    $('#nav_content').slideUp();
-                    $('#nav_opener').text('BUKA');
-                    nav_is_open = false;
-                }, 100);
-            });
-        }
-    });
-    // enjoyhint_instance.setScript(enjoyhint_script_data);
-    // enjoyhint_instance.runScript();
-    enjoyhint_instance.set(enjoyhint_script_steps);
-    enjoyhint_instance.run();
-}
-
 function init_page_level(){
     update_time();
     update_status_ujian();
-    @if($h_ujian->m_ujian->tampilkan_tutorial)
-    setup_hint();
-    @endif
     // ofs = $('#q_n_a').offset();
     // console.log('ofs',ofs);
     // $('body').bind('copy paste cut drag drop', function (e) {
@@ -575,7 +450,7 @@ function selesai(ended_by = '') {
 /** [END] FUNGSI SELESAI UJIAN */
 
 </script>
-<script src="{{ asset('assets/dist/js/app/ujian/index.js?u=' . mt_rand()) }}"></script>
+<script src="{{ asset('assets/dist/js/app/ujian/index.js') }}"></script>
 <!-- END PAGE LEVEL JS-->
 @endpush
 
@@ -729,10 +604,5 @@ function selesai(ended_by = '') {
 
 {!! form_close() !!}
 <!---- --->
-
-                </div>
-            </div>
-        </div>
-    </div>
 </section>
 @endsection

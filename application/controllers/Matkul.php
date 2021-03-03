@@ -219,15 +219,18 @@ class Matkul extends MY_Controller
 		$id = $this->input->post('id', true);
 		$ujian_id = $this->input->post('ujian_id', true);
 		$matkul = Matkul_orm::findOrFail($id);
-		$mhs_matkul = $matkul->mhs;
+		$mhs_matkul = $matkul->mhs()->where('tahun', get_selected_tahun())->get();
 		if(empty($ujian_id)){
 			$mhs_ujian = [];
 		}else {
 			$mhs_ujian = $matkul->mhs_matkul()
-			                    ->whereHas('mhs_ujian', function (Builder $query) use($ujian_id){
-				                    $query->where('ujian_id', $ujian_id);
-			                    })
-			                    ->get();
+										->whereHas('mhs', function(Builder $query){
+											$query->where('tahun', get_selected_tahun());
+										})
+										->whereHas('mhs_ujian', function (Builder $query) use($ujian_id){
+											$query->where('ujian_id', $ujian_id);
+										})
+										->get();
 		}
 		$this->_json(['mhs_matkul' => $mhs_matkul,'mhs_ujian' => $mhs_ujian]);
 	}
@@ -236,13 +239,18 @@ class Matkul extends MY_Controller
 		$id = $this->input->post('id', true);
 		$ujian_id = $this->input->post('ujian_id', true);
 		$matkul = Matkul_orm::findOrFail($id);
-		$mhs_matkul = $matkul->mhs()->whereDoesntHave('h_ujian', function (Builder $query) use($ujian_id){
+		$mhs_matkul = $matkul->mhs()
+								->where('tahun', get_selected_tahun())
+								->whereDoesntHave('h_ujian', function (Builder $query) use($ujian_id){
 			                    	$query->where('ujian_id', $ujian_id);
 			                    })->get();
 		if(empty($ujian_id)){
 			$mhs_ujian = [];
 		}else {
 			$mhs_ujian = $matkul->mhs_matkul()
+								->whereHas('mhs', function(Builder $query){
+									$query->where('tahun', get_selected_tahun());
+								})
 			                    ->whereHas('mhs_ujian', function (Builder $query) use($ujian_id){
 				                    $query->where('ujian_id', $ujian_id);
 			                    })

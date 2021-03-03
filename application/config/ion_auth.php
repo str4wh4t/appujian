@@ -131,7 +131,7 @@ $config['argon2_admin_params']		= [
 | This is an arbitrary (long) value to protect against DOS attack.
 */
 $config['site_title']                 = "Aplikasi Ujian Online";       // Site Title, example.com
-$config['admin_email']                = "admin@admin.com"; // Admin Email, admin@example.com
+$config['admin_email']                = "noreply_alumni_undip@office.undip.ac.id"; // Admin Email, admin@example.com
 $config['default_group']              = 'members';           // Default group, use name
 $config['admin_group']                = 'admin';             // Default administrators group, use name
 $config['identity']                   = 'username';         /* You can use any unique column in your table as identity column.
@@ -172,10 +172,21 @@ $config['remember_cookie_name'] = 'remember_code';
  | 	  'file' = Use the default CI config or use from a config file
  | 	  array  = Manually set your email config settings
  */
-$config['use_ci_email'] = FALSE; // Send Email using the builtin CI email class, if false it will return the code and the identity
+$config['use_ci_email'] = TRUE; // Send Email using the builtin CI email class, if false it will return the code and the identity
 $config['email_config'] = [
-	'mailtype' => 'html',
+	// 'mailtype' => 'html',
+	'protocol'    => 'smtp',
+	'smtp_host'   => 'smtp.office365.com',
+	'smtp_port'   => '587',
+	'smtp_user'   => 'noreply_alumni_undip@office.undip.ac.id',
+	'smtp_pass'   => 'Kay72590',
+	'smtp_crypto' => 'tls',
+	'mailtype'    => 'html',
+	'charset'     => 'utf-8',
+	'newline'     => "\r\n",
+	'crlf'        => "\r\n"
 ];
+
 
 /*
  | -------------------------------------------------------------------------
@@ -200,7 +211,8 @@ $config['email_activate'] = 'activate.tpl.php';
  | -------------------------------------------------------------------------
  | Default: forgot_password.tpl.php
  */
-$config['email_forgot_password'] = 'forgot_password.tpl.php';
+// $config['email_forgot_password'] = 'forgot_password.tpl.php';
+$config['email_forgot_password'] = 'resend_password.tpl.php';
 
 /*
  | -------------------------------------------------------------------------

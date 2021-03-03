@@ -37,6 +37,7 @@ class Mahasiswa extends MY_Controller
 		//		$this->load->view('master/mahasiswa/data');
 		//		$this->load->view('_templates/dashboard/_footer.php');
 
+		$data['tahun'] = Mhs_orm::distinct()->pluck('tahun')->toArray();
 		$data['jalur'] = Jalur_orm::all();
 
 		view('mahasiswa/index', $data);
@@ -44,7 +45,9 @@ class Mahasiswa extends MY_Controller
 
 	protected function _data()
 	{
-		$this->_json($this->master->getDataMahasiswa(), false);
+		$tahun_dipilih = $this->input->post('tahun_dipilih');
+		$tahun_dipilih = $tahun_dipilih == 'null' ? null : $tahun_dipilih ;
+		$this->_json($this->master->getDataMahasiswa($tahun_dipilih), false);
 	}
 
 	public function add()

@@ -33,8 +33,8 @@ class Mhs_orm extends Eloquent
 	// 	});
 	// }
 
-    protected static function booted(){
-		static::addGlobalScope(new Tahun);
-	}
+    // protected static function booted(){
+	// 	static::addGlobalScope(new Tahun);
+	// }
     
 }

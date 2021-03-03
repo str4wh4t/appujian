@@ -47,7 +47,8 @@ use Illuminate\Database\Eloquent\Builder;
 					<!---- --->
 					<div class="row">
 						<div class="col-md-12 mb-4">
-							<a href="{{ site_url('hasilujian/history/' . uuid_create_from_integer($h_ujian->mahasiswa_ujian_id) ) }}" class="btn btn-sm btn-warning btn-flat"><i
+							<?php $back_link = in_group('admin') ? site_url('hasilujian/detail/' . $h_ujian->m_ujian->id_ujian) : site_url('hasilujian/history/' . uuid_create_from_integer($h_ujian->mahasiswa_ujian_id)) ; ?>
+							<a href="{{ $back_link }}" class="btn btn-sm btn-warning btn-flat"><i
 									class="fa fa-arrow-left"></i> Kembali</a>
 							{{-- <a target="_blank" href="{{ site_url('hasilujian/cetak_detail_jawaban/') }}"
 							class="btn btn-danger btn-flat btn-sm">

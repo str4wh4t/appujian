@@ -169,6 +169,40 @@
                                         <div class="card-body">
                                             {{-- [START] FOREACH UJIAN AKTIF  --}}
                                             <div class="row">
+                                                <div class="col-md-4 col-sm-12">
+                                                    <div class="card box-shadow-0 border-success" style="background-color: #ffffee">
+                                                        <div class="card-content collapse show">
+                                                            <div class="card-body">
+                                                                <p><b>TUTORIAL UJIAN</b></p>
+                                                                <dl class="row">
+                                                                    <dt class="col-sm-5 text-left">Materi Ujian</dt>
+                                                                    <dd class="col-sm-7">TUTORIAL</dd>
+                                                                </dl>
+                                                                <dl class="row">
+                                                                    <dt class="col-sm-5 text-left">Jml Soal</dt>
+                                                                    <dd class="col-sm-7">{{ JML_SOAL_TUTORIAL }}</dd>
+                                                                </dl>
+                                                                <dl class="row">
+                                                                    <dt class="col-sm-5 text-left">Lama Ujian</dt>
+                                                                    <dd class="col-sm-7">{{ JML_WAKTU_TUTORIAL }} Mnt</dd>
+                                                                </dl>
+                                                                <dl class="row">
+                                                                    <dt class="col-sm-5 text-left">Wkt Mulai</dt>
+                                                                    <dd class="col-sm-7">-</dd>
+                                                                </dl>
+                                                                <dl class="row">
+                                                                    <dt class="col-sm-5 text-left">Wkt Selesai</dt>
+                                                                    <dd class="col-sm-7">-</dd>
+                                                                </dl>
+                                                            </div>
+                                                        </div>
+                                                        <div class="card-footer border-top-blue-grey border-top-lighten-5 text-muted">
+                                                            <a class="btn btn-success" href="http://localhost/ujianundip/ujian/tutorial">
+                                                                <i class="fa fa-pencil"></i> Masuk
+                                                            </a>
+                                                        </div>
+                                                    </div>
+                                                </div>
                                                 @forelse ($mhs_ujian_aktif as $mhs_ujian)
                                                 <div class="col-md-4 col-sm-12">
                                                     <div class="card box-shadow-0 border-success">
@@ -216,7 +250,7 @@
                                                             @endphp
                                                             @if ($status_ujian == 'active')
                                                                 <a class="btn btn-success" href="{{ url('ujian/token/' . uuid_create_from_integer($mhs_ujian->m_ujian->id_ujian)) }}">
-                                                                    <i class="fa fa-pencil"></i> Ikut Ujian
+                                                                    <i class="fa fa-pencil"></i> Masuk
                                                                 </a>
                                                             @elseif ($status_ujian == 'upcoming')
                                                                 <button type="button" class="btn btn-info">

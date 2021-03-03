@@ -77,7 +77,7 @@ class Master_model extends CI_Model {
      * Data Mahasiswa
      */
 
-    public function getDataMahasiswa()
+    public function getDataMahasiswa($tahun_dipilih = null)
     {
 //        $this->datatables->select('a.id_mahasiswa, a.nama, a.nim, a.email, a.prodi, GROUP_CONCAT(b.nama_matkul SEPARATOR "---") as nama_matkul, (SELECT COUNT(id) FROM users WHERE username = a.nim) AS ada');
 //        $this->datatables->from('mahasiswa a');
@@ -101,6 +101,10 @@ class Master_model extends CI_Model {
         $this->db->from('mahasiswa a');
         $this->db->join('vw_mhs_matkul b', 'b.mahasiswa_id = a.id_mahasiswa', 'left');
         $this->db->group_by('a.id_mahasiswa');
+
+        if(!empty($tahun_dipilih)){
+            $this->db->where('tahun', $tahun_dipilih);
+        }
         
         $query = $this->db->get_compiled_select() ;
         $dt->query($query);

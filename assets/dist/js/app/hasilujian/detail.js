@@ -47,11 +47,16 @@ $(document).ready(function () {
                 "data": 'aksi',
                 "orderable": false,
                 "searchable": false
+            },
+            {
+                "data": 'lama_pengerjaan',
+                "searchable": false,
+                "visible": false
             }
         ],
         order: [
             [4, 'desc'],
-            [1, 'asc']
+            [7, 'asc']
         ],
         rowId: function (a) {
             return a;

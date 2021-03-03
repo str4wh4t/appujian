@@ -564,13 +564,6 @@ $('#tampilkan_jawaban').on('switchChange.bootstrapSwitch', function(event, state
                     <small class="help-block"></small>
                 </div>
                 <div class="form-group">
-                    <label for="tampilkan_tutorial">Tampilkan Tutorial</label> <small class="help-block text-danger"><b>***</b> Tampilkan tutorial ujian sebelum memulai</small>
-                    <div>
-                        <input type="radio" class="switchBootstrap" id="tampilkan_tutorial" name="tampilkan_tutorial" data-on-text="Tampilkan" data-off-text="Tidak" data-radio-all-off="true" data-on-color="success" data-off-color="danger" {!! $ujian->tampilkan_tutorial == 1 ? 'checked="checked"' : '' !!} />
-                    </div>
-                    <small class="help-block"></small>
-                </div>
-                <div class="form-group">
                     <label for="repeatable">Repeatable</label> <small class="help-block text-danger"><b>***</b> Apakah ujian dapat diulang</small>
                     <div>
                         <input type="radio" class="switchBootstrap" id="repeatable" name="repeatable" data-on-text="Ya" data-off-text="Tidak" data-radio-all-off="true" data-on-color="success" data-off-color="danger" {!! $ujian->repeatable == 1 ? 'checked="checked"' : '' !!} />

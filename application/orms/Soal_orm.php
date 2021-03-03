@@ -23,5 +23,9 @@ class Soal_orm extends Eloquent
     {
         return $this->belongsTo('Orm\Bobot_soal_orm');
     }
+
+    // protected static function booted(){
+	// 	static::addGlobalScope(new Tahun);
+	// }
     
 }

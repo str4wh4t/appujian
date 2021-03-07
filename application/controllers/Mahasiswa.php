@@ -254,10 +254,16 @@ class Mahasiswa extends MY_Controller
 						'no_billkey' => $mhs->no_billkey,
 					];
 					$group           = [MHS_GROUP_ID]; // Sets user to mhs.
-					$this->ion_auth->register($username, $password, $email, $additional_data, $group);
+					
+					$return_id_user = $this->ion_auth->register($username, $password, $email, $additional_data, $group);
+
+					if($return_id_user == false){
+						throw new Exception('Gagal untuk mendaftar.');
+					}
+
 					commit_db_trx();
 					$action = true;
-				} catch (\Illuminate\Database\QueryException $e) {
+				} catch (Exception $e) {
 					rollback_db_trx();
 					$action = false;
 				}
@@ -338,7 +344,7 @@ class Mahasiswa extends MY_Controller
 
 					commit_db_trx();
 					$action = true;
-				} catch (\Illuminate\Database\QueryException $e) {
+				} catch (Exception $e) {
 					rollback_db_trx();
 					$action = false;
 				}
@@ -659,251 +665,268 @@ class Mahasiswa extends MY_Controller
 
 	public function do_import()
 	{
-		$input = json_decode($this->input->post('data', true));
-		//		$data = [];
-		begin_db_trx();
-		$allow = true;
-		$msg = null;
-		foreach ($input as $d) {
-			$nim = strval($d->nim);
-			if (strlen($nim) > MHS_ID_LENGTH || !ctype_digit($nim)) {
-				$allow = false;
-				$msg = 'NIM salah, nim : ' . $nim;
-				break;
-			}
-			if (Mhs_orm::where('nim', $nim)->first() != null) {
-				$allow = false;
-				$msg = 'NIM sudah terdaftar, nim : ' . $nim;
-				break;
-			}
+		try{
+			$input = json_decode($this->input->post('data', true));
+			//		$data = [];
+			begin_db_trx();
+			$allow = true;
+			$msg = null;
+			foreach ($input as $d) {
+				$nim = strval($d->nim);
+				if (strlen($nim) > MHS_ID_LENGTH || !ctype_digit($nim)) {
+					$allow = false;
+					$msg = 'NIM salah, nim : ' . $nim;
+					break;
+				}
+				if (Mhs_orm::where('nim', $nim)->first() != null) {
+					$allow = false;
+					$msg = 'NIM sudah terdaftar, nim : ' . $nim;
+					break;
+				}
 
-			$nama = $d->nama;
-			if (strlen($nama) > 250 || strlen($nama) < 3) {
-				$allow = false;
-				$msg = 'Nama salah, nama : ' . $nama;
-				break;
-			}
+				$nama = $d->nama;
+				if (strlen($nama) > 250 || strlen($nama) < 3) {
+					$allow = false;
+					$msg = 'Nama salah, nama : ' . $nama;
+					break;
+				}
 
-			$nik = strval($d->nik);
-			if (strlen($nik) != NIK_LENGTH || !ctype_digit($nik)) {
-				$allow = false;
-				$msg = 'NIK salah, nik : ' . $nik;
-				break;
-			}
+				$nik = strval($d->nik);
+				if (strlen($nik) != NIK_LENGTH || !ctype_digit($nik)) {
+					$allow = false;
+					$msg = 'NIK salah, nik : ' . $nik;
+					break;
+				}
 
-			/** NIK SEKARANG BOLEH SAMA JD DIMATIKAN DULU LOGIC NYA **/
-			//			if(Mhs_orm::where('nik',$nik)->first() != null){
-			//				$allow = false;
-			//				$msg = 'NIK sudah terdaftar, nik : '. $nik ;
-			//				break;
-			//			}
+				/** NIK SEKARANG BOLEH SAMA JD DIMATIKAN DULU LOGIC NYA **/
+				//			if(Mhs_orm::where('nik',$nik)->first() != null){
+				//				$allow = false;
+				//				$msg = 'NIK sudah terdaftar, nik : '. $nik ;
+				//				break;
+				//			}
 
-			$tmp_lahir = $d->tmp_lahir;
-			if (strlen($tmp_lahir) > 250 || strlen($tmp_lahir) < 3) {
-				$allow = false;
-				$msg = 'Tmp lahir salah, tmp_lahir : ' . $tmp_lahir;
-				break;
-			}
+				$tmp_lahir = $d->tmp_lahir;
+				if (strlen($tmp_lahir) > 250 || strlen($tmp_lahir) < 3) {
+					$allow = false;
+					$msg = 'Tmp lahir salah, tmp_lahir : ' . $tmp_lahir;
+					break;
+				}
 
-			$tgl_lahir = $d->tgl_lahir;
-			if (strlen($tgl_lahir) != 10) {
-				$allow = false;
-				$msg = 'Tgl lahir salah, tgl_lahir : ' . $tgl_lahir;
-				break;
-			} else {
-
-				// $day = (int) substr($tgl_lahir, 8, 2);
-				// $month = (int) substr($tgl_lahir, 5, 2);
-				// $year = (int) substr($tgl_lahir, 0, 4);
-
-				$d = DateTime::createFromFormat('Y-m-d', $tgl_lahir);
-    			if(!($d && $d->format('Y-m-d') == $tgl_lahir)){
+				$tgl_lahir = $d->tgl_lahir;
+				if (strlen($tgl_lahir) != 10) {
 					$allow = false;
 					$msg = 'Tgl lahir salah, tgl_lahir : ' . $tgl_lahir;
 					break;
+				} else {
+
+					// $day = (int) substr($tgl_lahir, 8, 2);
+					// $month = (int) substr($tgl_lahir, 5, 2);
+					// $year = (int) substr($tgl_lahir, 0, 4);
+
+					$d = DateTime::createFromFormat('Y-m-d', $tgl_lahir);
+					if(!($d && $d->format('Y-m-d') == $tgl_lahir)){
+						$allow = false;
+						$msg = 'Tgl lahir salah, tgl_lahir : ' . $tgl_lahir;
+						break;
+					}
+
 				}
 
-			}
-
-			$jk = $d->jenis_kelamin;
-			if (!in_array($jk, ['L', 'P'])) {
-				$allow = false;
-				$msg = 'Jenis kelamin bermasalah, jenis kelamin : ' . $jk;
-				break;
-			}
-
-			$email = $d->email;
-			if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
-
-				/** EMAIL SEKARANG BOLEH SAMA JD DIMATIKAN DULU LOGIC NYA **/
-				//				if(Mhs_orm::where('email',$email)->first() != null){
-				//					$allow = false;
-				//					$msg = 'Email sudah terdaftar, email : '. $email ;
-				//					break;
-				//				}
-
-				if (strlen($email) > 250) {
+				$jk = $d->jenis_kelamin;
+				if (!in_array($jk, ['L', 'P'])) {
 					$allow = false;
-					$msg = 'Email bermasalah, email : ' . $email;
+					$msg = 'Jenis kelamin bermasalah, jenis kelamin : ' . $jk;
 					break;
 				}
-			} else {
-				$allow = false;
-				$msg = 'Email bermasalah, email : ' . $email;
-				break;
-			}
 
-			$no_billkey = strval($d->no_billkey);
-			if (strlen($no_billkey) > NO_BILLKEY_LENGTH || !ctype_digit($no_billkey)) {
-				$allow = false;
-				$msg = 'No Billkey salah, no_billkey : ' . $no_billkey;
-				break;
-			}
-			if (Mhs_orm::where('no_billkey', $no_billkey)->first() != null) {
-				$allow = false;
-				$msg = 'No Billkey sudah terdaftar, no_billkey : ' . $no_billkey;
-				break;
-			}
+				$email = $d->email;
+				if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
 
-			$foto = $d->foto;
-			if (!empty($foto)) {
-				if ($size = @getimagesize($foto)) {
-					if (strtolower(substr($size['mime'], 0, 5)) != 'image') {
+					/** EMAIL SEKARANG BOLEH SAMA JD DIMATIKAN DULU LOGIC NYA **/
+					//				if(Mhs_orm::where('email',$email)->first() != null){
+					//					$allow = false;
+					//					$msg = 'Email sudah terdaftar, email : '. $email ;
+					//					break;
+					//				}
+
+					if (strlen($email) > 250) {
 						$allow = false;
-						$msg = 'Foto bermasalah, foto : ' . $foto;
+						$msg = 'Email bermasalah, email : ' . $email;
 						break;
 					}
 				} else {
 					$allow = false;
-					$msg = 'Foto bermasalah, foto : ' . $foto;
+					$msg = 'Email bermasalah, email : ' . $email;
 					break;
 				}
-			}
 
+				$no_billkey = strval($d->no_billkey);
+				if (strlen($no_billkey) > NO_BILLKEY_LENGTH || !ctype_digit($no_billkey)) {
+					$allow = false;
+					$msg = 'No Billkey salah, no_billkey : ' . $no_billkey;
+					break;
+				}
+				if (Mhs_orm::where('no_billkey', $no_billkey)->first() != null) {
+					$allow = false;
+					$msg = 'No Billkey sudah terdaftar, no_billkey : ' . $no_billkey;
+					break;
+				}
 
-			$kodeps = $d->kodeps;
-			if (!ctype_digit($kodeps)) {
-				$allow = false;
-				$msg = 'Kodeps salah, kodeps : ' . $kodeps;
-				break;
-			}
-
-			$prodi = $d->prodi;
-			if (strlen($prodi) > 250 || strlen($prodi) < 3) {
-				$allow = false;
-				$msg = 'Prodi salah, prodi : ' . $prodi;
-				break;
-			}
-
-			$jalur = $d->jalur;
-			if (strlen($jalur) > 250 || strlen($jalur) < 3) {
-				$allow = false;
-				$msg = 'Jalur salah, jalur : ' . $jalur;
-				break;
-			}
-
-			$gel = strval($d->gel);
-			if (!ctype_digit($gel)) {
-				$allow = false;
-				$msg = 'Gel salah, gel : ' . $gel;
-				break;
-			}
-
-			$smt = strval($d->smt);
-			if (!ctype_digit($smt)) {
-				$allow = false;
-				$msg = 'Smt salah, smt : ' . $smt;
-				break;
-			}
-
-			$tahun = $d->tahun;
-			if (strlen($tahun) != 4 || !ctype_digit($tahun)) {
-				$allow = false;
-				$msg = 'Tahun salah, tahun : ' . $tahun;
-				break;
-			}
-
-			$matkul_list = [];
-			$sd = $d->matkul;
-			if (!empty($sd)) {
-				foreach ($sd as $s) {
-					$m = Matkul_orm::find($s->id_matkul);
-					if ($m == null) {
+				$foto = $d->foto;
+				if (!empty($foto)) {
+					if ($size = @getimagesize($foto)) {
+						if (strtolower(substr($size['mime'], 0, 5)) != 'image') {
+							$allow = false;
+							$msg = 'Foto bermasalah, foto : ' . $foto;
+							break;
+						}
+					} else {
 						$allow = false;
-						$msg = 'Materi ujian bermasalah, ID : ' . $s->id_matkul;
+						$msg = 'Foto bermasalah, foto : ' . $foto;
 						break;
 					}
-					$matkul_list[] = $m;
 				}
-				if (!$allow) {
+
+
+				$kodeps = $d->kodeps;
+				if (!ctype_digit($kodeps)) {
+					$allow = false;
+					$msg = 'Kodeps salah, kodeps : ' . $kodeps;
 					break;
 				}
+
+				$prodi = $d->prodi;
+				if (strlen($prodi) > 250 || strlen($prodi) < 3) {
+					$allow = false;
+					$msg = 'Prodi salah, prodi : ' . $prodi;
+					break;
+				}
+
+				$jalur = $d->jalur;
+				if (strlen($jalur) > 250 || strlen($jalur) < 3) {
+					$allow = false;
+					$msg = 'Jalur salah, jalur : ' . $jalur;
+					break;
+				}
+
+				$gel = strval($d->gel);
+				if (!ctype_digit($gel)) {
+					$allow = false;
+					$msg = 'Gel salah, gel : ' . $gel;
+					break;
+				}
+
+				$smt = strval($d->smt);
+				if (!ctype_digit($smt)) {
+					$allow = false;
+					$msg = 'Smt salah, smt : ' . $smt;
+					break;
+				}
+
+				$tahun = $d->tahun;
+				if (strlen($tahun) != 4 || !ctype_digit($tahun)) {
+					$allow = false;
+					$msg = 'Tahun salah, tahun : ' . $tahun;
+					break;
+				}
+
+				$matkul_list = [];
+				$sd = $d->matkul;
+				if (!empty($sd)) {
+					foreach ($sd as $s) {
+						$m = Matkul_orm::find($s->id_matkul);
+						if ($m == null) {
+							$allow = false;
+							$msg = 'Materi ujian bermasalah, ID : ' . $s->id_matkul;
+							break;
+						}
+						$matkul_list[] = $m;
+					}
+					if (!$allow) {
+						break;
+					}
+				} else {
+					$allow = false;
+					$msg = 'Materi ujian bermasalah, ID : TIDAK BOLEH KOSONG';
+					break;
+				}
+
+				$mhs                = new Mhs_orm();
+				$mhs->nim           = $nim;
+				$mhs->nama          = $nama;
+				$mhs->nik           = $nik;
+				$mhs->tmp_lahir          = $tmp_lahir;
+				$mhs->tgl_lahir          = $tgl_lahir;
+				$mhs->email         = $email;
+				$mhs->no_billkey         = $no_billkey;
+				$mhs->foto         = $foto;
+				$mhs->jenis_kelamin = $jk;
+				$mhs->kodeps         = $kodeps;
+				$mhs->prodi         = $prodi;
+				$mhs->jalur         = $jalur;
+				$mhs->gel         = $gel;
+				$mhs->smt         = $smt;
+				$mhs->tahun         = $tahun;
+				$mhs->save();
+
+				foreach ($matkul_list as $matkul) {
+					$mhs_matkul               = new Mhs_matkul_orm();
+					$mhs_matkul->mahasiswa_id = $mhs->id_mahasiswa;
+					$mhs_matkul->matkul_id    = $matkul->id_matkul;
+					$mhs_matkul->save();
+				}
+
+				// MENDAFTARKAN SBG USER
+				$nama       = explode(' ', $mhs->nama, 2);
+				$first_name = $nama[0];
+				$last_name  = end($nama);
+				$full_name  = $mhs->nama;
+
+				$username        = $mhs->nim;
+				//			$password        = date("dmY", strtotime($mhs->tgl_lahir));
+				$password        = $no_billkey;
+				$email           = $mhs->email;
+				//			$tgl_lahir        = date("dmY", strtotime($mhs->tgl_lahir));
+				$additional_data = [
+					'first_name' => $first_name,
+					'last_name'  => $last_name,
+					'full_name'  => $full_name,
+					//				'tgl_lahir'  => $tgl_lahir,
+					'no_billkey' => $no_billkey,
+				];
+				$group           = [MHS_GROUP_ID]; // Sets user to mhs.
+
+
+				$return_id_user = $this->ion_auth->register($username, $password, $email, $additional_data, $group);
+
+				if($return_id_user == false){
+					$allow = false;
+					$msg = 'Bermasalah ketika mendaftarkan user dengan NIM : ' . $nim;
+					break;
+				}
+
+			}
+
+			if (!$allow) {
+				throw new Exception($msg);
+				
 			} else {
-				$allow = false;
-				$msg = 'Materi ujian bermasalah, ID : TIDAK BOLEH KOSONG';
-				break;
+				commit_db_trx();
+				$message_rootpage = [
+					'header' => 'Perhatian',
+					'content' => 'Data berhasil di impor.',
+					'type' => 'success'
+				];
+				$this->session->set_flashdata('message_rootpage', $message_rootpage);
+				redirect('mahasiswa/import');
 			}
 
-			$mhs                = new Mhs_orm();
-			$mhs->nim           = $nim;
-			$mhs->nama          = $nama;
-			$mhs->nik           = $nik;
-			$mhs->tmp_lahir          = $tmp_lahir;
-			$mhs->tgl_lahir          = $tgl_lahir;
-			$mhs->email         = $email;
-			$mhs->no_billkey         = $no_billkey;
-			$mhs->foto         = $foto;
-			$mhs->jenis_kelamin = $jk;
-			$mhs->kodeps         = $kodeps;
-			$mhs->prodi         = $prodi;
-			$mhs->jalur         = $jalur;
-			$mhs->gel         = $gel;
-			$mhs->smt         = $smt;
-			$mhs->tahun         = $tahun;
-			$mhs->save();
-
-			foreach ($matkul_list as $matkul) {
-				$mhs_matkul               = new Mhs_matkul_orm();
-				$mhs_matkul->mahasiswa_id = $mhs->id_mahasiswa;
-				$mhs_matkul->matkul_id    = $matkul->id_matkul;
-				$mhs_matkul->save();
-			}
-
-			// MENDAFTARKAN SBG USER
-			$nama       = explode(' ', $mhs->nama, 2);
-			$first_name = $nama[0];
-			$last_name  = end($nama);
-			$full_name  = $mhs->nama;
-
-			$username        = $mhs->nim;
-			//			$password        = date("dmY", strtotime($mhs->tgl_lahir));
-			$password        = $no_billkey;
-			$email           = $mhs->email;
-			//			$tgl_lahir        = date("dmY", strtotime($mhs->tgl_lahir));
-			$additional_data = [
-				'first_name' => $first_name,
-				'last_name'  => $last_name,
-				'full_name'  => $full_name,
-				//				'tgl_lahir'  => $tgl_lahir,
-				'no_billkey' => $no_billkey,
-			];
-			$group           = [MHS_GROUP_ID]; // Sets user to mhs.
-			$this->ion_auth->register($username, $password, $email, $additional_data, $group);
-		}
-
-		if (!$allow) {
+		}catch(Exception $e){
 			rollback_db_trx();
-			show_error($msg, 500, 'Perhatian');
-		} else {
-			commit_db_trx();
-			$message_rootpage = [
-				'header' => 'Perhatian',
-				'content' => 'Data berhasil di impor.',
-				'type' => 'success'
-			];
-			$this->session->set_flashdata('message_rootpage', $message_rootpage);
-			redirect('mahasiswa/import');
+			show_error($e->getMessage(), 500, 'Perhatian');
 		}
+
+
 	}
 
 	public function edit_on_table()
@@ -917,253 +940,267 @@ class Mahasiswa extends MY_Controller
 
 	protected function _table_import()
 	{
-		$input = json_decode($this->input->post('data', true));
+		try{
+			$input = json_decode($this->input->post('data', true));
 
-		//		$data = [];
-		begin_db_trx();
-		$allow = true;
-		$msg = null;
-		$i = 1;
-		foreach ($input as $d) {
-			$nim = strval($d[0]);
-			if (strlen($nim) > MHS_ID_LENGTH || !ctype_digit($nim)) {
-				$allow = false;
-				$msg = 'Row : ' . $i . ', NIM salah, nim : ' . $nim;
-				break;
-			}
-			if (Mhs_orm::where('nim', $nim)->first() != null) {
-				$allow = false;
-				$msg = 'Row : ' . $i . ', NIM sudah terdaftar, nim : ' . $nim;
-				break;
-			}
+			//		$data = [];
+			begin_db_trx();
+			$allow = true;
+			$msg = null;
+			$i = 1;
+			foreach ($input as $d) {
+				$nim = strval($d[0]);
+				if (strlen($nim) > MHS_ID_LENGTH || !ctype_digit($nim)) {
+					$allow = false;
+					$msg = 'Row : ' . $i . ', NIM salah, nim : ' . $nim;
+					break;
+				}
+				if (Mhs_orm::where('nim', $nim)->first() != null) {
+					$allow = false;
+					$msg = 'Row : ' . $i . ', NIM sudah terdaftar, nim : ' . $nim;
+					break;
+				}
 
-			$nama = $d[1];
-			if (strlen($nama) > 50 || strlen($nama) < 3) {
-				$allow = false;
-				$msg = 'Row : ' . $i . ', Nama salah, nama : ' . $nama;
-				break;
-			}
+				$nama = $d[1];
+				if (strlen($nama) > 50 || strlen($nama) < 3) {
+					$allow = false;
+					$msg = 'Row : ' . $i . ', Nama salah, nama : ' . $nama;
+					break;
+				}
 
-			$nik = strval($d[2]);
-			$nik = str_replace("'", "", $nik);
-			if (strlen($nik) != NIK_LENGTH || !ctype_digit($nik)) {
-				$allow = false;
-				$msg = 'Row : ' . $i . ', NIK salah, nik : ' . $nik;
-				break;
-			}
+				$nik = strval($d[2]);
+				$nik = str_replace("'", "", $nik);
+				if (strlen($nik) != NIK_LENGTH || !ctype_digit($nik)) {
+					$allow = false;
+					$msg = 'Row : ' . $i . ', NIK salah, nik : ' . $nik;
+					break;
+				}
 
-			/** NIK SEKARANG BOLEH SAMA JD DIMATIKAN DULU LOGIC NYA **/
-			//			if(Mhs_orm::where('nik',$nik)->first() != null){
-			//				$allow = false;
-			//				$msg = 'Row : '. $i .', NIK sudah terdaftar, nik : '. $nik ;
-			//				break;
-			//			}
+				/** NIK SEKARANG BOLEH SAMA JD DIMATIKAN DULU LOGIC NYA **/
+				//			if(Mhs_orm::where('nik',$nik)->first() != null){
+				//				$allow = false;
+				//				$msg = 'Row : '. $i .', NIK sudah terdaftar, nik : '. $nik ;
+				//				break;
+				//			}
 
-			$tmp_lahir = $d[3];
-			if (strlen($tmp_lahir) > 50 || strlen($tmp_lahir) < 3) {
-				$allow = false;
-				$msg = 'Row : ' . $i . ', Tmp lahir salah, tmp lahir : ' . $tmp_lahir;
-				break;
-			}
+				$tmp_lahir = $d[3];
+				if (strlen($tmp_lahir) > 50 || strlen($tmp_lahir) < 3) {
+					$allow = false;
+					$msg = 'Row : ' . $i . ', Tmp lahir salah, tmp lahir : ' . $tmp_lahir;
+					break;
+				}
 
-			$tgl_lahir = $d[4];
-			if (strlen($tgl_lahir) != 10) {
-				$allow = false;
-				$msg = 'Row : ' . $i . ', Tgl lahir salah, tgl lahir : ' . $tmp_lahir;
-				break;
-			} else {
-
-				// $day = (int) substr($tgl_lahir, 8, 2);
-				// $month = (int) substr($tgl_lahir, 5, 2);
-				// $year = (int) substr($tgl_lahir, 0, 4);
-				// if (!checkdate($month, $day, $year)) {
-				// 	$allow = false;
-				// 	$msg = 'Row : ' . $i . ', Tgl lahir salah, tgl lahir : ' . $tmp_lahir;
-				// 	break;
-				// }
-
-				$d = DateTime::createFromFormat('Y-m-d', $tgl_lahir);
-				if(!($d && $d->format('Y-m-d') == $tgl_lahir)){
+				$tgl_lahir = $d[4];
+				if (strlen($tgl_lahir) != 10) {
 					$allow = false;
 					$msg = 'Row : ' . $i . ', Tgl lahir salah, tgl lahir : ' . $tmp_lahir;
 					break;
+				} else {
+
+					// $day = (int) substr($tgl_lahir, 8, 2);
+					// $month = (int) substr($tgl_lahir, 5, 2);
+					// $year = (int) substr($tgl_lahir, 0, 4);
+					// if (!checkdate($month, $day, $year)) {
+					// 	$allow = false;
+					// 	$msg = 'Row : ' . $i . ', Tgl lahir salah, tgl lahir : ' . $tmp_lahir;
+					// 	break;
+					// }
+
+					$d = DateTime::createFromFormat('Y-m-d', $tgl_lahir);
+					if(!($d && $d->format('Y-m-d') == $tgl_lahir)){
+						$allow = false;
+						$msg = 'Row : ' . $i . ', Tgl lahir salah, tgl lahir : ' . $tmp_lahir;
+						break;
+					}
 				}
-			}
 
-			$jk = $d[5];
-			if (!in_array($jk, ['L', 'P'])) {
-				$allow = false;
-				$msg = 'Row : ' . $i . ', Jenis kelamin bermasalah, jenis kelamin : ' . $jk;
-				break;
-			}
-
-			$email = $d[6];
-			if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
-
-				/** EMAIL SEKARANG BOLEH SAMA JD DIMATIKAN DULU LOGIC NYA **/
-				//				if(Mhs_orm::where('email',$email)->first() != null){
-				//					$allow = false;
-				//					$msg = 'Row : '. $i .', Email sudah terdaftar, email : '. $email ;
-				//					break;
-				//				}
-
-				if (strlen($email) > 250) {
+				$jk = $d[5];
+				if (!in_array($jk, ['L', 'P'])) {
 					$allow = false;
-					$msg = 'Row : ' . $i . ', Email bermasalah, email : ' . $email;
+					$msg = 'Row : ' . $i . ', Jenis kelamin bermasalah, jenis kelamin : ' . $jk;
 					break;
 				}
-			} else {
-				$allow = false;
-				$msg = 'Row : ' . $i . ', Email bermasalah, email : ' . $email;
-				break;
-			}
 
-			$no_billkey = strval($d[7]);
-			$no_billkey = str_replace("'", "", $no_billkey);
-			if (strlen($no_billkey) > NO_BILLKEY_LENGTH || !ctype_digit($no_billkey)) {
-				$allow = false;
-				$msg = 'Row : ' . $i . ', No Billkey salah, no_billkey : ' . $no_billkey;
-				break;
-			}
-			if (Mhs_orm::where('no_billkey', $no_billkey)->first() != null) {
-				$allow = false;
-				$msg = 'Row : ' . $i . ', No Billkey sudah terdaftar, no_billkey : ' . $no_billkey;
-				break;
-			}
+				$email = $d[6];
+				if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
 
-			$foto = $d[8];
-			if (!empty($foto)) {
-				if ($size = @getimagesize($foto)) {
-					if (strtolower(substr($size['mime'], 0, 5)) != 'image') {
+					/** EMAIL SEKARANG BOLEH SAMA JD DIMATIKAN DULU LOGIC NYA **/
+					//				if(Mhs_orm::where('email',$email)->first() != null){
+					//					$allow = false;
+					//					$msg = 'Row : '. $i .', Email sudah terdaftar, email : '. $email ;
+					//					break;
+					//				}
+
+					if (strlen($email) > 250) {
 						$allow = false;
-						$msg = 'Row : ' . $i . ', Foto bermasalah, foto : ' . $foto;
+						$msg = 'Row : ' . $i . ', Email bermasalah, email : ' . $email;
 						break;
 					}
 				} else {
 					$allow = false;
-					$msg = 'Row : ' . $i . ', Foto bermasalah, foto : ' . $foto;
+					$msg = 'Row : ' . $i . ', Email bermasalah, email : ' . $email;
 					break;
 				}
-			}
 
+				$no_billkey = strval($d[7]);
+				$no_billkey = str_replace("'", "", $no_billkey);
+				if (strlen($no_billkey) > NO_BILLKEY_LENGTH || !ctype_digit($no_billkey)) {
+					$allow = false;
+					$msg = 'Row : ' . $i . ', No Billkey salah, no_billkey : ' . $no_billkey;
+					break;
+				}
+				if (Mhs_orm::where('no_billkey', $no_billkey)->first() != null) {
+					$allow = false;
+					$msg = 'Row : ' . $i . ', No Billkey sudah terdaftar, no_billkey : ' . $no_billkey;
+					break;
+				}
 
-			$kodeps = $d[9];
-			if (!ctype_digit($kodeps)) {
-				$allow = false;
-				$msg = 'Row : ' . $i . ', Kodeps bermasalah, kodeps : ' . $kodeps;
-				break;
-			}
-
-			$prodi = $d[10];
-			if (strlen($prodi) > 250 || strlen($prodi) < 3) {
-				$allow = false;
-				$msg = 'Row : ' . $i . ', Prodi bermasalah, prodi : ' . $prodi;
-				break;
-			}
-
-			$jalur = $d[11];
-			if (strlen($jalur) > 250 || strlen($jalur) < 3) {
-				$allow = false;
-				$msg = 'Row : ' . $i . ', Jalur bermasalah, jalur : ' . $jalur;
-				break;
-			}
-
-			$gel = strval($d[12]);
-			if (!ctype_digit($gel)) {
-				$allow = false;
-				$msg = 'Row : ' . $i . ', Gel bermasalah, gel : ' . $gel;
-				break;
-			}
-
-			$smt = strval($d[13]);
-			if (!ctype_digit($smt)) {
-				$allow = false;
-				$msg = 'Row : ' . $i . ', Smt bermasalah, smt : ' . $smt;
-				break;
-			}
-
-			$tahun = $d[14];
-			if (strlen($tahun) != 4 || !ctype_digit($tahun)) {
-				$allow = false;
-				$msg = 'Row : ' . $i . ', Tahun bermasalah, tahun : ' . $tahun;
-				break;
-			}
-
-			$matkul_list = [];
-			$sd = explode(',', $d[15]);
-			if (!empty($sd)) {
-				foreach ($sd as $s) {
-					$m = Matkul_orm::find($s);
-					if ($m == null) {
+				$foto = $d[8];
+				if (!empty($foto)) {
+					if ($size = @getimagesize($foto)) {
+						if (strtolower(substr($size['mime'], 0, 5)) != 'image') {
+							$allow = false;
+							$msg = 'Row : ' . $i . ', Foto bermasalah, foto : ' . $foto;
+							break;
+						}
+					} else {
 						$allow = false;
-						$msg = 'Row : ' . $i . ', Materi ujian bermasalah, ID : ' . $s;
+						$msg = 'Row : ' . $i . ', Foto bermasalah, foto : ' . $foto;
 						break;
 					}
-					$matkul_list[] = $m;
 				}
-				if (!$allow) {
+
+
+				$kodeps = $d[9];
+				if (!ctype_digit($kodeps)) {
+					$allow = false;
+					$msg = 'Row : ' . $i . ', Kodeps bermasalah, kodeps : ' . $kodeps;
 					break;
 				}
+
+				$prodi = $d[10];
+				if (strlen($prodi) > 250 || strlen($prodi) < 3) {
+					$allow = false;
+					$msg = 'Row : ' . $i . ', Prodi bermasalah, prodi : ' . $prodi;
+					break;
+				}
+
+				$jalur = $d[11];
+				if (strlen($jalur) > 250 || strlen($jalur) < 3) {
+					$allow = false;
+					$msg = 'Row : ' . $i . ', Jalur bermasalah, jalur : ' . $jalur;
+					break;
+				}
+
+				$gel = strval($d[12]);
+				if (!ctype_digit($gel)) {
+					$allow = false;
+					$msg = 'Row : ' . $i . ', Gel bermasalah, gel : ' . $gel;
+					break;
+				}
+
+				$smt = strval($d[13]);
+				if (!ctype_digit($smt)) {
+					$allow = false;
+					$msg = 'Row : ' . $i . ', Smt bermasalah, smt : ' . $smt;
+					break;
+				}
+
+				$tahun = $d[14];
+				if (strlen($tahun) != 4 || !ctype_digit($tahun)) {
+					$allow = false;
+					$msg = 'Row : ' . $i . ', Tahun bermasalah, tahun : ' . $tahun;
+					break;
+				}
+
+				$matkul_list = [];
+				$sd = explode(',', $d[15]);
+				if (!empty($sd)) {
+					foreach ($sd as $s) {
+						$m = Matkul_orm::find($s);
+						if ($m == null) {
+							$allow = false;
+							$msg = 'Row : ' . $i . ', Materi ujian bermasalah, ID : ' . $s;
+							break;
+						}
+						$matkul_list[] = $m;
+					}
+					if (!$allow) {
+						break;
+					}
+				} else {
+					$allow = false;
+					$msg = 'Row : ' . $i . ', Materi ujian bermasalah, ID : TIDAK BOLEH KOSONG';
+					break;
+				}
+
+				$mhs                = new Mhs_orm();
+				$mhs->nim           = $nim;
+				$mhs->nama          = $nama;
+				$mhs->nik          = $nik;
+				$mhs->tmp_lahir     = $tmp_lahir;
+				$mhs->tgl_lahir     = $tgl_lahir;
+				$mhs->email         = $email;
+				$mhs->no_billkey         = $no_billkey;
+				$mhs->foto         = $foto;
+				$mhs->jenis_kelamin = $jk;
+				$mhs->kodeps         = $kodeps;
+				$mhs->prodi         = $prodi;
+				$mhs->jalur         = $jalur;
+				$mhs->gel         = $gel;
+				$mhs->smt         = $smt;
+				$mhs->tahun         = $tahun;
+				$mhs->save();
+
+				foreach ($matkul_list as $matkul) {
+					$mhs_matkul               = new Mhs_matkul_orm();
+					$mhs_matkul->mahasiswa_id = $mhs->id_mahasiswa;
+					$mhs_matkul->matkul_id    = $matkul->id_matkul;
+					$mhs_matkul->save();
+				}
+
+				// MENDAFTARKAN SBG USER
+				$nama       = explode(' ', $mhs->nama, 2);
+				$first_name = $nama[0];
+				$last_name  = end($nama);
+				$full_name  = $mhs->nama;
+
+				$username        = $mhs->nim;
+				//			$password        = date("dmY", strtotime($mhs->tgl_lahir));
+				$password        = $no_billkey;
+				$email           = $mhs->email;
+				//			$tgl_lahir        = date("dmY", strtotime($mhs->tgl_lahir));
+				$additional_data = [
+					'first_name' => $first_name,
+					'last_name'  => $last_name,
+					'full_name'  => $full_name,
+					//				'tgl_lahir'  => $tgl_lahir,
+					'no_billkey' => $no_billkey,
+				];
+				$group           = [MHS_GROUP_ID]; // Sets user to mhs.
+
+				$return_id_user = $this->ion_auth->register($username, $password, $email, $additional_data, $group);
+
+				if($return_id_user == false){
+					$allow = false;
+					$msg = 'Row : ' . $i . ', Bermasalah ketika mendaftarkan user tsb';
+					break;
+				}
+
+				$i++;
+			}
+
+			if (!$allow) {
+				throw new Exception($msg);
+				
 			} else {
-				$allow = false;
-				$msg = 'Row : ' . $i . ', Materi ujian bermasalah, ID : TIDAK BOLEH KOSONG';
-				break;
+				commit_db_trx();
+				$this->_json(['status' => true]);
 			}
 
-			$mhs                = new Mhs_orm();
-			$mhs->nim           = $nim;
-			$mhs->nama          = $nama;
-			$mhs->nik          = $nik;
-			$mhs->tmp_lahir     = $tmp_lahir;
-			$mhs->tgl_lahir     = $tgl_lahir;
-			$mhs->email         = $email;
-			$mhs->no_billkey         = $no_billkey;
-			$mhs->foto         = $foto;
-			$mhs->jenis_kelamin = $jk;
-			$mhs->kodeps         = $kodeps;
-			$mhs->prodi         = $prodi;
-			$mhs->jalur         = $jalur;
-			$mhs->gel         = $gel;
-			$mhs->smt         = $smt;
-			$mhs->tahun         = $tahun;
-			$mhs->save();
-
-			foreach ($matkul_list as $matkul) {
-				$mhs_matkul               = new Mhs_matkul_orm();
-				$mhs_matkul->mahasiswa_id = $mhs->id_mahasiswa;
-				$mhs_matkul->matkul_id    = $matkul->id_matkul;
-				$mhs_matkul->save();
-			}
-
-			// MENDAFTARKAN SBG USER
-			$nama       = explode(' ', $mhs->nama, 2);
-			$first_name = $nama[0];
-			$last_name  = end($nama);
-			$full_name  = $mhs->nama;
-
-			$username        = $mhs->nim;
-			//			$password        = date("dmY", strtotime($mhs->tgl_lahir));
-			$password        = $no_billkey;
-			$email           = $mhs->email;
-			//			$tgl_lahir        = date("dmY", strtotime($mhs->tgl_lahir));
-			$additional_data = [
-				'first_name' => $first_name,
-				'last_name'  => $last_name,
-				'full_name'  => $full_name,
-				//				'tgl_lahir'  => $tgl_lahir,
-				'no_billkey' => $no_billkey,
-			];
-			$group           = [MHS_GROUP_ID]; // Sets user to mhs.
-			$this->ion_auth->register($username, $password, $email, $additional_data, $group);
-			$i++;
-		}
-
-		if (!$allow) {
+		}catch(Exception $e){
 			rollback_db_trx();
-			$this->_json(['status' => false, 'msg' => $msg]);
-		} else {
-			commit_db_trx();
-			$this->_json(['status' => true]);
+			$this->_json(['status' => false, 'msg' => $e->getMessage()]);
 		}
 	}
 

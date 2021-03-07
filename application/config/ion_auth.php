@@ -130,7 +130,7 @@ $config['argon2_admin_params']		= [
 | The library will fail for empty password or password size above 4096 bytes.
 | This is an arbitrary (long) value to protect against DOS attack.
 */
-$config['site_title']                 = "Aplikasi Ujian Online";       // Site Title, example.com
+$config['site_title']                 = "Aplikasi Ujian Online";  // TAMPIL SBG PENGIRIM PADA EMAIL KONFIRMASI      // Site Title, example.com
 $config['admin_email']                = "noreply_alumni_undip@office.undip.ac.id"; // Admin Email, admin@example.com
 $config['default_group']              = 'members';           // Default group, use name
 $config['admin_group']                = 'admin';             // Default administrators group, use name
@@ -138,8 +138,8 @@ $config['identity']                   = 'username';         /* You can use any u
 															    The values in this column, alongside password, will be used for login purposes
 															    IMPORTANT: If you are changing it from the default (email),
 															    		   update the UNIQUE constraint in your DB */
-$config['min_password_length']        = 8;                   // Minimum Required Length of Password (not enforced by lib - see note above)
-$config['email_activation']           = FALSE;               // Email Activation for registration
+$config['min_password_length']        = PASSWORD_LENGTH;  // DEFAULT 8                 // Minimum Required Length of Password (not enforced by lib - see note above)
+$config['email_activation']           = TRUE; // DEFAULT FALSE               // Email Activation for registration
 $config['manual_activation']          = FALSE;               // Manual Activation for registration
 $config['remember_users']             = TRUE;                // Allow users to be remembered and enable auto-login
 $config['user_expire']                = 86500;               // How long to remember the user (seconds). Set to zero for no expiration - see sess_expiration in CodeIgniter Session Config for session expiration

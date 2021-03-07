@@ -32,12 +32,20 @@
     <link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/assets/css/style.css') }}">
     <!-- END Custom CSS-->
 
+    <link rel="stylesheet" type="text/css" href="{{ asset('assets/yarn/node_modules/bootstrap4-datetimepicker/build/css/bootstrap-datetimepicker.css') }}">
+
     <style type="text/css">
         html body.bg-full-screen-image {
             background: url({{ asset('assets/imgs/'. APP_BG_LOGIN .'.jpg') }}) no-repeat center center fixed;
             webkit-background-size: cover; /** */
             background-size: cover;
             /** **/
+        }
+        #ul_error{
+            margin-bottom: 0
+        }
+        #ul_error li{
+            list-style-type: disc;
         }
     </style>
 
@@ -61,71 +69,84 @@
                 </div>
                 <div class="card-content">
                     <div class="card-body">
-                        @if(flash_data('error_login_msg'))
-                        <div class="alert alert-warning">{{ flash_data('error_login_msg') }}</div>
+                        @if(flash_data('error_registrasi_msg'))
+                        <div class="alert alert-warning">{{ flash_data('error_registrasi_msg') }}</div>
                         @endif
+
+                        @if(flash_data('success_registrasi_msg'))
+                        <div class="alert bg-success"><i class="ft-check-circle"></i> {{ flash_data('success_registrasi_msg') }}</div>
+                        @endif
+
+                        @if(!empty(validation_errors()))
+                        <div class="alert alert-warning"><ul id="ul_error">{!! validation_errors() !!}</ul></div>
+                        @endif
+                        
+                        @if(!empty($error_register_user))
+                        <div class="alert alert-warning">{{ $error_register_user }}</div>
+                        @endif
+
                         <?= form_open("auth/registrasi", ['id'=>'form','class'=>'form-horizontal','novalidate'=>'','method'=>'POST'], ['token' => '', 'action' => '']);?>
                         <div class="row">
                             <div class="col-md-6 col-sm-12">
                                 <fieldset class="form-group position-relative has-icon-left">
-                                    <input type="text" name="full_name" value="" id="full_name" placeholder="Nama lengkap" autofocus="autofocus" class="form-control" autocomplete="off">
+                                    <input type="text" name="full_name" value="{{ set_value('full_name') }}" id="full_name" placeholder="Nama lengkap" autofocus="autofocus" class="form-control" autocomplete="off">
                                     <div class="form-control-position" style="line-height: 2.8rem;">
-                                        <i class="fa fa-genderless"></i>
+                                        <i class="ft-chevron-right"></i>
                                     </div>
                                     <span class="help-block"></span>
                                 </fieldset>
                                 <fieldset class="form-group position-relative has-icon-left">
-                                    <input type="text" name="nik" value="" id="nik" placeholder="NIK" autofocus="autofocus" class="form-control" autocomplete="off">
+                                    <input type="text" name="nik" value="{{ set_value('nik') }}" id="nik" placeholder="NIK" autofocus="autofocus" class="form-control" autocomplete="off">
                                     <div class="form-control-position" style="line-height: 2.8rem;">
-                                        <i class="fa fa-genderless"></i>
+                                        <i class="ft-chevron-right"></i>
                                     </div>
                                     <span class="help-block"></span>
                                 </fieldset>
                                 <fieldset class="form-group position-relative has-icon-left">
-                                    <input type="text" name="email" value="" id="email" placeholder="Email" autofocus="autofocus" class="form-control" autocomplete="off">
+                                    <input type="text" name="email" value="{{ set_value('email') }}" id="email" placeholder="Email" autofocus="autofocus" class="form-control" autocomplete="off">
                                     <div class="form-control-position" style="line-height: 2.8rem;">
-                                        <i class="fa fa-genderless"></i>
+                                        <i class="ft-chevron-right"></i>
                                     </div>
                                     <span class="help-block"></span>
                                 </fieldset>
                                 <fieldset class="form-group position-relative has-icon-left">
-                                    <input type="text" name="telp" value="" id="telp" placeholder="No. telp / WA" autofocus="autofocus" class="form-control" autocomplete="off">
+                                    <input type="text" name="telp" value="{{ set_value('telp') }}" id="telp" placeholder="No. telp / WA" autofocus="autofocus" class="form-control" autocomplete="off">
                                     <div class="form-control-position" style="line-height: 2.8rem;">
-                                        <i class="fa fa-genderless"></i>
+                                        <i class="ft-chevron-right"></i>
                                     </div>
                                     <span class="help-block"></span>
                                 </fieldset>
                                 <fieldset class="form-group position-relative has-icon-left">
-                                    <select name="jenis_kelamin" value="" id="jenis_kelamin" placeholder="Jenis kelamin" autofocus="autofocus" class="form-control" autocomplete="off">
-                                        <option value="" selected disabled>Jenis kelamin</option>
-                                        <option value="L">Laki-laki</option>
-                                        <option value="P">Perempuan</option>
+                                    <select name="jenis_kelamin" id="jenis_kelamin" class="form-control">
+                                        <option value="" {{ empty(set_value('jenis_kelamin')) ? 'selected' : '' }} hidden>Jenis kelamin</option>
+                                        <option value="L" {{ set_value('jenis_kelamin') == 'L' ? 'selected' : '' }}>Laki-laki</option>
+                                        <option value="P" {{ set_value('jenis_kelamin') == 'P' ? 'selected' : '' }}>Perempuan</option>
                                     </select>
                                     <div class="form-control-position" style="line-height: 2.8rem;">
-                                        <i class="fa fa-genderless"></i>
+                                        <i class="ft-chevron-right"></i>
                                     </div>
                                     <span class="help-block"></span>
                                 </fieldset>
                             </div>
                             <div class="col-md-6 col-sm-12">
                                 <fieldset class="form-group position-relative has-icon-left">
-                                    <input type="text" name="kota_asal" value="" id="kota_asal" placeholder="Kota / daerah asal" autofocus="autofocus" class="form-control" autocomplete="off">
+                                    <input type="text" name="kota_asal" value="{{ set_value('kota_asal') }}" id="kota_asal" placeholder="Kota / daerah asal" autofocus="autofocus" class="form-control" autocomplete="off">
                                     <div class="form-control-position" style="line-height: 2.8rem;">
-                                        <i class="fa fa-genderless"></i>
+                                        <i class="ft-chevron-right"></i>
                                     </div>
                                     <span class="help-block"></span>
                                 </fieldset>
                                 <fieldset class="form-group position-relative has-icon-left">
-                                    <input type="text" name="tmp_lahir" value="" id="tmp_lahir" placeholder="Tempat lahir" autofocus="autofocus" class="form-control" autocomplete="off">
+                                    <input type="text" name="tmp_lahir" value="{{ set_value('tmp_lahir') }}" id="tmp_lahir" placeholder="Tempat lahir" autofocus="autofocus" class="form-control" autocomplete="off">
                                     <div class="form-control-position" style="line-height: 2.8rem;">
-                                        <i class="fa fa-genderless"></i>
+                                        <i class="ft-chevron-right"></i>
                                     </div>
                                     <span class="help-block"></span>
                                 </fieldset>
                                 <fieldset class="form-group position-relative has-icon-left">
-                                    <input type="text" name="tgl_lahir" value="" id="tgl_lahir" placeholder="Tgl lahir" autofocus="autofocus" class="form-control" autocomplete="off">
+                                    <input type="text" name="tgl_lahir" value="{{ set_value('tgl_lahir') }}" id="tgl_lahir" placeholder="Tgl lahir" class="datetimepicker form-control">
                                     <div class="form-control-position" style="line-height: 2.8rem;">
-                                        <i class="fa fa-genderless"></i>
+                                        <i class="ft-chevron-right"></i>
                                     </div>
                                     <span class="help-block"></span>
                                 </fieldset>
@@ -165,7 +186,8 @@
     </div>
 
     <!-- ////////////////////////////////////////////////////////////////////////////-->
-    <script src="https://www.google.com/recaptcha/api.js?render={{ RECAPTCHA_V3_SITE_KEY }}"></script>
+
+    <script src="{{ asset('assets/template/robust/app-assets/js/core/libraries/jquery.min.js') }}"></script>
 
     <!-- BEGIN VENDOR JS-->
     <script src="{{ asset('assets/template/robust/app-assets/vendors/js/vendors.min.js') }}"></script>
@@ -176,6 +198,9 @@
 
     <script src="{{ asset('assets/template/robust/app-assets/vendors/js/forms/validation/jqBootstrapValidation.js') }}"></script>
     <script src="{{ asset('assets/template/robust/app-assets/vendors/js/forms/icheck/icheck.min.js') }}"></script>
+
+    <script src="{{ asset('assets/yarn/node_modules/moment/min/moment.min.js') }}"></script>
+    <script src="{{ asset('assets/yarn/node_modules/bootstrap4-datetimepicker/build/js/bootstrap-datetimepicker.min.js') }}"></script>
     <!-- END PAGE VENDOR JS-->
     <!-- BEGIN ROBUST JS-->
     <script src="{{ asset('assets/template/robust/app-assets/js/core/app-menu.js') }}"></script>
@@ -188,6 +213,9 @@
 {{--    <script src="https://cdn.jsdelivr.net/jquery.validation/1.16.0/jquery.validate.min.js"></script>--}}
     <script src="{{ asset('assets/yarn/node_modules/jquery-validation/dist/jquery.validate.min.js') }}"></script>
     <!-- END PAGE LEVEL JS-->
+
+    <script src="https://www.google.com/recaptcha/api.js?render={{ RECAPTCHA_V3_SITE_KEY }}"></script>
+
     <script type="text/javascript">
 
         // $("#identity").inputmask("email");
@@ -200,28 +228,26 @@
         jQuery.validator.addMethod("valid_no_telp", function(value, element) {
             // allow any non-whitespace characters as the host part
             return value.substring(0,2) == '08';
-        }, 'Please enter a valid email address.');
+        }, 'Please enter a valid no telp.');
 
         let validator = $("#form").validate({
             debug: false,
             ignore: [],
             rules: {
-                // 'identity': {required: true, email: true},
                 'full_name': {required: true},
-                'nik': {required: true, digits: true},
+                'nik': {required: true, minlength: {{ NIK_LENGTH }}, digits: true},
                 'email': {required: true, valid_email: true},
                 'telp': {required: true, digits: true, minlength: 10, valid_no_telp: true},
                 'jenis_kelamin': {required: true},
                 'kota_asal': {required: true},
                 'tmp_lahir': {required: true},
                 'tgl_lahir': {required: true},
-                'password': {required: true, minlength: 8},
+                'password': {required: true, minlength: {{ PASSWORD_LENGTH }}},
                 'password_confirm': {required: true, equalTo: "#password"},
             },
             messages: {
                 'full_name': {
                     required: "tidak boleh kosong",
-                    // email: "email yg dimasukan salah"
                 },
                 'nik': {
                     required: "tidak boleh kosong",
@@ -309,6 +335,23 @@
         $(document).ready(function(){
             $('#btn_submit_registrasi').show();
             $('#btn_link_login').show();
+
+            $('.datetimepicker').datetimepicker({
+                format: 'YYYY-MM-DD',
+                // Your Icons
+                // as Bootstrap 4 is not using Glyphicons anymore
+                icons: {
+                    time: 'fa fa-clock-o',
+                    date: 'fa fa-calendar',
+                    up: 'fa fa-chevron-up',
+                    down: 'fa fa-chevron-down',
+                    previous: 'fa fa-chevron-left',
+                    next: 'fa fa-chevron-right',
+                    today: 'fa fa-check',
+                    clear: 'fa fa-trash',
+                    close: 'fa fa-times'
+                }
+            });
         });
 
         </script>

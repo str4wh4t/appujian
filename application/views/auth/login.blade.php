@@ -64,9 +64,15 @@
                         @if(flash_data('error_login_msg'))
                         <div class="alert alert-warning">{{ flash_data('error_login_msg') }}</div>
                         @endif
+
                         @if(flash_data('success_resend_password_msg'))
                         {{-- INI JIKA BERHASIL RESET PASSWORD --}}
                         <div class="alert bg-success"><i class="fa fa-check-circle"></i> {{ flash_data('success_resend_password_msg') }}</div>
+                        @endif
+
+                        @if(flash_data('success_activation_msg'))
+                        {{-- INI JIKA BERHASIL RESET PASSWORD --}}
+                        <div class="alert bg-success"><i class="ft-check-circle"></i> {{ flash_data('success_activation_msg') }}</div>
                         @endif
                         <?= form_open("auth/cek_login", ['id'=>'form_login','class'=>'form-horizontal','novalidate'=>'','method'=>'POST']);?>
                             <fieldset class="form-group position-relative has-icon-left">
@@ -160,6 +166,7 @@
 {{--    <script src="https://cdn.jsdelivr.net/jquery.validation/1.16.0/jquery.validate.min.js"></script>--}}
     <script src="{{ asset('assets/yarn/node_modules/jquery-validation/dist/jquery.validate.min.js') }}"></script>
     <!-- END PAGE LEVEL JS-->
+
     <script type="text/javascript">
         function init_login_super(){
 

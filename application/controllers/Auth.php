@@ -1,6 +1,8 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
+use Orm\Mhs_orm;
+
 class Auth extends CI_Controller
 {
 	public $data = [];
@@ -352,14 +354,18 @@ class Auth extends CI_Controller
 		if ($activation)
 		{
 			// redirect them to the auth page
-			$this->session->set_flashdata('message', $this->ion_auth->messages());
+			// $this->session->set_flashdata('message', $this->ion_auth->messages());
+			$this->session->set_flashdata('success_activation_msg', 'Aktifasi berhasil, silahkan login');
 			redirect("auth", 'refresh');
 		}
 		else
 		{
 			// redirect them to the forgot password page
-			$this->session->set_flashdata('message', $this->ion_auth->errors());
-			redirect("auth/forgot_password", 'refresh');
+			// $this->session->set_flashdata('message', $this->ion_auth->errors());
+			// redirect("auth/forgot_password", 'refresh');
+
+			$this->session->set_flashdata('error_activation_msg', 'Aktifasi gagal, silahkan resend password');
+			redirect("auth/resend_password", 'refresh');
 		}
 	}
 
@@ -432,7 +438,10 @@ class Auth extends CI_Controller
 
 	
 	public function registrasi(){
-		if($this->input->post('token')){
+		$data = [];
+		$data['error_register_user'] = null;
+
+		if($this->input->post('action')){
 			$token = $this->input->post('token');
 			$action = $this->input->post('action');
 			$recaptcha = new \ReCaptcha\ReCaptcha(RECAPTCHA_V3_SECRET_KEY);
@@ -440,16 +449,122 @@ class Auth extends CI_Controller
                   ->setScoreThreshold(0.5)
                   ->verify($token, $_SERVER['REMOTE_ADDR']);
 
+			// vdebug($resp->isSuccess());
+
 			if ($resp->isSuccess()) {
 				// Verified!
-				vdebug('Verified!');
+				$this->form_validation->set_rules('full_name', 'Email', 'required|trim|min_length[3]|max_length[250]');
+				$this->form_validation->set_rules('nik', 'Nik', 'exact_length[' . NIK_LENGTH . ']|is_unique[mahasiswa.nik]');
+				$this->form_validation->set_rules('email', 'Email', 'required|trim|max_length[250]|valid_email|is_unique[users.email]');
+				$this->form_validation->set_rules('telp', 'Telp', 'required');
+				$this->form_validation->set_rules('jenis_kelamin', 'Jenis Kelamin', 'required|in_list[L,P]');
+				$this->form_validation->set_rules('kota_asal', 'Kota Asal', 'required|trim|min_length[3]|max_length[250]');
+				$this->form_validation->set_rules('tmp_lahir', 'Tmp Lahir', 'required|trim|min_length[3]|max_length[250]');
+				$this->form_validation->set_rules(
+					'tgl_lahir', 
+					'Tgl Lahir', 
+					[
+						'required', 
+						'trim', 
+						[
+							'check_valid_date', 
+							function ($tgl_lahir) {
+								if (!empty($tgl_lahir)) {
+									$d = DateTime::createFromFormat('Y-m-d', $tgl_lahir);
+									return $d && $d->format('Y-m-d') == $tgl_lahir;
+								}
+							}
+						]
+						],
+						[
+							'check_valid_date' => 'Kolom tanggal salah',
+						]
+				);
+				$this->form_validation->set_rules('password', 'password', 'required');
+				$this->form_validation->set_rules('password_confirm', 'password_confirm', 'required');
+
+				$this->form_validation->set_error_delimiters('<li>', '</li>');
+				$this->form_validation->set_message('required', 'Kolom {field} wajib diisi');
+				$this->form_validation->set_message('is_unique', '{field} tsb sudah terdaftar');
+
+				if ($this->form_validation->run() === FALSE)
+				{
+					// $this->session->set_flashdata('error_registrasi_msg', $this->form_validation->error_string());
+					// redirect('auth/registrasi', 'refresh');
+				}else{
+
+					// MENDAFTARKAN SBG USER
+					$nama       = explode(' ', $this->input->post('full_name'), 2);
+					$first_name = $nama[0];
+					$last_name  = end($nama);
+					$full_name  = $this->input->post('full_name');
+	
+	
+	
+					$username        = date('ymdHis'); // USERNAME DIGENERATE OTOMATIS
+					$password        = $this->input->post('password');
+					$email           = $this->input->post('email');
+	
+					$additional_data = [
+						'first_name' => $first_name,
+						'last_name'  => $last_name,
+						'full_name'  => $full_name,
+						'phone'		=> $this->input->post('telp'),
+					];
+					$group           = [MHS_GROUP_ID]; // Sets user to mhs.
+	
+					try {
+						begin_db_trx();
+						$return_id_user = $this->ion_auth->register($username, $password, $email, $additional_data, $group);
+	
+						if($return_id_user == false){
+							throw new Exception('Pendaftaran gagal, silahkan ulangi.');
+						}
+	
+						$mhs = new Mhs_orm;
+						$id_mahasiswa = $return_id_user;
+
+						while(strlen($id_mahasiswa) < JML_DIGIT_ID_MHS){
+							if(strlen($id_mahasiswa) == 9){
+								$id_mahasiswa = PREFIX_ID_MHS . $id_mahasiswa ;
+							}else{
+								$id_mahasiswa = '0' . $id_mahasiswa ;
+							}
+						}
+
+						$mhs->id_mahasiswa = $id_mahasiswa;
+						$mhs->nim = $username;
+						$mhs->nama = $this->input->post('full_name');
+						$mhs->nik = $this->input->post('nik');
+						$mhs->tmp_lahir = $this->input->post('tmp_lahir');
+						$mhs->tgl_lahir = $this->input->post('tgl_lahir');
+						$mhs->email = $this->input->post('email');
+						$mhs->jenis_kelamin = $this->input->post('jenis_kelamin');
+						$mhs->kota_asal = $this->input->post('kota_asal');
+						$mhs->save();
+						
+						commit_db_trx();
+
+						$this->session->set_flashdata('success_registrasi_msg', 'Pendaftaran berhasil, silahkan cek email untuk aktivasi');
+						redirect('auth/registrasi', 'refresh');
+	
+					} catch (Exception $e) {
+						rollback_db_trx();
+						// $this->session->set_flashdata('error_registrasi_msg', '<li>' . $e->getMessage();  . '</li>');
+						// redirect('auth/registrasi', 'refresh');
+						$data['error_register_user'] = $e->getMessage(); 
+					}
+				}
+
+
 			} else {
-				$errors = $resp->getErrorCodes();
-				vdebug($errors);
+				// $errors = $resp->getErrorCodes();
+				$this->session->set_flashdata('error_registrasi_msg', 'Oops, maaf ulangi isian anda.');
+				redirect('auth/registrasi', 'refresh');
 			}
 
 		}
-		view('auth/registrasi');
+		view('auth/registrasi', $data);
 	}
 
 	public function resend_password()
@@ -464,31 +579,30 @@ class Auth extends CI_Controller
 				$this->session->set_flashdata('error_resend_password_msg', 'Oops, isian anda salah.');
 				redirect('auth/resend_password', 'refresh');
 			}
+
+			$identity = $this->ion_auth->where('email', $this->input->post('identity'))->users()->row();
+
+			if (empty($identity))
+			{
+				$this->session->set_flashdata('error_resend_password_msg', 'User dengan email tsb tidak ditemukan.');
+				redirect('auth/resend_password', 'refresh');
+			}
+
+			// run the forgotten password method to email an activation code to the user
+			$forgotten = $this->ion_auth->forgotten_password($identity->{$this->config->item('identity', 'ion_auth')});
+
+			if ($forgotten)
+			{
+				// if there were no errors
+				$this->session->set_flashdata('success_resend_password_msg', 'Password baru telah dikirim ke email anda');
+				redirect('auth/resend_password', 'refresh');
+			}
 			else
 			{
-				$identity = $this->ion_auth->where('email', $this->input->post('identity'))->users()->row();
-
-				if (empty($identity))
-				{
-					$this->session->set_flashdata('error_resend_password_msg', 'User dengan email tsb tidak ditemukan.');
-					redirect('auth/resend_password', 'refresh');
-				}
-
-				// run the forgotten password method to email an activation code to the user
-				$forgotten = $this->ion_auth->forgotten_password($identity->{$this->config->item('identity', 'ion_auth')});
-
-				if ($forgotten)
-				{
-					// if there were no errors
-					$this->session->set_flashdata('success_resend_password_msg', 'Password baru telah dikirim ke email anda');
-					redirect('auth/resend_password', 'refresh');
-				}
-				else
-				{
-					$this->session->set_flashdata('error_resend_password_msg', 'Terjadi kesalahan saat memproses.');
-					redirect('auth/resend_password', 'refresh');
-				}
+				$this->session->set_flashdata('error_resend_password_msg', 'Terjadi kesalahan saat memproses.');
+				redirect('auth/resend_password', 'refresh');
 			}
+			
 		}
 
 		view('auth/resend_password');
@@ -518,34 +632,30 @@ class Auth extends CI_Controller
 				$this->session->set_flashdata('error_set_password_msg', 'Isian password anda salah');
 				redirect("auth/set_password/" . $code, 'refresh');
 			}
+
+			$identity = $user->{$this->config->item('identity', 'ion_auth')};
+
+			if ($user->id != $this->input->post('user_id'))
+			{
+
+				// something fishy might be up
+				$this->session->set_flashdata('error_resend_password_msg', 'Kesalahan token, silahkan ulangi');
+				redirect("auth/resend_password", 'refresh');
+			}
+		
+			// finally change the password
+			$change = $this->ion_auth->reset_password($identity, $this->input->post('new'));
+
+			if ($change)
+			{
+				// if the password was successfully changed
+				$this->session->set_flashdata('success_resend_password_msg', 'Password berhasil direset, silahkan login kembali');
+				redirect("login", 'refresh');
+			}
 			else
 			{
-				$identity = $user->{$this->config->item('identity', 'ion_auth')};
-	
-				if ($user->id != $this->input->post('user_id'))
-				{
-	
-					// something fishy might be up
-					$this->session->set_flashdata('error_resend_password_msg', 'Kesalahan token, silahkan ulangi');
-					redirect("auth/resend_password", 'refresh');
-				}
-				else
-				{
-					// finally change the password
-					$change = $this->ion_auth->reset_password($identity, $this->input->post('new'));
-	
-					if ($change)
-					{
-						// if the password was successfully changed
-						$this->session->set_flashdata('success_resend_password_msg', 'Password berhasil direset, silahkan login kembali');
-						redirect("login", 'refresh');
-					}
-					else
-					{
-						$this->session->set_flashdata('error_resend_password_msg', 'Terjadi kesalahan saat reset password');
-						redirect('auth/resend_password/', 'refresh');
-					}
-				}
+				$this->session->set_flashdata('error_resend_password_msg', 'Terjadi kesalahan saat reset password');
+				redirect('auth/resend_password/', 'refresh');
 			}
 		}
 		

@@ -68,10 +68,6 @@
                         @if(flash_data('success_resend_password_msg'))
                         <div class="alert bg-success"><i class="fa fa-check-circle"></i> {{ flash_data('success_resend_password_msg') }}</div>
                         @endif
-
-                        @if(flash_data('error_activation_msg'))
-                        <div class="alert bg-warning">{{ flash_data('error_activation_msg') }}</div>
-                        @endif
                         <?= form_open("auth/resend_password", ['id'=>'form','class'=>'form-horizontal','novalidate'=>'','method'=>'POST']);?>
                             <fieldset class="form-group position-relative has-icon-left">
                                 <div class="form-control-position" style="line-height: 2.8rem;">

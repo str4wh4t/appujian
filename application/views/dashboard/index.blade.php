@@ -247,7 +247,10 @@
             <div class="col-md-4">
                 <div class="card">
                     <div class="card-body ">
-                <img id="img_profile"  style="height: 150px; width: 120px;" src="{{ $mahasiswa->foto }}" />
+                        <?php 
+                            $foto = empty($mahasiswa->foto)? asset('assets/imgs/no_profile.jpg') : $mahasiswa->foto ;
+                        ?>
+                <img id="img_profile"  style="height: 150px; width: 120px;" src="{{ $foto }}" />
                     </div>
                 </div>
             </div>

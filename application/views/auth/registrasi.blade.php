@@ -242,7 +242,7 @@
                 'kota_asal': {required: true},
                 'tmp_lahir': {required: true},
                 'tgl_lahir': {required: true},
-                'password': {required: true, minlength: {{ PASSWORD_LENGTH }}},
+                'password': {required: true, minlength: {{ PASSWORD_MIN_LENGTH }}, maxlength: {{ PASSWORD_MAX_LENGTH }}},
                 'password_confirm': {required: true, equalTo: "#password"},
             },
             messages: {

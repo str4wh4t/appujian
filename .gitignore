@@ -1,9 +1,8 @@
 /application/cache
 /application/config/database.php
 /application/config/config.php
-/application/config/constants.php
+application/config/constants_depend_app.php
 /vendor
 composer.phar
 /.idea
-application/config/constants.php
 /assets/yarn/node_modules/*

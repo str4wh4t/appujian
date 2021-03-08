@@ -3,14 +3,17 @@
 		<ul class="navigation navigation-main" id="main-menu-navigation" data-menu="menu-navigation">
 			@php
 			$page = segment(1);
+			$method = segment(2);
+			$param1 = segment(3);
 			$master = ["jurusan", "kelas", "matkul", "dosen", "mahasiswa"];
 			$relasi = ["kelasdosen", "jurusanmatkul"];
 			$users = ["users"];
 			@endphp
-			<li class="navigation-header" style="background-color: #ffcb60;text-align: left;">
+
+			{{-- <li class="navigation-header" style="background-color: #ffcb60;text-align: left;">
 				<span data-i18n="nav.category.ui">MAIN MENU</span>
 				<i class="ft-more-horizontal ft-minus" data-toggle="tooltip" data-placement="right" data-original-title="MAIN MENU"></i>
-          	</li>
+          	</li> --}}
 			<li class="{{ $page === 'dashboard' ? "active" : "" }} nav-item">
 				<a href="{{ site_url('dashboard') }}">
 					<i class="icon-home"></i><span class="menu-title" data-i18n="nav.dash.main">Dashboard</span>
@@ -137,18 +140,36 @@
 			@endif
 
 			@if( in_group('mahasiswa') )
-			<li class="{{ $page === 'ujian' ? "active" : "" }} nav-item">
-				<a href="{{ site_url('ujian/list') }}">
-					<i class="fa fa-calendar"></i><span class="menu-title" data-i18n="nav.dash.main">Ujian</span>
-				</a>
-			</li>
+				@if( APP_ID == 'tryout.undip.ac.id' )
+				<li class="{{ $page === 'bundle' ? "active" : "" }} nav-item">
+					<a href="{{ site_url('ujian/latian_soal') }}">
+						<i class="icon-basket-loaded"></i><span class="menu-title" data-i18n="nav.dash.main">Paket</span>
+					</a>
+				</li>
+				<li class="{{ ($page === 'ujian' && $method === 'latian_soal' ) ? "active" : "" }} nav-item">
+					<a href="{{ site_url('ujian/latian_soal') }}">
+						<i class="ft-bar-chart-2"></i><span class="menu-title" data-i18n="nav.dash.main">Latian Soal</span>
+					</a>
+				</li>
+				<li class="{{ ($page === 'ujian' && $method === 'tryout' ) ? "active" : "" }} nav-item">
+					<a href="{{ site_url('ujian/tryout') }}">
+						<i class="ft-edit-3"></i><span class="menu-title" data-i18n="nav.dash.main">Tryout</span>
+					</a>
+				</li>
+				@else
+				<li class="{{ $page === 'ujian' ? "active" : "" }} nav-item">
+					<a href="{{ site_url('ujian/list') }}">
+						<i class="fa fa-calendar"></i><span class="menu-title" data-i18n="nav.dash.main">Ujian</span>
+					</a>
+				</li>
+				@endif
 			@endif
 
 			@if( is_admin() || in_group('dosen') )
-			<li class="navigation-header" style="background-color: #ffcb60;text-align: left;">
+			{{-- <li class="navigation-header" style="background-color: #ffcb60;text-align: left;">
 				<span data-i18n="nav.category.ui">LAPORAN</span>
 				<i class="ft-more-horizontal ft-minus" data-toggle="tooltip" data-placement="right" data-original-title="LAPORAN"></i>
-          	</li>
+          	</li> --}}
 			<li class="{{ $page === 'hasilujian' ? "active" : "" }} nav-item">
 				<a href="{{ site_url('hasilujian') }}">
 					<i class="fa fa-file"></i><span class="menu-title" data-i18n="nav.dash.main">Hasil Ujian</span>
@@ -157,10 +178,10 @@
 			@endif
 
 			@if(is_admin())
-			<li class="navigation-header" style="background-color: #ffcb60;text-align: left;">
+			{{-- <li class="navigation-header" style="background-color: #ffcb60;text-align: left;">
 				<span data-i18n="nav.category.ui">SETTING</span>
 				<i class="ft-more-horizontal ft-minus" data-toggle="tooltip" data-placement="right" data-original-title="ADMINISTRATOR"></i>
-          	</li>
+          	</li> --}}
 			<li class="{{ $page === 'users' ? "active" : "" }} nav-item">
 				<a href="{{ site_url('users') }}">
 					<i class="fa fa-users"></i><span class="menu-title" data-i18n="nav.dash.main">User Manaj.</span>
@@ -174,10 +195,10 @@
 			@endif
 
 			@if( in_group('dosen') || in_group('mahasiswa') )
-			<li class="navigation-header" style="background-color: #ffcb60;text-align: left;">
+			{{-- <li class="navigation-header" style="background-color: #ffcb60;text-align: left;">
 				<span data-i18n="nav.category.ui">SETTING</span>
 				<i class="ft-more-horizontal ft-minus" data-toggle="tooltip" data-placement="right" data-original-title="ADMINISTRATOR"></i>
-          	</li>
+          	</li> --}}
 			<li class="{{ $page === 'users' ? "active" : "" }} nav-item">
 				<a href="{{ site_url('users/edit') }}">
 					<i class="fa fa-cog"></i><span class="menu-title" data-i18n="nav.dash.main">Setting</span>

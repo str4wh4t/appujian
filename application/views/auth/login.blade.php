@@ -74,6 +74,10 @@
                         {{-- INI JIKA BERHASIL RESET PASSWORD --}}
                         <div class="alert bg-success"><i class="ft-check-circle"></i> {{ flash_data('success_activation_msg') }}</div>
                         @endif
+
+                        @if(flash_data('error_activation_msg'))
+                        <div class="alert bg-warning">{{ flash_data('error_activation_msg') }}</div>
+                        @endif
                         <?= form_open("auth/cek_login", ['id'=>'form_login','class'=>'form-horizontal','novalidate'=>'','method'=>'POST']);?>
                             <fieldset class="form-group position-relative has-icon-left">
                                 {!! form_input($identity) !!}

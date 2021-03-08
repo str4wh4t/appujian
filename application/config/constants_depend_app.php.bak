@@ -1,0 +1,13 @@
+<?php
+defined('BASEPATH') OR exit('No direct script access allowed');
+
+defined('APP_ID')      OR define('APP_ID', 'ujian.undip.ac.id');
+defined('EMAIL_ACTIVATION')      OR define('EMAIL_ACTIVATION',  false);
+
+defined('APP_NAME')      OR define('APP_NAME', APP_ID == 'ujian.undip.ac.id' ? 'UNDIP UJIAN ONLINE' : 'UNDIP CAT');
+defined('APP_COLOR_NAV')      OR define('APP_COLOR_NAV', APP_ID == 'ujian.undip.ac.id' ? '#6061b3' : '#7a8ddc'); // #60a5b3
+defined('APP_BG_LOGIN')      OR define('APP_BG_LOGIN', APP_ID == 'ujian.undip.ac.id' ? 'img_big_login' : 'img_big_login_cat');
+defined('APP_FAVICON_APPLE')      OR define('APP_FAVICON_APPLE', APP_ID == 'ujian.undip.ac.id' ? 'apple-touch-icon' : 'apple-touch-icon-cat');
+defined('APP_FAVICON')      OR define('APP_FAVICON', APP_ID == 'ujian.undip.ac.id' ? 'favicon' : 'favicon_cat');
+defined('APP_ICON')      OR define('APP_ICON', APP_ID == 'ujian.undip.ac.id' ? 'android-chrome-512x512' : 'android-chrome-512x512-cat');
+defined('ADMIN_EMAIL')      OR define('ADMIN_EMAIL', 'cat@undip.ac.id');

@@ -645,7 +645,7 @@ class Soal extends MY_Controller
 			$data = [];
 			for ($i = 1; $i < count($sheetData); $i++) {
 
-				if (count($sheetData[$i]) < 12) {
+				if (count($sheetData[$i]) < JML_KOLOM_EXCEL_IMPOR_SOAL) {
 					unlink($file);
 					show_error('Isian file tidak sesuai', 500, 'Perhatian');
 				}
@@ -691,24 +691,29 @@ class Soal extends MY_Controller
 					$jawaban = '!! ERROR !!';
 				}
 
-				$bobot_soal_id = $sheetData[$i][8];
+				$penjelasan = $sheetData[$i][8];
+				// if (empty($penjelasan)) {
+				// 	$penjelasan = '!! ERROR !!';
+				// }
+
+				$bobot_soal_id = $sheetData[$i][9];
 				$bobot_soal = Bobot_soal_orm::find($bobot_soal_id);
 				if ($bobot_soal == null) {
 					$bobot_soal_id = '!! ERROR !!';
 				}
 
 
-				$gel = strval($sheetData[$i][9]);
+				$gel = strval($sheetData[$i][10]);
 				if (!ctype_digit($gel)) {
 					$gel = '!! ERROR !!';
 				}
 
-				$smt = strval($sheetData[$i][10]);
+				$smt = strval($sheetData[$i][11]);
 				if (!ctype_digit($smt)) {
 					$smt = '!! ERROR !!';
 				}
 
-				$tahun = $sheetData[$i][11];
+				$tahun = $sheetData[$i][12];
 				if (strlen($tahun) != 4 || !ctype_digit($tahun)) {
 					$tahun = '!! ERROR !!';
 				}
@@ -723,6 +728,7 @@ class Soal extends MY_Controller
 					'opsi_d' => $opsi_d,
 					'opsi_e' => $opsi_e,
 					'jawaban' => $jawaban,
+					'penjelasan' => $penjelasan,
 					'bobot_soal_id' => $bobot_soal_id,
 					'bobot_soal' => $bobot_soal,
 					'gel' => $gel,
@@ -809,6 +815,13 @@ class Soal extends MY_Controller
 					break;
 				}
 
+				$penjelasan = empty($d->penjelasan) ? null : $d->penjelasan;
+				// if (empty($penjelasan)) {
+				// 	$allow = FALSE;
+				// 	$msg   = 'Penjelasan salah, penjelasan : ' . $penjelasan;
+				// 	break;
+				// }
+
 				$bobot_soal_id = $d->bobot_soal_id;
 				if (Bobot_soal_orm::find($bobot_soal_id) == NULL) {
 					$allow = FALSE;
@@ -846,12 +859,12 @@ class Soal extends MY_Controller
 				$soal->opsi_d        = '<p>' . $opsi_d . '</p>';
 				$soal->opsi_e        = '<p>' . $opsi_e . '</p>';
 				$soal->jawaban       = $jawaban;
+				$soal->penjelasan       = $penjelasan;
 				$soal->bobot_soal_id = $bobot_soal_id;
 				$soal->gel = $gel;
 				$soal->smt = $smt;
 				$soal->tahun = $tahun;
-				$soal->created_by    = $this->ion_auth->user()
-					->row()->username;
+				$soal->created_by    = $this->ion_auth->user()->row()->username;
 				$soal->save();
 			}
 
@@ -867,6 +880,7 @@ class Soal extends MY_Controller
 				$this->session->set_flashdata('message_rootpage', $message_rootpage);
 				redirect('soal/import');
 			}
+
 		} catch (Exception $e) {
 			rollback_db_trx();
 			show_error($e->getMessage(), 500, 'Perhatian');

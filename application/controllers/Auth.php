@@ -291,6 +291,7 @@ class Auth extends CI_Controller
 						'full_name'  => $full_name,
 						'phone'		=> $this->input->post('telp'),
 						'no_billkey'		=> $password, // BILLKEY DISAMAKAN DENGN PASSWORD
+						'membership_id'	=> MEMBERSHIP_ID_DEFAULT, // OTOMATIS DI ASSIGN SBG MEMBERSHIP GRATIS
 					];
 					$group           = [MHS_GROUP_ID]; // Sets user to mhs.
 	

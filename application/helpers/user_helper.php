@@ -2,6 +2,8 @@
 defined('BASEPATH') OR exit('No direct script access allowed');
 
 use Orm\Tahun;
+use Orm\Users_orm;
+use Orm\Membership_orm;
 
 function get_nama_lengkap_user($user = null){
 	if(null == $user){
@@ -76,4 +78,43 @@ function get_selected_smt(){
 
 function get_selected_tahun(){
 	return Tahun::get_tahun_aktif();
+}
+
+
+function get_membership_text(int $membership_id): string{
+	$membership = Membership_orm::findOrFail($membership_id);
+	return $membership->name;
+}
+
+function  get_membership_star(int $membership_id, string $size = 'medium'): string{
+	
+	// $return = '';
+	// switch($membership_id){
+	// 	case 2:
+	// 		$stars = '';
+	// 		foreach(){
+	// 			$stars .= '<i class="fa fa-star font-'. $size .'-2"></i>';
+	// 		}
+	// 		$return = $stars;
+	// 		break;
+	// 	case 3:
+	// 		$return = '<i class="fa fa-star font-'. $size .'-2"></i><i class="fa fa-star font-'. $size .'-2"></i>';
+	// 		break;
+	// 	default:
+	// 		$return = '';
+	// 		break;
+	// }
+
+	$stars = '';
+	for($i = 2; $i <= $membership_id; $i++ ){
+		$stars .= '<i class="fa fa-star font-'. $size .'-2"></i>';
+	}
+
+	return $stars;
+}
+
+function  get_membership_color(int $membership_id): string{
+	
+	$membership = Membership_orm::findOrFail($membership_id);
+	return $membership->text_color;
 }

@@ -4,6 +4,7 @@
 {{--<link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/vendors/css/forms/icheck/custom.css') }}">--}}
 {{--<link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/vendors/css/extensions/sweetalert.css') }}">--}}
 {{--<link rel="stylesheet" type="text/css" href="{{ asset('assets/yarn/node_modules/sweetalert2/dist/sweetalert2.min.css') }}">--}}
+<link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/vendors/css/extensions/toastr.css') }}">
 @stack('page_vendor_level_css')
 <!-- END VENDOR CSS-->
 
@@ -63,6 +64,10 @@
 
     .header-navbar.navbar-brand-center .navbar-header {
         left: 20%;
+    }
+
+    footer.footer-dark {
+        background: #fff;
     }
 
 </style>

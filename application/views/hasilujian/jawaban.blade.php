@@ -5,14 +5,11 @@ use Illuminate\Database\Eloquent\Builder;
 
 @push('page_level_css')
 <!-- BEGIN PAGE LEVEL JS-->
-<link rel="stylesheet" type="text/css"
-	href="{{ asset('assets/template/robust/app-assets/vendors/css/extensions/toastr.css') }}">
 <!-- END PAGE LEVEL JS-->
 @endpush
 
 @push('page_vendor_level_js')
 <!-- BEGIN PAGE VENDOR JS-->
-<script src="{{ asset('assets/template/robust/app-assets/vendors/js/extensions/toastr.min.js') }}"></script>
 <!-- END PAGE VENDOR -->
 @endpush
 

@@ -141,8 +141,8 @@
 
 			@if( in_group('mahasiswa') )
 				@if( APP_ID == 'tryout.undip.ac.id' )
-				<li class="{{ $page === 'bundle' ? "active" : "" }} nav-item">
-					<a href="{{ site_url('ujian/latian_soal') }}">
+				<li class="{{ $page === 'paket' ? "active" : "" }} nav-item">
+					<a href="{{ site_url('paket/list') }}">
 						<i class="icon-basket-loaded"></i><span class="menu-title" data-i18n="nav.dash.main">Paket</span>
 					</a>
 				</li>

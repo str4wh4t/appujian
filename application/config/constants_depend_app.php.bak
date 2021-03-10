@@ -11,3 +11,4 @@ defined('APP_FAVICON_APPLE')      OR define('APP_FAVICON_APPLE', APP_ID == 'ujia
 defined('APP_FAVICON')      OR define('APP_FAVICON', APP_ID == 'ujian.undip.ac.id' ? 'favicon' : 'favicon_cat');
 defined('APP_ICON')      OR define('APP_ICON', APP_ID == 'ujian.undip.ac.id' ? 'android-chrome-512x512' : 'android-chrome-512x512-cat');
 defined('ADMIN_EMAIL')      OR define('ADMIN_EMAIL', 'cat@undip.ac.id');
+defined('MEMBERSHIP_ID_DEFAULT')      OR define('MEMBERSHIP_ID_DEFAULT', 0);

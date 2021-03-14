@@ -52,9 +52,9 @@
         <div class="content-body">
 <section class="flexbox-container">
     <div class="col-12 d-flex align-items-center justify-content-center">
-        <div class="col-md-4 col-10 box-shadow-2 p-0">
-            <div class="card border-grey border-lighten-3 px-1 py-1 m-0">
-                <div class="card-header border-0">
+        <div class="col-md-4 col-sm-12 p-0">
+            <div class="card border-grey border-lighten-3">
+                <div class="card-header border-0 mt-1">
                     <h6 class="card-subtitle text-muted text-center font-small-3 font-large-1">
                         <span>Lupa Password</span>
                     </h6>

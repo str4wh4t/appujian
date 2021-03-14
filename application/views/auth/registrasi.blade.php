@@ -60,9 +60,9 @@
         <div class="content-body">
 <section class="flexbox-container">
     <div class="col-12 d-flex align-items-center justify-content-center">
-        <div class="col-md-6 col-11 box-shadow-2 p-0">
-            <div class="card border-grey border-lighten-3 px-1 py-1 m-0">
-                <div class="card-header border-0">
+        <div class="col-md-6 col-sm-12 p-0">
+            <div class="card border-grey border-lighten-3">
+                <div class="card-header border-0 mt-1">
                     <h6 class="card-subtitle text-muted text-center font-small-3 font-large-1">
                         <span>Registrasi</span>
                     </h6>
@@ -240,7 +240,7 @@
             ignore: [],
             rules: {
                 'full_name': {required: true},
-                'nik': {required: true, minlength: {{ NIK_LENGTH }}, digits: true},
+                'nik': {required: true, minlength: {{ NIK_LENGTH }}, maxlength: {{ NIK_LENGTH }}, digits: true},
                 'email': {required: true, valid_email: true},
                 'telp': {required: true, digits: true, minlength: 10, valid_no_telp: true},
                 'jenis_kelamin': {required: true},

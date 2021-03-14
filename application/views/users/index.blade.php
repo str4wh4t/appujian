@@ -349,7 +349,7 @@ $(document).on('click','#btn_simpan_penyusun_soal',function(){
             <div class="modal-body">
                 <form class="form">
                     <div class="form-body">
-                        <h4 class="form-section"><i class="fa fa-eye"></i> Masukan Pengawas</h4>
+                        <h4 class="form-section"><i class="fa fa-eye"></i> Identitas</h4>
                         <div class="row">
                             <div class="col-md-12">
                                 <div class="form-group">
@@ -420,7 +420,7 @@ $(document).on('click','#btn_simpan_penyusun_soal',function(){
             <div class="modal-body">
                 <form id="form_tambah_penyusun_soal" class="form">
                     <div class="form-body">
-                        <h4 class="form-section"><i class="fa fa-eye"></i> Masukan Penyusun Soal</h4>
+                        <h4 class="form-section"><i class="fa fa-eye"></i> Identitas</h4>
                         <div class="row">
                             <div class="col-md-12">
                                 <div class="form-group">

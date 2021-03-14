@@ -166,11 +166,6 @@ class Auth extends CI_Controller
 		{
 			// redirect them to the auth page
 			// $this->session->set_flashdata('message', $this->ion_auth->messages());
-			
-			/** CHANGE BILLKEY TO DEFAULT PASSSWORD FOR RESET, YAITU DIISIKAN USERNAME */
-			$user = Users_orm::findOrFail($id);
-			$user->no_billkey = $user->username;
-			$user->save();
 
 			$this->session->set_flashdata('success_activation_msg', 'Aktifasi berhasil, silahkan login');
 			redirect("auth", 'refresh');
@@ -290,7 +285,7 @@ class Auth extends CI_Controller
 						'last_name'  => $last_name,
 						'full_name'  => $full_name,
 						'phone'		=> $this->input->post('telp'),
-						'no_billkey'		=> $password, // BILLKEY DISAMAKAN DENGN PASSWORD
+						'no_billkey'		=> $username, // BILLKEY DISAMAKAN DENGN USERNAME
 						'membership_id'	=> MEMBERSHIP_ID_DEFAULT, // OTOMATIS DI ASSIGN SBG MEMBERSHIP GRATIS
 					];
 					$group           = [MHS_GROUP_ID]; // Sets user to mhs.

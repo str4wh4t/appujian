@@ -230,6 +230,11 @@
             return value.substring(0,2) == '08';
         }, 'Please enter a valid no telp.');
 
+        jQuery.validator.addMethod("valid_date", function(value, element) {
+            // allow any non-whitespace characters as the host part
+            return this.optional( element ) || /{{ REGEX_DATE_VALID }}/.test( value );
+        }, 'Please enter a valid date');
+
         let validator = $("#form").validate({
             debug: false,
             ignore: [],
@@ -241,7 +246,7 @@
                 'jenis_kelamin': {required: true},
                 'kota_asal': {required: true},
                 'tmp_lahir': {required: true},
-                'tgl_lahir': {required: true},
+                'tgl_lahir': {required: true, valid_date: true},
                 'password': {required: true, minlength: {{ PASSWORD_MIN_LENGTH }}, maxlength: {{ PASSWORD_MAX_LENGTH }}},
                 'password_confirm': {required: true, equalTo: "#password"},
             },

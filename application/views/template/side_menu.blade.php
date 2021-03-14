@@ -123,7 +123,7 @@
 			</li>
 			@endif
 
-			@if(in_group('dosen'))
+			@if(in_group('dosen') || in_group('penyusun_soal'))
 			<li class="{{ $page === 'soal' ? "active" : "" }} nav-item">
 				<a href="{{ site_url('soal') }}">
 					<i class="fa fa-file-text-o"></i><span class="menu-title" data-i18n="nav.dash.main">Soal Manaj.</span>

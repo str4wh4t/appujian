@@ -12,68 +12,69 @@ class Dashboard extends CI_Controller {
 		$this->user = $this->ion_auth->user()->row();
 	}
 
-	private function _admin_box()
-	{
-		$box = [
-			[
-				'box' 		=> 'olive',
-				'total' 	=> $this->dashboard->total('matkul'),
-				'title'		=> 'Materi Ujian',
-				'link'		=> 'matkul',
-				'icon'		=> 'graduation-cap'
-			],
-			[
-				'box' 		=> 'olive',
-				'total' 	=> $this->dashboard->total('dosen'),
-				'title'		=> 'Dosen',
-				'link'		=> 'dosen',
-				'icon'		=> 'user-secret'
-			],
-			[
-				'box' 		=> 'olive',
-				'total' 	=> $this->dashboard->total('topik'),
-				'title'		=> 'Topik',
-				'link'		=> 'topik',
-				'icon'		=> 'building-o'
-			],
-			[
-				'box' 		=> 'olive',
-				'total' 	=> $this->dashboard->total('mahasiswa'),
-				'title'		=> 'Peserta Ujian',
-				'link'		=> 'mahasiswa',
-				'icon'		=> 'user'
-			],
-			[
-				'box' 		=> 'olive',
-				'total' 	=> $this->dashboard->total('tb_soal'),
-				'title'		=> 'Soal',
-				'link'		=> 'soal',
-				'icon'		=> 'bookmark'
-			],
-			[
-				'box' 		=> 'olive',
-				'total' 	=> $this->dashboard->total('m_ujian'),
-				'title'		=> 'Ujian',
-				'link'		=> 'ujian',
-				'icon'		=> 'book'
-			],
-		];
-		$info_box = json_decode(json_encode($box), FALSE);
-		return $info_box;
-	}
-
 	public function index()
 	{
 		$user = $this->user;
+		$user_groups = $this->ion_auth->get_users_groups($user->id)->result();
 		$data = [
-			'user' 		=> $user,
-			'judul'		=> 'Dashboard',
-			'subjudul'	=> 'Data Aplikasi',
+			'user' 			=> $user,
+			'user_groups'	=> $user_groups,
+			'judul'			=> 'Dashboard',
+			'subjudul'		=> 'Data Aplikasi',
 		];
 
 		if ( $this->ion_auth->is_admin() ) {
-			$data['info_box'] = $this->_admin_box();
+
+			$box = [
+				[
+					'box' 		=> 'olive',
+					'total' 	=> $this->dashboard->total('matkul'),
+					'title'		=> 'Materi Ujian',
+					'link'		=> 'matkul',
+					'icon'		=> 'graduation-cap'
+				],
+				[
+					'box' 		=> 'olive',
+					'total' 	=> $this->dashboard->total('dosen'),
+					'title'		=> 'Dosen',
+					'link'		=> 'dosen',
+					'icon'		=> 'user-secret'
+				],
+				[
+					'box' 		=> 'olive',
+					'total' 	=> $this->dashboard->total('topik'),
+					'title'		=> 'Topik',
+					'link'		=> 'topik',
+					'icon'		=> 'building-o'
+				],
+				[
+					'box' 		=> 'olive',
+					'total' 	=> $this->dashboard->total('mahasiswa'),
+					'title'		=> 'Peserta Ujian',
+					'link'		=> 'mahasiswa',
+					'icon'		=> 'user'
+				],
+				[
+					'box' 		=> 'olive',
+					'total' 	=> $this->dashboard->total('tb_soal'),
+					'title'		=> 'Soal',
+					'link'		=> 'soal',
+					'icon'		=> 'bookmark'
+				],
+				[
+					'box' 		=> 'olive',
+					'total' 	=> $this->dashboard->total('m_ujian'),
+					'title'		=> 'Ujian',
+					'link'		=> 'ujian',
+					'icon'		=> 'book'
+				],
+			];
+			$info_box = json_decode(json_encode($box), FALSE);
+
+			$data['info_box'] = $info_box;
 		} elseif ( $this->ion_auth->in_group('pengawas') ) {
+			$data['user'] = $user;
+		} elseif ( $this->ion_auth->in_group('penyusun_soal') ) {
 			$data['user'] = $user;
 		} elseif ( $this->ion_auth->in_group('dosen') ) {
 //			$matkul = ['matkul' => 'dosen.matkul_id=matkul.id_matkul'];

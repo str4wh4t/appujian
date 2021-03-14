@@ -126,6 +126,25 @@ $(document).ready(function() {
         let url = $(this).prop("checked") === true ? src : src + "/" + user_id;
         table.ajax.url(url).load();
     });
+
+
+    $('.datetimepicker').datetimepicker({
+        format: 'YYYY-MM-DD',
+        // Your Icons
+        // as Bootstrap 4 is not using Glyphicons anymore
+        icons: {
+            time: 'fa fa-clock-o',
+            date: 'fa fa-calendar',
+            up: 'fa fa-chevron-up',
+            down: 'fa fa-chevron-down',
+            previous: 'fa fa-chevron-left',
+            next: 'fa fa-chevron-right',
+            today: 'fa fa-check',
+            clear: 'fa fa-trash',
+            close: 'fa fa-times'
+        }
+    });
+    
 });
 
 function hapus(id) {

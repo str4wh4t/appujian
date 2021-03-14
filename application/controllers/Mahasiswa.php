@@ -145,19 +145,21 @@ class Mahasiswa extends MY_Controller
 													'check_valid_date' => 'Kolom tanggal salah',
 												]
 										);
-		$this->form_validation->set_rules('no_billkey', 'No Billkey', 'required|trim|max_length[' . NO_BILLKEY_LENGTH . ']');
-		$this->form_validation->set_rules('foto', 'Foto', ['required', 'trim', ['check_valid_img_url', function ($foto) {
+		$this->form_validation->set_rules('kota_asal', 'Kota Asal', 'required|trim|min_length[3]|max_length[250]');
+		$this->form_validation->set_rules('no_billkey', 'No Billkey', 'trim|max_length[' . NO_BILLKEY_LENGTH . ']');
+		// $this->form_validation->set_rules('foto', 'Foto', ['required', 'trim', ['check_valid_img_url', function ($foto) {
+		$this->form_validation->set_rules('foto', 'Foto', ['trim', ['check_valid_img_url', function ($foto) {
 			if (!empty($foto)) {
 				$size = @getimagesize($foto);
 				if ($size) {
 					if (strtolower(substr($size['mime'], 0, 5)) == 'image') {
 						return TRUE;
 					} else {
-						$this->form_validation->set_message('check_valid_img_url', 'Kolom foto salah');
+						$this->form_validation->set_message('check_valid_img_url', 'Tipe file foto tidak valid');
 						return FALSE;
 					}
 				} else {
-					$this->form_validation->set_message('check_valid_img_url', 'Kolom foto salah - size');
+					$this->form_validation->set_message('check_valid_img_url', 'URL Foto tidak valid');
 					return FALSE;
 				}
 			}
@@ -185,6 +187,7 @@ class Mahasiswa extends MY_Controller
 					'nik' => form_error('nik'),
 					'tmp_lahir' => form_error('tmp_lahir'),
 					'tgl_lahir' => form_error('tgl_lahir'),
+					'kota_asal' => form_error('kota_asal'),
 					'email' => form_error('email'),
 					'foto' => form_error('foto'),
 					'jenis_kelamin' => form_error('jenis_kelamin'),
@@ -203,6 +206,7 @@ class Mahasiswa extends MY_Controller
 				'nik' 			=> $this->input->post('nik', true),
 				'tmp_lahir' 	=> $this->input->post('tmp_lahir', true),
 				'tgl_lahir' 	=> $this->input->post('tgl_lahir', true),
+				'kota_asal' 	=> $this->input->post('kota_asal', true),
 				'nama' 			=> $this->input->post('nama', true),
 				'foto' 			=> $this->input->post('foto', true),
 				'jenis_kelamin' => $this->input->post('jenis_kelamin', true),
@@ -222,6 +226,7 @@ class Mahasiswa extends MY_Controller
 					$mhs->nik = $input['nik'];
 					$mhs->tmp_lahir = $input['tmp_lahir'];
 					$mhs->tgl_lahir = $input['tgl_lahir'];
+					$mhs->kota_asal = $input['kota_asal'];
 					$mhs->email = $input['email'];
 					$mhs->foto = $input['foto'];
 					$mhs->jenis_kelamin = $input['jenis_kelamin'];
@@ -283,10 +288,11 @@ class Mahasiswa extends MY_Controller
 					$mhs->nik = $input['nik'];
 					$mhs->tmp_lahir = $input['tmp_lahir'];
 					$mhs->tgl_lahir = $input['tgl_lahir'];
+					$mhs->kota_asal = $input['kota_asal'];
 					$mhs->email = $input['email'];
-					$mhs->foto = $input['foto'];
+					$mhs->foto = empty($input['foto']) ? null : $input['foto'];
 					$mhs->jenis_kelamin = $input['jenis_kelamin'];
-					$mhs->no_billkey = $input['no_billkey'];
+					$mhs->no_billkey = empty($input['no_billkey']) ? null : $input['no_billkey'];
 					$mhs->save();
 
 					$mhs_matkul =  Mhs_matkul_orm::where('mahasiswa_id', $id_mahasiswa)->get();
@@ -338,7 +344,10 @@ class Mahasiswa extends MY_Controller
 						$user->last_name  = $last_name;
 						$user->full_name  = $mhs->nama;
 						$user->email      = $mhs->email;
-						$user->no_billkey = $mhs->no_billkey;
+						if(!empty($mhs->no_billkey)){
+							$user->no_billkey = $mhs->no_billkey;
+						}
+
 						$user->save();
 					}
 

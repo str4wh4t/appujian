@@ -299,7 +299,10 @@ class Users extends MY_Controller {
 		}
 	}
 	
-	protected function _save_pengawas(){
+	protected function _save_pengawas()
+	{
+
+		$this->_akses_admin();
 		
 		$nip = $this->input->post('nip', true);
 		
@@ -327,7 +330,7 @@ class Users extends MY_Controller {
 				$last_name  = end($nama);
 				$full_name  = $record_nama;
 				
-				$username        = $record->nip;
+				$username        = $record->nip; // JADI TIDAK AKAN DOBEL INSERT
 				$password        = date("dmY", strtotime($record->tgl_lahir));
 				$email           = $record->email;
 				$tgl_lahir        = date("dmY", strtotime($record->tgl_lahir));
@@ -340,6 +343,7 @@ class Users extends MY_Controller {
 				
 				$group           = [ PENGAWAS_GROUP_ID ]; // Sets user to pengawas
 				$msg = null;
+
 				try {
 					begin_db_trx();
 					$status = $this->ion_auth->register($username, $password, $email, $additional_data, $group);
@@ -349,6 +353,7 @@ class Users extends MY_Controller {
 					$msg = $e->getMessage();
 					$status = false ;
 				}
+
 				$this->_json(['status' => $status, 'msg' => $msg]);
 			}else{
 				show_error('Terjadi kesalahan, status : ' . $response->getStatusCode(), 500, 'Perhatian');
@@ -357,6 +362,81 @@ class Users extends MY_Controller {
 			show_error('Terjadi kesalahan, ' . $e->getMessage(), 500, 'Perhatian');
 		}
 		
+		
+	}
+
+	protected function _save_penyusun_soal()
+	{
+		$this->_akses_admin();
+
+		$nm_lengkap = $this->input->post('nm_lengkap', true);
+		$tgl_lahir = $this->input->post('tgl_lahir', true);
+		$email = $this->input->post('email', true);
+		$email = strtolower($email);
+
+		$this->form_validation->set_rules('nm_lengkap', 'Nama', 'required');
+		$this->form_validation->set_rules('email', 'Email', 'required|valid_email|is_unique[users.email]');
+		$this->form_validation->set_rules(
+					'tgl_lahir', 
+					'Tgl Lahir', 
+					[
+						'required', 
+						'trim', 
+						[
+							'check_valid_date', 
+							function ($tgl_lahir) {
+								if (!empty($tgl_lahir)) {
+									$d = DateTime::createFromFormat('Y-m-d', $tgl_lahir);
+									return $d && $d->format('Y-m-d') == $tgl_lahir;
+								}
+							}
+						]
+						],
+						[
+							'check_valid_date' => 'Kolom tanggal salah',
+						]
+				);
+		
+		$status = true ;
+		$msg = null;
+
+		if ($this->form_validation->run() === FALSE)
+		{
+			$status = false;
+			$msg = $this->form_validation->error_string();
+		}else{
+			
+			$nama       = explode(' ', $nm_lengkap, 2);
+			$first_name = $nama[0];
+			$last_name  = end($nama);
+			$full_name  = $nm_lengkap;
+			
+			$username        = date('ymdHis'); // USERNAME DIGENERATE OTOMATIS
+			$password        = date("dmY", strtotime($tgl_lahir));
+			$email           = $email;
+			$tgl_lahir        = date("dmY", strtotime($tgl_lahir));
+			$additional_data = [
+				'first_name' => $first_name,
+				'last_name'  => $last_name,
+				'full_name'  => $full_name,
+				'tgl_lahir'  => $tgl_lahir,
+			];
+			
+			$group           = [ PENYUSUN_SOAL_GROUP_ID ]; // Sets user to penyusun soal
+			
+			try {
+				begin_db_trx();
+				$status = $this->ion_auth->register($username, $password, $email, $additional_data, $group);
+				commit_db_trx();
+			}catch(Exception $e){
+				rollback_db_trx();
+				$msg = $e->getMessage();
+				$status = false ;
+			}
+
+		}
+
+		$this->_json(['status' => $status, 'msg' => $msg]);
 		
 	}
 }

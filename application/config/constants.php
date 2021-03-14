@@ -90,6 +90,8 @@ include 'constants_depend_app.php';
 defined('DOSEN_GROUP_ID')      OR define('DOSEN_GROUP_ID', 2);
 defined('MHS_GROUP_ID')      OR define('MHS_GROUP_ID', 3);
 defined('PENGAWAS_GROUP_ID')      OR define('PENGAWAS_GROUP_ID', 4);
+defined('PENYUSUN_SOAL_GROUP_ID')      OR define('PENYUSUN_SOAL_GROUP_ID', 5);
+
 defined('MHS_ID_LENGTH')      OR define('MHS_ID_LENGTH', 12);
 defined('NIK_LENGTH')      OR define('NIK_LENGTH', 16);
 defined('NO_BILLKEY_LENGTH')      OR define('NO_BILLKEY_LENGTH', 20);
@@ -103,10 +105,12 @@ defined('FLAG_AKTIF')      OR define('FLAG_AKTIF', 1);
 defined('JML_SOAL_TUTORIAL')      OR define('JML_SOAL_TUTORIAL', 3);
 defined('JML_WAKTU_TUTORIAL')      OR define('JML_WAKTU_TUTORIAL', 5);
 
-defined('RECAPTCHA_V3_SITE_KEY')      OR define('RECAPTCHA_V3_SITE_KEY', '6Lfr6WsaAAAAANagzqQC1oyxtj2aWwnK5VnCa6Nm');
-defined('RECAPTCHA_V3_SECRET_KEY')      OR define('RECAPTCHA_V3_SECRET_KEY', '6Lfr6WsaAAAAAILW941zZHzNZ3ZhAZ76fLTRs2Ie');
-
 defined('PREFIX_ID_MHS')      OR define('PREFIX_ID_MHS', 3);
 defined('JML_DIGIT_ID_MHS')      OR define('JML_DIGIT_ID_MHS', 10);
 defined('PASSWORD_MIN_LENGTH')      OR define('PASSWORD_MIN_LENGTH', 8);
 defined('PASSWORD_MAX_LENGTH')      OR define('PASSWORD_MAX_LENGTH', 50);
+
+defined('FOTO_DEFAULT_URL')      OR define('FOTO_DEFAULT_URL', 'assets/imgs/no_profile.jpg');
+
+$regex_date = '^\d{4}\-(0[1-9]|1[012])\-(0[1-9]|[12][0-9]|3[01])$';
+defined('REGEX_DATE_VALID')      OR define('REGEX_DATE_VALID', $regex_date ); // YYYY-MM-DD

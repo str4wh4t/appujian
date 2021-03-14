@@ -75,7 +75,8 @@
                                             <li>Silahkan import data dari excel, menggunakan format yang sudah
                                                 disediakan</li>
                                             <li>Data tidak boleh ada yang kosong, harus terisi semua.</li>
-                                            <li>Untuk data Kelas, hanya bisa diisi menggunakan ID materi ujian.</li>
+                                            <li>Untuk data Topik, hanya bisa diisi menggunakan ID Topik Ujian yang tersedia.</li>
+                                            <li>Untuk data Bobot, hanya bisa diisi menggunakan ID Bobot Soal yang tersedia.</li>
                                             <li>Maks. ukuran file yg diupload 5mb</li>
                                         </ul>
                                     </div>
@@ -114,7 +115,7 @@
                                             <li>Apabila ditemukan data !! ERROR !! , silahkan perbaiki data terlebih
                                                 dahulu sebelum bisa diimpor.</li>
                                             <li>Data Topik dan Bobot harus sesuai dengan ID yang ada</li>
-                                            <li>Data Jawaban harus sesuai dengan opsi yang ada</li>
+                                            <li>Data Jawaban harus sesuai dengan opsi yang ada, Abjad harus huruf besar</li>
                                         </ul>
                                     </div>
                                     <div style="overflow-x: scroll">

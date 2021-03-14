@@ -6,6 +6,7 @@
 {{--<link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/vendors/css/tables/datatable/dataTables.bootstrap4.min.css') }}">--}}
 {{--<link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/vendors/css/tables/extensions/rowReorder.dataTables.min.css') }}">--}}
 {{--<link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/vendors/css/tables/extensions/responsive.dataTables.min.css') }}">--}}
+<link rel="stylesheet" type="text/css" href="{{ asset('assets/yarn/node_modules/bootstrap4-datetimepicker/build/css/bootstrap-datetimepicker.css') }}">
 <!-- END PAGE LEVEL JS-->
 @endpush
 
@@ -17,6 +18,9 @@
 {{--<script src="{{ asset('assets/template/robust/app-assets/vendors/js/tables/datatable/dataTables.bootstrap4.min.js') }}"></script>--}}
 {{--<script src="{{ asset('assets/template/robust/app-assets/vendors/js/tables/datatable/dataTables.responsive.min.js') }}"></script>--}}
 {{--<script src="{{ asset('assets/template/robust/app-assets/vendors/js/tables/datatable/dataTables.rowReorder.min.js') }}"></script>--}}
+<script src="{{ asset('assets/yarn/node_modules/moment/min/moment.min.js') }}"></script>
+<script src="{{ asset('assets/yarn/node_modules/bootstrap4-datetimepicker/build/js/bootstrap-datetimepicker.min.js') }}"></script>
+<script src="{{ asset('assets/yarn/node_modules/jquery-validation/dist/jquery.validate.min.js') }}"></script>
 <!-- END PAGE VENDOR -->
 @endpush
 
@@ -26,6 +30,7 @@
 let user_id = '{{ $user->id }}';
 
 let ok_submit_pengawas = false;
+let ok_submit_penyusun_soal = false;
 let nip_pengawas = '';
 
 $(document).on('click','#btn_tambah_pengawas',function(){
@@ -36,6 +41,15 @@ $(document).on('click','#btn_tambah_pengawas',function(){
     $('#modal_tambah_pengawas').modal('show');
     ok_submit_pengawas = false;
     nip_pengawas = '';
+});
+
+$(document).on('click','#btn_tambah_penyusun_soal',function(){
+    $('#nm_lengkap_ps').val('');
+    $('#tgl_lahir_ps').val('');
+    $('#email_ps').val('');
+    $('#modal_tambah_penyusun_soal').modal('show');
+    ok_submit_penyusun_soal = false;
+    validator.resetForm();
 });
 
 $(document).on('click','#btn_cari_pegawai',function(){
@@ -97,7 +111,7 @@ $(document).on('click','#btn_simpan_pengawas',function(){
                 }else{
                     Swal.fire({
                         title: "Perhatian",
-                        text: "Terjadi kesalahan",
+                        text: res.msg,
                         icon: "warning"
                     });
                 }
@@ -119,6 +133,135 @@ $(document).on('click','#btn_simpan_pengawas',function(){
 
     }
 });
+
+
+jQuery.validator.addMethod("valid_email", function(value, element) {
+    // allow any non-whitespace characters as the host part
+    return this.optional( element ) || /\S+@\S+\.\S+/.test( value );
+}, 'Please enter a valid email');
+
+jQuery.validator.addMethod("valid_date", function(value, element) {
+    // allow any non-whitespace characters as the host part
+    return this.optional( element ) || /{{ REGEX_DATE_VALID }}/.test( value );
+}, 'Please enter a valid date');
+
+
+
+let validator = $("#form_tambah_penyusun_soal").validate({
+    debug: false,
+    ignore: [],
+    rules: {
+        'nm_lengkap_ps': {required: true},
+        'email_ps': {required: true, valid_email: true},
+        'tgl_lahir_ps': {required: true, valid_date: true},
+    },
+    messages: {
+        'nm_lengkap_ps': {
+            required: "tidak boleh kosong",
+        },
+        'email_ps': {
+            required: "tidak boleh kosong",
+            valid_email: "email yg dimasukan salah"
+        },
+        'tgl_lahir_ps': {
+            required: "tidak boleh kosong",
+        },
+    },
+    errorElement: "small",
+    // <p class="badge-default badge-danger block-tag text-right"><small class="block-area white">Helper aligned to right</small></p>
+    errorPlacement: function ( error, element ) {
+        error.addClass("badge-default badge-danger block-tag pl-2");
+        // error.css('display','block');
+        if ( element.prop("type") === "radio" ) {
+            error.appendTo(element.siblings(".error_radio"));
+        } else if ( element.hasClass("only_input_select2multi")) {
+            // error.insertAfter(element.parent().parent().parent().siblings(".error_select2"));
+            error.css('display','block');
+            error.insertAfter(element.siblings(".error_select2"));
+            // error.insertAfter(element);
+        } else if ( element.hasClass("only_input_select2single")) {
+            // error.insertAfter(element.parent().parent().parent().siblings(".error_select2"));
+            error.css('display','block');
+            error.insertAfter(element.siblings(".error_select2"));
+            // error.insertAfter(element);
+        } else if ( element.prop("type") === "checkbox" ) {
+            error.appendTo(element.siblings(".error_checkbox"));
+        } else {
+            error.insertAfter(element);
+            element.addClass('border-danger');
+        }
+    },
+    highlight: function ( element, errorClass, validClass ) {
+        // $(element).parents( ".col-sm-5" ).addClass( "has-error" ).removeClass( "has-success" );
+        $(element).addClass('border-danger');
+    },
+    unhighlight: function (element, errorClass, validClass) {
+        // $(element).parents( ".col-sm-5" ).addClass( "has-success" ).removeClass( "has-error" );
+        $(element).removeClass('border-danger');
+    },
+    submitHandler: function(form) {
+        // if(confirm('Yakin akan mensubmit jawaban ?')){
+            // form.submit();
+        // }
+
+        grecaptcha.ready(function() {
+            grecaptcha.execute('{{ RECAPTCHA_V3_SITE_KEY }}', {action: 'submit_registration'}).then(function(token) {
+                $('input[name="token"]').val(token);
+                $('input[name="action"]').val('submit_registration');
+                form.submit();
+            });;
+        });
+
+    }
+});
+
+$(document).on('click','#btn_simpan_penyusun_soal',function(){
+    let valid = validator.form();
+    
+    if(valid){
+    
+    let nm_lengkap_ps = $('#nm_lengkap_ps').val();
+    let tgl_lahir_ps = $('#tgl_lahir_ps').val();
+    let email_ps = $('#email_ps').val();
+    
+    ajx_overlay(true);
+    $.ajax({
+        url: '{{ url('users/ajax/save_penyusun_soal') }}',
+        data: {'nm_lengkap': nm_lengkap_ps, 'tgl_lahir': tgl_lahir_ps, 'email': email_ps},
+        type: 'POST',
+        success: function (res) {
+            if(res.status){
+                $('#modal_tambah_penyusun_soal').modal('hide');
+                Swal.fire({
+                    title: "Perhatian",
+                    text: "Penyusun_soal telah ditambahkan",
+                    icon: "success"
+                });
+            }else{
+                Swal.fire({
+                    title: "Perhatian",
+                    text: res.msg,
+                    icon: "warning"
+                });
+            }
+        },
+        error: function () {
+            Swal.fire({
+                title: "Perhatian",
+                text: "Terjadi kesalahan",
+                icon: "warning"
+            });
+        },
+        complete: function(){
+            ajx_overlay(false);
+        }
+    });
+
+    }
+});
+
+
+
 
 </script>
 <script src="{{ asset('assets/dist/js/app/users/index.js') }}"></script>
@@ -143,6 +286,7 @@ $(document).on('click','#btn_simpan_pengawas',function(){
         <div class="mb-3">
             <button type="button" onclick="reload_ajax()" class="btn btn-sm btn-flat btn-outline-secondary"><i class="fa fa-refresh"></i> Reload</button>
             <button type="button" class="btn btn-sm btn-flat btn-primary" id="btn_tambah_pengawas"><i class="fa fa-plus-circle"></i> Tambah Pengawas</button>
+            <button type="button" class="btn btn-sm btn-flat btn-info" id="btn_tambah_penyusun_soal"><i class="fa fa-plus-circle"></i> Tambah Penyusun Soal</button>
             <div class="pull-right">
                 <label for="show_me">
                     <input type="checkbox" id="show_me">
@@ -209,7 +353,7 @@ $(document).on('click','#btn_simpan_pengawas',function(){
                         <div class="row">
                             <div class="col-md-12">
                                 <div class="form-group">
-                                    <label for="userinput1">NIP</label>
+                                    <label for="input_pegawai">NIP</label>
                                     <div class="input-group">
                                         <input type="text" class="form-control" id="input_pegawai" placeholder="Masukan nip disini" aria-label="" name="nip">
                                         <div class="input-group-append" id="btn_cari_pegawai" style="cursor: pointer">
@@ -222,7 +366,7 @@ $(document).on('click','#btn_simpan_pengawas',function(){
                         <div class="row">
                             <div class="col-md-12">
                                 <div class="form-group">
-                                    <label for="userinput3">Nama Lengkap</label>
+                                    <label for="nm_lengkap">Nama Lengkap</label>
                                     <input readonly="readonly" type="text" id="nm_lengkap" class="form-control border-primary" placeholder="Nama Lengkap" name="nm_lengkap">
                                 </div>
                             </div>
@@ -230,7 +374,7 @@ $(document).on('click','#btn_simpan_pengawas',function(){
                         <div class="row">
                             <div class="col-md-12">
                                 <div class="form-group">
-                                    <label for="userinput4">Unit</label>
+                                    <label for="unit">Unit</label>
                                     <input readonly="readonly" type="text" id="unit" class="form-control border-primary" placeholder="Unit" name="unit">
                                 </div>
                             </div>
@@ -238,7 +382,7 @@ $(document).on('click','#btn_simpan_pengawas',function(){
                         <div class="row">
                             <div class="col-md-12">
                                 <div class="form-group">
-                                    <label for="userinput4">Tgl Lahir</label>
+                                    <label for="tgl_lahir">Tgl Lahir <small class="text-muted"><b class="text-danger">***</b> Digunakan sbg password default</small></label>
                                     <input readonly="readonly" type="text" id="tgl_lahir" class="form-control border-primary" placeholder="Tgl Lahir" name="tgl_lahir">
                                 </div>
                             </div>
@@ -253,6 +397,67 @@ $(document).on('click','#btn_simpan_pengawas',function(){
                 </button>
                 <button type="button"
                         class="btn btn-outline-info" id="btn_simpan_pengawas">Simpan
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal text-left"
+     id="modal_tambah_penyusun_soal"
+     tabindex="-1"
+     role="dialog"
+     aria-labelledby="myModalPenyusunSoal"
+     aria-hidden="true">
+    <div class="modal-dialog"
+         role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-info white">
+                <h4 class="modal-title white"
+                    id="myModalPenyusunSoal">Tambah Penyusun Soal</h4>
+            </div>
+            <div class="modal-body">
+                <form id="form_tambah_penyusun_soal" class="form">
+                    <div class="form-body">
+                        <h4 class="form-section"><i class="fa fa-eye"></i> Masukan Penyusun Soal</h4>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label for="nm_lengkap_ps">Nama Lengkap</label>
+                                    <input type="text" id="nm_lengkap_ps" class="form-control border-primary" placeholder="Nama Lengkap" name="nm_lengkap_ps">
+                                    <span class="help-block"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label for="tgl_lahir_ps">Tgl Lahir <small class="text-muted"><b class="text-danger">***</b> Digunakan sbg password default</small></label>
+                                    <input type="text" id="tgl_lahir_ps" class="form-control border-primary datetimepicker" placeholder="Tgl Lahir" name="tgl_lahir_ps">
+                                    <span class="help-block"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label for="email_ps">Email</label>
+                                    <input type="text" id="email_ps" class="form-control border-primary" placeholder="Email" name="email_ps">
+                                    <span class="help-block"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button"
+                        class="btn grey btn-outline-secondary"
+                        data-dismiss="modal">Batal
+                </button>
+                <button type="button"
+                        class="btn btn-outline-info" id="btn_simpan_penyusun_soal">Simpan
                 </button>
             </div>
         </div>

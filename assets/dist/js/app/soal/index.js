@@ -189,6 +189,7 @@ $(document).ready(function() {
               text: respon.total + " data berhasil dihapus",
               icon:"success"
             });
+            reload_ajax();
           } else {
             Swal.fire({
               title: "Perhatian",
@@ -196,7 +197,6 @@ $(document).ready(function() {
               icon:"warning"
             });
           }
-          reload_ajax();
         },
         error: function () {
           Swal.fire({
@@ -204,6 +204,9 @@ $(document).ready(function() {
             text: "Ada data yang sedang digunakan",
             icon:"error"
           });
+        },
+        complete: function(){
+
         }
       });
     }

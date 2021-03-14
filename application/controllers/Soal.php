@@ -17,7 +17,9 @@ class Soal extends MY_Controller
 		parent::__construct();
 		if (!$this->ion_auth->logged_in()) {
 			redirect('auth');
-		} else if (!$this->ion_auth->is_admin() && !$this->ion_auth->in_group('dosen')) {
+		} else if (!$this->ion_auth->is_admin() && 
+					!$this->ion_auth->in_group('dosen') && 
+					!$this->ion_auth->in_group('penyusun_soal')) {
 			show_error('Hanya Administrator dan dosen yang diberi hak untuk mengakses halaman ini', 403, 'Akses Terlarang');
 		}
 		$this->load->library(['datatables', 'form_validation']); // Load Library Ignited-Datatables
@@ -35,7 +37,7 @@ class Soal extends MY_Controller
 			'subjudul' => 'List Soal'
 		];
 
-		if ($this->ion_auth->is_admin()) {
+		if ($this->ion_auth->is_admin() || $this->ion_auth->in_group('penyusun_soal')) {
 			//Jika admin maka tampilkan semua matkul
 			$data['matkul'] = $this->master->getAllMatkul();
 		} else {
@@ -86,14 +88,13 @@ class Soal extends MY_Controller
 			'subjudul'  => 'Add Soal'
 		];
 
-		if ($this->ion_auth->is_admin()) {
-			//Jika admin maka tampilkan semua matkul
-			//            $data['dosen'] = $this->soal->getAllDosen();
+		if ($this->ion_auth->in_group('dosen')) {
+			//Jika dosen otomatis sesuai matkul dosen
+			$data['matkul'] =  Orm\Dosen_orm::where('nip', $user->username)->firstOrFail()->matkul;
+		} else {
+			//Jika admin / penyusun_soal maka tampilkan semua matkul
 			$data['matkul'] = $this->master->getAllMatkul();
 			$data['topik'] = $this->master->getAllTopik();
-		} else {
-			//Jika bukan maka matkul dipilih otomatis sesuai matkul dosen
-			$data['matkul'] =  Orm\Dosen_orm::where('nip', $user->username)->firstOrFail()->matkul;
 		}
 
 		$data['bobot_soal'] = Bobot_soal_orm::All();
@@ -127,15 +128,15 @@ class Soal extends MY_Controller
 			'soal'      => $this->soal->getSoalById($id),
 		];
 
-		if ($this->ion_auth->is_admin()) {
-			//Jika admin maka tampilkan semua matkul
+		if ($this->ion_auth->in_group('dosen')) {
+			//Jika dosen maka matkul dipilih otomatis sesuai matkul dosen
+			$data['soal'] = $soal;
+			$data['matkul'] =  Orm\Dosen_orm::where('nip', $user->username)->firstOrFail()->matkul;
+		} else {
+			//Jika admin / penyusun_soal maka tampilkan semua matkul
 			$data['matkul'] = $this->master->getAllMatkul();
 			$data['topik'] = $this->master->getAllTopik();
 			$data['soal'] = $soal;
-		} else {
-			//Jika bukan maka matkul dipilih otomatis sesuai matkul dosen
-			$data['soal'] = $soal;
-			$data['matkul'] =  Orm\Dosen_orm::where('nip', $user->username)->firstOrFail()->matkul;
 		}
 
 		$data['bobot_soal'] = Bobot_soal_orm::All();
@@ -155,7 +156,7 @@ class Soal extends MY_Controller
 		$data['tahun'] = $this->input->get('tahun') == 'null' ? null : $this->input->get('tahun');
 
 		$username = null;
-		if (!$this->ion_auth->is_admin()) {
+		if ($this->ion_auth->in_group('dosen')) {
 			$username = $this->ion_auth->user()->row()->username;
 		}
 		$this->_json($this->soal->getDataSoal($data, $username), false);
@@ -252,7 +253,7 @@ class Soal extends MY_Controller
 		$method = $this->input->post('method', true);
 		$id_soal = $this->input->post('id_soal', true);
 		$this->_validasi();
-		//        $this->_file_config();
+		// $this->_file_config();
 
 		if ($this->form_validation->run() === FALSE) {
 			// VALIDASI SALAH
@@ -262,7 +263,7 @@ class Soal extends MY_Controller
 			$data = [
 				'soal'      => $this->input->post('soal'),
 				'jawaban'   => $this->input->post('jawaban', true),
-				//                'bobot'     => $this->input->post('bobot', true),
+				// 'bobot'     => $this->input->post('bobot', true),
 				'bobot_soal_id'     => $this->input->post('bobot_soal_id', true),
 				'gel'     => $this->input->post('gel', true),
 				'smt'     => $this->input->post('smt', true),
@@ -355,6 +356,7 @@ class Soal extends MY_Controller
 				'content' => 'Data berhasil disimpan.',
 				'type' => 'success'
 			];
+
 			$this->session->set_flashdata('message_rootpage', $message_rootpage);
 			$method === 'add' ? redirect('soal/add') : redirect('soal/edit/' . $id_soal);
 		}
@@ -365,27 +367,27 @@ class Soal extends MY_Controller
 		$chk = $this->input->post('checked', true);
 
 		// Delete File
-		foreach ($chk as $id) {
-			$abjad = ['a', 'b', 'c', 'd', 'e'];
-			$path = FCPATH . 'uploads/bank_soal/';
-			$soal = $this->soal->getSoalById($id);
-			// Hapus File Soal
-			if (!empty($soal->file)) {
-				if (file_exists($path . $soal->file)) {
-					unlink($path . $soal->file);
-				}
-			}
-			//Hapus File Opsi
-			$i = 0; //index
-			foreach ($abjad as $abj) {
-				$file_opsi = 'file_' . $abj;
-				if (!empty($soal->$file_opsi)) {
-					if (file_exists($path . $soal->$file_opsi)) {
-						unlink($path . $soal->$file_opsi);
-					}
-				}
-			}
-		}
+		// foreach ($chk as $id) {
+		// 	$abjad = ['a', 'b', 'c', 'd', 'e'];
+		// 	$path = FCPATH . 'uploads/bank_soal/';
+		// 	$soal = $this->soal->getSoalById($id);
+		// 	// Hapus File Soal
+		// 	if (!empty($soal->file)) {
+		// 		if (file_exists($path . $soal->file)) {
+		// 			unlink($path . $soal->file);
+		// 		}
+		// 	}
+		// 	//Hapus File Opsi
+		// 	$i = 0; //index
+		// 	foreach ($abjad as $abj) {
+		// 		$file_opsi = 'file_' . $abj;
+		// 		if (!empty($soal->$file_opsi)) {
+		// 			if (file_exists($path . $soal->$file_opsi)) {
+		// 				unlink($path . $soal->$file_opsi);
+		// 			}
+		// 		}
+		// 	}
+		// }
 
 		if (!$chk) {
 			$this->_json(['status' => false]);
@@ -402,7 +404,7 @@ class Soal extends MY_Controller
 					}
 				}
 				if (!$allow) {
-					$data['status'] = FALSE;
+					$data['status'] = false;
 					$this->_json($data);
 					return;
 				}

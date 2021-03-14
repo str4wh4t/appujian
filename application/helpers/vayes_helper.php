@@ -40,15 +40,15 @@ if (! function_exists('vdebug')) {
         $varname = null;
         $c = 0;
         for ($i = 0; $i < $max; $i++) {
-            if ($match[1]{$i} == "(") {
+            if ($match[1][$i] == "(") {
                 $c++;
-            } elseif ($match[1]{$i} == ")") {
+            } elseif ($match[1][$i] == ")") {
                 $c--;
             }
             if ($c < 0) {
                 break;
             }
-            $varname .= $match[1]{$i};
+            $varname .= $match[1][$i];
         }
         if (is_object($data)) {
             $message = '<span class="vayes-debug-badge vayes-debug-badge-object">OBJECT</span>';
@@ -152,15 +152,15 @@ if (!function_exists('terminal')) {
         $varname = null;
         $c = 0;
         for ($i = 0; $i < $max; $i++) {
-            if ($match[1]{$i} == "(") {
+            if ($match[1][$i] == "(") {
                 $c++;
-            } elseif ($match[1]{$i} == ")") {
+            } elseif ($match[1][$i] == ")") {
                 $c--;
             }
             if ($c < 0) {
                 break;
             }
-            $varname .= $match[1]{$i};
+            $varname .= $match[1][$i];
         }
         $str='
         <html><style type="text/css">body.ubuntu-terminal-body{margin:0;background:rgb(48,10,36);color:#fff;font-family:monospace;font-size:14px}div.ubuntu-terminal-container{width:100%;margin:0;padding:10px 5px 0px 5px}div.ubuntu-terminal-left{float:left;margin-right:10px}div.ubuntu-terminal-right{float:left}div.ubuntu-terminal-clearfix{display:block;clear:both;height:1px}span.ubuntu-terminal-variable-name{color:#0F0;font-weight:bold}hr.ubuntu-terminal-close-line{border:0;height:1px;background-image:-webkit-linear-gradient(left,rgba(200,200,200,0),rgba(200,200,200,0.75),rgba(200,200,200,0));background-image:-moz-linear-gradient(left,rgba(200,200,200,0),rgba(200,200,200,0.75),rgba(200,200,200,0));background-image:-ms-linear-gradient(left,rgba(200,200,200,0),rgba(200,200,200,0.75),rgba(200,200,200,0));background-image:-o-linear-gradient(left,rgba(200,200,200,0),rgba(200,200,200,0.75),rgba(200,200,200,0))}.ubuntu-cursor{float:left;margin-top:-2px;margin-left:4px;color:white;font-weight:bold;-webkit-animation:1s blink step-end infinite;-moz-animation:1s blink step-end infinite;-ms-animation:1s blink step-end infinite;-o-animation:1s blink step-end infinite;animation:1s blink step-end infinite}@keyframes "blink"{from,to{color:transparent}50%{color:#fff}}@-moz-keyframes blink{from,to{color:transparent}50%{color:#fff}}@-webkit-keyframes "blink"{from,to{color:transparent}50%{color:#fff}}@-ms-keyframes "blink"{from,to{color:transparent}50%{color:#fff}}@-o-keyframes "blink"{from,to{color:transparent}50%{color:#fff}}pre{color:#93AEFF;font-weight:bold;margin:5px}</style><body class="ubuntu-terminal-body"><div class="ubuntu-terminal-container"><div class="ubuntu-terminal-left">yahya@vayesweb:~$</div><div class="ubuntu-terminal-right"">cat ';

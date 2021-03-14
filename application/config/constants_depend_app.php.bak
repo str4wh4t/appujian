@@ -12,3 +12,6 @@ defined('APP_FAVICON')      OR define('APP_FAVICON', APP_ID == 'ujian.undip.ac.i
 defined('APP_ICON')      OR define('APP_ICON', APP_ID == 'ujian.undip.ac.id' ? 'android-chrome-512x512' : 'android-chrome-512x512-cat');
 defined('ADMIN_EMAIL')      OR define('ADMIN_EMAIL', 'cat@undip.ac.id');
 defined('MEMBERSHIP_ID_DEFAULT')      OR define('MEMBERSHIP_ID_DEFAULT', 0);
+
+defined('RECAPTCHA_V3_SECRET_KEY')      OR define('RECAPTCHA_V3_SECRET_KEY', '6Lfr6WsaAAAAAILW941zZHzNZ3ZhAZ76fLTRs2Ie');
+defined('RECAPTCHA_V3_SITE_KEY')      OR define('RECAPTCHA_V3_SITE_KEY', '6Lfr6WsaAAAAANagzqQC1oyxtj2aWwnK5VnCa6Nm');

@@ -82,7 +82,7 @@ function readURL(input) {
                         reader.readAsDataURL(input.files[0]);
                         return true;
                     }else{
-                        console.log('err');
+                        // console.log('err');
                         return false;
                     }
                 };
@@ -218,6 +218,11 @@ $(document).on('click','#btn_set_materi',function(){
             <small class="help-block"></small>
         </div>
         <div class="form-group">
+            <label for="kota_asal">Kota Asal</label>
+            <input value="<?=$mahasiswa->kota_asal?>" placeholder="Kota Asal" type="text" name="kota_asal" id="kota_asal" class="form-control">
+            <small class="help-block"></small>
+        </div>
+        <div class="form-group">
             <label for="email">Email</label>
             <input value="<?=$mahasiswa->email?>" placeholder="Email" type="text" name="email" id="email" class="form-control">
             <small class="help-block"></small>
@@ -316,11 +321,11 @@ $(document).on('click','#btn_set_materi',function(){
             </div>
             <div class="form-group">
                 <label for="nama">Foto</label>
-                <input value="<?=$mahasiswa->foto?>" placeholder="Foto" type="text" name="foto" class="form-control">
+                <input value="{{ $mahasiswa->foto }}" placeholder="Foto" type="text" name="foto" class="form-control">
                 <small class="help-block"></small>
             </div>
             <div style="text-align: center">
-                <img id="img_profile" style="width: 320px" src="{{ $mahasiswa->foto }}" />
+                <img id="img_profile" style="width: 320px" src="{{ empty($mahasiswa->foto) ? asset(FOTO_DEFAULT_URL) : $mahasiswa->foto }}" />
             </div>
     </div>
 </div>

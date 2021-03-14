@@ -89,7 +89,7 @@ $(document).on('click', '.btn_sudah_beli', function(){
                 </h3>
                 <a 
                     href="{{ $membership->id <= $user->membership_id ? '' : url('paket/beli/' . $membership->id) }}"
-                    class="btn btn-glow w-100 fw-600 my-2 text-white {{ $membership->id <= $user->membership_id ? 'btn-secondary btn_sudah_beli' : 'btn-primary' }}">
+                    class="btn btn-glow round w-100 fw-600 my-2 text-white {{ $membership->id <= $user->membership_id ? 'btn-secondary btn_sudah_beli' : 'btn-primary' }}">
                     <i class="ft-shopping-cart text-white icon-md "></i> Ambil Sekarang
                 </a>
                 <hr>

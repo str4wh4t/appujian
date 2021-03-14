@@ -171,18 +171,75 @@
             <dt class="col-md-4">Email</dt>
             <dd class="col-md-8"><?=$user->email?></dd>
         </dl>
-{{--        <dl class="row">--}}
-{{--            <dt class="col-md-6">Matkul</dt>--}}
-{{--            <dd class="col-md-6"><?=$dosen->nama_matkul?></dd>--}}
-{{--        </dl>--}}
         <dl class="row">
+            <dt class="col-md-4">User Group</dt>
+            <dd class="col-md-8">
+                            <ul class="pl-1">
+                                @foreach($user_groups as $group)
+                                    <li>{{ $group->name }}</li>
+                                @endforeach
+                            </ul>
+                            </dd>
+        </dl>
+        {{-- <dl class="row">
             <dt class="col-md-4">Ruang Ujian</dt>
             <dd class="col-md-8">
                 <ol class="pl-4" style="padding-left: 15px !important">
 
                 </ol>
             </dd>
+        </dl> --}}
+    </div>
+    <div class="col-md-6">
+        <h3 class="box-title">Pengumuman</h3>
+        <hr>
+        <p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Quidem in animi quibusdam nihil esse ratione, nulla sint enim natus, aut mollitia quas veniam, tempore quia!</p>
+        <ul class="pl-4">
+            <li>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Consectetur, culpa.</li>
+            <li>Provident dolores doloribus, fugit aperiam alias tempora saepe non omnis.</li>
+            <li>Doloribus sed eum et repellat distinctio a repudiandae quia voluptates.</li>
+            <li>Adipisci hic rerum illum odit possimus voluptatibus ad aliquid consequatur.</li>
+            <li>Laudantium sapiente architecto excepturi beatae est minus, labore non libero.</li>
+        </ul>
+    </div>
+</div>
+
+@elseif(in_group('penyusun_soal'))
+
+<div class="row">
+    <div class="col-md-6">
+        <h3 class="box-title">Informasi Akun</h3>
+        <hr>
+        <dl class="row">
+            <dt class="col-md-4">Nama</dt>
+            <dd class="col-md-8"><?=$user->full_name?></dd>
         </dl>
+        <dl class="row">
+            <dt class="col-md-4">Username</dt>
+            <dd class="col-md-8"><?=$user->username?></dd>
+        </dl>
+        <dl class="row">
+            <dt class="col-md-4">Email</dt>
+            <dd class="col-md-8"><?=$user->email?></dd>
+        </dl>
+        <dl class="row">
+            <dt class="col-md-4">User Group</dt>
+            <dd class="col-md-8">
+                            <ul class="pl-1">
+                                @foreach($user_groups as $group)
+                                    <li>{{ $group->name }}</li>
+                                @endforeach
+                            </ul>
+                            </dd>
+        </dl>
+        {{-- <dl class="row">
+            <dt class="col-md-4">Ruang Ujian</dt>
+            <dd class="col-md-8">
+                <ol class="pl-4" style="padding-left: 15px !important">
+
+                </ol>
+            </dd>
+        </dl> --}}
     </div>
     <div class="col-md-6">
         <h3 class="box-title">Pengumuman</h3>

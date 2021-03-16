@@ -197,7 +197,7 @@
                                                             </div>
                                                         </div>
                                                         <div class="card-footer border-top-blue-grey border-top-lighten-5 text-muted">
-                                                            <a class="btn btn-success" href="http://localhost/ujianundip/ujian/tutorial">
+                                                            <a class="btn btn-success" href="{{ url('ujian/tutorial') }}">
                                                                 <i class="fa fa-pencil"></i> Masuk
                                                             </a>
                                                         </div>

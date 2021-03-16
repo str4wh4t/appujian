@@ -58,39 +58,41 @@ $(document).on('click','#btn_proses_sync_mhs',function(){
                 text: "Data akan di-tambah : " + respon.jml_tambah , // + ", dan di-hapus : " + respon.jml_hapus,
                 icon: "warning",
                 showCancelButton: true,
-                confirmButtonText: "Proses"
+                confirmButtonText: respon.jml_tambah > 0 ? "Proses" : "Skip",
             }).then(result => {
-                if (result.value) {
-                    ajx_overlay(true);
-                    $.ajax({
-                        url: '{{ url('mahasiswa/ajax/proses_sync') }}',
-                        data: $('#form_sync_mhs').serialize(),
-                        type: "POST",
-                        success: function (respon) {
-                            if (respon.status) {
-                                Swal.fire({
-                                    title: "Berhasil",
-                                    text: "Data berhasil di-sync",
-                                    icon: "success"
-                                });
-                            } else {
+                if(respon.jml_tambah > 0){
+                    if (result.value) {
+                        ajx_overlay(true);
+                        $.ajax({
+                            url: '{{ url('mahasiswa/ajax/proses_sync') }}',
+                            data: $('#form_sync_mhs').serialize(),
+                            type: "POST",
+                            success: function (respon) {
+                                if (respon.status) {
+                                    Swal.fire({
+                                        title: "Berhasil",
+                                        text: "Data berhasil di-sync",
+                                        icon: "success"
+                                    });
+                                } else {
+                                    Swal.fire({
+                                        title: "Gagal",
+                                        text: "Tidak ada data yg di sync",
+                                        icon: "error"
+                                    });
+                                }
+                                reload_ajax();
+                            }, error: function () {
                                 Swal.fire({
                                     title: "Gagal",
-                                    text: "Tidak ada data yg di sync",
+                                    text: "Terjadi kesalahan",
                                     icon: "error"
                                 });
-                            }
-                            reload_ajax();
-                        }, error: function () {
-                            Swal.fire({
-                                title: "Gagal",
-                                text: "Terjadi kesalahan",
-                                icon: "error"
-                            });
-                        },complete: function(){
-                            ajx_overlay(false);
-                        },
-                    });
+                            },complete: function(){
+                                ajx_overlay(false);
+                            },
+                        });
+                    }
                 }
             });
         }, error: function () {

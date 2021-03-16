@@ -145,7 +145,7 @@ class Mahasiswa extends MY_Controller
 													'check_valid_date' => 'Kolom tanggal salah',
 												]
 										);
-		$this->form_validation->set_rules('kota_asal', 'Kota Asal', 'required|trim|min_length[3]|max_length[250]');
+		$this->form_validation->set_rules('kota_asal', 'Kota Asal', 'trim|min_length[3]|max_length[250]');
 		$this->form_validation->set_rules('no_billkey', 'No Billkey', 'trim|max_length[' . NO_BILLKEY_LENGTH . ']');
 		// $this->form_validation->set_rules('foto', 'Foto', ['required', 'trim', ['check_valid_img_url', function ($foto) {
 		$this->form_validation->set_rules('foto', 'Foto', ['trim', ['check_valid_img_url', function ($foto) {
@@ -1261,7 +1261,8 @@ class Mahasiswa extends MY_Controller
 			show_error('Data masih digunakan', 500, 'Perhatian');
 		}
 	}
-
+	/*
+	** FUNGSI INI DIMATIKAN KRN HANYA UNTUK UJI COBA
 	protected function _sync_pendaftaran()
 	{
 		ini_set('max_execution_time', 0);
@@ -1386,6 +1387,7 @@ class Mahasiswa extends MY_Controller
 			show_error($e->getMessage(), 500, 'Perhatian');
 		}
 	}
+	*/
 
 	protected function _check_sync()
 	{
@@ -1467,6 +1469,7 @@ class Mahasiswa extends MY_Controller
 		$mhs_ids_delete = array_diff($mhs_ids_before, $mhs_ids);
 		try {
 			begin_db_trx();
+			
 			//			if(!empty($mhs_ids_delete)) {
 			//				foreach ($mhs_ids_delete as $mhs_id) {
 			//					$mhs = Mhs_orm::find($mhs_id);
@@ -1475,8 +1478,10 @@ class Mahasiswa extends MY_Controller
 			//			}
 
 			if (!empty($mhs_ids_insert)) {
-				foreach ($mhs_ids_insert as $mhs_id) {
-					$mhs_source = Mhs_source_orm::find($mhs_id);
+
+				$mhs_source_list = Mhs_source_orm::whereIn('id_mahasiswa', $mhs_ids_insert)->get();
+
+				foreach ($mhs_source_list as $mhs_source) {
 					$mhs = new Mhs_orm;
 					$mhs->id_mahasiswa = $mhs_source->id_mahasiswa;
 					$mhs->nim = $mhs_source->nim;
@@ -1494,6 +1499,8 @@ class Mahasiswa extends MY_Controller
 					$mhs->smt = $mhs_source->smt;
 					$mhs->jalur = $mhs_source->jalur;
 					$mhs->tahun = $mhs_source->tahun;
+					$mhs->kelompok_ujian = $mhs_source->kelompok_ujian;
+					$mhs->tgl_ujian = empty($mhs_source->tgl_ujian) ? null : $mhs_source->tgl_ujian;
 					$mhs->save();
 
 					// MENDAFTARKAN SBG USER

@@ -220,7 +220,15 @@ class Pub extends MY_Controller {
 		if($mhs_ujian_list->isNotEmpty()) {
 			$cron_end = date("Y-m-d H:i:s", strtotime("+1 minutes"));
 			foreach ($mhs_ujian_list as $mu) {
-				$m_ujian = $m_ujian_orm->find($mu->ujian_id);
+
+				echo 'ID : Mujian : ' . $mu->ujian_id . "\n";
+
+				$m_ujian = $m_ujian_orm->where(['id_ujian' => $mu->ujian_id, 'status_ujian' => 1])->first();
+
+				if(empty($m_ujian)){
+					echo 'break, status not active';
+					break;
+				}
 				
 				$today = date('Y-m-d H:i:s');
 				if($today > $cron_end){
@@ -232,7 +240,7 @@ class Pub extends MY_Controller {
 				if ($today < $date_end){
 					continue;
 				}
-				echo 'mu->id : ' . $mu->id . "\n";
+				
 				echo 'today : ' . $today . "\n";
 				echo 'date_end : ' . $date_end . "\n";
 				try {

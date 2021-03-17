@@ -1,20 +1,4 @@
 $(document).ready(function () {
-    $('.datetimepicker').datetimepicker({
-        format: 'YYYY-MM-DD HH:mm:ss',
-        // Your Icons
-        // as Bootstrap 4 is not using Glyphicons anymore
-        icons: {
-            time: 'fa fa-clock-o',
-            date: 'fa fa-calendar',
-            up: 'fa fa-chevron-up',
-            down: 'fa fa-chevron-down',
-            previous: 'fa fa-chevron-left',
-            next: 'fa fa-chevron-right',
-            today: 'fa fa-check',
-            clear: 'fa fa-trash',
-            close: 'fa fa-times'
-        }
-    });
 
     $('#formujian input, #formujian select').on('change', function () {
         $(this).closest('.form-group').eq(0).removeClass('has-error');

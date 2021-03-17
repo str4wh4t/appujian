@@ -129,6 +129,9 @@ class Ujian extends MY_Controller
 		$data['bobot_soal'] = Bobot_soal_orm::all();
 		$data['peserta_avail'] = [];
 
+		$data['tahun_soal'] = Soal_orm::distinct()->pluck('tahun')->toArray();
+		$data['tahun_mhs'] = Mhs_orm::distinct()->pluck('tahun')->toArray();
+
 		view('ujian/add', $data);
 	}
 
@@ -191,6 +194,8 @@ class Ujian extends MY_Controller
 		$data['peserta_avail'] = []; // VALUE INI TIDAK BERGUNA KRN AKAN DI OVERIDE DI VIEW, DATA DIAMBIL SCR AJAX
 		$data['bobot_soal'] = Bobot_soal_orm::all();
 
+		$data['tahun_soal'] = Soal_orm::distinct()->pluck('tahun')->toArray();
+		$data['tahun_peserta'] = Mhs_orm::distinct()->pluck('tahun')->toArray();
 
 		view('ujian/edit', $data);
 	}
@@ -265,17 +270,12 @@ class Ujian extends MY_Controller
 			[
 				'required',
 				[
-					'is_valid_tgl_value',
-					function ($tgl_mulai) use ($tgl_selesai) {
+					'is_valid_tgl_mulai_value',
+					function ($tgl_mulai) {
 						$return = true;
 
 						$d = DateTime::createFromFormat('Y-m-d H:i:s', $tgl_mulai);
 						if (!($d && $d->format('Y-m-d H:i:s') == $tgl_mulai)) {
-							$return = false;
-						}
-
-						$d = DateTime::createFromFormat('Y-m-d H:i:s', $tgl_selesai);
-						if (!($d && $d->format('Y-m-d H:i:s') == $tgl_selesai)) {
 							$return = false;
 						}
 
@@ -299,11 +299,34 @@ class Ujian extends MY_Controller
 				],
 			],
 			[
-				'is_valid_tgl_value' => 'Tgl mulai / tgl selesai ujian tidak valid',
+				'is_valid_tgl_mulai_value' => 'Tgl mulai ujian tidak valid',
 				'is_valid_tgl_mulai' => 'Tgl mulai tidak boleh melebihi / sama dengan tgl selesai ujian',
 			]
 		);
-		$this->form_validation->set_rules('tgl_selesai', 'Tanggal Selesai', 'required');
+
+		$this->form_validation->set_rules(
+			'tgl_selesai',
+			'Tanggal Selesai',
+			[
+				'required',
+				[
+					'is_valid_tgl_selesai_value',
+					function ($tgl_selesai) {
+						$return = true;
+
+						$d = DateTime::createFromFormat('Y-m-d H:i:s', $tgl_selesai);
+						if (!($d && $d->format('Y-m-d H:i:s') == $tgl_selesai)) {
+							$return = false;
+						}
+
+						return $return;
+					}
+				]
+			],
+			[
+				'is_valid_tgl_selesai_value' => 'Tgl selesai ujian tidak valid',
+			]
+		);
 		$this->form_validation->set_rules('waktu', 'Waktu', 'required|integer|max_length[4]|greater_than[0]');
 		$this->form_validation->set_rules('masa_berlaku_sert', 'Masa Berlaku Sertifikat', 'required|is_natural');
 		//		$this->form_validation->set_rules('pakai_token', 'Pakai Token', 'required|in_list[Y,N]');
@@ -350,6 +373,9 @@ class Ujian extends MY_Controller
 				'is_valid_smt' => 'Smt yg dimasukan salah',
 			]
 		);
+
+		$tahun_soal = Soal_orm::distinct()->pluck('tahun')->toArray();
+		
 		$this->form_validation->set_rules(
 			'tahun',
 			'Tahun',
@@ -357,9 +383,9 @@ class Ujian extends MY_Controller
 				'required',
 				[
 					'is_valid_tahun',
-					function ($tahun) {
+					function ($tahun) use ($tahun_soal) {
 						if ($tahun != 'null') {
-							return in_array($tahun, TAHUN_AVAIL);
+							return in_array($tahun, $tahun_soal);
 						} else {
 							return true;
 						}
@@ -368,6 +394,70 @@ class Ujian extends MY_Controller
 			],
 			[
 				'is_valid_tahun' => 'Tahun yg dimasukan salah',
+			]
+		);
+
+		$this->form_validation->set_rules(
+			'kelompok_ujian',
+			'Kelompok Ujian',
+			[
+				'required',
+				[
+					'is_valid_kelompok_ujian',
+					function ($kelompok_ujian) {
+						return array_key_exists($kelompok_ujian, KELOMPOK_UJIAN_AVAIL);
+					}
+				]
+			],
+			[
+				'is_valid_kelompok_ujian' => 'KelompoK Ujian yg dimasukan salah',
+			]
+		);
+
+		$this->form_validation->set_rules(
+			'tgl_ujian',
+			'Tanggal Ujian',
+			[
+				[
+					'is_valid_tgl_ujian_value',
+					function ($tgl_ujian) {
+						$return = true;
+						if(!empty($tgl_ujian)){
+							$d = DateTime::createFromFormat('Y-m-d', $tgl_ujian);
+							if (!($d && $d->format('Y-m-d') == $tgl_ujian)) {
+								$return = false;
+							}
+						}
+
+						return $return;
+					}
+				]
+			],
+			[
+				'is_valid_tgl_ujian_value' => 'Tgl ujian tidak valid',
+			]
+		);
+
+		$tahun_mhs = Mhs_orm::distinct()->pluck('tahun')->toArray();
+
+		$this->form_validation->set_rules(
+			'tahun_mhs',
+			'Tahun',
+			[
+				'required',
+				[
+					'is_valid_tahun_mhs',
+					function ($tahun) use ($tahun_mhs) {
+						if ($tahun != 'null') {
+							return in_array($tahun, $tahun_mhs);
+						} else {
+							return true;
+						}
+					}
+				]
+			],
+			[
+				'is_valid_tahun_mhs' => 'Tahun yg dimasukan salah',
 			]
 		);
 	}
@@ -399,6 +489,9 @@ class Ujian extends MY_Controller
 				'gel' 	=> form_error('gel'),
 				'smt' 	=> form_error('smt'),
 				'tahun' 	=> form_error('tahun'),
+				'kelompok_ujian' 	=> form_error('kelompok_ujian'),
+				'tgl_ujian' 	=> form_error('tgl_ujian'),
+				'tahun_mhs' 	=> form_error('tahun_mhs'),
 			];
 			$jumlah_soal_list = $this->input->post('jumlah_soal', true);
 			if (!empty($jumlah_soal_list)) {
@@ -440,6 +533,9 @@ class Ujian extends MY_Controller
 			$gel			= $this->input->post('gel', true);
 			$smt			= $this->input->post('smt', true);
 			$tahun			= $this->input->post('tahun', true);
+			$kelompok_ujian			= $this->input->post('kelompok_ujian', true);
+			$tgl_ujian			= $this->input->post('tgl_ujian', true);
+			$tahun_mhs			= $this->input->post('tahun_mhs', true);
 
 			//[START] LOGIC TAMPILKAN HASIL & JAWABAN
 			$tampilkan_hasil = $tampilkan_jawaban == 1 ? 1 : $tampilkan_hasil ;
@@ -463,20 +559,6 @@ class Ujian extends MY_Controller
 				'jenis_jawaban' 			=> $jenis_jawaban,
 				'peserta' 					=> $peserta,
 			];
-
-			$filter_data = [
-				'gel' 		=> $gel == 'null' ? null : $gel,
-				'smt' 		=> $smt == 'null' ? null : $smt,
-				'tahun' 	=> $tahun == 'null' ? null : $tahun,
-			];
-
-			$filter = [];
-
-			foreach ($filter_data as $key => $v) {
-				if ($v != 'null') {
-					$filter[$key] = $v;
-				}
-			}
 
 			if ($method === 'add') {
 
@@ -502,9 +584,15 @@ class Ujian extends MY_Controller
 					$m_ujian_orm->tampilkan_jawaban = $input['tampilkan_jawaban'];
 					$m_ujian_orm->repeatable = $input['repeatable'];
 					$m_ujian_orm->status_ujian = $input['status_ujian'];
+
 					$m_ujian_orm->soal_gel = $gel == 'null' ? null : $gel;
 					$m_ujian_orm->soal_smt = $smt == 'null' ? null : $smt;
 					$m_ujian_orm->soal_tahun = $tahun == 'null' ? null : $tahun;
+
+					$m_ujian_orm->mhs_kelompok_ujian = $kelompok_ujian == 'null' ? null : $kelompok_ujian;
+					$m_ujian_orm->mhs_tgl_ujian = empty($tgl_ujian) ? null : $tgl_ujian;
+					$m_ujian_orm->mhs_tahun = $tahun_mhs == 'null' ? null : $tahun_mhs;
+
 					$m_ujian_orm->created_by = $user->username;
 					$m_ujian_orm->save();
 
@@ -558,9 +646,15 @@ class Ujian extends MY_Controller
 					$m_ujian_orm->tampilkan_jawaban = $input['tampilkan_jawaban'];
 					$m_ujian_orm->repeatable = $input['repeatable'];
 					$m_ujian_orm->status_ujian = $this->input->post('status_ujian', true) == 'on' ? '1' : '0';
+
 					$m_ujian_orm->soal_gel = $gel == 'null' ? null : $gel;
 					$m_ujian_orm->soal_smt = $smt == 'null' ? null : $smt;
 					$m_ujian_orm->soal_tahun = $tahun == 'null' ? null : $tahun;
+
+					$m_ujian_orm->mhs_kelompok_ujian = $kelompok_ujian == 'null' ? null : $kelompok_ujian;
+					$m_ujian_orm->mhs_tgl_ujian = empty($tgl_ujian) ? null : $tgl_ujian;
+					$m_ujian_orm->mhs_tahun = $tahun_mhs == 'null' ? null : $tahun_mhs;
+
 					$m_ujian_orm->updated_by = $user->username;
 					$m_ujian_orm->save();
 

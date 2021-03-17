@@ -43,6 +43,12 @@ let filter = {
 		tahun: null,
 	};
 
+let filter_mhs = {
+    kelompok_ujian: null,
+    tgl_ujian: null,
+    tahun: null,
+};
+
 function init_page_level(){
     ajaxcsrf();
     $('.select2').select2();
@@ -52,6 +58,10 @@ function init_page_level(){
     filter.gel      = $('#gel').val();
     filter.smt      = $('#smt').val();
     filter.tahun    = $('#tahun').val();
+
+    filter_mhs.kelompok_ujian    = $('#kelompok_ujian').val();
+    filter_mhs.tgl_ujian    = $('#tgl_ujian').val() == '' ? 'null' : $('#tgl_ujian').val();
+    filter_mhs.tahun    = $('#tahun_mhs').val();
 
     let options = {};
     cascadLoading = new Select2Cascade($('#matkul_id'), $('#topik_id'), '{{ site_url('soal/ajax/get_topic_by_matkul/') }}?id=:parentId:', options);
@@ -76,6 +86,41 @@ function init_page_level(){
     });
 
     $(".switchBootstrap").bootstrapSwitch();
+
+    $('.datetimepicker').datetimepicker({
+        format: 'YYYY-MM-DD HH:mm:ss',
+        // Your Icons
+        // as Bootstrap 4 is not using Glyphicons anymore
+        icons: {
+            time: 'fa fa-clock-o',
+            date: 'fa fa-calendar',
+            up: 'fa fa-chevron-up',
+            down: 'fa fa-chevron-down',
+            previous: 'fa fa-chevron-left',
+            next: 'fa fa-chevron-right',
+            today: 'fa fa-check',
+            clear: 'fa fa-trash',
+            close: 'fa fa-times'
+        }
+    });
+
+    $('.datepicker').datetimepicker({
+        format: 'YYYY-MM-DD',
+        // Your Icons
+        // as Bootstrap 4 is not using Glyphicons anymore
+        icons: {
+            time: 'fa fa-clock-o',
+            date: 'fa fa-calendar',
+            up: 'fa fa-chevron-up',
+            down: 'fa fa-chevron-down',
+            previous: 'fa fa-chevron-left',
+            next: 'fa fa-chevron-right',
+            today: 'fa fa-check',
+            clear: 'fa fa-trash',
+            close: 'fa fa-times'
+        }
+    });
+
 }
 
 $('#matkul_id').on('select2:select', function (e) {
@@ -194,9 +239,10 @@ function sum_input_jumlah_soal(){
 }
 
 const init_peserta_table_value = () => {
+    let id_matkul = $('#matkul_id').val();
     return $.ajax({
         url: "{{ site_url('matkul/ajax/get_peserta_ujian_matkul') }}",
-        data: { 'id' : $('#matkul_id').val() },
+        data: { 'id' : id_matkul, 'filter' : filter_mhs },
         type: 'POST',
         success: function (response) {
             $('#tbody_tb_peserta').html('');
@@ -222,6 +268,7 @@ const init_peserta_table_value = () => {
             $('#chkbox_pilih_semua_peserta').prop('checked', false);
         }
     });
+
 };
 
 $(document).on('change','#chkbox_pilih_semua_peserta',function () {
@@ -329,6 +376,33 @@ $(document).on('change','#tahun', function(){
     });
 });
 
+$(document).on('change','#kelompok_ujian', function(){
+    let kelompok_ujian = $(this).val();
+    filter_mhs.kelompok_ujian = kelompok_ujian;
+    ajx_overlay(true);
+    init_peserta_table_value().then(function(){
+        ajx_overlay(false);
+    });
+});
+
+$(document).on('focusout','#tgl_ujian', function(){ /** DATEPICKER WORKS ON FOCUSOUT */
+    let tgl_ujian = $(this).val() == '' ? 'null' : $(this).val();
+    filter_mhs.tgl_ujian = tgl_ujian;
+    ajx_overlay(true);
+    init_peserta_table_value().then(function(){
+        ajx_overlay(false);
+    });
+});
+
+$(document).on('change','#tahun_mhs', function(){
+    let tahun = $(this).val();
+    filter_mhs.tahun = tahun;
+    ajx_overlay(true);
+    init_peserta_table_value().then(function(){
+        ajx_overlay(false);
+    });
+});
+
 $('#tampilkan_hasil').on('switchChange.bootstrapSwitch', function(event, state) {
     if(!event.target.checked){ // DETEKSI JIKA FALSE MAKA JUGA MENON-AKTIFKAN TAMPILKAN JAWABAN
         $('#tampilkan_jawaban').bootstrapSwitch('state', false, false);
@@ -427,7 +501,7 @@ $('#tampilkan_jawaban').on('switchChange.bootstrapSwitch', function(event, state
                         <select name="tahun" id="tahun" class="form-control select2"
                             style="width:100%!important">
                             <option value="null">Semua Tahun</option>
-                            @foreach (TAHUN_AVAIL as $tahun)
+                            @foreach ($tahun_soal as $tahun)
                             <option value="{{ $tahun }}" {{ $tahun == get_selected_tahun() ? "selected" : "" }}>{{ $tahun }}</option>    
                             @endforeach
                         </select>
@@ -521,8 +595,8 @@ $('#tampilkan_jawaban').on('switchChange.bootstrapSwitch', function(event, state
                     <label for="jenis">Acak Soal</label>
                     <select name="jenis" class="form-control select2">
                         <option value="" disabled selected>- Pilihan -</option>
-                        <option value="acak">Acak Soal</option>
                         <option value="urut">Urut Soal</option>
+                        <option value="acak">Acak Soal</option>
                     </select>
                     <small class="help-block"></small>
                 </div>
@@ -530,8 +604,8 @@ $('#tampilkan_jawaban').on('switchChange.bootstrapSwitch', function(event, state
                     <label for="jenis_jawaban">Acak Jawaban</label>
                     <select name="jenis_jawaban" class="form-control select2">
                         <option value="" disabled selected>- Pilihan -</option>
-                        <option value="acak">Acak Jawaban</option>
                         <option value="urut">Urut Jawaban</option>
+                        <option value="acak">Acak Jawaban</option>
                     </select>
                     <small class="help-block"></small>
                 </div>
@@ -542,6 +616,35 @@ $('#tampilkan_jawaban').on('switchChange.bootstrapSwitch', function(event, state
                     </div>
                     <small class="help-block"></small>
                 </div>
+                <fieldset class="form-group" style="padding: 10px; border: 1px solid #ccc;">
+                    <legend class="col-form-label col-sm-2" style="border: 1px solid #ccc; background-color: #fffcd4;">Cluster Peserta</legend>
+                    <div class="form-group">
+                        <label for="kelompok_ujian" class="control-label">Kelompok Ujian</label>
+                        <select name="kelompok_ujian" id="kelompok_ujian" class="form-control select2"
+                            style="width:100%!important">
+                            @foreach (KELOMPOK_UJIAN_AVAIL as $key => $val)
+                            <option value="{{ $key }}">{{ $key !== 'null' ? $key . ' : ' : ''  }}{{ $val }}</option>    
+                            @endforeach
+                        </select>
+                        <small class="help-block" style="color: #dc3545"><?=form_error('kelompok_ujian')?></small>
+                    </div>
+                    <div class="form-group">
+                        <label for="tgl_ujian" class="control-label">Tgl Ujian</label> <small class="help-block text-danger"><b>***</b> Diisi sesuai dengan tgl ujian peserta jika ada</small>
+                        <input id="tgl_ujian" name="tgl_ujian" type="text" class="datepicker form-control" placeholder="Tanggal Ujian">
+                        <small class="help-block" style="color: #dc3545"><?=form_error('tgl_ujian')?></small>
+                    </div>
+                    <div class="form-group">
+                        <label for="tahun_mhs" class="control-label">Tahun</label>
+                        <select name="tahun_mhs" id="tahun_mhs" class="form-control select2"
+                            style="width:100%!important">
+                            <option value="null">Semua Tahun</option>
+                            @foreach ($tahun_mhs as $tahun)
+                            <option value="{{ $tahun }}" {{ $tahun == get_selected_tahun() ? "selected" : "" }}>{{ $tahun }}</option>    
+                            @endforeach
+                        </select>
+                        <small class="help-block" style="color: #dc3545"><?=form_error('tahun_mhs')?></small>
+                    </div>
+                </fieldset>
                 <div class="form-group">
                     <label for="status_ujian">Peserta Ujian</label>  <small class="help-block text-danger"><b>***</b> Pilih peserta yg akan dienroll ke ujian</small>
                     <input type="hidden" name="peserta_hidden" class="form-control" id="peserta_hidden">

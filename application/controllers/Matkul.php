@@ -10,6 +10,7 @@ use Orm\Mhs_matkul_orm;
 use Illuminate\Database\Eloquent\Builder;
 use Orm\Prodi_orm;
 use Orm\Mhs_orm;
+use Orm\Soal_orm;
 
 class Matkul extends MY_Controller
 {
@@ -217,44 +218,89 @@ class Matkul extends MY_Controller
 	
 	protected function _get_peserta_ujian_matkul(){
 		$id = $this->input->post('id', true);
-		$ujian_id = $this->input->post('ujian_id', true);
-		$matkul = Matkul_orm::findOrFail($id);
-		$mhs_matkul = $matkul->mhs()->where('tahun', get_selected_tahun())->get();
-		if(empty($ujian_id)){
-			$mhs_ujian = [];
-		}else {
-			$mhs_ujian = $matkul->mhs_matkul()
-										->whereHas('mhs', function(Builder $query){
-											$query->where('tahun', get_selected_tahun());
-										})
-										->whereHas('mhs_ujian', function (Builder $query) use($ujian_id){
-											$query->where('ujian_id', $ujian_id);
-										})
-										->get();
+		$mhs_matkul = [];
+		$mhs_ujian = [];
+		if($id !== ''){
+			$ujian_id = $this->input->post('ujian_id', true);
+	
+			$filter_data	= $this->input->post('filter');
+			$filter			= [];
+			if (!empty($filter_data)) {
+				foreach ($filter_data as $key => $v) {
+					if($v != 'null'){
+						$filter[$key] = $v;
+					}
+				}
+			}
+	
+			$matkul = Matkul_orm::findOrFail($id);
+			// $mhs_matkul = $matkul->mhs;
+	
+			// if(!empty($filter)){ /** TIDAK PERLU DI CEK EMPTY */
+				$mhs_matkul = $matkul->mhs()->where($filter)->get();
+			// }
+
+			$filter_tahun_mhs = isset($filter['tahun']) ? $filter['tahun'] : null ;
+	
+			if(empty($ujian_id)){
+				// $mhs_ujian = [];
+			}else {
+				$filter_tahun_mhs = isset($filter['tahun']) ? $filter['tahun'] : null ;
+				$mhs_ujian = $matkul->mhs_matkul()
+											->whereHas('mhs', function(Builder $query) use ($filter_tahun_mhs) {
+												if(!empty($filter_tahun_mhs))
+													$query->where('tahun', $filter_tahun_mhs);
+											})
+											->whereHas('mhs_ujian', function (Builder $query) use ($ujian_id){
+												$query->where('ujian_id', $ujian_id);
+											})
+											->get();
+			}
 		}
 		$this->_json(['mhs_matkul' => $mhs_matkul,'mhs_ujian' => $mhs_ujian]);
 	}
 	
 	protected function _get_peserta_ujian_matkul_not_ujian(){
 		$id = $this->input->post('id', true);
-		$ujian_id = $this->input->post('ujian_id', true);
-		$matkul = Matkul_orm::findOrFail($id);
-		$mhs_matkul = $matkul->mhs()
-								->where('tahun', get_selected_tahun())
-								->whereDoesntHave('h_ujian', function (Builder $query) use($ujian_id){
-			                    	$query->where('ujian_id', $ujian_id);
-			                    })->get();
-		if(empty($ujian_id)){
-			$mhs_ujian = [];
-		}else {
-			$mhs_ujian = $matkul->mhs_matkul()
-								->whereHas('mhs', function(Builder $query){
-									$query->where('tahun', get_selected_tahun());
-								})
-			                    ->whereHas('mhs_ujian', function (Builder $query) use($ujian_id){
-				                    $query->where('ujian_id', $ujian_id);
-			                    })
-			                    ->get();
+		$mhs_matkul = [];
+		$mhs_ujian = [];
+		
+		if($id !== ''){
+			$ujian_id = $this->input->post('ujian_id', true);
+
+			$filter_data	= $this->input->post('filter');
+			$filter			= [];
+			if (!empty($filter_data)) {
+				foreach ($filter_data as $key => $v) {
+					if($v != 'null'){
+						$filter[$key] = $v;
+					}
+				}
+			}
+
+			$matkul = Matkul_orm::findOrFail($id);
+
+			$mhs_matkul = $matkul->mhs()
+									->where($filter)
+									->whereDoesntHave('h_ujian', function (Builder $query) use($ujian_id){
+										$query->where('ujian_id', $ujian_id);
+									})->get();
+
+			$filter_tahun_mhs = isset($filter['tahun']) ? $filter['tahun'] : null ;
+
+			if(empty($ujian_id)){
+				// $mhs_ujian = [];
+			}else {
+				$mhs_ujian = $matkul->mhs_matkul()
+									->whereHas('mhs', function(Builder $query) use ($filter_tahun_mhs){
+										if(!empty($filter_tahun_mhs))
+											$query->where('tahun', $filter_tahun_mhs);
+									})
+									->whereHas('mhs_ujian', function (Builder $query) use($ujian_id){
+										$query->where('ujian_id', $ujian_id);
+									})
+									->get();
+			}
 		}
 		
 		$this->_json(['mhs_matkul' => $mhs_matkul, 'mhs_ujian' => $mhs_ujian]);
@@ -330,6 +376,8 @@ class Matkul extends MY_Controller
 		}
 		
 		$data['prodi_mhs_selected'] = $prodi_mhs_selected;
+		$data['tahun_soal'] = Soal_orm::distinct()->pluck('tahun')->toArray();
+		$data['tahun_mhs'] = Mhs_orm::distinct()->pluck('tahun')->toArray();
 		
 		view('matkul/peserta',$data);
 	}
@@ -351,18 +399,36 @@ class Matkul extends MY_Controller
 		$matkul_id = $this->input->post('matkul_id', true);
 		$kodeps = $this->input->post('kodeps', true);
 		$kodeps = json_decode($kodeps);
-		$mhs = Mhs_orm::whereIn('kodeps', $kodeps)->get();
-//		$mhs_matkul = Mhs_orm::whereIn('kodeps', $kodeps)
-//		                        ->whereHas('mhs_matkul', function (Builder $query) use($matkul_id){
-//				                    $query->where('matkul_id', $matkul_id);
-//			                    })
-//			                    ->get();
+
+		$filter_data	= $this->input->post('filter');
+		$filter			= [];
+		if (!empty($filter_data)) {
+			foreach ($filter_data as $key => $v) {
+				if($v != 'null'){
+					$filter[$key] = $v;
+				}
+			}
+		}
+
+		$mhs = Mhs_orm::whereIn('kodeps', $kodeps)
+						->where($filter)
+						->get();
 		$mhs_ids = [];
 		if($mhs->isNotEmpty()){
 			foreach ($mhs as $m) {
 				$mhs_ids[] = $m->id_mahasiswa;
 			}
 		}
+
+		$mhs_non_filter = Mhs_orm::whereIn('kodeps', $kodeps)
+						->get();
+		$mhs_non_filter_ids = [];
+		if($mhs_non_filter->isNotEmpty()){
+			foreach ($mhs_non_filter as $m) {
+				$mhs_non_filter_ids[] = $m->id_mahasiswa;
+			}
+		}
+
 		$mhs_matkul = Mhs_matkul_orm::whereIn('mahasiswa_id', $mhs_ids)
 								->where('matkul_id', $matkul_id)
 		                        ->whereHas('mhs_ujian')
@@ -374,16 +440,36 @@ class Matkul extends MY_Controller
 				$mhs_matkul_ids[] = $mm->mahasiswa_id;
 			}
 		}
-		
+
 		$mhs_valid_ids = array_diff($mhs_ids, $mhs_matkul_ids);
-		
+
 		$mhs = Mhs_orm::whereIn('id_mahasiswa', $mhs_valid_ids)->get();
-		
+
 		$mhs_matkul = Mhs_matkul_orm::whereIn('mahasiswa_id', $mhs_ids)
 								->where('matkul_id', $matkul_id)
 		                        ->whereDoesntHave('mhs_ujian')
 			                    ->get();
+
+		$mhs_matkul_has_ujian = Mhs_matkul_orm::whereIn('mahasiswa_id', $mhs_ids)
+								->where('matkul_id', $matkul_id)
+		                        ->whereHas('mhs_ujian')
+			                    ->get();
+
+		$jml_mhs_matkul_belum_asign_ujian = Mhs_matkul_orm::whereIn('mahasiswa_id', $mhs_non_filter_ids)
+								->where('matkul_id', $matkul_id)
+		                        ->whereDoesntHave('mhs_ujian')
+			                    ->count();
+
+		$jml_mhs_matkul_sudah_asign_ujian = Mhs_matkul_orm::whereIn('mahasiswa_id', $mhs_non_filter_ids)
+								->where('matkul_id', $matkul_id)
+		                        ->whereHas('mhs_ujian')
+			                    ->count();
 		
-		$this->_json(['mhs' => $mhs, 'mhs_matkul' => $mhs_matkul]);
+		$this->_json(['mhs' => $mhs, 
+						'mhs_matkul' => $mhs_matkul, 
+						'mhs_matkul_has_ujian' => $mhs_matkul_has_ujian,
+						'jml_mhs_matkul_belum_asign_ujian' => $jml_mhs_matkul_belum_asign_ujian,
+						'jml_mhs_matkul_sudah_asign_ujian' => $jml_mhs_matkul_sudah_asign_ujian
+					]);
 	}
 }

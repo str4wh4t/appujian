@@ -59,13 +59,27 @@ class Soal extends MY_Controller
 	public function detail($id)
 	{
 		//        $user = $this->ion_auth->user()->row();
+
 		$soal_orm = Soal_orm::findOrFail($id);
+
+
+		$prev = Soal_orm::where('id_soal', '<', $soal_orm->id_soal)
+								->where('topik_id', $soal_orm->topik_id)
+								->max('id_soal');
+
+		// get next user id
+		$next = Soal_orm::where('id_soal', '>', $soal_orm->id_soal)
+							->where('topik_id', $soal_orm->topik_id)
+							->min('id_soal');
+
 		$data = [
 			//			'user'      => $user,
 			'judul'	    => 'Soal',
 			'subjudul'  => 'Detail Soal',
 			'soal'      => $this->soal->getSoalById($id),
 			'soal_orm'      => $soal_orm,
+			'prev'	=> $prev,
+			'next'	=> $next,
 		];
 
 

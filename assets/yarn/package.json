@@ -16,6 +16,8 @@
     "moment": "^2.29.0",
     "summernote": "^0.8.18",
     "sweetalert": "^2.1.2",
-    "sweetalert2": "^10.3.1"
+    "sweetalert2": "^10.3.1",
+    "typeface-muli": "^1.1.13",
+    "typeface-open-sans": "^1.1.13"
   }
 }

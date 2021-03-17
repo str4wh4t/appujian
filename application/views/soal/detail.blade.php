@@ -48,8 +48,9 @@ function init_page_level(){
 
 
 <!---- --->
-<div class="box">
-    <div class="box-header with-header">
+
+<div class="row">
+    <div class="col-sm-8">
         <div class="mb-2">
             <a href="{{ site_url('soal') }}" class="btn btn-flat btn-warning">
                 <i class="fa fa-arrow-left"></i> Kembali
@@ -57,75 +58,78 @@ function init_page_level(){
             <a href="{{ site_url('soal/edit/' . segment(3)) }}" class="btn btn-flat btn-outline-primary">
                 <i class="fa fa-edit"></i> Edit
             </a>
-        </div>
-    </div>
-    <div class="box-body">
-        <div class="row">
-            <div class="col-sm-8">
-                <table class="table table-bordered">
-                    <tr>
-                        <td>Matkul</td><td>{{ $soal_orm->topik->matkul->nama_matkul }}</td>
-                    </tr>
-                    <tr>
-                        <td>Topik</td><td>{{ $soal_orm->topik->nama_topik }}</td>
-                    </tr>
-                    <tr>
-                        <td>Dibuat Oleh</td><td>{{ $soal->created_by }}</td>
-                    </tr>
-                    <tr>
-                        <td>Dibuat Pada</td><td>{{ $soal->created_at }}</td>
-                    </tr>
-                    <tr>
-                        <td>Terkahir Diupdate</td><td>{{ $soal->updated_at }}</td>
-                    </tr>
-                </table>
-                <hr>
-                <div class="alert bg-info mb-2" role="alert">
-                    <strong>Pertanyaan</strong>
-                </div>
-                <?php if(!empty($soal->file)): ?>
-                    <div class="w-50">
-                        <?= tampil_media('uploads/bank_soal/'.$soal->file); ?>
-                    </div>
-                <?php endif; ?>
-                <?=$soal->soal?>
-                <div class="alert bg-danger mb-2 mt-2" role="alert">
-                    <strong>Jawaban</strong>
-                </div>
-                <?php
-                $abjad = ['a', 'b', 'c', 'd', 'e'];
+            <div class="pull-right">
+                @if (!empty($prev))
+                <a href="{{ url('soal/detail/' . $prev) }}" class="btn btn-info"><i class="fa fa-chevron-left"></i> Prev</a>
+                @endif
 
-                foreach ($abjad as $abj) :
-                    $ABJ = strtoupper($abj);
-                    $opsi = 'opsi_'.$abj;
-                    $file = 'file_'.$abj;
-                ?>
-
-                    <h4></h4>
-                    @if($soal->jawaban === $ABJ)
-                    <div class="badge border-success success badge-square badge-border">
-                        <span>Pilihan <?=$ABJ?></span> <i class="fa fa-check-circle font-medium-2"></i>
-                    </div>
-                    @else
-                    <div class="badge border-danger danger badge-square badge-border">
-                        Pilihan <?=$ABJ?>
-                    </div>
-                    @endif
-                    <blockquote class="blockquote pl-1 border-left-grey border-left-3 mt-2 mb-2">
-                    <?=$soal->$opsi?>
-                    </blockquote>
-                    <?php if(!empty($soal->$file)): ?>
-                    <div class="w-50 mx-auto">
-                        <?= tampil_media('uploads/bank_soal/'.$soal->$file); ?>
-                    </div>
-                    <?php endif;?>
-
-                <?php endforeach;?>
-                <hr>
+                @if (!empty($next))
+                <a href="{{ url('soal/detail/' . $next) }}" class="btn btn-info">Next <i class="fa fa-chevron-right"></i></a>
+                @endif
             </div>
         </div>
     </div>
 </div>
+<div class="row">
+    <div class="col-sm-8">
+        <table class="table table-bordered">
+            <tr>
+                <td>Matkul</td><td>{{ $soal_orm->topik->matkul->nama_matkul }}</td>
+            </tr>
+            <tr>
+                <td>Topik</td><td>{{ $soal_orm->topik->nama_topik }}</td>
+            </tr>
+            <tr>
+                <td>Dibuat Oleh</td><td>{{ $soal->created_by }}</td>
+            </tr>
+            <tr>
+                <td>Dibuat Pada</td><td>{{ $soal->created_at }}</td>
+            </tr>
+            <tr>
+                <td>Terakhir Diupdate</td><td>{{ $soal->updated_at }}</td>
+            </tr>
+        </table>
+        <hr>
+        <div class="alert bg-info mb-2" role="alert">
+            <strong>Pertanyaan</strong>
+        </div>
+        <?php if(!empty($soal->file)): ?>
+            <div class="w-50">
+                <?= tampil_media('uploads/bank_soal/'.$soal->file); ?>
+            </div>
+        <?php endif; ?>
+        {!! $soal->soal !!}
+        <div class="alert bg-danger mb-2 mt-2" role="alert">
+            <strong>Jawaban</strong>
+        </div>
+        <?php
+        $abjad = ['a', 'b', 'c', 'd', 'e'];
+
+        foreach ($abjad as $abj) :
+            $ABJ = strtoupper($abj);
+            $opsi = 'opsi_'.$abj;
+            $file = 'file_'.$abj;
+        ?>
+
+            <div
+            class="alert alert-light border-success {{ ($ABJ === $soal->jawaban) ? 'bg-success' : '' }}">
+            <?php $text_color = ($ABJ == $soal->jawaban) ? 'white' : 'success';  ?>
+            <span style="font-size: 1.5rem"
+                class="float-left mr-1 text-{{ $text_color }}">{{ $ABJ }}. </span>{!!
+            $soal->$opsi !!}
+            </div>
+
+            <?php if(!empty($soal->$file)): ?>
+            <div class="w-50 mx-auto">
+                <?= tampil_media('uploads/bank_soal/'.$soal->$file); ?>
+            </div>
+            <?php endif;?>
+
+        <?php endforeach;?>
+        <hr>
+    </div>
+</div>
+
 <!---- --->
 
 				</div>

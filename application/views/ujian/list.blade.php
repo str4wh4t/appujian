@@ -278,10 +278,10 @@
                                                     </div>
                                                 </div>
                                                 @empty
-                                                <div class="alert bg-warning alert-icon-left alert-arrow-left w-100" role="alert">
+                                                {{-- <div class="alert bg-warning alert-icon-left alert-arrow-left w-100" role="alert">
                                                     <span class="alert-icon"><i class="fa fa-warning"></i></span> 
-                                                    <b>Anda tidak memiliki ujian.</b>
-                                                </div>
+                                                    <b>Belum ada ujian aktif.</b>
+                                                </div> --}}
                                                 @endforelse
                                             </div>
                                             {{-- [STOP] FOREACH UJIAN AKTIF  --}}
@@ -371,7 +371,7 @@
                                                 @empty
                                                 <div class="alert bg-warning alert-icon-left alert-arrow-left w-100" role="alert">
                                                     <span class="alert-icon"><i class="fa fa-warning"></i></span> 
-                                                    <b>Anda tidak memiliki ujian.</b>
+                                                    <b>Anda belum memiliki hasil ujian.</b>
                                                 </div>
                                                 @endforelse
                                             </div>

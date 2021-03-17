@@ -7,7 +7,7 @@
 {{--<link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/vendors/css/tables/extensions/rowReorder.dataTables.min.css') }}">--}}
 {{--<link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/vendors/css/tables/extensions/responsive.dataTables.min.css') }}">--}}
 <link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/vendors/css/forms/selects/select2.min.css') }}">
-{{--<link rel="stylesheet" type="text/css" href="{{ asset('assets/bower_components/bootstrap4-datetimepicker/build/css/bootstrap-datetimepicker.css') }}">--}}
+<link rel="stylesheet" type="text/css" href="{{ asset('assets/yarn/node_modules/bootstrap4-datetimepicker/build/css/bootstrap-datetimepicker.css') }}">
 <link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/vendors/css/forms/toggle/bootstrap-switch.min.css') }}">
 <!-- END PAGE LEVEL JS-->
 @endpush
@@ -22,8 +22,8 @@
 {{--<script src="{{ asset('assets/template/robust/app-assets/vendors/js/tables/datatable/dataTables.rowReorder.min.js') }}"></script>--}}
 <script src="{{ asset('assets/template/robust/app-assets/vendors/js/forms/select/select2.full.min.js') }}"></script>
 {{--<script src="{{ asset('assets/plugins/select2-cascade.js') }}"></script>--}}
-{{--<script src="{{ asset('assets/bower_components/moment/min/moment.min.js') }}"></script>--}}
-{{--<script src="{{ asset('assets/bower_components/bootstrap4-datetimepicker/build/js/bootstrap-datetimepicker.min.js') }}"></script>--}}
+<script src="{{ asset('assets/yarn/node_modules/moment/min/moment.min.js') }}"></script>
+<script src="{{ asset('assets/yarn/node_modules/bootstrap4-datetimepicker/build/js/bootstrap-datetimepicker.min.js') }}"></script>
 {{--<script src="{{ asset('assets/template/robust/app-assets/vendors/js/forms/toggle/bootstrap-switch.min.js') }}"></script>--}}
 <!-- END PAGE VENDOR -->
 @endpush
@@ -35,24 +35,54 @@
 let prodi_avail = [];
 let prodi_mhs_selected = [];
 
+let filter_mhs = {
+    kelompok_ujian: null,
+    tgl_ujian: null,
+    tahun: null,
+};
+
 function init_page_level(){
     ajaxcsrf();
     $('.select2').select2();
     $('#prodi_id').select2({placeholder : 'Pilih Prodi'});
     $('#prodi_id').prepend('<option value="ALL">Semua Prodi</option>');
 
+    filter_mhs.kelompok_ujian    = $('#kelompok_ujian').val();
+    filter_mhs.tgl_ujian    = $('#tgl_ujian').val() == '' ? 'null' : $('#tgl_ujian').val();
+    filter_mhs.tahun    = $('#tahun_mhs').val();
+
     @foreach($prodi as $p)
         prodi_avail.push('{{ $p->kodeps }}');
     @endforeach
 
     @if(!empty($prodi_mhs_selected))
-    @foreach($prodi_mhs_selected as $kodeps)
-        prodi_mhs_selected.push('{{ $kodeps }}');
-    @endforeach
+        @foreach($prodi_mhs_selected as $kodeps)
+            prodi_mhs_selected.push('{{ $kodeps }}');
+        @endforeach
 
-    $('#prodi_id').val(prodi_mhs_selected).trigger('change');
-    init_peserta_table_value();
+        $('#prodi_id').val(prodi_mhs_selected).trigger('change');
+        ajx_overlay(true);
+        init_peserta_table_value().then(function(){
+            ajx_overlay(false);
+        });
     @endif
+
+    $('.datepicker').datetimepicker({
+        format: 'YYYY-MM-DD',
+        // Your Icons
+        // as Bootstrap 4 is not using Glyphicons anymore
+        icons: {
+            time: 'fa fa-clock-o',
+            date: 'fa fa-calendar',
+            up: 'fa fa-chevron-up',
+            down: 'fa fa-chevron-down',
+            previous: 'fa fa-chevron-left',
+            next: 'fa fa-chevron-right',
+            today: 'fa fa-check',
+            clear: 'fa fa-trash',
+            close: 'fa fa-times'
+        }
+    });
 
 }
 
@@ -65,7 +95,6 @@ $('#prodi_id').on('select2:select', function (e) {
     if(data.id == 'ALL'){
         $(this).val(null).trigger('change');
         $(this).val('ALL').trigger('change');
-        init_peserta_table_value();
     }else{
         let values = $(this).val();
         if (values) {
@@ -75,8 +104,11 @@ $('#prodi_id').on('select2:select', function (e) {
                 $(this).val(values).change();
             }
         }
-        init_peserta_table_value();
     }
+    ajx_overlay(true);
+    init_peserta_table_value().then(function(){
+        ajx_overlay(false);
+    });
 });
 
 $('#prodi_id').on('select2:unselect', function (e) {
@@ -88,11 +120,14 @@ $('#prodi_id').on('select2:unselect', function (e) {
     }else{
         // topik_jumlah_soal[data.id] = [];
     }
-    init_peserta_table_value();
+    ajx_overlay(true);
+    init_peserta_table_value().then(function(){
+        ajx_overlay(false);
+    });
 
 });
 
-function init_peserta_table_value(){
+const init_peserta_table_value = () => {
     let selected_ids = $('#prodi_id').val();
     if($.inArray('ALL', selected_ids) !== -1){
         selected_ids = [];
@@ -100,18 +135,27 @@ function init_peserta_table_value(){
             selected_ids.push(v);
         });
     }
-    $.ajax({
+    return $.ajax({
         url: "{{ site_url('matkul/ajax/get_mhs_prodi') }}",
-        data: { 'matkul_id' : '{{ $matkul->id_matkul }}', 'kodeps': JSON.stringify(selected_ids) },
+        data: { 'matkul_id' : '{{ $matkul->id_matkul }}', 
+                'kodeps': JSON.stringify(selected_ids),
+                'filter' : filter_mhs },
         type: 'POST',
         async: false,
         success: function (response) {
             $('#tbody_tb_peserta').html('');
             let mhs_matkul_existing = [];
+            let mhs_matkul_has_ujian_existing = [];
             if(!$.isEmptyObject(response.mhs_matkul)) {
                 $.each(response.mhs_matkul, function (i, item) {
                     // mhs_matkul_existing.push(item.id_mahasiswa);
                     mhs_matkul_existing.push(item.mahasiswa_id);
+                });
+            }
+            if(!$.isEmptyObject(response.mhs_matkul_has_ujian)) {
+                $.each(response.mhs_matkul_has_ujian, function (i, item) {
+                    // mhs_matkul_existing.push(item.id_mahasiswa);
+                    mhs_matkul_has_ujian_existing.push(item.mahasiswa_id);
                 });
             }
             if(!$.isEmptyObject(response.mhs)) {
@@ -137,10 +181,11 @@ function init_peserta_table_value(){
                     ).appendTo('#tbody_tb_peserta');
             }
             $('#peserta_hidden').val(JSON.stringify(mhs_matkul_existing));
-            $('#span_jml_mhs').text(mhs_matkul_existing.length);
+            $('#span_jml_mhs').text(response.jml_mhs_matkul_belum_asign_ujian);
+            $('#span_jml_mhs_has_ujian').text(response.jml_mhs_matkul_sudah_asign_ujian);
         }
     });
-}
+};
 
 $(document).on('change','#chkbox_pilih_semua_peserta',function () {
     if($(this).is(':checked')){
@@ -209,6 +254,33 @@ $(document).on('click','#btn_submit_search',function () {
     }
 });
 
+$(document).on('change','#kelompok_ujian', function(){
+    let kelompok_ujian = $(this).val();
+    filter_mhs.kelompok_ujian = kelompok_ujian;
+    ajx_overlay(true);
+    init_peserta_table_value().then(function(){
+        ajx_overlay(false);
+    });
+});
+
+$(document).on('focusout','#tgl_ujian', function(){ /** DATEPICKER WORKS ON FOCUSOUT */
+    let tgl_ujian = $(this).val() == '' ? 'null' : $(this).val();
+    filter_mhs.tgl_ujian = tgl_ujian;
+    ajx_overlay(true);
+    init_peserta_table_value().then(function(){
+        ajx_overlay(false);
+    });
+});
+
+$(document).on('change','#tahun_mhs', function(){
+    let tahun = $(this).val();
+    filter_mhs.tahun = tahun;
+    ajx_overlay(true);
+    init_peserta_table_value().then(function(){
+        ajx_overlay(false);
+    });
+});
+
 </script>
 <!-- END PAGE LEVEL JS-->
 @endpush
@@ -260,10 +332,42 @@ $(document).on('click','#btn_submit_search',function () {
                         @endforeach
                     </select> <small class="help-block" style="color: #dc3545"><?=form_error('prodi_id')?></small>
                 </div>
+                <fieldset class="form-group" style="padding: 10px; border: 1px solid #ccc;">
+                    <legend class="col-form-label col-sm-2" style="border: 1px solid #ccc; background-color: #fffcd4;">Cluster Peserta</legend>
+                    <div class="form-group">
+                        <label for="kelompok_ujian" class="control-label">Kelompok Ujian</label>
+                        <select name="kelompok_ujian" id="kelompok_ujian" class="form-control select2"
+                            style="width:100%!important">
+                            @foreach (KELOMPOK_UJIAN_AVAIL as $key => $val)
+                            <option value="{{ $key }}">{{ $key !== 'null' ? $key . ' : ' : ''  }}{{ $val }}</option>    
+                            @endforeach
+                        </select>
+                        <small class="help-block" style="color: #dc3545"><?=form_error('kelompok_ujian')?></small>
+                    </div>
+                    <div class="form-group">
+                        <label for="tgl_ujian" class="control-label">Tgl Ujian</label> <small class="help-block text-danger"><b>***</b> Diisi sesuai dengan tgl ujian peserta jika ada</small>
+                        <input id="tgl_ujian" name="tgl_ujian" type="text" class="datepicker form-control" placeholder="Tanggal Ujian">
+                        <small class="help-block" style="color: #dc3545"><?=form_error('tgl_ujian')?></small>
+                    </div>
+                    <div class="form-group">
+                        <label for="tahun_mhs" class="control-label">Tahun</label>
+                        <select name="tahun_mhs" id="tahun_mhs" class="form-control select2"
+                            style="width:100%!important">
+                            <option value="null">Semua Tahun</option>
+                            @foreach ($tahun_mhs as $tahun)
+                            <option value="{{ $tahun }}" {{ $tahun == get_selected_tahun() ? "selected" : "" }}>{{ $tahun }}</option>    
+                            @endforeach
+                        </select>
+                        <small class="help-block" style="color: #dc3545"><?=form_error('tahun_mhs')?></small>
+                    </div>
+                </fieldset>
                 <div class="form-group">
                     <label for="status_ujian">Peserta Ujian</label>  <small class="help-block text-danger"><b>***</b> Pilih peserta yg akan di-asign ke materi ujian dipilih</small>
                     <input type="hidden" name="peserta_hidden" class="form-control" id="peserta_hidden">
-                    <div class="alert bg-success">Jumlah mhs yang di-asign : <span id="span_jml_mhs"><b>0</b></span> mhs ( Belum diasign ke ujian )</div>
+                    <div class="alert" style="background-color: #ffb; border: 1px solid #f00; color: #333;">
+                        Jumlah mhs yang di-asign : <b><span id="span_jml_mhs" class="text-danger">0</span></b> mhs ( Belum diasign ke ujian ) , 
+                        <b><span id="span_jml_mhs_has_ujian" class="text-danger">0</span></b> mhs ( Sudah diasign ke ujian )
+                    </div>
                     <div style="overflow-x: scroll">
                     <table class="table table-bordered">
                         <thead>

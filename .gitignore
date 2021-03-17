@@ -1,5 +1,4 @@
 /application/cache
-/application/config/database.php
 /application/config/config.php
 application/config/constants_depend_app.php
 /vendor

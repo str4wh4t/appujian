@@ -172,12 +172,14 @@
                                                 <div class="col-md-4 col-sm-12">
                                                     <div class="card box-shadow-0 border-success" style="background-color: #ffffee">
                                                         <div class="card-content collapse show">
+                                                            <div class="card-header">
+                                                                <h6><b>TUTORIAL UJIAN</b></h6>
+                                                            </div>
                                                             <div class="card-body">
-                                                                <p><b>TUTORIAL UJIAN</b></p>
-                                                                <dl class="row">
+                                                                {{-- <dl class="row">
                                                                     <dt class="col-sm-5 text-left">Materi Ujian</dt>
                                                                     <dd class="col-sm-7">TUTORIAL</dd>
-                                                                </dl>
+                                                                </dl> --}}
                                                                 <dl class="row">
                                                                     <dt class="col-sm-5 text-left">Jml Soal</dt>
                                                                     <dd class="col-sm-7">{{ JML_SOAL_TUTORIAL }}</dd>
@@ -208,12 +210,14 @@
                                                     <div class="card box-shadow-0 border-success">
                                                         {{-- <div class="card-header"></div> --}}
                                                         <div class="card-content collapse show">
+                                                            <div class="card-header">
+                                                                <h6><b>{{ $mhs_ujian->m_ujian->nama_ujian }}</b></h6>
+                                                            </div>
                                                             <div class="card-body">
-                                                                <p><b>{{ $mhs_ujian->m_ujian->nama_ujian }}</b></p>
-                                                                <dl class="row">
+                                                                {{-- <dl class="row">
                                                                     <dt class="col-sm-5 text-left">Materi Ujian</dt>
                                                                     <dd class="col-sm-7">{{ $mhs_ujian->m_ujian->matkul->nama_matkul }}</dd>
-                                                                </dl>
+                                                                </dl> --}}
                                                                 <dl class="row">
                                                                     <dt class="col-sm-5 text-left">Jml Soal</dt>
                                                                     <dd class="col-sm-7">{{ $mhs_ujian->m_ujian->jumlah_soal }}</dd>
@@ -313,12 +317,14 @@
                                                     <div class="card box-shadow-0 border-primary">
                                                         {{-- <div class="card-header"></div> --}}
                                                         <div class="card-content collapse show">
+                                                            <div class="card-header">
+                                                                <h6><b>{{ $mhs_ujian->m_ujian->nama_ujian }}</b></h6>
+                                                            </div>
                                                             <div class="card-body">
-                                                                <p><b>{{ $mhs_ujian->m_ujian->nama_ujian }}</b></p>
-                                                                <dl class="row">
+                                                                {{-- <dl class="row">
                                                                     <dt class="col-sm-5 text-left">Materi Ujian</dt>
                                                                     <dd class="col-sm-7">{{ $mhs_ujian->m_ujian->matkul->nama_matkul }}</dd>
-                                                                </dl>
+                                                                </dl> --}}
                                                                 <dl class="row">
                                                                     <dt class="col-sm-5 text-left">Jml Soal</dt>
                                                                     <dd class="col-sm-7">{{ $mhs_ujian->m_ujian->jumlah_soal }}</dd>

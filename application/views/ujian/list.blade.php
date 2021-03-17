@@ -171,10 +171,10 @@
                                             <div class="row">
                                                 <div class="col-md-4 col-sm-12">
                                                     <div class="card box-shadow-0 border-success" style="background-color: #ffffee">
+                                                        <div class="card-header ">
+                                                            <h6><b>TUTORIAL UJIAN</b></h6>
+                                                        </div>
                                                         <div class="card-content collapse show">
-                                                            <div class="card-header">
-                                                                <h6><b>TUTORIAL UJIAN</b></h6>
-                                                            </div>
                                                             <div class="card-body">
                                                                 {{-- <dl class="row">
                                                                     <dt class="col-sm-5 text-left">Materi Ujian</dt>
@@ -209,10 +209,10 @@
                                                 <div class="col-md-4 col-sm-12">
                                                     <div class="card box-shadow-0 border-success">
                                                         {{-- <div class="card-header"></div> --}}
+                                                        <div class="card-header ">
+                                                            <h6><b>{{ $mhs_ujian->m_ujian->nama_ujian }}</b></h6>
+                                                        </div>
                                                         <div class="card-content collapse show">
-                                                            <div class="card-header">
-                                                                <h6><b>{{ $mhs_ujian->m_ujian->nama_ujian }}</b></h6>
-                                                            </div>
                                                             <div class="card-body">
                                                                 {{-- <dl class="row">
                                                                     <dt class="col-sm-5 text-left">Materi Ujian</dt>
@@ -316,10 +316,10 @@
                                                 <div class="col-md-4 col-sm-12">
                                                     <div class="card box-shadow-0 border-primary">
                                                         {{-- <div class="card-header"></div> --}}
+                                                        <div class="card-header ">
+                                                            <h6><b>{{ $mhs_ujian->m_ujian->nama_ujian }}</b></h6>
+                                                        </div>
                                                         <div class="card-content collapse show">
-                                                            <div class="card-header">
-                                                                <h6><b>{{ $mhs_ujian->m_ujian->nama_ujian }}</b></h6>
-                                                            </div>
                                                             <div class="card-body">
                                                                 {{-- <dl class="row">
                                                                     <dt class="col-sm-5 text-left">Materi Ujian</dt>

@@ -42,6 +42,7 @@ $(document).on('click','.btn_reset_hasil',function(){
         confirmButtonText: "Reset"
     }).then(result => {
         if (result.value) {
+            ajx_overlay(true);
             $.ajax({
                 url: '{{ url('hasilujian/ajax/reset_hasil_ujian') }}',
                 type: 'post',
@@ -56,6 +57,12 @@ $(document).on('click','.btn_reset_hasil',function(){
                         });
                     }else{
                         table.ajax.reload();
+                        $.post('{{ url('hasilujian/ajax/get_stat_nilai') }}', {'id' : data.mujian_id}, function(data){
+                            console.log(data.nilai_terendah);
+                            $('#nilai_terendah').text(data.nilai_terendah);
+                            $('#nilai_tertinggi').text(data.nilai_tertinggi);
+                            $('#nilai_rata_rata').text(data.nilai_rata_rata);
+                        });
                     }
                 },
                 error: function (data){
@@ -64,6 +71,9 @@ $(document).on('click','.btn_reset_hasil',function(){
                         text: "Terjadi kesalahan.",
                         icon: "warning"
                     });
+                },
+                complete: function(){
+                    ajx_overlay(false);
                 }
             });
         }
@@ -143,20 +153,21 @@ $(document).on('click','.btn_reset_hasil',function(){
             </tr>
             <tr>
                 <th>Nilai Terendah</th>
-                <td><?=number_format($nilai->min_nilai,2,'.', '')?></td>
+                <td id="nilai_terendah"><?=number_format($nilai->min_nilai,2,'.', '')?></td>
             </tr>
             <tr>
                 <th>Nilai Tertinggi</th>
-                <td><?=number_format($nilai->max_nilai,2,'.', '')?></td>
+                <td id="nilai_tertinggi"><?=number_format($nilai->max_nilai,2,'.', '')?></td>
             </tr>
             <tr>
                 <th>Rata-rata Nilai</th>
-                <td><?=number_format($nilai->avg_nilai,2,'.', '')?></td>
+                <td id="nilai_rata_rata"><?=number_format($nilai->avg_nilai,2,'.', '')?></td>
             </tr>
         </table>
     </div>
 </div>
 <div class="row">
+
     @if(in_group('mahasiswa'))
 
 {{--    <div class="col-md-12 mt-2" style="text-align: center">--}}
@@ -176,6 +187,7 @@ $(document).on('click','.btn_reset_hasil',function(){
         
         
     @endif
+
     <div class="col-md-12 mb-4 mt-2">
         <div class="table-responsive pb-3" style="border: 0">
             <table id="detail_hasil" class="w-100 table table-striped table-bordered table-hover">

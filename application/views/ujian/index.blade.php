@@ -425,7 +425,12 @@ function selesai(ended_by = '') {
                 Swal.fire({
                     title: "Perhatian",
                     text: "Ujian telah selesai, anda akan keluar ujian dalam 3 detik",
-                    icon: "success"
+                    icon: "success",
+                    confirmButtonText: "Keluar Sekarang"
+                }).then(result => {
+			        if (result.value) {
+                        window.location.href = '{{ url('ujian/list') }}';
+                    }
                 });
                 setTimeout(function() {
                     window.location.href = '{{ url('ujian/list') }}';

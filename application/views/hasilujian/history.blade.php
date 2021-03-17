@@ -172,6 +172,7 @@ use Illuminate\Database\Capsule\Manager as DB;
                                 </tr>
                             </table>
                         </div>
+                        @if (in_group('mahasiswa'))
                         @if ($m_ujian->repeatable)
 
                             <?php 
@@ -192,6 +193,7 @@ use Illuminate\Database\Capsule\Manager as DB;
                                 @endif
                             @endif
 
+                        @endif
                         @endif
                     </div>
                     <div class="border border-success p-1 mt-1 mb-1" style="">

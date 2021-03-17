@@ -69,6 +69,7 @@ class HasilUjian extends MY_Controller {
 		
 		$id = $this->input->post('id');
 		$h_ujian = Hujian_orm::findOrFail($id);
+		$mujian_id = $h_ujian->ujian_id;
 		$action = true;
 		try {
 			begin_db_trx();
@@ -98,7 +99,12 @@ class HasilUjian extends MY_Controller {
 //				$jawaban_ujian_deleted_orm->status_jawaban  = $jawaban_ujian->status_jawaban;
 //				$jawaban_ujian_deleted_orm->save();
 //			}
+
+			$mahasiswa_ujian_id = $h_ujian->mahasiswa_ujian_id;
 			$h_ujian->delete();
+
+			Hujian_history_orm::where('mahasiswa_ujian_id', $mahasiswa_ujian_id)->delete();
+
 			commit_db_trx();
 		} catch(\Illuminate\Database\QueryException $e){
 			rollback_db_trx();
@@ -106,7 +112,7 @@ class HasilUjian extends MY_Controller {
 			$action = false;
 	    }
 		
-		$this->_json(['status' => $action]);
+		$this->_json(['status' => $action, 'mujian_id' => $mujian_id]);
 		
 	}
 
@@ -151,13 +157,37 @@ class HasilUjian extends MY_Controller {
 			'subjudul'=> 'Detail Hasil Ujian',
 			'ujian'	=> $ujian,
 			'nilai'	=> $nilai,
-			'mhs'	=> $mhs,
+			'mhs'	=> $mhs, //  ADA NILAI NYA JIKA YG LOGIN MHS
 		];
 
 //		$this->load->view('_templates/dashboard/_header.php', $data);
 //		$this->load->view('ujian/detail_hasil');
 //		$this->load->view('_templates/dashboard/_footer.php');
 		view('hasilujian/detail',$data);
+	}
+
+	protected function _get_stat_nilai(){
+		$id = $this->input->post('id');
+		
+		if(in_group('mahasiswa')){
+			$id = integer_read_from_uuid($id);
+		}
+		
+		$m_ujian = Mujian_orm::findOrFail($id);
+		
+		if(in_group('mahasiswa')){
+			if(!$m_ujian->tampilkan_hasil){
+				show_404();
+			}
+		}
+		
+		$nilai = $this->ujian->bandingNilai($m_ujian->id_ujian);
+
+		$data['nilai_terendah'] = number_format($nilai->min_nilai,2,'.', '');
+		$data['nilai_tertinggi'] = number_format($nilai->max_nilai,2,'.', '');
+		$data['nilai_rata_rata'] = number_format($nilai->avg_nilai,2,'.', '');
+		
+		$this->_json($data);
 	}
 
 //	public function cetak($id)
@@ -301,18 +331,20 @@ class HasilUjian extends MY_Controller {
 
 	}
 
-	public function history($mahasiswa_ujian_id_uuid){
+	public function history($mahasiswa_ujian_id){
 
-		$this->_akses_mahasiswa();
+		if(!is_admin() && !in_group('mahasiswa')){
+			show_404();
+		}
 
 		$data = [
 			'judul'	=> 'Ujian',
 			'subjudul' => 'History Ujian'
 		];
 		
-		if(in_group('mahasiswa')){
-			$mahasiswa_ujian_id = integer_read_from_uuid($mahasiswa_ujian_id_uuid);
-		}
+		if(in_group('mahasiswa'))
+			$mahasiswa_ujian_id = integer_read_from_uuid($mahasiswa_ujian_id);
+
 		
 		$mhs_ujian = Mhs_ujian_orm::findOrFail($mahasiswa_ujian_id);
 		

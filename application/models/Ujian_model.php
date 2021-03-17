@@ -313,7 +313,7 @@ class Ujian_model extends CI_Model {
     public function HslUjianById($id, $dt=false)
     {
     	
-    	$this->db->select('d.id, a.nim, a.nama, d.detail_bobot_benar, d.nilai, d.nilai_bobot_benar, b.masa_berlaku_sert, b.tampilkan_jawaban, TIMESTAMPDIFF(SECOND, d.tgl_mulai, d.tgl_selesai) AS lama_pengerjaan');
+    	$this->db->select('d.id, a.nim, a.nama, d.detail_bobot_benar, d.nilai, d.nilai_bobot_benar, b.masa_berlaku_sert, b.tampilkan_jawaban, TIMESTAMPDIFF(SECOND, d.tgl_mulai, d.tgl_selesai) AS lama_pengerjaan, d.mahasiswa_ujian_id');
         $this->db->from('h_ujian d');
 		$this->db->join('mahasiswa a', 'a.id_mahasiswa = d.mahasiswa_id');
 		$this->db->join('m_ujian b', 'd.ujian_id = b.id_ujian');
@@ -375,7 +375,11 @@ class Ujian_model extends CI_Model {
 	        	    	if($data['masa_berlaku_sert'] > 0)
 		                    $return .= '<a class="btn btn-sm btn-info btn_cetak_hasil" target="_blank" href="'. url('pub/cetak_sertifikat/' . $data['nim'] . '/' . uuid_create_from_integer($id)) .'" title="Cetak hasil"><i class="fa fa-print"></i></a>';
 		            }
-                    $return .= '<a target="_blank" href="'. url('hasilujian/jawaban/' . uuid_create_from_integer($data['id']) ) .'" class="btn btn-success btn-sm"><i class="fa fa-eye"></i></a>';
+                    $mahasiswa_ujian_id = $data['mahasiswa_ujian_id'];
+                    if(in_group('mahasiswa'))
+                        $mahasiswa_ujian_id = uuid_create_from_integer($data['mahasiswa_ujian_id']);
+
+                    $return .= '<a target="_blank" href="'. url('hasilujian/history/' . $mahasiswa_ujian_id ) .'" class="btn btn-success btn-sm"><i class="fa fa-eye"></i></a>';
 		            $return .= '</div>';
 		        }else{
                     $return = '-';

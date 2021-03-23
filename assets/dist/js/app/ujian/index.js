@@ -1,3 +1,5 @@
+let waktu_buka_soal = null;
+
 $(document).ready(function () {
     ajaxcsrf();
 
@@ -6,8 +8,8 @@ $(document).ready(function () {
     //     sisawaktu(t.data('time'));
     // }
 
-    buka(1);
-    simpan_view();
+    // buka(1);
+    // simpan_view();
 
     widget = $(".step");
     btnnext = $(".next");
@@ -44,12 +46,20 @@ function buka(id_widget) {
     cek_status_ragu(id_widget);
     cek_terakhir(id_widget);
 
-    $("#soalke").html(id_widget);
+    let soal_ke = $('#btn_soal_' + id_widget).text();
+    $("#soalke").html(soal_ke);
+
+    let topik_id_buka = $('#topik_id_' + id_widget).val();
+    $('#text_info_topik').text(topik_nama[topik_id_buka]);
 
     $(".step").hide();
     $("#widget_" + id_widget).show();
     $("#widget_jawaban_" + id_widget).show();
 
+    let sid = $('input[name="id_soal_'+ id_widget +'"]').val();
+    // waktu_buka_soal[sid] = waktu_buka_soal[sid] ? waktu_buka_soal[sid] : moment().format("YYYY-MM-DD HH:mm:ss");
+    waktu_buka_soal = moment().format("YYYY-MM-DD HH:mm:ss");
+    console.log('buka', waktu_buka_soal);
 }
 
 function next() {
@@ -57,7 +67,23 @@ function next() {
     berikutnya = parseInt(berikutnya);
     berikutnya = berikutnya > total_widget ? total_widget : berikutnya;
 
-    $("#soalke").html(berikutnya);
+    let topik_id_next = $('#topik_id_' + berikutnya).val();
+    if(is_sekuen_topik){
+        if(topik_id_next != topik_aktif){
+            Swal.fire({
+                title: "Perhatian",
+                text: "Maaf, tidak diperbolehkan", // INI TERJADI JIKA INGIN MENERUKAN KE TOPIK SESUDAHNYA
+                icon: "warning"
+            });
+            return;
+        }
+    }
+
+    let soal_ke = $('#btn_soal_' + berikutnya).text();
+    $("#soalke").html(soal_ke);
+
+    let topik_id_buka = $('#topik_id_' + berikutnya).val();
+    $('#text_info_topik').text(topik_nama[topik_id_buka]);
 
     $(".next").attr('rel', (berikutnya + 1));
     $(".back").attr('rel', (berikutnya - 1));
@@ -89,6 +115,12 @@ function next() {
     }
 
     simpan_view();
+
+    let sid = $('input[name="id_soal_'+ berikutnya +'"]').val();
+    // waktu_buka_soal[sid] = waktu_buka_soal[sid] ? waktu_buka_soal[sid] : moment().format("YYYY-MM-DD HH:mm:ss");
+    waktu_buka_soal = moment().format("YYYY-MM-DD HH:mm:ss");
+    console.log('next', waktu_buka_soal);
+
 }
 
 function back() {
@@ -96,7 +128,24 @@ function back() {
     back = parseInt(back);
     back = back < 1 ? 1 : back;
 
-    $("#soalke").html(back);
+    let topik_id_back = $('#topik_id_' + back).val();
+    if(is_sekuen_topik){
+        if(topik_id_back != topik_aktif){
+            Swal.fire({
+                title: "Perhatian",
+                text: "Maaf, tidak diperbolehkan", // INI TERJADI JIKA INGIN MENERUKAN KE TOPIK SESUDAHNYA
+                icon: "warning"
+            });
+            return;
+        }
+    }
+
+    let soal_ke = $('#btn_soal_' + back).text();
+    $("#soalke").html(soal_ke);
+
+    let topik_id_buka = $('#topik_id_' + back).val();
+    $('#text_info_topik').text(topik_nama[topik_id_buka]);
+
 
     $(".back").attr('rel', (back - 1));
     $(".next").attr('rel', (back + 1));
@@ -128,6 +177,11 @@ function back() {
     }
 
     simpan_view();
+
+    // waktu_buka_soal[sid] = waktu_buka_soal[sid] ? waktu_buka_soal[sid] : moment().format("YYYY-MM-DD HH:mm:ss");
+    waktu_buka_soal = moment().format("YYYY-MM-DD HH:mm:ss");
+    // console.log('buka', waktu_buka_soal);
+
 }
 
 function tidak_jawab() {
@@ -158,7 +212,7 @@ function tidak_jawab() {
 
     let sid = $('input[name="id_soal_'+ id_step +'"]').val();
     let answer = $('input[name="opsi_'+ id_step +'"]:checked').val();
-    simpan_jawaban_satu(sid, answer, ragu);
+    simpan_jawaban_satu(sid, answer, ragu, false);
 }
 
 function cek_status_ragu(id_soal) {
@@ -201,7 +255,8 @@ function simpan_view() {
 
     // var hasil_jawaban = '<div class="btn-group" role="group" aria-label="">';
     var hasil_jawaban = '<div >';
-
+    let count_jml_soal_per_topik = [];
+    let label_soal = 1 ;
     for (var i = 1; i < jml_soal; i++) {
         var idx = 'opsi_' + i;
         var idx2 = 'rg_' + i;
@@ -211,6 +266,13 @@ function simpan_view() {
         var ragu = form[idx2];
         var topik_id = form[idx3];
 
+
+        // count_jml_soal_per_topik[topik_id] = count_jml_soal_per_topik[topik_id] ? count_jml_soal_per_topik[topik_id] : 0 ;
+        // count_jml_soal_per_topik[topik_id] = count_jml_soal_per_topik[topik_id] + 1;
+
+        
+
+        
         // if (jawab != undefined) {
         //     if (ragu == "Y") {
         //         if (jawab == "-") {
@@ -232,20 +294,26 @@ function simpan_view() {
         if (jawab != undefined) {
             if (ragu == "Y") {
                 if (jawab == "-") {
-                    hasil_jawaban += '<button type="button" id="btn_soal_' + (i) + '" class="class_topik_id_' + topik_id + ' btn btn-outline-primary btn_soal" style="padding: 10px; font-size:10px; margin-right:10px; margin-bottom: 10px; border-radius: 0; border-color: #967adc !important" onclick="return buka(' + (i) + ');">' + (i) + "</button>";
+                    hasil_jawaban += '<button type="button" id="btn_soal_' + (i) + '" class="class_topik_id_' + topik_id + ' btn btn-outline-primary btn_soal" style="padding: 10px; font-size:10px; margin-right:10px; margin-bottom: 10px; border-radius: 0; border-color: #967adc !important" onclick="return buka(' + (i) + ');">' + (label_soal) + "</button>";
                 } else {
-                    hasil_jawaban += '<button type="button" id="btn_soal_' + (i) + '" class="class_topik_id_' + topik_id + ' btn btn-warning btn_soal" style="padding: 10px; font-size:10px; margin-right:10px; margin-bottom: 10px; border-radius: 0; border-color: #967adc !important" onclick="return buka(' + (i) + ');">' + (i) + "</button>";
+                    hasil_jawaban += '<button type="button" id="btn_soal_' + (i) + '" class="class_topik_id_' + topik_id + ' btn btn-warning btn_soal" style="padding: 10px; font-size:10px; margin-right:10px; margin-bottom: 10px; border-radius: 0; border-color: #967adc !important" onclick="return buka(' + (i) + ');">' + (label_soal) + "</button>";
                 }
             } else {
                 if (jawab == "-") {
-                    hasil_jawaban += '<button type="button" id="btn_soal_' + (i) + '" class="class_topik_id_' + topik_id + ' btn btn-outline-primary btn_soal" style="padding: 10px; font-size:10px; margin-right:10px; margin-bottom: 10px; border-radius: 0; border-color: #967adc !important" onclick="return buka(' + (i) + ');">' + (i) + "</button>";
+                    hasil_jawaban += '<button type="button" id="btn_soal_' + (i) + '" class="class_topik_id_' + topik_id + ' btn btn-outline-primary btn_soal" style="padding: 10px; font-size:10px; margin-right:10px; margin-bottom: 10px; border-radius: 0; border-color: #967adc !important" onclick="return buka(' + (i) + ');">' + (label_soal) + "</button>";
                 } else {
-                    hasil_jawaban += '<button type="button" id="btn_soal_' + (i) + '" class="class_topik_id_' + topik_id + ' btn btn-success btn_soal" style="padding: 10px; font-size:10px; margin-right:10px; margin-bottom: 10px; border-radius: 0; border-color: #967adc !important" onclick="return buka(' + (i) + ');">' + (i) + "</button>";
+                    hasil_jawaban += '<button type="button" id="btn_soal_' + (i) + '" class="class_topik_id_' + topik_id + ' btn btn-success btn_soal" style="padding: 10px; font-size:10px; margin-right:10px; margin-bottom: 10px; border-radius: 0; border-color: #967adc !important" onclick="return buka(' + (i) + ');">' + (label_soal) + "</button>";
                 }
             }
         } else {
-            hasil_jawaban += '<button type="button" id="btn_soal_' + (i) + '" class="class_topik_id_' + topik_id + ' btn btn-outline-primary btn_soal" style="padding: 10px; font-size:10px; margin-right:10px; margin-bottom: 10px; border-radius: 0; border-color: #967adc !important" onclick="return buka(' + (i) + ');">' + (i) + "</button>";
+            hasil_jawaban += '<button type="button" id="btn_soal_' + (i) + '" class="class_topik_id_' + topik_id + ' btn btn-outline-primary btn_soal" style="padding: 10px; font-size:10px; margin-right:10px; margin-bottom: 10px; border-radius: 0; border-color: #967adc !important" onclick="return buka(' + (i) + ');">' + (label_soal) + "</button>";
         }
+
+        if(label_soal == topik[topik_id]){
+            label_soal = 0;
+        }
+
+        label_soal = label_soal + 1 ;
 
     }
 
@@ -256,37 +324,38 @@ function simpan_view() {
     wrap_navigasi();
 }
 
-function simpan_jawaban_all() {
-    let form = $("#ujian");
-    ajx_overlay(true);
-    $.ajax({
-        type: "POST",
-        url: base_url + "ujian/ajax/simpan_jawaban_all",
-        data: form.serialize(),
-        dataType: 'json',
-        success: function (data) {
+// function simpan_jawaban_all() {
+//     let form = $("#ujian");
+//     ajx_overlay(true);
+//     $.ajax({
+//         type: "POST",
+//         url: base_url + "ujian/ajax/simpan_jawaban_all",
+//         data: form.serialize(),
+//         dataType: 'json',
+//         success: function (data) {
 
-        },
-        error: function () {
-            Swal.fire({
-                title: "Perhatian",
-                text: "Terjadi kesalahan, halaman akan di-reload",
-                icon: "warning",
-                confirmButtonColor: "#37bc9b",
-                confirmButtonText: "Reload"
-            }).then(result => {
-                if (result.value) {
-                    location.href = base_url + "ujian/list";
-                }
-            });
-        },
-        complete: function () {
-            ajx_overlay(false);
-        }
-    });
-}
+//         },
+//         error: function () {
+//             Swal.fire({
+//                 title: "Perhatian",
+//                 text: "Terjadi kesalahan, halaman akan di-reload",
+//                 icon: "warning",
+//                 confirmButtonColor: "#37bc9b",
+//                 confirmButtonText: "Reload"
+//             }).then(result => {
+//                 if (result.value) {
+//                     // location.href = base_url + "ujian/list";
+//                     location.reload();
+//                 }
+//             });
+//         },
+//         complete: function () {
+//             ajx_overlay(false);
+//         }
+//     });
+// }
 
-function simpan_jawaban_satu(sid, answer, ragu) {
+function simpan_jawaban_satu(sid, answer, ragu, go_next = true) {
     ajx_overlay(true);
     $.ajax({
         type: "POST",
@@ -297,10 +366,28 @@ function simpan_jawaban_satu(sid, answer, ragu) {
             'id': id_ujian,
             'key': key,
             'ragu': ragu,
+            'waktu_buka_soal': waktu_buka_soal,
+            'waktu_jawab_soal': moment().format("YYYY-MM-DD HH:mm:ss"),
         },
         dataType: 'json',
         success: function (data) {
+            let urutan_soal = $('#opsi_a_' + sid ).attr('rel'); // AMBIL SALAH SATU ABJAD, contoh : A
+            let next_soal_id = parseInt(urutan_soal) + 1;
 
+            let topik_id_next = $('#topik_id_' + next_soal_id).val();
+            let valid_next = false ;
+            if(is_sekuen_topik){
+                if(topik_id_next == topik_aktif){
+                    valid_next = true ;
+                }
+            }else{
+                valid_next = true ;
+            }
+
+            let sudah_akhir = next_soal_id > total_widget ? 1 : 0;
+            if((!sudah_akhir) && valid_next && go_next){
+                next(next_soal_id);
+            }
         },
         error: function () {
             Swal.fire({
@@ -311,7 +398,8 @@ function simpan_jawaban_satu(sid, answer, ragu) {
                 confirmButtonText: "Reload"
             }).then(result => {
                 if (result.value) {
-                    location.href = base_url + "ujian/list";
+                    // location.href = base_url + "ujian/list";
+                    location.reload();
                 }
             });
         },
@@ -322,6 +410,16 @@ function simpan_jawaban_satu(sid, answer, ragu) {
 }
 
 function simpan_akhir() {
+    if(is_sekuen_topik){
+        if(last_topik_id != topik_aktif){
+            Swal.fire({
+                title: "Perhatian",
+                text: "Anda belum bisa untuk mengakhiri ujian saat ini",
+                icon: "warning",
+            });
+            return ;
+        }
+    }
     Swal.fire({
         title: "Akhiri Ujian",
         text: "Ujian yang sudah diakhiri tidak dapat diulangi.",

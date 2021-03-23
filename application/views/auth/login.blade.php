@@ -58,7 +58,7 @@
                     <div class="card-title text-center">
                         <img src="{{ asset('assets/imgs/logo_undip.png') }}" alt="logo undip" style="width: 100px">
                     </div>
-                    <h6 class="card-subtitle text-muted text-center font-small-3 pt-5 font-large-1"><span>{{ APP_NAME }}</span></h6>
+                    <h6 class="card-subtitle text-muted text-center font-small-5 pt-3 font-large-1"><span>{{ APP_NAME }}</span></h6>
                 </div>
                 <div class="card-content">
                     <div class="card-body">
@@ -79,6 +79,7 @@
                         @if(flash_data('error_activation_msg'))
                         <div class="alert bg-warning">{{ flash_data('error_activation_msg') }}</div>
                         @endif
+                        <div class="alert text-center rounded-0 border-light" style="background-color: #ffffcc; padding: 5px;">latency : <span id="latency" style="font-weight: bold">0ms</span></div>
                         <?= form_open("auth/cek_login", ['id'=>'form_login','class'=>'form-horizontal','novalidate'=>'','method'=>'POST']);?>
                             <fieldset class="form-group position-relative has-icon-left">
                                 {!! form_input($identity) !!}
@@ -107,9 +108,11 @@
                                <div class="col-md-12 text-sm-right"><a href="{{ site_url('auth/resend_password') }}" class="card-link text-danger">Lupa password?</a></div>
 
                             </div>
+                            
                             <button type="submit" class="btn btn-outline-info btn-block" style="display: none" id="btn_submit_login"><i class="ft-unlock"></i> Login</button>
                             <a href="{{ url('auth/registrasi') }}" class="btn btn-info btn-block" style="display: none" id="btn_link_registrasi"><i class="fa fa-user"></i> Registrasi</a>
-                            <div class="alert bg-warning mt-1" style="background-color: #fffccc !important; color: #f00; border: solid 1px #f00;"><small><i class="fa fa-exclamation-triangle"></i> &nbsp;Jika terkendala login silahkan hub. <a href="mailto:{{ ADMIN_EMAIL }}">{{ ADMIN_EMAIL }}</a></small></div>
+                            <hr>
+                            <div class="mt-1 text-center" style=""><small><i class="fa fa-exclamation-triangle"></i> &nbsp;Jika terkendala login silahkan hub. <a href="mailto:{{ ADMIN_EMAIL }}">{{ ADMIN_EMAIL }}</a></small></div>
                         <?= form_close() ?>
                     </div>
                 </div>
@@ -170,6 +173,7 @@
     <script src="{{ asset('assets/yarn/node_modules/inputmask/dist/jquery.inputmask.min.js') }}"></script>
 {{--    <script src="https://cdn.jsdelivr.net/jquery.validation/1.16.0/jquery.validate.min.js"></script>--}}
     <script src="{{ asset('assets/yarn/node_modules/jquery-validation/dist/jquery.validate.min.js') }}"></script>
+    <script src="{{ asset('assets/plugins/ping.min.js') }}"></script>
     <!-- END PAGE LEVEL JS-->
 
     <script type="text/javascript">
@@ -186,6 +190,25 @@
             });
             // $( ".grid-form-dialog" ).dialog("open");
         @endif
+
+        let p = new Ping();
+        p.ping("{{ url('/') }}", function(err, data) {
+            $('#latency').text(data + 'ms');
+            $('#latency').addClass('text-success').removeClass('text-danger')
+            if(data > 1000){
+                $('#latency').addClass('text-danger').removeClass('text-success');
+            }
+        });
+        setInterval(function() {
+            // let mctime = moment().valueOf();
+            p.ping("{{ url('/') }}", function(err, data) {
+                $('#latency').text(data + 'ms');
+                $('#latency').addClass('text-success').removeClass('text-danger')
+                if(data > 1000){
+                    $('#latency').addClass('text-danger').removeClass('text-success');
+                }
+            });
+        },10000);
 
         }
 

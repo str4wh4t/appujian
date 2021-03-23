@@ -75,6 +75,30 @@ function reload_ajax(){
     }, false);
 }
 
+sendmsg = function (message, callback) {
+    waitForConnection(function () {
+        conn.send(message);
+        if (typeof callback !== 'undefined') {
+          callback();
+        }
+    }, 1000);
+};
+
+waitForConnection = function (callback, interval) {
+    if (conn.readyState === 1) {
+        callback();
+    } else {
+        // var that = this;
+        // optional: implement backoff for interval here
+        setTimeout(function () {
+            waitForConnection(callback, interval);
+        }, interval);
+    }
+};
+
+let latency = 0;
+let p = new Ping();
+
 $(document).ready(function(){
 
     /* [START] WEBSOCKET BOOTSTRAP */
@@ -83,7 +107,7 @@ $(document).ready(function(){
     @php($ip = get_client_ip())
         conn = new WebSocket('{{ ws_url() }}');
         conn.onopen = function(e) {
-            conn.send(JSON.stringify({
+            sendmsg(JSON.stringify({
                 'nim':'{{ get_logged_user()->username }}',
                 'as':'{{ get_selected_role()->name }}',
                 'identifier': '{{ $identifier }}',
@@ -110,12 +134,19 @@ $(document).ready(function(){
                             selesai(ended_by);
                         }
                     }
+                } else if (data.cmd == 'UPDATE_TIME') {
+                    if (data.nim == '{{ get_logged_user()->username }}') {
+                        if (typeof setting_up_view == 'function'){
+                            clearInterval(refreshIntervalId);
+                            setting_up_view();
+                        }
+                    }
                 }
             }
         };
 
         conn.onclose = function(e) {
-            conn.send(JSON.stringify({
+            sendmsg(JSON.stringify({
                 'nim':'{{ get_logged_user()->username }}',
                 'as':'{{ get_selected_role()->name }}',
                 'cmd':'MHS_OFFLINE',
@@ -123,12 +154,24 @@ $(document).ready(function(){
             }));
         };
 
+        p.ping("{{ url('/') }}", function(err, data) {
+            sendmsg(JSON.stringify({
+                'nim':'{{ get_logged_user()->username }}',
+                'as':'{{ get_selected_role()->name }}',
+                'cmd':'PING',
+                'ip': '{{ $ip }}',
+                'app_id': '{{ APP_ID }}',
+                'latency': data ,
+            }));
+            latency = data;
+            toastr.info('', 'latency : ' + latency + 'ms', {positionClass: 'toast-bottom-right', containerId: 'toast-bottom-right', timeOut: 0});
+        });
+
         setInterval(function() {
             // let mctime = moment().valueOf();
-            let p = new Ping();
-            p.ping("https://{{ APP_ID }}", function(err, data) {
+            p.ping("{{ url('/') }}", function(err, data) {
                 // console.log('ping', data);
-                conn.send(JSON.stringify({
+                sendmsg(JSON.stringify({
                     'nim':'{{ get_logged_user()->username }}',
                     'as':'{{ get_selected_role()->name }}',
                     'cmd':'PING',
@@ -136,13 +179,16 @@ $(document).ready(function(){
                     'app_id': '{{ APP_ID }}',
                     'latency': data ,
                 }));
+                latency = data;
+                toastr.remove();
+                toastr.info('', 'latency : ' + latency + 'ms', {positionClass: 'toast-bottom-right', containerId: 'toast-bottom-right', timeOut: 0});
             });
-        },10000);
+        },{{ PING_INTERVAL }});
 
 
           // Also display error if err is returned.
           // let mctime = moment().valueOf();
-          {{--  conn.send(JSON.stringify({--}}
+          {{--  sendmsg(JSON.stringify({--}}
           {{--      'nim':'{{ get_logged_user()->username }}',--}}
           {{--      'as':'{{ get_selected_role()->name }}',--}}
           {{--      'cmd':'PING',--}}
@@ -170,6 +216,20 @@ $(document).ready(function(){
            text: "{{ $msg['content'] }}",
            icon: "{{ $msg['type'] }}"
         });
+    @endif
+    
+    @if(!in_group('mahasiswa'))
+    p.ping("{{ url('/') }}", function(err, data) {
+        latency = data;
+        toastr.info('', 'latency : ' + latency + 'ms', {positionClass: 'toast-bottom-right', containerId: 'toast-bottom-right', timeOut: 0});
+    });
+    setInterval(function() {
+        p.ping("{{ url('/') }}", function(err, data) {
+            latency = data;
+            toastr.remove();
+            toastr.info('', 'latency : ' + latency + 'ms', {positionClass: 'toast-bottom-right', containerId: 'toast-bottom-right', timeOut: 0});
+        });
+    },{{ PING_INTERVAL }});
     @endif
 
 });

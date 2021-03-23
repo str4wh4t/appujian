@@ -70,4 +70,8 @@
         background: #fff;
     }
 
+    #toast-bottom-right > div {
+        width: 175px;
+    }
+
 </style>

@@ -289,6 +289,10 @@ body {
                     $('#badge_koneksi_' + data.nim).text('ONLINE').removeClass('bg-danger').removeClass('bg-warning').addClass('bg-success');
                     $('#badge_ip_' + data.nim).text(data.ip).show();
                     $('#badge_latency_' + data.nim).text(data.latency + 'ms').show();
+                    if(data.latency > 1000)
+                        $('#badge_latency_' + data.nim).removeClass('bg-primary').addClass('bg-danger');
+                    else
+                        $('#badge_latency_' + data.nim).removeClass('bg-danger').addClass('bg-primary');
                 }
             }else if (data.cmd == 'MHS_OFFLINE') {
                 pop_mhs_online(data.nim);

@@ -284,6 +284,9 @@ class Matkul extends MY_Controller
 									->where($filter)
 									->whereDoesntHave('h_ujian', function (Builder $query) use($ujian_id){
 										$query->where('ujian_id', $ujian_id);
+									})
+									->whereDoesntHave('h_ujian_history', function (Builder $query) use($ujian_id){
+										$query->where('ujian_id', $ujian_id);
 									})->get();
 
 			$filter_tahun_mhs = isset($filter['tahun']) ? $filter['tahun'] : null ;

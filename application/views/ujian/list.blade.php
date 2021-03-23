@@ -170,9 +170,10 @@
                                             {{-- [START] FOREACH UJIAN AKTIF  --}}
                                             <div class="row">
                                                 <div class="col-md-4 col-sm-12">
-                                                    <div class="card box-shadow-0 border-success" style="background-color: #ffffee">
-                                                        <div class="card-header ">
+                                                    <div class="card box-shadow-0 border-success" style="background-color: #ffffcc;">
+                                                        <div class="card-header " style="min-height: 85px;">
                                                             <h6><b>TUTORIAL UJIAN</b></h6>
+                                                            <small class="text-danger"><b>***</b> Latihan contoh ujian dan cara menjawab nya.</small>
                                                         </div>
                                                         <div class="card-content collapse show">
                                                             <div class="card-body">
@@ -209,7 +210,7 @@
                                                 <div class="col-md-4 col-sm-12">
                                                     <div class="card box-shadow-0 border-success">
                                                         {{-- <div class="card-header"></div> --}}
-                                                        <div class="card-header ">
+                                                        <div class="card-header " style="min-height: 85px;">
                                                             <h6><b>{{ $mhs_ujian->m_ujian->nama_ujian }}</b></h6>
                                                         </div>
                                                         <div class="card-content collapse show">
@@ -252,14 +253,18 @@
                                                                         $status_ujian = 'expired';
                                                                 }
                                                             @endphp
-                                                            @if ($status_ujian == 'active')
+                                                            {{-- @if ($status_ujian == 'active')
                                                                 <a class="btn btn-success" href="{{ url('ujian/token/' . uuid_create_from_integer($mhs_ujian->m_ujian->id_ujian)) }}">
                                                                     <i class="fa fa-pencil"></i> Masuk
                                                                 </a>
                                                             @elseif ($status_ujian == 'upcoming')
                                                                 <button type="button" class="btn btn-info">
                                                                     <i class="fa fa-exclamation-circle"></i> Upcoming
-                                                                </button>
+                                                                </button> --}}
+                                                            @if (($status_ujian == 'active')||($status_ujian == 'upcoming'))
+                                                                <a class="btn btn-success" href="{{ url('ujian/token/' . uuid_create_from_integer($mhs_ujian->m_ujian->id_ujian)) }}">
+                                                                    <i class="fa fa-pencil"></i> Masuk
+                                                                </a>
                                                             @elseif ($status_ujian == 'expired')
                                                                 <button type="button" class="btn btn-warning">
                                                                     <i class="fa fa-times-circle"></i> Ujian Expired
@@ -316,7 +321,7 @@
                                                 <div class="col-md-4 col-sm-12">
                                                     <div class="card box-shadow-0 border-primary">
                                                         {{-- <div class="card-header"></div> --}}
-                                                        <div class="card-header ">
+                                                        <div class="card-header " style="min-height: 85px;">
                                                             <h6><b>{{ $mhs_ujian->m_ujian->nama_ujian }}</b></h6>
                                                         </div>
                                                         <div class="card-content collapse show">

@@ -21,7 +21,8 @@
         "cboden/ratchet": "^0.4.3",
         "ratchet/pawl": "^0.3.5",
         "guzzlehttp/guzzle": "^7.0",
-        "google/recaptcha": "^1.2"
+        "google/recaptcha": "^1.2",
+        "tecnickcom/tcpdf": "^6.3"
     },
     "suggest": {
         "paragonie/random_compat": "Provides better randomness in PHP 5.x"

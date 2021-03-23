@@ -171,6 +171,10 @@ legend{
     z-index: 9997 !important;
 }
 
+#ul_topik_ujian li {
+    text-transform: uppercase;
+}
+
 </style>
 @endpush
 
@@ -201,24 +205,73 @@ let key = '{{ $one_time_token }}';
 
 let topik = [];
 let topik_nama = [];
+let topik_waktu = [];
+let urutan_topik = [];
+
 @php
 @endphp
+
 @foreach($h_ujian->soal as $s)
     @php
         $topik_ujian_jml[$s->topik_id] = !isset($topik_ujian_jml[$s->topik_id]) ? 1 : $topik_ujian_jml[$s->topik_id] + 1;
         $topik_ujian_nama[$s->topik_id] = $s->topik->nama_topik;
     @endphp
 @endforeach
+
 @foreach($topik_ujian_jml as $topik_id => $jml_topik)
     topik[{{ $topik_id }}] = '{{ $jml_topik }}';
 @endforeach
+
 @foreach($topik_ujian_nama as $topik_id => $nama_topik)
     topik_nama[{{ $topik_id }}] = '{{ $nama_topik }}';
 @endforeach
 
-let curr_date;
+/** UNTUK NGESET PADA AWAL START UJIAN */
+@if($h_ujian->m_ujian->is_sekuen_topik)
+    @if(!empty($urutan_topik))
+        @php
+        $date_akhir_topik = '';
+        @endphp
+        @foreach($urutan_topik as $topik_id => $v)
+            @php 
+                if(empty($date_akhir_topik))
+                    $date_akhir_topik = date('Y-m-d H:i:s', strtotime($h_ujian->tgl_mulai . '+' . $v['waktu'] . ' minutes')) ;
+                else
+                    $date_akhir_topik = date('Y-m-d H:i:s', strtotime($date_akhir_topik . '+' . $v['waktu'] . ' minutes')) ;
+            @endphp
+            // topik_waktu[{{ $topik_id }}] = '{{ $date_akhir_topik }}'; // TELAH DISET SECARA AJAX, LIHAT FUNGSI  get_urutan_topik
+            urutan_topik.push({{ $topik_id }}) ;
+        @endforeach
+    @endif
+@endif
 
-let update_time = () => {
+let is_sekuen_topik = {{ $h_ujian->m_ujian->is_sekuen_topik == 1 ? 'true' : 'false' }};
+
+let curr_date;
+let topik_aktif;
+let last_topik_id = 0;
+let waktu_selesai = '{{ date('Y-m-d H:i:s', strtotime($h_ujian->tgl_selesai)) }}';
+
+let refreshIntervalId ;
+
+const set_urutan_topik = () => {
+    // let topik_waktu = [];
+    // let urutan_topik = [];
+
+    return $.ajax({
+        url: "{{ site_url('ujian/ajax/get_urutan_topik') }}",
+        data: { 'id' : {{ $h_ujian->id }} },
+        type: 'POST',
+        success: function (res) {
+            topik_waktu = res.topik_waktu;
+            waktu_selesai = res.fixed_waktu;
+            // urutan_topik = res.urutan_topik ; // TIDAK BERUBAH
+        }
+    });
+
+}
+
+const update_time = () => {
 
     moment.locale('id');
 
@@ -231,20 +284,35 @@ let update_time = () => {
         type: "GET"
     });
 
-    $.ajax({
+    return $.ajax({
         success: function (date_ajax) {
 
             curr_date = moment(date_ajax, "YYYY-MM-DD HH:mm:ss");
+            
+            $.each(urutan_topik, function(i, v){
+                let akhir_topik = moment(topik_waktu[v], "YYYY-MM-DD HH:mm:ss");
+                if(akhir_topik.isAfter(curr_date)){
+                    topik_aktif  = v;
+                    return false;
+                }
+            });
+
+            $.each(urutan_topik, function(i, v){
+                last_topik_id = v ;
+            });
 
             let interval = 1000;
-
-            let ujian_selesai = moment('{{ date('Y-m-d H:i:s', strtotime($h_ujian->tgl_selesai)) }}', "YYYY-MM-DD HH:mm:ss");
+            let ujian_selesai ;
+            if(is_sekuen_topik)
+                ujian_selesai = moment(topik_waktu[topik_aktif], "YYYY-MM-DD HH:mm:ss");
+            else
+                ujian_selesai = moment(waktu_selesai, "YYYY-MM-DD HH:mm:ss");
             let diffTime = ujian_selesai.unix() - curr_date.unix();
 
             let duration = moment.duration(diffTime*1000, 'milliseconds');
             let duration_text = '';
 
-            let refreshIntervalId = setInterval(function(){
+            refreshIntervalId = setInterval(function(){
 
                 curr_date.add(1, 'second');
                 // datetime_el.html(curr_date.format('dddd, Do MMMM YYYY, HH:mm:ss'));
@@ -263,16 +331,36 @@ let update_time = () => {
                         // alert("Waktu ujian kurang dari 10 menit");
                     }
                 }else{
-                   duration_text = "0:0:0";
-                   $('#btn_lanjut_ujian').removeClass('btn-success').addClass('btn-danger');
-                   selesai();
-                   clearInterval(refreshIntervalId);
+                    duration_text = "0:0:0";
+                    $('#btn_lanjut_ujian').removeClass('btn-success').addClass('btn-danger');
+                   
+                    if(is_sekuen_topik){
+                        if(last_topik_id == topik_aktif)
+                            selesai();
+                        else{
+                            // ajx_overlay(true);
+                            // set_urutan_topik().then(function(){
+                            //     update_time().then(function(){
+                            //         simpan_view();
+                            //         $('.class_topik_id_' + topik_aktif).first().click(); // MENAMPILKAN SOAL PERTAMA PADA TOPIK TERKAIT
+                            //         ajx_overlay(false); 
+                            //     });
+                            // });
+                            setting_up_view();
+                            // location.reload(); 
+                        }
+                    }else{
+                        selesai();
+                    }
+                   
+                    clearInterval(refreshIntervalId);
 
                 }
 
                 $('#sisa_waktu').text(duration_text);
 
             },interval);
+
         }
     });
 
@@ -310,8 +398,43 @@ let total_widget    = widget.length;
 
 let ofs = 0;
 
+const setting_up_view = () => {
+    ajx_overlay(true);
+    set_urutan_topik().then(function(){
+        update_time().then(function(){
+            simpan_view();
+            if(is_sekuen_topik){
+                $('.class_topik_id_' + topik_aktif).first().click(); // MENAMPILKAN SOAL PERTAMA PADA TOPIK TERKAIT
+            }else{
+                buka(1);
+            }
+
+            $('#ol_topik_ujian').html('');
+            if(is_sekuen_topik){
+                $.each(urutan_topik, function(i, v){
+                    if(v){
+                        let el = $('<li></li>').text(topik_nama[v]);   
+                        $('#ol_topik_ujian').append(el);
+                    }
+                });
+            }else{
+                $('.legend_topik').each(function(i,v){
+                    let id = $(this).data('id');
+                    if(v){
+                        let el = $('<li></li>').text(topik_nama[id]);   
+                        $('#ol_topik_ujian').append(el);
+
+                    }
+                });
+            }
+
+            ajx_overlay(false); 
+        });
+    });
+};
+
 function init_page_level(){
-    update_time();
+    setting_up_view();
     update_status_ujian();
     // ofs = $('#q_n_a').offset();
     // console.log('ofs',ofs);
@@ -319,6 +442,9 @@ function init_page_level(){
     //   e.preventDefault();
     // });
     document.addEventListener('contextmenu', event => event.preventDefault());
+    
+
+
 }
 
 function wrap_navigasi(){
@@ -332,6 +458,16 @@ function wrap_navigasi(){
         if(v)
             $(this).prepend('<legend>'+ topik_nama[id] +'</legend>');
     });
+
+    if(is_sekuen_topik){
+        $('fieldset.legend_topik').each(function(i, v){
+            let fs_id = $(this).data('id');
+            $(this).show();
+            if(fs_id != topik_aktif){
+                $(this).hide();
+            }
+        })
+    }
 }
 
 // $('#lembar_ujian').on('scroll', function(event) {
@@ -363,34 +499,40 @@ $(document).on('click','#nav_opener',function() {
     return false;
 });
 
-window.onblur = function () {
+// window.onblur = function () {
+    
+// };
+
+// window.onfocus = function () {
+   
+// };
+
+$(window).focus(function() {
+    sendmsg(JSON.stringify({
+        'nim':'{{ get_logged_user()->username }}',
+        'as':'{{ get_selected_role()->name }}',
+        'cmd':'MHS_GET_FOCUS',
+        'app_id': '{{ APP_ID }}',
+    }));
+}).blur(function() {
     /** SEMENTARA DIMATIKAN **/
     // Swal.fire({
     //     title: "Perhatian",
     //     text: "Anda diperingatkan tidak boleh membuka halaman lain, semua aktifitas anda direkam oleh sistem untuk penilaian",
     //     icon: "warning"
     // });
-    conn.send(JSON.stringify({
+    sendmsg(JSON.stringify({
         'nim':'{{ get_logged_user()->username }}',
         'as':'{{ get_selected_role()->name }}',
         'cmd':'MHS_LOST_FOCUS',
         'app_id': '{{ APP_ID }}',
     }));
-};
-
-window.onfocus = function () {
-    conn.send(JSON.stringify({
-        'nim':'{{ get_logged_user()->username }}',
-        'as':'{{ get_selected_role()->name }}',
-        'cmd':'MHS_GET_FOCUS',
-        'app_id': '{{ APP_ID }}',
-    }));
-};
+});
 
 function update_status_ujian(){
     setTimeout(function() {
       //your code to be executed after 1 second
-        conn.send(JSON.stringify({
+        sendmsg(JSON.stringify({
             'nim':'{{ get_logged_user()->username }}',
             'as':'{{ get_selected_role()->name }}',
             'cmd':'MHS_START_UJIAN',
@@ -416,7 +558,7 @@ function selesai(ended_by = '') {
         },
         success: function (r) {
             if (r.status) {
-                conn.send(JSON.stringify({
+                sendmsg(JSON.stringify({
                     'nim':'{{ get_logged_user()->username }}',
                     'as':'{{ get_selected_role()->name }}',
                     'cmd':'MHS_STOP_UJIAN',
@@ -513,7 +655,7 @@ function selesai(ended_by = '') {
                                 <tr>
                                     <th colspan="2" style="text-align: center; white-space: normal;">
                                         <label style="display: block;">{{ $h_ujian->mhs->nama }}</label>
-                                        <label style="display: block; font-weight: normal;">( {{ $h_ujian->mhs->nim }} )</label>
+                                        <label style="display: block; font-weight: normal; margin-bottom: 0;">( {{ $h_ujian->mhs->nim }} )</label>
                                     </th>
                                 </tr>
                                 <tr>
@@ -534,6 +676,14 @@ function selesai(ended_by = '') {
                                 <tr>
                                     <th>Waktu</th>
                                     <td>{{ $h_ujian->m_ujian->waktu }} menit</td>
+                                </tr>
+                                <tr>
+                                    <th colspan="2" class="text-center bg-light">Topik Ujian</th>
+                                </tr>
+                                <tr>
+                                    <td colspan="2">
+                                        <ol id="ol_topik_ujian"></ol>
+                                    </td>
                                 </tr>
                             </table>
                         </div>
@@ -560,7 +710,8 @@ function selesai(ended_by = '') {
                 <div class="card">
                     <div class="card-content">
                         <div class="card-body" id="isi_pertanyaan">
-                            <span style="font-size: 20px" class="">Pertanyaan #<span id="soalke"></span></span>
+                            <span style="font-size: 20px" class="">Soal #<span id="soalke"></span></span>
+                            <span class="float-right text-danger" id="text_info_topik" style="font-size: 15px; font-weight: bold; padding-top: 5px; text-transform: uppercase">KEMAMPUAN VERBAL</span>
                             <hr>
                             {!! $html_pertanyaan !!}
                         </div>

@@ -190,25 +190,9 @@ class HasilUjian extends MY_Controller {
 		$this->_json($data);
 	}
 
-//	public function cetak($id)
-//	{
-//		$this->load->library('Pdf');
-//
-//		$mhs 	= $this->ujian->getIdMahasiswa($this->user->username);
-//		$hasil 	= $this->ujian->HslUjian($id, $mhs->id_mahasiswa)->row();
-//		$ujian 	= $this->ujian->getUjianById($id);
-//
-//		$data = [
-//			'ujian' => $ujian,
-//			'hasil' => $hasil,
-//			'mhs'	=> $mhs
-//		];
-//
-//		$this->load->view('hasilujian/cetak', $data);
-//	}
-
 	public function cetak_detail($id)
 	{
+		ini_set('max_execution_time', 0);
 		if(in_group('mahasiswa')){
 			$id = integer_read_from_uuid($id);
 		}
@@ -221,8 +205,6 @@ class HasilUjian extends MY_Controller {
 			}
 		}
 		
-		$this->load->library('Pdf');
-
 		$ujian = $m_ujian;
 		$nilai = $this->ujian->bandingNilai($id);
 		$hasil = $this->ujian->HslUjianById($id)->result();
@@ -311,9 +293,6 @@ class HasilUjian extends MY_Controller {
 			'subjudul' => 'Jawaban'
 		];
 
-
-		
-
 		$data['h_ujian'] = $h_ujian;
 
 		$date1 = new DateTime($h_ujian->tgl_mulai);
@@ -326,6 +305,24 @@ class HasilUjian extends MY_Controller {
 		$data['mhs'] = $mhs;
 		$data['peringkat'] = $peringkat;
 		$data['jml_peserta'] = $jml_peserta;
+
+		$topik_ujian_list = [];
+		if(!empty($h_ujian->m_ujian->urutan_topik)){
+			$urutan_topik = $h_ujian->m_ujian->urutan_topik;
+			$urutan_topik = json_decode($urutan_topik, true);
+			uasort($urutan_topik, function($a, $b){
+				return $a['urutan'] <=> $b['urutan'];
+			});
+			
+			foreach($urutan_topik as $topik_id => $v){
+				$topik_ujian_list[] = Topik_orm::findOrFail($topik_id);
+			}
+		}else{
+			$topik_ujian_list = $h_ujian->m_ujian->topik;
+		}
+
+		$data['topik_ujian_list'] = $topik_ujian_list;
+
 
 		view('hasilujian/jawaban', $data);
 
@@ -347,9 +344,11 @@ class HasilUjian extends MY_Controller {
 
 		
 		$mhs_ujian = Mhs_ujian_orm::findOrFail($mahasiswa_ujian_id);
-		
-		if(!($mhs_ujian->m_ujian->tampilkan_hasil && $mhs_ujian->m_ujian->tampilkan_jawaban)){ // CHECK JIKA BOLEH MENAMPILKAN HASIL DAN JAWABAN
-			show_404();
+
+		if(in_group('mahasiswa')){
+			if(!($mhs_ujian->m_ujian->tampilkan_hasil && $mhs_ujian->m_ujian->tampilkan_jawaban)){ // CHECK JIKA BOLEH MENAMPILKAN HASIL DAN JAWABAN
+				show_404();
+			}
 		}
 		
 		$h_ujian = $mhs_ujian->h_ujian()->where('ujian_selesai', 'Y')->first(); // RELASI 1 - 1

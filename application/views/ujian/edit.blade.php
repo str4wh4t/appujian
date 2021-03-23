@@ -33,9 +33,11 @@
 <script type="text/javascript">
 
 let topik_id_dipilih = [];
-let topik_jumlah_soal = {};
-let topik_jumlah_soal_asli = {};
-let topik_avail = {};
+let topik_jumlah_soal = [];
+let topik_jumlah_soal_asli = [];
+let topik_jumlah_waktu = [];
+let topik_urutan = [];
+let topik_avail = [];
 
 let filter = {
 		gel: null,
@@ -70,9 +72,13 @@ function init_page_level(){
         topik_id_dipilih = [];
         topik_jumlah_soal = [];
         topik_jumlah_soal_asli = [];
+        topik_jumlah_waktu = [];
+        topik_urutan = [];
+
         @foreach($topik as $topik_id => $t)
         topik_id_dipilih.push('{{ $topik_id }}');
         @endforeach
+
         @foreach($jumlah_soal as $topik_id => $t)
             @foreach($t as $bobot_soal_id => $jml_soal)
             topik_jumlah_soal[{{ $topik_id }}] = topik_jumlah_soal[{{ $topik_id }}] ? topik_jumlah_soal[{{ $topik_id }}] : [] ;
@@ -82,6 +88,13 @@ function init_page_level(){
             @endforeach
         @endforeach
             // console.log('topik_jumlah_soal',topik_jumlah_soal);
+
+        @if(!empty($urutan_topik))
+        @foreach($urutan_topik as $topik_id => $urutan_dan_waktu)
+            topik_urutan[{{ $topik_id  }}] = {{ $urutan_dan_waktu['urutan'] }};
+            topik_jumlah_waktu[{{ $topik_id  }}] = {{ $urutan_dan_waktu['waktu'] }};
+        @endforeach
+        @endif
 
         topik_avail = items;
         child.select2({placeholder : 'Pilih Topik'});
@@ -147,6 +160,10 @@ function init_page_level(){
             close: 'fa fa-times'
         }
     });
+
+    @if($ujian->is_sekuen_topik)
+    // $('#is_sekuen_topik').bootstrapSwitch('toggleState');
+    @endif
 }
 
 $('#matkul_id').on('select2:select', function (e) {
@@ -223,6 +240,30 @@ async function init_topik_table_value(){
                 $(this).closest('.row').remove();
         });
 
+        clone.find('.input_waktu').each(function(j){
+            let val = topik_jumlah_waktu[topik_id] ? topik_jumlah_waktu[topik_id] : 0;
+            $(this).attr('name','waktu_topik['+ topik_id +']')
+                        .addClass('input_waktu_topik')
+                        .val(val)
+                        .data('topik_id',topik_id);
+
+            let is_sekuen_topik = $('#is_sekuen_topik').is(':checked');
+            
+            if(is_sekuen_topik)
+                $(this).removeAttr('disabled');
+            else
+                $(this).attr('disabled', 'disabled');
+        });
+
+        clone.find('.input_urutan').each(function(j){
+            let val = topik_urutan[topik_id] ? topik_urutan[topik_id] : 0;
+            $(this).attr('name','urutan_topik['+ topik_id +']')
+                        .addClass('input_urutan_topik')
+                        .val(val)
+                        .data('topik_id',topik_id)
+                        .removeAttr('disabled');
+        });
+
         clone.insertAfter("#table-topik tr.head" );
         clone.show();
         sum_input_jumlah_soal();
@@ -265,6 +306,24 @@ function sum_input_jumlah_soal(){
     $('input[name="jumlah_soal_total"]').val(jumlah_soal_total);
 }
 
+$(document).on('keyup','.input_waktu_topik',function () {
+    let  topik_id = $(this).data('topik_id');
+    topik_jumlah_waktu[topik_id] = topik_jumlah_waktu[topik_id] ? topik_jumlah_waktu[topik_id] : 0 ;
+    topik_jumlah_waktu[topik_id] = $(this).val();
+    sum_input_jumlah_waktu();
+});
+
+function sum_input_jumlah_waktu(){
+    let jumlah_waktu_total = 0;
+    $('.input_waktu_topik').each(function(i){
+       let  jumlah_waktu = $(this).val() == '' ? 0 : $(this).val() ;
+       jumlah_waktu_total = jumlah_waktu_total + parseInt(jumlah_waktu);
+    });
+    // $('#jumlah_waktu_total').text(jumlah_waktu_total);
+    // $('input[name="jumlah_waktu_total"]').val(jumlah_waktu_total);
+    $('input[name="waktu"]').val(jumlah_waktu_total);
+}
+
 let tgl_mulai = '{{ $ujian->tgl_mulai }}';
 let terlambat = '{{ $ujian->terlambat }}';
 
@@ -305,6 +364,7 @@ const init_peserta_table_value = () => {
             }
             $('#peserta_hidden').val(JSON.stringify(mhs_ujian_existing));
             $('#chkbox_pilih_semua_peserta').prop('checked', false);
+            $('.search_pes').val('');
         }
     });
 };
@@ -454,6 +514,18 @@ $('#tampilkan_jawaban').on('switchChange.bootstrapSwitch', function(event, state
     }
 });
 
+$('#is_sekuen_topik').on('switchChange.bootstrapSwitch', function(event, state) {
+    if(event.target.checked){ // DETEKSI JIKA TRUE 
+        $('.input_waktu_topik').removeAttr('disabled');
+        $('input[name="waktu"]').attr('disabled', 'disabled');
+        sum_input_jumlah_waktu();
+    }else{
+        $('.input_waktu_topik').attr('disabled', 'disabled');
+        $('input[name="waktu"]').removeAttr('disabled');
+        $('input[name="waktu"]').val('');
+    }
+});
+
 </script>
 <script src="{{ asset('assets/dist/js/app/ujian/edit.js') }}"></script>
 <!-- END PAGE LEVEL JS-->
@@ -534,30 +606,61 @@ $('#tampilkan_jawaban').on('switchChange.bootstrapSwitch', function(event, state
                         <small class="help-block" style="color: #dc3545"><?=form_error('tahun')?></small>
                     </div>
                 </fieldset>
+                <div class="form-group">
+                    <label for="is_sekuen_topik">Is Sekuen Topik</label> <small class="help-block text-danger"><b>***</b> Mengerjakan soal scr sekuensial (pengerjaan topik bergantian)</small>
+                    <div>
+                        <input type="radio" class="switchBootstrap" id="is_sekuen_topik" name="is_sekuen_topik" data-on-text="Ya" data-off-text="Tidak" data-radio-all-off="true" data-on-color="success" data-off-color="danger" {!! $ujian->is_sekuen_topik == 1 ? 'checked="checked"' : '' !!} />
+                    </div>
+                    <small class="help-block"></small>
+                </div>
                 <div>
                     <label for="jumlah_soal">
                         <span>Jumlah Soal</span>
-                        <small class="help-block text-info"><span class="text-danger"><b>***</b></span> Silahkan isikan jumlah soal sesuai topik</small>
+                        <small class="help-block text-danger"><b>***</b> Silahkan isikan jumlah soal sesuai topik</small>
                     </label>
                     <table class="table table-bordered" id="table-topik">
                         <tr class="head" style="background-color: #eee">
-                            <td>Nm Topik</td>
-                            <td>
+                            <td class="w-70">
+                                <div class="row">
+                                    <label for="" style="" class="col-md-2">Urutan</label>
+                                    <label for="" style="" class="col-md-8">Nm Topik</label>
+                                    <label for="" style="" class="col-md-2">Waktu Topik</label>
+                                </div>
+                            </td>
+                            <td class="w-30">
                                 <div class="row">
                                     <label for="" style="" class="col-md-8">Bobot Soal</label>
                                     <label for="" style="text-align: right" class="col-md-4">Jml Soal</label>
+                                </div>
                             </td>
                         </tr>
                         <tr id="tr-master-topik" style="display: none">
                             <td>
-                                <label class="label_topik" for="" style="margin-top: 7px;">NAMA-TOPIK</label>
+                                <div class="row">
+                                    <div class="form-group col-md-2">
+                                        <input placeholder="Urutan" type="number" data-topik_id="DATA-TOPIK-ID" class="form-control input_urutan input-sm input_number" name="urutan_topik[ID-TOPIK]" style="" value="0" disabled="disabled">
+                                        <small class="help-block"></small>
+                                    </div>
+                                    <label class="label_topik col-md-8" for="">NAMA-TOPIK</label>
+                                    <div class="form-group col-md-2">
+                                        <input placeholder="Waktu Topik" type="number" data-topik_id="DATA-TOPIK-ID" class="form-control input_waktu input-sm input_number" name="waktu_topik[ID-TOPIK]" style="" disabled="disabled">
+                                        <small class="help-block"></small>
+                                    </div>
+                                </div>
                             </td>
                             <td>
                                 @foreach($bobot_soal as $d)
-                                <div class="form-group row">
-                                    <label for="" style="" class="col-md-8">{{ $d->bobot }} <small class="text-danger"><span data-bobot_soal_id="{{ $d->id }}" class="jml_soal"></span> soal</small></label>
-                                    <input placeholder="Jml Soal" type="number" data-topik_id="DATA-TOPIK-ID" data-bobot_soal_id="{{ $d->id }}" class="form-control input_jml input-sm input_number col-md-4" name="jumlah_soal[ID-TOPIK][ID-BOBOT-SOAL]" style="text-align: right" disabled="disabled">
-                                    <small class="help-block"></small>
+                                <div class="row">
+                                    <label for="" style="" class="col-md-8">
+                                        {{ $d->bobot }}
+                                        <small class="text-danger">
+                                            <span data-bobot_soal_id="{{ $d->id }}" class="jml_soal"></span> soal
+                                        </small>
+                                    </label>
+                                    <div class="form-group col-md-4">
+                                        <input placeholder="Jml Soal" type="number" data-topik_id="DATA-TOPIK-ID" data-bobot_soal_id="{{ $d->id }}" class="form-control input_jml input-sm input_number" name="jumlah_soal[ID-TOPIK][ID-BOBOT-SOAL]" style="text-align: right" disabled="disabled">
+                                        <small class="help-block"></small>
+                                    </div>
                                 </div>
                                 @endforeach
                             </td>
@@ -588,7 +691,7 @@ $('#tampilkan_jawaban').on('switchChange.bootstrapSwitch', function(event, state
                 </div>
                 <div class="form-group">
                     <label for="waktu">Waktu</label>
-                    <input value="<?=$ujian->waktu?>" placeholder="menit" type="number" class="form-control" name="waktu">
+                    <input value="{{ $ujian->waktu }}" placeholder="menit" type="number" class="form-control" name="waktu" {!! $ujian->is_sekuen_topik == 1 ? 'disabled' : '' !!}>
                     <small class="help-block"></small>
                 </div>
                 <div class="form-group">

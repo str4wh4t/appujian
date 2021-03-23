@@ -16,11 +16,12 @@ use Ratchet\WebSocket\WsServer;
 use Wsock\Chat;
 use Ratchet\Client;
 
-
 class Pub extends MY_Controller {
 
 	public function __construct(){
 		parent::__construct();
+		$this->load->library('socket');
+
 	}
 	
 	public function index(){
@@ -33,8 +34,6 @@ class Pub extends MY_Controller {
 		$mhs = Mhs_orm::where('nim', $nim)->firstOrFail();
 		$ujian_id = integer_read_from_uuid($ujian_id_uuid);
 		$hasil = Hujian_orm::where(['mahasiswa_id' => $mhs->id_mahasiswa, 'ujian_id' => $ujian_id])->firstOrFail();
-		$this->load->library('Pdf');
-
 		$mhs 	= $hasil->mhs;
 //		$hasil 	= $ujian;
 		$ujian 	= $hasil->m_ujian;
@@ -183,18 +182,21 @@ class Pub extends MY_Controller {
 	public function socket(){
 		if(!is_cli()) show_404();
 		
-		$wsServer = new WsServer(new Chat());
+		// $wsServer = new WsServer(new Chat());
 		
-		$server = IoServer::factory(
-		    new HttpServer(
-		        $wsServer
-		    ),
-		    8080
-		);
+		// $server = IoServer::factory(
+		//     new HttpServer(
+		//         $wsServer
+		//     ),
+		//     8080
+		// );
 		
-		$wsServer->enableKeepAlive($server->loop, 30);
+		// $wsServer->enableKeepAlive($server->loop, 30);
 		
-		$server->run();
+		// $server->run();
+
+		$this->socket->run();
+
 	}
 	
 	public function cron_auto_start_ujian_for_unstarted_participants($app_id = 'ujian'){
@@ -373,7 +375,7 @@ class Pub extends MY_Controller {
 //						$cmd = 'wscat -c '. ws_url() .' -x  {\"cmd\":\"MHS_STOP_UJIAN\",\"nim\":\"'. $h_ujian->mhs->nim .'\",\"app_id\":\"'. $app_id . '.undip.ac.id' .'\"}';
 //						exec($cmd);
 						$cmd = '{"cmd":"MHS_STOP_UJIAN","nim":"'. $h_ujian->mhs->nim .'","app_id":"'. $app_id . '.undip.ac.id' .'"}';
-						$this->_notif_ws($cmd);
+						$this->socket->notif_ws($cmd);
 						echo "DONE" ;
 					}else{
 						echo "ERROR" ;
@@ -382,23 +384,6 @@ class Pub extends MY_Controller {
 			}
 		}
 		return;
-	}
-	
-//	public function coba(){
-//		$cmd = '{"cmd":"MHS_STOP_UJIAN","nim":"22020090007","app_id":"cat.undip.ac.id"}';
-//		$this->_notif_ws($cmd);
-//	}
-	
-	private function _notif_ws($send_msg = ''){
-		Client\connect(ws_url())->then(function($conn) use ($send_msg){
-	        $conn->on('message', function($msg) use ($conn, $send_msg) {
-	            echo "Received: {$msg}\n";
-	            $conn->close();
-	        });
-	        $conn->send($send_msg);
-	    }, function ($e) {
-	        echo "Could not connect: {$e->getMessage()}\n";
-	    });
 	}
 	
 	public function submit_ujian($h_ujian){
@@ -454,7 +439,7 @@ class Pub extends MY_Controller {
 		$h_ujian->nilai_bobot_benar     =  round($nilai_bobot_benar, 2);
 		$h_ujian->total_bobot     =  round($total_bobot, 2);
 		$h_ujian->detail_bobot_benar     =  json_encode($topik_ujian_nilai_bobot);
-		$h_ujian->tgl_selesai =  date('Y-m-d H:i:s');
+		$h_ujian->tgl_selesai =  $h_ujian->tgl_selesai; //date('Y-m-d H:i:s');
 		$h_ujian->ujian_selesai    =  'Y';
 		$h_ujian->ended_by =  'cron';
 		$action = $h_ujian->save();
@@ -550,5 +535,22 @@ class Pub extends MY_Controller {
 		}
 		
 	}
+
+	//	public function coba(){
+	//		$cmd = '{"cmd":"MHS_STOP_UJIAN","nim":"22020090007","app_id":"cat.undip.ac.id"}';
+	//		$this->socket->notif_ws($cmd);
+	//	}
+	
+	// private function _notif_ws($send_msg = ''){
+	// 	Client\connect(ws_url())->then(function($conn) use ($send_msg){
+	//         $conn->on('message', function($msg) use ($conn, $send_msg) {
+	//             echo "Received: {$msg}\n";
+	//             $conn->close();
+	//         });
+	//         $conn->send($send_msg);
+	//     }, function ($e) {
+	//         echo "Could not connect: {$e->getMessage()}\n";
+	//     });
+	// }
 	
 }

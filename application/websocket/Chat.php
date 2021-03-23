@@ -197,15 +197,17 @@ class Chat implements MessageComponentInterface {
 			    $client->send(json_encode($res));
 		    }
 	    }elseif($req->cmd == 'DO_KICK'){
-	    	$res = [
-			    'cmd'         => $req->cmd,
-			    'nim'         => $req->nim,
-			    'username'      => $req->username,
-			    'app_id'      => $req->app_id,
-		    ];
-	        foreach ($this->clients as $client) {
-			    $client->send(json_encode($res));
-		    }
+			if(($req->as == 'pengawas') || $req->as == 'admin'){
+				$res = [
+					'cmd'         => $req->cmd,
+					'nim'         => $req->nim,
+					'username'    => $req->username,
+					'app_id'      => $req->app_id,
+				];
+				foreach ($this->clients as $client) {
+					$client->send(json_encode($res));
+				}
+			}
 	    }elseif($req->cmd == 'MHS_START_UJIAN'){
 		    $res = [
 			    'cmd'             => $req->cmd,
@@ -236,6 +238,17 @@ class Chat implements MessageComponentInterface {
 	        foreach ($this->clients as $client) {
 			    $client->send(json_encode($res));
 		    }
+	    }elseif($req->cmd == 'UPDATE_TIME'){
+			if(($req->as == 'pengawas') || $req->as == 'admin'){
+				$res = [
+					'cmd'         => $req->cmd,
+					'nim'         => $req->nim,
+					'app_id'      => $req->app_id,
+				];
+				foreach ($this->clients as $client) {
+					$client->send(json_encode($res));
+				}
+			}
 	    }
 	    
 //	    elseif($req->cmd == 'MHS_OFFLINE'){

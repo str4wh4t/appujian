@@ -117,7 +117,7 @@ use Illuminate\Database\Eloquent\Builder;
 
 				<?php $i = 1; ?>
 
-				@foreach ($h_ujian->m_ujian->topik as $topik)
+				@foreach ($topik_ujian_list as $topik)
 				<div class="alert bg-info w-100"><b>Topik : </b> {{ $topik->nama_topik }} ( Poin Topik :
 					{{ $topik->poin_topik }} )</div>
 
@@ -197,13 +197,25 @@ use Illuminate\Database\Eloquent\Builder;
 										{!! ($jawaban_ujian->jawaban == $jawaban_ujian->soal->jawaban) ?
 										$badge_benar : $badge_salah !!}
 									</h4>
+									@if (!empty($jawaban_ujian->waktu_jawab_soal))
+									<h4 class="card-title">
+										<?php
+										$date1 = new DateTime($jawaban_ujian->waktu_buka_soal);
+										$date2 = new DateTime($jawaban_ujian->waktu_jawab_soal);
+										$interval = $date1->diff($date2);
+
+										$waktu_menjawab = $interval->i . ' mnt ' . $interval->s . ' dtk' ;
+										?>
+										Waktu Menjawab : {{ $waktu_menjawab }}
+									</h4>
+									@endif
 									<h4 class="card-title">Penjelasan :</h4>
 									<div class="">
 										@if (empty($jawaban_ujian->soal->penjelasan))
 										<p>Maaf, belum ada penjelasan mengenai soal ini, anda dapat meminta
 											penjelasan dengan klik tombol minta penjelasan dibawah.</p>
 										@else
-										{{ $jawaban_ujian->soal->penjelasan }}
+										{!! $jawaban_ujian->soal->penjelasan !!}
 										@endif
 									</div>
 								</div>

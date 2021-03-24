@@ -1135,7 +1135,7 @@ class Ujian extends MY_Controller
 			foreach ($ujian->topik_ujian as $topik_ujian) {
 				$jumlah_soal_diset = $topik_ujian->jumlah_soal;
 				$soal_avail = Soal_orm::where('topik_id', $topik_ujian->topik_id)
-					->where('bobot_soal_id', $topik_ujian->bobot_soal_id);
+										->where('bobot_soal_id', $topik_ujian->bobot_soal_id);
 
 				$filter_data = [
 					'gel' 		=> $ujian->soal_gel,

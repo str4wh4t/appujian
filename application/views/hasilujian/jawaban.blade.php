@@ -5,11 +5,16 @@ use Illuminate\Database\Eloquent\Builder;
 
 @push('page_level_css')
 <!-- BEGIN PAGE LEVEL JS-->
+<link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/vendors/css/charts/morris.css') }}">
 <!-- END PAGE LEVEL JS-->
 @endpush
 
 @push('page_vendor_level_js')
 <!-- BEGIN PAGE VENDOR JS-->
+<script src="{{ asset('assets/yarn/node_modules/moment/min/moment.min.js') }}"></script>
+<script src="{{ asset('assets/yarn/node_modules/moment/min/moment-with-locales.min.js') }}"></script>
+<script src="{{ asset('assets/template/robust/app-assets/vendors/js/charts/raphael-min.js') }}"></script>
+<script src="{{ asset('assets/template/robust/app-assets/vendors/js/charts/morris.min.js') }}"></script>
 <!-- END PAGE VENDOR -->
 @endpush
 
@@ -20,6 +25,60 @@ use Illuminate\Database\Eloquent\Builder;
 		
 		ajaxcsrf();
 		
+		/**[START] CHART */
+        //Get the context of the Chart canvas element we want to select
+        
+		let mmt = moment();
+
+        Morris.Line({
+            element: 'line-chart',
+            data: {!! $chart_label_and_data !!},
+            xkey: 'soal_ke',
+            ykeys: ['waktu_menjawab'],
+            labels: ['Waktu'],
+            parseTime: false,
+            resize: true,
+            smooth: false,
+            pointSize: 3,
+            pointStrokeColors:['#FF4558'],
+            gridLineColor: '#e3e3e3',
+            behaveLikeLine: true,
+            numLines: 6,
+            gridtextSize: 14,
+            lineWidth: 3,
+            hideHover: 'auto',
+            lineColors: ['#FF4558'],
+            xLabelFormat: function (x) {
+                let soal_ke = parseInt(x.src.soal_ke);
+                return "Ke-" + soal_ke;
+            },
+			hoverCallback: function(index, options, content, row) {
+				// console.log(row.waktu_menjawab);
+				// var hover = "<div class='morris-hover-row-label'>"+row.period+"</div><div class='morris-hover-point' style='color: #A4ADD3'><p color:black>"+row.park1+"</p></div>";
+				// return hover;
+
+				let duration = moment.duration(row.waktu_menjawab * 1000);
+
+				let mnt = duration.minutes() + ' Mnt'; 
+				let dtk = duration.seconds() + ' Dtk'; 
+				let new_content = '<div class="morris-hover-row-label">Ke-'+ row.soal_ke +'</div>'
+									+ '<div class="morris-hover-point" style="color: #689bc3">'
+									+	'Waktu:  '+ mnt + ' ' + dtk
+									+ '</div>';
+				
+				// let mnt = mmt.minutes(row.waktu_menjawab).format('mm') + ' Mnt'; 
+				// let dtk = mmt.seconds(row.waktu_menjawab).format('ss') + ' Dtk'; 
+				// let new_content = '<div class="morris-hover-row-label">Ke-'+ row.soal_ke +'</div>'
+				// 					+ '<div class="morris-hover-point" style="color: #689bc3">'
+				// 					+	'Waktu:  '+ mnt + ' ' + dtk
+				// 					+ '</div>';
+
+				return(new_content);
+			},
+            xLabels: "soal_ke",
+        });
+		/**[STOP] CHART */
+
 	}
 	
 	
@@ -113,6 +172,22 @@ use Illuminate\Database\Eloquent\Builder;
 								</tr>
 							</table>
 						</div>
+				</div>
+
+				<div class="border border-success p-1 mt-1 mb-1" style="">
+					<div class="height-350 w-100 mb-2">
+						<ul class="list-inline text-center">
+							<li>
+								<h4 class="text-danger">Grafik Waktu Menjawab</h4>
+							</li>
+						</ul>
+						<div id="line-chart" class="height-300"></div>
+						<ul class="list-inline text-center">
+							<li>
+								<h6><i class="ft-circle danger"></i> Soal</h6>
+							</li>
+						</ul>
+					</div>
 				</div>
 
 				<?php $i = 1; ?>

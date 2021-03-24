@@ -245,7 +245,7 @@ class HasilUjian extends MY_Controller {
 		$this->load->view('hasilujian/cetak_detail', $data);
 	}
 
-	public function jawaban($id, $nomor = '')
+	public function jawaban($id)
 	{
 		if(in_group('mahasiswa')){
 			$id = integer_read_from_uuid($id);
@@ -256,11 +256,11 @@ class HasilUjian extends MY_Controller {
 		if(empty($h_ujian)){
 			$h_ujian = Hujian_history_orm::findorFail($id);
 			$mhs = $h_ujian->mhs;
-			$h_ujian_all = Hujian_history_orm::select('*', DB::raw('TIMESTAMPDIFF(SECOND, tgl_mulai, tgl_selesai) AS lama_pengerjaan'))
-							->where(['ujian_id' => $h_ujian->ujian_id])
-							->orderBy('nilai_bobot_benar', 'desc')
-							->orderBy('lama_pengerjaan', 'asc')
-							->get();
+			// $h_ujian_all = Hujian_history_orm::select('*', DB::raw('TIMESTAMPDIFF(SECOND, tgl_mulai, tgl_selesai) AS lama_pengerjaan'))
+			// 				->where(['ujian_id' => $h_ujian->ujian_id])
+			// 				->orderBy('nilai_bobot_benar', 'desc')
+			// 				->orderBy('lama_pengerjaan', 'asc')
+			// 				->get();
 			$peringkat = $h_ujian->peringkat;
 			$jml_peserta = $h_ujian->jml_peserta ;
 
@@ -323,6 +323,50 @@ class HasilUjian extends MY_Controller {
 
 		$data['topik_ujian_list'] = $topik_ujian_list;
 
+		/**[START] PREPARE DATA FOR CHART*/
+		$label_and_data = collect();
+
+		if($h_ujian->jawaban_ujian->isNotEmpty()){
+			// $label_and_data = $h_ujian->jawaban_ujian->pluck('waktu_jawab_soal', 'soal_id');
+			$i = 1 ;
+
+			$jawaban_ujian_urut = collect();
+			$tes = [];
+			foreach($topik_ujian_list as $topik_ujian){
+				foreach($h_ujian->jawaban_ujian as $jawaban_ujian){
+					if($topik_ujian->id == $jawaban_ujian->soal->topik_id){
+						$jawaban_ujian_urut->add($jawaban_ujian);
+						$tes[] = $jawaban_ujian->id;
+					}
+				}
+			}
+
+			foreach($jawaban_ujian_urut as $jawaban_ujian){
+				$date1 = new DateTime($jawaban_ujian->waktu_buka_soal);
+				$date2 = new DateTime($jawaban_ujian->waktu_jawab_soal);
+				$interval = $date1->diff($date2);
+
+				// $waktu_menjawab = $interval->i . ' mnt ' . $interval->s . ' dtk' ;
+				$label_and_data->put($i, ($interval->i * 60) + $interval->s);
+				$i++;
+			}
+		}
+
+		// vdebug($label_and_data);
+
+		$chart_label_and_data_array = [];
+		$label_and_data->each(function ($item, $key) use(&$chart_label_and_data_array){
+			$data = [
+				'soal_ke' => $key,
+				'waktu_menjawab' => $item,
+			];
+			$chart_label_and_data_array[] = $data;
+		});
+		
+		$chart_label_and_data = collect($chart_label_and_data_array);
+		$data['chart_label_and_data'] = $chart_label_and_data;
+		/**[START] PREPARE DATA FOR CHART*/
+
 
 		view('hasilujian/jawaban', $data);
 
@@ -375,7 +419,6 @@ class HasilUjian extends MY_Controller {
 			$label_and_data->put($label_and_data->count() + 1, $h_ujian->nilai_bobot_benar);
 		}
 		
-		
 		$chart_label_and_data_array = [];
 		$label_and_data->each(function ($item, $key) use(&$chart_label_and_data_array){
 			$data = [
@@ -387,7 +430,6 @@ class HasilUjian extends MY_Controller {
 		
 		$chart_label_and_data = collect($chart_label_and_data_array);
 		$data['chart_label_and_data'] = $chart_label_and_data;
-		
 		/**[START] PREPARE DATA FOR CHART*/
 
 		view('hasilujian/history', $data);

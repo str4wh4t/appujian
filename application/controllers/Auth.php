@@ -86,6 +86,9 @@ class Auth extends CI_Controller
 	
 	public function cek_login()
 	{
+		if(!$this->input->post()){
+			show_404();
+		}
 		$this->form_validation->set_rules('identity', str_replace(':', '', $this->lang->line('login_identity_label')), 'required|trim');
 		$this->form_validation->set_rules('password', str_replace(':', '', $this->lang->line('login_password_label')), 'required|trim');
 
@@ -120,6 +123,8 @@ class Auth extends CI_Controller
 			$this->session->set_flashdata('error_login_msg', 'Oops, isian anda salah.');
 			redirect('/', 'refresh');
 		}
+
+
 	}
 
 

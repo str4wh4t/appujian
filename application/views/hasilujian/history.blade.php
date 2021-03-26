@@ -117,7 +117,8 @@ use Illuminate\Database\Capsule\Manager as DB;
                     <!---- --->
                     <div class="row">
                         <div class="col-md-12 mb-4">
-                            <a href="{{ site_url('ujian/list') }}" class="btn btn-sm btn-warning btn-flat"><i
+                            <?php $back_link = in_group('admin') ? site_url('hasilujian/detail/' . $m_ujian->id_ujian) : site_url('hasilujian/detail/' . uuid_create_from_integer($m_ujian->id_ujian)) ; ?>
+                            <a href="{{ $back_link }}" class="btn btn-sm btn-warning btn-flat"><i
                                     class="fa fa-arrow-left"></i> Kembali</a>
                             {{-- <a target="_blank" href="{{ site_url('hasilujian/cetak_detail_jawaban/') }}"
                             class="btn btn-danger btn-flat btn-sm">

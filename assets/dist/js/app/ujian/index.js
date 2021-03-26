@@ -59,7 +59,7 @@ function buka(id_widget) {
     let sid = $('input[name="id_soal_'+ id_widget +'"]').val();
     // waktu_buka_soal[sid] = waktu_buka_soal[sid] ? waktu_buka_soal[sid] : moment().format("YYYY-MM-DD HH:mm:ss");
     waktu_buka_soal = moment().format("YYYY-MM-DD HH:mm:ss");
-    console.log('buka', waktu_buka_soal);
+    // console.log('buka', waktu_buka_soal);
 }
 
 function next() {
@@ -119,7 +119,7 @@ function next() {
     let sid = $('input[name="id_soal_'+ berikutnya +'"]').val();
     // waktu_buka_soal[sid] = waktu_buka_soal[sid] ? waktu_buka_soal[sid] : moment().format("YYYY-MM-DD HH:mm:ss");
     waktu_buka_soal = moment().format("YYYY-MM-DD HH:mm:ss");
-    console.log('next', waktu_buka_soal);
+    // console.log('next', waktu_buka_soal);
 
 }
 
@@ -386,7 +386,7 @@ function simpan_jawaban_satu(sid, answer, ragu, go_next = true) {
 
             let sudah_akhir = next_soal_id > total_widget ? 1 : 0;
             if((!sudah_akhir) && valid_next && go_next){
-                next(next_soal_id);
+                // next(next_soal_id); // UNTUK MENUJU SOAL SELANJUTNYA JIKA SUDAH MENJAWAB
             }
         },
         error: function () {

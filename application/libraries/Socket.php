@@ -22,7 +22,7 @@ class Socket
 		    new HttpServer(
 		        $wsServer
 		    ),
-		    8080
+		    SOCKET_PORT
 		);
 		
 		$wsServer->enableKeepAlive($server->loop, 30);

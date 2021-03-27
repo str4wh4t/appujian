@@ -188,9 +188,10 @@ body {
     function init_socket(){
         // conn = new WebSocket();
         conn = new WebSocket('{{ ws_url() }}');
+
         conn.onopen = function(e) {
-            console.log('wesocket status opened');
-            conn.send(JSON.stringify({
+            // console.log('wesocket status opened');
+            sendmsg(JSON.stringify({
                 'user_id':'{{ get_logged_user()->id }}',
                 'm_ujian_id':'{{ $m_ujian->id_ujian }}',
                 'as':'{{ get_selected_role()->name }}',
@@ -316,7 +317,7 @@ body {
         ajx_overlay(true);
         $.post('{{ url('ujian/ajax/absen_pengawas') }}', {'mahasiswa_ujian_id' : mahasiswa_ujian_id, 'nim' : nim}, function (res){
             if(res.ok) {
-                conn.send(JSON.stringify({
+                sendmsg(JSON.stringify({
                     'mahasiswa_ujian_id': mahasiswa_ujian_id,
                     'user_id': '{{ get_logged_user()->id }}',
                     'as': '{{ get_selected_role()->name }}',
@@ -347,7 +348,7 @@ body {
                 ajx_overlay(true);
                 $.post('{{ url('ujian/ajax/absen_pengawas') }}', {'mahasiswa_ujian_id' : mahasiswa_ujian_id, 'nim' : nim, 'aksi' : 'batal'}, function (res){
                     if(res.ok) {
-                        conn.send(JSON.stringify({
+                        sendmsg(JSON.stringify({
                             'mahasiswa_ujian_id': mahasiswa_ujian_id,
                             'user_id': '{{ get_logged_user()->id }}',
                             'as': '{{ get_selected_role()->name }}',
@@ -432,7 +433,7 @@ body {
 
     function pop_mhs_online_ips(nim){
         nim = nim.toString();
-        ip = ip.toString();
+        // ip = ip.toString();
         delete list_mhs_online_ips[nim];
     }
 
@@ -483,7 +484,7 @@ body {
                     },
                     success: function (r) {
                         if (r.status) {
-                            conn.send(JSON.stringify({
+                            sendmsg(JSON.stringify({
                                 'mahasiswa_ujian_id': mahasiswa_ujian_id,
                                 'user_id': '{{ get_logged_user()->id }}',
                                 'username': '{{ get_logged_user()->username }}',

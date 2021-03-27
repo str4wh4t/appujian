@@ -101,7 +101,7 @@ defined('JML_KOLOM_EXCEL_IMPOR_SOAL')      OR define('JML_KOLOM_EXCEL_IMPOR_SOAL
 defined('GEL_AVAIL')      OR define('GEL_AVAIL', [1, 2, 3, 4, 5]);
 defined('SMT_AVAIL')      OR define('SMT_AVAIL', [1, 2]);
 defined('TAHUN_AVAIL')      OR define('TAHUN_AVAIL', [2020, 2021, 2022, 2023, 2024, 2025]);
-defined('KELOMPOK_UJIAN_AVAIL')      OR define('KELOMPOK_UJIAN_AVAIL', ['null' => 'Semua Kelompok', 0 => 'TIDAK ADA', 1 => 'SOSHUM', 2 => 'SAINTEK', 3 => 'CAMPURAN']);
+defined('KELOMPOK_UJIAN_AVAIL')      OR define('KELOMPOK_UJIAN_AVAIL', ['null' => 'Semua Kelompok', 0 => 'TIDAK ADA', 1 => 'SAINTEK', 2 => 'SOSHUM',  3 => 'CAMPURAN']);
 defined('FLAG_AKTIF')      OR define('FLAG_AKTIF', 1);
 defined('JML_SOAL_TUTORIAL')      OR define('JML_SOAL_TUTORIAL', 3);
 defined('JML_WAKTU_TUTORIAL')      OR define('JML_WAKTU_TUTORIAL', 5);

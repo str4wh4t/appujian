@@ -1,6 +1,5 @@
 /application/cache
 /application/config/config.php
-application/config/constants_depend_app.php
 /vendor
 composer.phar
 /.idea

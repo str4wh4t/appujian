@@ -262,7 +262,7 @@ class Dosen extends MY_Controller
 					'total'  => count($chk)
 				]);
 			} catch (Exception $e) {
-			    rollback_db_trx()
+			    rollback_db_trx();
 			    show_error('Terjadi masalah' ,500, 'Perhatian');
 			}
 		

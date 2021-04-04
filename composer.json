@@ -22,7 +22,9 @@
         "ratchet/pawl": "^0.3.5",
         "guzzlehttp/guzzle": "^7.0",
         "google/recaptcha": "^1.2",
-        "tecnickcom/tcpdf": "^6.3"
+        "tecnickcom/tcpdf": "^6.3",
+        "midtrans/midtrans-php": "^2.3",
+        "nesbot/carbon": "^2.46"
     },
     "suggest": {
         "paragonie/random_compat": "Provides better randomness in PHP 5.x"

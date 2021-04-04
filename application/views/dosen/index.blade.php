@@ -53,7 +53,7 @@
             </div>
 		</div>
         <?= form_open('', array('id' => 'bulk')) ?>
-        <div class="table-responsive pb-3" style="border: 0">
+        <div class="table-responsive pb-3 w-100" style="border: 0">
         <table id="dosen" class="table table-striped table-bordered table-hover">
             <thead>
                 <tr>

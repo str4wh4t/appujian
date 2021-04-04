@@ -219,8 +219,10 @@ function init_page_level(){
             <div class="modal-body">
                 <table id="matkul" class="table table-bordered table-condensed table-striped">
                     <thead>
-                        <th>ID</th>
-                        <th>Materi Ujian</th>
+                        <tr>
+                            <th>ID</th>
+                            <th>Materi Ujian</th>
+                        </tr>
                     </thead>
                     <tbody>
                         <?php foreach ($matkul_list as $m) : ?>

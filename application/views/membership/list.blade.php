@@ -45,7 +45,7 @@ $(document).on('click', '.btn_sudah_beli', function(){
     <div class="col-12">
         <div class="card">
             <div class="card-header">
-                <h4 class="card-title">Paket</h4>
+                <h4 class="card-title">Membership</h4>
                 <a class="heading-elements-toggle"><i class="ft-ellipsis-h font-medium-3"></i></a>
             </div>
             <div class="card-content">
@@ -59,7 +59,7 @@ $(document).on('click', '.btn_sudah_beli', function(){
                 <div class="card-body">
                     <div class="media">
                         <div class="media-left media-middle">
-                            <i class="ft-bar-chart-2 white font-large-2 float-left"></i>
+                            <i class="icon-diamond white font-large-2 float-left"></i>
                         </div>
                         <div class="media-body white text-center">
                             <h3 class="white">Membership</h3>
@@ -72,31 +72,44 @@ $(document).on('click', '.btn_sudah_beli', function(){
             </div>
         </div>
     </div>
-    @forelse ($paket_list->sortBy('urut') as $paket)
-    <div class="col-lg-3 pb-2">
+    @forelse ($membership_list->sortBy('urut') as $membership)
+    <div class="col-lg-4 pb-2">
         <div class="card h-100">
-            <div class="card-header bg-{{ $paket->text_color }}">
-                <h3 class="my-0 font-weight-bold text-white text-center" style="text-transform: uppercase">{{ $paket->name }}</h3>
+            <div class="card-header bg-{{ $membership->text_color }}">
+                <h3 class="my-0 font-weight-bold text-white text-center" style="text-transform: uppercase">{{ $membership->name }}</h3>
               </div>
             <div class="card-body border border-secondary">
-                @if (!empty($paket->delete_price))
-                <h4 class="text-center"><del>Rp {{ number_format($paket->delete_price, 0, ",", ".") }}</del></h4>
+                @if (!empty($membership->delete_price))
+                <h4 class="text-center"><del>Rp {{ number_format($membership->delete_price, 0, ",", ".") }}</del></h4>
                 @endif
-                <h3 class="text-center mb-3" style="{{ !empty($paket->delete_price) ? 'margin-bottom: 0.8rem !important;' : '' }}">
-                    Rp {{ number_format($paket->price, 0, ",", ".") }}
+                <h3 class="text-center mb-3" style="{{ !empty($membership->delete_price) ? 'margin-bottom: 0.8rem !important;' : '' }}">
+                    Rp {{ number_format($membership->price, 0, ",", ".") }}
                 </h3>
-                @if($user->paket_dibeli($paket->id)->get()->isEmpty())
-                <a href="{{ url('payment/beli/P/' . uuid_create_from_integer($paket->id)) }}"
-                    class="btn btn-glow round w-100 fw-600 my-2 text-white btn-primary">
-                    <i class="ft-shopping-cart text-white icon-md "></i> Beli sekarang
-                </a>
-                @else
-                <button type="button" class="btn btn-glow round w-100 fw-600 my-2 text-white btn-secondary btn_sudah_beli" disabled="disabled">
+                    @if($membership->id == MEMBERSHIP_ID_DEFAULT)
+                    <button type="button" class="btn btn-glow round w-100 fw-600 my-2 text-white btn-secondary btn_sudah_beli" disabled="disabled">
                     <i class="ft-shopping-cart text-white icon-md "></i> Sudah dibeli
                     </button>
-                @endif
+                    @else
+                        @if($is_valid_membership)
+                            @if($membership->id > $user->membership_id)
+                            <a href="{{ url('payment/beli/M/' . uuid_create_from_integer($membership->id)) }}"
+                                class="btn btn-glow round w-100 fw-600 my-2 text-white btn-primary">
+                                <i class="ft-shopping-cart text-white icon-md "></i> Beli sekarang
+                            </a>
+                            @else
+                            <button type="button" class="btn btn-glow round w-100 fw-600 my-2 text-white btn-secondary btn_sudah_beli" disabled="disabled">
+                                <i class="ft-shopping-cart text-white icon-md "></i> Sudah dibeli
+                                </button>
+                            @endif
+                        @else
+                        <a href="{{ url('payment/beli/M/' . uuid_create_from_integer($membership->id)) }}"
+                            class="btn btn-glow round w-100 fw-600 my-2 text-white btn-primary">
+                            <i class="ft-shopping-cart text-white icon-md "></i> Beli sekarang
+                        </a>
+                        @endif
+                    @endif
                 <hr>
-                {!! $paket->description !!}
+                {!! $membership->description !!}
             </div>
         </div>
     </div>

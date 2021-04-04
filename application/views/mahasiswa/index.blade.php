@@ -113,7 +113,7 @@ $(document).on('change','#tahun_filter', function(){
 });
 
 </script>
-<script src="{{ asset('assets/dist/js/app/master/mahasiswa/index.js?u' . mt_rand()) }}"></script>
+<script src="{{ asset('assets/dist/js/app/master/mahasiswa/index.js') }}"></script>
 <!-- END PAGE LEVEL JS-->
 @endpush
 

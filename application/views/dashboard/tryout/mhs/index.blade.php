@@ -85,12 +85,12 @@
                 </dl>
             </div> --}}
             <div class="card-body">
-                <div class="alert bg-info rounded-0 text-center">Materi Ujian</div>
+                <div class="alert bg-info rounded-0 text-center">Paket Materi</div>
                 <div class="chart-stats text-center">
                     @forelse($mahasiswa->matkul as $matkul)
                         <li><?=$matkul->nama_matkul?></li>
                     @empty
-                        <li>Belum ada materi ujian</li>
+                        <li>Belum ada paket materi</li>
                     @endforelse
                 </div>
             </div>
@@ -99,24 +99,38 @@
 
     <div class="col-xl-8 col-lg-12">
         <div class="row">
-            <div class="col-12">
-                <div class="card bg-{{ get_membership_color($user->membership_id) }}">
-                    <div class="card-content">
-                        <div class="card-body">
-                            <div class="media">
-                                <div class="media-left media-middle">
-                                    <i class="ft-bar-chart-2 white font-large-2 float-left"></i>
-                                </div>
-                                <div class="media-body white text-center">
-                                    <h3 class="white">Membership</h3>
-                                    <span>Saat ini anda terdaftar dalam paket : 
-                                        {!! get_membership_star($user->membership_id) !!}
-                                        <b style="text-transform: uppercase">{{ get_membership_text($user->membership_id) }}</b></span>
+            <div class="col-8">
+                <a href="{{ url('membership/history') }}" >
+                    <div class="card bg-{{ get_membership_color($user->membership_id) }}">
+                        <div class="card-content">
+                            <div class="card-body">
+                                <div class="media">
+                                    <div class="media-left media-middle">
+                                        <i class="icon-diamond white font-medium-3 float-left"></i>
+                                    </div>
+                                    <div class="media-body white text-center">
+                                        <h6 class="white mb-0">MEMBERSHIP : {!! get_membership_star($user->membership_id) !!} <b style="text-transform: uppercase">{{ get_membership_text($user->membership_id) }} {{ is_user_membership_expired() ? '(EXPIRED)' : '' }}</b></h6>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
+                </a>
+            </div>
+            <div class="col-4">
+                <a href="{{ url('payment/history') }}" >
+                    <div class="card bg-info">
+                        <div class="card-content">
+                            <div class="card-body">
+                                <div class="media">
+                                    <div class="media-body white text-center">
+                                        <h6 class="white mb-0">ORDER HISTORY <i class="fa fa-hand-pointer-o white font-medium-3"></i></h6>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </a>
             </div>
             <div class="col-12">
                 <div class="row">
@@ -160,10 +174,11 @@
                         <div class="card" style="">
                             <div class="card-header">
                                 <h4 class="card-title">
-                                    <div class="badge border-danger danger round badge-border">
+                                    <div class="badge border-danger danger round badge-border mr-1">
                                         <i class="fa fa-bar-chart"></i> 
                                     </div> Leaderboard
                                 </h4>
+                                <hr>
                             </div>
                             <div class="card-content">
                                 <div id="friends-activity" class="media-list height-350 position-relative">

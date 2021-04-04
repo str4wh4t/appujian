@@ -5,3 +5,6 @@ application/config/constants_depend_app.php
 composer.phar
 /.idea
 /assets/yarn/node_modules/*
+/sessions
+/uploads/img_soal/*
+.DS_STORE

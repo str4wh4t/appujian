@@ -250,20 +250,20 @@ class Dosen extends MY_Controller
 //			}
 			
 			try {
-			    DB::beginTransaction();
+			    begin_db_trx();
 			    foreach($chk as $c) {
 				    $dosen = Dosen_orm::findOrFail($c);
 				    Users_orm::where('username', $dosen->nip)->delete();
 				    $dosen->delete();
 			    }
-			    DB::commit();
+			    commit_db_trx();
 				$this->_json([
 					'status' => TRUE,
 					'total'  => count($chk)
 				]);
 			} catch (Exception $e) {
-			    DB::rollBack();
-			    show_error('Terjadi masalah',500,'Perhatian');
+			    rollback_db_trx()
+			    show_error('Terjadi masalah' ,500, 'Perhatian');
 			}
 		
 		}
@@ -279,12 +279,14 @@ class Dosen extends MY_Controller
 		$full_name = $data->nama_dosen;
 
 		$username = $data->nip;
-		$password = $data->nip;
+		$password = date("dmY", strtotime($data->tgl_lahir));
 		$email = $data->email;
+		$tgl_lahir        = date("dmY", strtotime($data->tgl_lahir));
 		$additional_data = [
 			'first_name'	=> $first_name,
 			'last_name'		=> $last_name,
 			'full_name'     => $full_name,
+			'tgl_lahir'  	=> $tgl_lahir,
 		];
 		$group = [ DOSEN_GROUP_ID ]; // Sets user to dosen.
 
@@ -394,4 +396,5 @@ class Dosen extends MY_Controller
 			redirect('dosen/import');
 		}
 	}
+
 }

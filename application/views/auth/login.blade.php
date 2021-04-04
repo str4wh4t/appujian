@@ -110,7 +110,11 @@
                             </div>
                             
                             <button type="submit" class="btn btn-outline-info btn-block" style="display: none" id="btn_submit_login"><i class="ft-unlock"></i> Login</button>
-                            <a href="{{ url('auth/registrasi') }}" class="btn btn-info btn-block" style="display: none" id="btn_link_registrasi"><i class="fa fa-user"></i> Registrasi</a>
+                            
+                            @if (SHOW_REGISTRATION)
+                            <a href="{{ url('auth/registrasi') }}" class="btn btn-info btn-block" style="display: none" id="btn_link_registrasi"><i class="fa fa-user"></i> Registrasi</a>    
+                            @endif
+                            
                             <hr>
                             <div class="mt-1 text-center" style=""><small><i class="fa fa-exclamation-triangle"></i> &nbsp;Jika terkendala login silahkan hub. <a href="mailto:{{ ADMIN_EMAIL }}">{{ ADMIN_EMAIL }}</a></small></div>
                         <?= form_close() ?>
@@ -199,6 +203,8 @@
                 $('#latency').addClass('text-danger').removeClass('text-success');
             }
         });
+
+        @if(PING_ENABLE)
         setInterval(function() {
             // let mctime = moment().valueOf();
             p.ping("{{ url('/') }}", function(err, data) {
@@ -208,7 +214,8 @@
                     $('#latency').addClass('text-danger').removeClass('text-success');
                 }
             });
-        },10000);
+        },{{ PING_INTERVAL }});
+        @endif
 
         }
 

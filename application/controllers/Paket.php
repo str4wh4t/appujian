@@ -1,10 +1,8 @@
 <?php
 defined('BASEPATH') or exit('No direct script access allowed');
 
-use Orm\Dosen_orm;
-use Orm\Dosen_matkul_orm;
 use Orm\Users_orm;
-use Orm\Membership_orm;
+use Orm\Paket_orm;
 use Illuminate\Database\Capsule\Manager as DB;
 
 class Paket extends MY_Controller
@@ -27,10 +25,11 @@ class Paket extends MY_Controller
         $data = [];
 
         $user = $this->ion_auth->user()->row();
-        $data['user'] = $user;
+        $data['user'] = Users_orm::findOrFail($user->id);
 
-        $membership_list = Membership_orm::where('show', 1)->get();
-        $data['membership_list'] = $membership_list;
+        $paket_list = Paket_orm::where('show', 1)->get();
+
+        $data['paket_list'] = $paket_list;
         
         view('paket/list', $data);
     }

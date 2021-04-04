@@ -87,6 +87,8 @@ defined('EXIT__AUTO_MAX')      OR define('EXIT__AUTO_MAX', 125); // highest auto
 // CONSTANT DEFINED BY APP
 include 'constants_depend_app.php';
 
+defined('UPLOAD_DIR') OR define('UPLOAD_DIR', 'uploads/img_soal/');
+
 defined('DOSEN_GROUP_ID')      OR define('DOSEN_GROUP_ID', 2);
 defined('MHS_GROUP_ID')      OR define('MHS_GROUP_ID', 3);
 defined('PENGAWAS_GROUP_ID')      OR define('PENGAWAS_GROUP_ID', 4);
@@ -115,6 +117,12 @@ defined('FOTO_DEFAULT_URL')      OR define('FOTO_DEFAULT_URL', 'assets/imgs/no_p
 
 $regex_date = '^\d{4}\-(0[1-9]|1[012])\-(0[1-9]|[12][0-9]|3[01])$';
 defined('REGEX_DATE_VALID')      OR define('REGEX_DATE_VALID', $regex_date ); // YYYY-MM-DD
-defined('PING_INTERVAL')      OR define('PING_INTERVAL', 15000 ); // IN MS
+defined('PING_ENABLE')      OR define('PING_ENABLE', false);
+defined('PING_INTERVAL')      OR define('PING_INTERVAL', 30000 ); // IN MS
 
 defined('SOCKET_PORT')      OR define('SOCKET_PORT', 8080 ); // IN MS
+defined('MEMBERSHIP_STTS_AKTIF')      OR define('MEMBERSHIP_STTS_AKTIF', 1);
+defined('MEMBERSHIP_STTS_NON_AKTIF')      OR define('MEMBERSHIP_STTS_NON_AKTIF', 0);
+
+defined('PAKET_STTS_AKTIF')      OR define('PAKET_STTS_AKTIF', 1);
+defined('PAKET_STTS_NON_AKTIF')      OR define('PAKET_STTS_NON_AKTIF', 0);

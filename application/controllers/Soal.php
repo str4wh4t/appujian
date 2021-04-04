@@ -5,6 +5,7 @@ use Orm\Soal_orm;
 use Orm\Matkul_orm;
 use Orm\Bobot_soal_orm;
 use Orm\Topik_orm;
+use Orm\Users_orm;
 
 use Ozdemir\Datatables\Datatables;
 use Ozdemir\Datatables\DB\MySQL;
@@ -61,15 +62,33 @@ class Soal extends MY_Controller
 		//        $user = $this->ion_auth->user()->row();
 
 		$soal_orm = Soal_orm::findOrFail($id);
+		$user = $this->ion_auth->user()->row();
 
+		$where_add = [];
+		if (!$this->ion_auth->is_admin()) {
+			if ($soal_orm->created_by != $user->username) {
+				$message_rootpage = [
+					'header' => 'Perhatian',
+					'content' => 'Anda bukan pembuat soal.',
+					'type' => 'warning'
+				];
+				$this->session->set_flashdata('message_rootpage', $message_rootpage);
+				redirect('soal/index', 'refresh');
+			}
+			$where_add['created_by'] = $soal_orm->created_by;
+		}
+
+		$maker = Users_orm::where('username', $soal_orm->created_by)->firstOrFail();
 
 		$prev = Soal_orm::where('id_soal', '<', $soal_orm->id_soal)
 								->where('topik_id', $soal_orm->topik_id)
+								->where($where_add)
 								->max('id_soal');
 
 		// get next user id
 		$next = Soal_orm::where('id_soal', '>', $soal_orm->id_soal)
 							->where('topik_id', $soal_orm->topik_id)
+							->where($where_add)
 							->min('id_soal');
 
 		$data = [
@@ -80,15 +99,12 @@ class Soal extends MY_Controller
 			'soal_orm'      => $soal_orm,
 			'prev'	=> $prev,
 			'next'	=> $next,
+			'user' => $maker,
 		];
 
-
-
-
-
-		//        $this->load->view('_templates/dashboard/_header.php', $data);
-		//		$this->load->view('soal/detail');
-		//		$this->load->view('_templates/dashboard/_footer.php');
+		// $this->load->view('_templates/dashboard/_header.php', $data);
+		// $this->load->view('soal/detail');
+		// $this->load->view('_templates/dashboard/_footer.php');
 
 		view('soal/detail', $data);
 	}
@@ -348,28 +364,228 @@ class Soal extends MY_Controller
 
 			$data['topik_id'] = $this->input->post('topik_id', true);
 			//            $data['matkul_id'] = $this->input->post('matkul_id', true);
+			
+			$ok = true ;
+			$error = null ;
 
 			if ($method === 'add') {
 				//push array
-				$data['created_at'] = date('Y-m-d H:i:s');
-				$data['created_by']   = $this->ion_auth->user()->row()->username;
+				// $data['created_at'] = date('Y-m-d H:i:s');
+				// $data['created_by']   = $this->ion_auth->user()->row()->username;
 				//insert data
-				$this->master->create('tb_soal', $data);
+				// $this->master->create('tb_soal', $data);
+				try{
+					begin_db_trx();
+
+					$soal = new Soal_orm();
+					$soal->soal = $data['soal'];
+					$soal->jawaban = $data['jawaban'];
+					$soal->bobot_soal_id = $data['bobot_soal_id'];
+					$soal->gel = $data['gel'];
+					$soal->smt = $data['smt'];
+					$soal->tahun = $data['tahun'];
+					foreach ($abjad as $abj) {
+						// $data['opsi_' . $abj]    = $this->input->post('jawaban_' . $abj);
+						$opsi = 'opsi_' . $abj ;
+						$soal->$opsi = $data[$opsi];
+					}
+					$soal->topik_id = $data['topik_id'];
+					$soal->created_by = $this->ion_auth->user()->row()->username;
+					$soal->save();
+
+					$soal_temp = Soal_orm::findOrFail($soal->id_soal);
+
+					$soal = $soal_temp->soal;
+					$doc = new DOMDocument('1.0', 'UTF-8');
+					$doc->loadHTML($soal);
+					$i = 0 ;
+					foreach ($doc->getElementsByTagName('img') as $img_node) {
+						$src = $img_node->getAttribute('src') ;
+						if(strpos($src, 'data:image/png;base64,') !== false){
+							$img = str_replace('data:image/png;base64,', '', $src);
+							$img = str_replace(' ', '+', $img);
+							$data = base64_decode($img);
+							$file = UPLOAD_DIR . $soal_temp->id_soal . '_soal_' . mt_rand() . '.png';
+							$success = file_put_contents($file, $data);
+							if($success){
+								$img_node->setAttribute('src', asset($file)) ;
+								$doc->saveHTML($img_node);
+							}
+							$i++;
+						}
+					}
+					
+					$xpath = new DOMXPath($doc);
+
+					$body = '';
+					foreach ($xpath->evaluate('//body/node()') as $node) {
+						$body .= $doc->saveHtml($node);
+					}
+
+					$soal_temp->soal = $body;
+
+					foreach ($abjad as $abj) {
+						$opsi = 'opsi_' . $abj ;
+						$html = $soal_temp->$opsi;
+						$doc = new DOMDocument('1.0', 'UTF-8');
+						$doc->loadHTML($html);
+						$i = 0 ;
+						foreach ($doc->getElementsByTagName('img') as $img_node) {
+							$src = $img_node->getAttribute('src') ;
+							if(strpos($src, 'data:image/png;base64,') !== false){
+								$img = str_replace('data:image/png;base64,', '', $src);
+								$img = str_replace(' ', '+', $img);
+								$data = base64_decode($img);
+								$file = UPLOAD_DIR . $soal_temp->id_soal . '_jawaban_'. $opsi .'_' . mt_rand() . '.png';
+								$success = file_put_contents($file, $data);
+								if($success){
+									$img_node->setAttribute('src', asset($file)) ;
+									$doc->saveHTML($img_node);
+								}
+								$i++;
+							}
+						}
+						
+						$xpath = new DOMXPath($doc);
+
+						$body = '';
+						foreach ($xpath->evaluate('//body/node()') as $node) {
+							$body .= $doc->saveHtml($node);
+						}
+
+						$soal_temp->$opsi = $body;
+
+					}
+					
+					$soal_temp->save();
+
+					commit_db_trx();
+
+				}catch(Exception $e){
+					rollback_db_trx();
+
+					$error = $e->getMessage();
+					$ok = false ;
+				}
+
 			} else if ($method === 'edit') {
 				//push array
-				$data['updated_at'] = date('Y-m-d H:i:s');
-				$data['updated_by']   = $this->ion_auth->user()->row()->username;
+				// $data['updated_at'] = date('Y-m-d H:i:s');
+				/// $data['updated_by']   = $this->ion_auth->user()->row()->username;
 				//update data
 				//                $id_soal = $this->input->post('id_soal', true);
-				$this->master->update('tb_soal', $data, 'id_soal', $id_soal);
+				try{
+					begin_db_trx();
+
+					// $this->master->update('tb_soal', $data, 'id_soal', $id_soal);
+
+					$soal = Soal_orm::findOrFail($id_soal);
+					$soal->soal = $data['soal'];
+					$soal->jawaban = $data['jawaban'];
+					$soal->bobot_soal_id = $data['bobot_soal_id'];
+					$soal->gel = $data['gel'];
+					$soal->smt = $data['smt'];
+					$soal->tahun = $data['tahun'];
+					foreach ($abjad as $abj) {
+						// $data['opsi_' . $abj]    = $this->input->post('jawaban_' . $abj);
+						$opsi = 'opsi_' . $abj ;
+						$soal->$opsi = $data[$opsi];
+					}
+					$soal->topik_id = $data['topik_id'];
+					$soal->created_by = $this->ion_auth->user()->row()->username;
+					$soal->save();
+
+					$soal_temp = Soal_orm::findOrFail($id_soal);
+
+					$html = $soal_temp->soal;
+					$doc = new DOMDocument('1.0', 'UTF-8');
+					$doc->loadHTML($html);
+					$i = 0 ;
+					foreach ($doc->getElementsByTagName('img') as $img_node) {
+						$src = $img_node->getAttribute('src') ;
+						if(strpos($src, 'data:image/png;base64,') !== false){
+							$img = str_replace('data:image/png;base64,', '', $src);
+							$img = str_replace(' ', '+', $img);
+							$data = base64_decode($img);
+							$file = UPLOAD_DIR . $soal_temp->id_soal . '_soal_' . mt_rand() . '.png';
+							$success = file_put_contents($file, $data);
+							if($success){
+								$img_node->setAttribute('src', asset($file)) ;
+								$doc->saveHTML($img_node);
+							}
+							$i++;
+						}
+					}
+					
+					$xpath = new DOMXPath($doc);
+
+					$body = '';
+					foreach ($xpath->evaluate('//body/node()') as $node) {
+						$body .= $doc->saveHtml($node);
+					}
+
+					$soal_temp->soal = $body;
+
+					foreach ($abjad as $abj) {
+						$opsi = 'opsi_' . $abj ;
+						$html = $soal_temp->$opsi;
+						$doc = new DOMDocument('1.0', 'UTF-8');
+						$doc->loadHTML($html);
+						$i = 0 ;
+						foreach ($doc->getElementsByTagName('img') as $img_node) {
+							$src = $img_node->getAttribute('src') ;
+							if(strpos($src, 'data:image/png;base64,') !== false){
+								$img = str_replace('data:image/png;base64,', '', $src);
+								$img = str_replace(' ', '+', $img);
+								$data = base64_decode($img);
+								$file = UPLOAD_DIR . $soal_temp->id_soal . '_jawaban_'. $opsi .'_' . mt_rand() . '.png';
+								$success = file_put_contents($file, $data);
+								if($success){
+									$img_node->setAttribute('src', asset($file)) ;
+									$doc->saveHTML($img_node);
+								}
+								$i++;
+							}
+						}
+						
+						$xpath = new DOMXPath($doc);
+
+						$body = '';
+						foreach ($xpath->evaluate('//body/node()') as $node) {
+							$body .= $doc->saveHtml($node);
+						}
+
+						$soal_temp->$opsi = $body;
+
+					}
+
+					$soal_temp->save();
+
+					commit_db_trx();
+
+				}catch(Exception $e){
+					rollback_db_trx();
+
+					$error = $e->getMessage();
+					$ok = false ;
+				}
 			} else {
 				show_error('Method tidak diketahui', 404);
 			}
-			$message_rootpage = [
-				'header' => 'Perhatian',
-				'content' => 'Data berhasil disimpan.',
-				'type' => 'success'
-			];
+
+			if($ok){
+				$message_rootpage = [
+					'header' => 'Perhatian',
+					'content' => 'Data berhasil disimpan.',
+					'type' => 'success'
+				];
+			}else{
+				$message_rootpage = [
+					'header' => 'Perhatian',
+					'content' => 'Data gagal disimpan, error : ' . $error,
+					'type' => 'error'
+				];
+			}
 
 			$this->session->set_flashdata('message_rootpage', $message_rootpage);
 			$method === 'add' ? redirect('soal/add') : redirect('soal/edit/' . $id_soal);

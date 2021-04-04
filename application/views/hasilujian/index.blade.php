@@ -43,7 +43,7 @@
 <!---- --->
 <div class="box">
     <div class="table-responsive pb-3" style="border: 0">
-        <table id="hasil" class="table table-striped table-bordered table-hover pb-3">
+        <table id="hasil" class="table table-striped table-bordered table-hover">
         <thead>
             <tr>
                 <th>No.</th>
@@ -58,19 +58,6 @@
                 </th>
             </tr>
         </thead>
-        <tfoot>
-            <tr>
-                <th>No.</th>
-                <th>Nama Ujian</th>
-                <th>Materi Ujian</th>
-                <th>Jumlah Soal</th>
-                <th>Waktu</th>
-                <th>Tanggal</th>
-                <th class="text-center">
-                    Aksi
-                </th>
-            </tr>
-        </tfoot>
         </table>
     </div>
 </div>

@@ -38,7 +38,8 @@ class Mahasiswa extends MY_Controller
 		//		$this->load->view('_templates/dashboard/_footer.php');
 
 		$data['tahun'] = Mhs_orm::distinct()->pluck('tahun')->toArray();
-		$data['jalur'] = Jalur_orm::all();
+		if(APP_ID == 'ujian.undip.ac.id')
+			$data['jalur'] = Jalur_orm::all();
 
 		view('mahasiswa/index', $data);
 	}

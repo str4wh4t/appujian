@@ -1,8 +1,14 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
+use Orm\Matkul_orm;
 use Orm\Mhs_orm;
 use Orm\Users_orm;
+use Orm\Membership_orm;
+use Orm\Membership_history_orm;
+use Orm\Mhs_matkul_orm;
+use Orm\Paket_orm;
+use Orm\Mhs_ujian_orm;
 
 class Auth extends CI_Controller
 {
@@ -116,7 +122,7 @@ class Auth extends CI_Controller
 //					redirect('not_valid_login', 'refresh');
 //				}
 			}else {
-				$this->session->set_flashdata('error_login_msg', 'Login salah atau login akun anda ditutup.');
+				$this->session->set_flashdata('error_login_msg', 'Login salah / login akun anda tidak aktif.');
 				redirect('/', 'refresh');
 			}
 		}else{
@@ -294,14 +300,18 @@ class Auth extends CI_Controller
 						'membership_id'	=> MEMBERSHIP_ID_DEFAULT, // OTOMATIS DI ASSIGN SBG MEMBERSHIP GRATIS
 					];
 					$group           = [MHS_GROUP_ID]; // Sets user to mhs.
+
+					$return_id_user = null ;
 	
 					try {
-						begin_db_trx();
+
 						$return_id_user = $this->ion_auth->register($username, $password, $email, $additional_data, $group);
 	
 						if($return_id_user == false){
 							throw new Exception('Pendaftaran gagal, silahkan ulangi.');
 						}
+
+						begin_db_trx();
 	
 						$mhs = new Mhs_orm;
 						$id_mahasiswa = $return_id_user;
@@ -324,6 +334,49 @@ class Auth extends CI_Controller
 						$mhs->jenis_kelamin = $this->input->post('jenis_kelamin');
 						$mhs->kota_asal = $this->input->post('kota_asal');
 						$mhs->save();
+
+						$membership = Membership_orm::findOrFail(MEMBERSHIP_ID_DEFAULT);
+
+						$sisa_kuota_latihan_soal = 0;
+						$expired_at  = null;
+			
+						if($membership->is_limit_by_kuota)
+							$sisa_kuota_latihan_soal = $membership->kuota_latihan_soal ;
+			
+						if($membership->is_limit_by_durasi)
+							$expired_at = date('Y-m-d', strtotime("+". $membership->durasi ." months", strtotime(date('Y-m-d'))));
+
+						$membership_history = new Membership_history_orm();
+						$membership_history->users_id = $return_id_user;
+						$membership_history->membership_id = MEMBERSHIP_ID_DEFAULT ;
+						$membership_history->upgrade_ke = 0 ;
+						$membership_history->sisa_kuota_latihan_soal = $sisa_kuota_latihan_soal ;
+						$membership_history->expired_at = $expired_at;
+						$membership_history->stts =  MEMBERSHIP_STTS_AKTIF ;
+						$membership_history->save();
+
+
+						if (!empty(PAKET_MATERI_ID_DEFAULT)) {
+							foreach (PAKET_MATERI_ID_DEFAULT as $paket_id) {
+								$paket = Paket_orm::findOrFail($paket_id);
+
+								foreach($paket->matkul as $matkul){
+									$mhs_matkul_orm = new Mhs_matkul_orm();
+									$mhs_matkul_orm->mahasiswa_id = $id_mahasiswa;
+									$mhs_matkul_orm->matkul_id = $matkul->id_matkul;
+									$mhs_matkul_orm->save();
+
+									if($matkul->m_ujian->isNotEmpty()){
+										foreach($matkul->m_ujian as $m_ujian){
+											$mhs_ujian = new Mhs_ujian_orm();
+											$mhs_ujian->mahasiswa_matkul_id = $mhs_matkul_orm->id;
+											$mhs_ujian->ujian_id = $m_ujian->id_ujian;
+											$mhs_ujian->save();
+										}
+									}
+								}
+							}
+						}
 						
 						commit_db_trx();
 
@@ -332,6 +385,7 @@ class Auth extends CI_Controller
 	
 					} catch (Exception $e) {
 						rollback_db_trx();
+						$this->ion_auth->delete_user($return_id_user); // UNREGISTER USER
 						// $this->session->set_flashdata('error_registrasi_msg', '<li>' . $e->getMessage();  . '</li>');
 						// redirect('auth/registrasi', 'refresh');
 						$data['error_register_user'] = $e->getMessage(); 

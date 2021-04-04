@@ -193,14 +193,12 @@
     <script src="{{ asset('assets/template/robust/app-assets/vendors/js/vendors.min.js') }}"></script>
     <!-- BEGIN VENDOR JS-->
     <!-- BEGIN PAGE VENDOR JS-->
-
     <script src="{{ asset('assets/template/robust/app-assets/js/core/libraries/jquery_ui/jquery-ui.min.js') }}"></script>
-
     <script src="{{ asset('assets/template/robust/app-assets/vendors/js/forms/validation/jqBootstrapValidation.js') }}"></script>
     <script src="{{ asset('assets/template/robust/app-assets/vendors/js/forms/icheck/icheck.min.js') }}"></script>
-
     <script src="{{ asset('assets/yarn/node_modules/moment/min/moment.min.js') }}"></script>
     <script src="{{ asset('assets/yarn/node_modules/bootstrap4-datetimepicker/build/js/bootstrap-datetimepicker.min.js') }}"></script>
+    <script src="{{ asset('assets/yarn/node_modules/gasparesganga-jquery-loading-overlay/dist/loadingoverlay.min.js') }}"></script>
     <!-- END PAGE VENDOR JS-->
     <!-- BEGIN ROBUST JS-->
     <script src="{{ asset('assets/template/robust/app-assets/js/core/app-menu.js') }}"></script>
@@ -330,7 +328,12 @@
                     grecaptcha.execute('{{ RECAPTCHA_V3_SITE_KEY }}', {action: 'submit_registration'}).then(function(token) {
                         $('input[name="token"]').val(token);
                         $('input[name="action"]').val('submit_registration');
-                        form.submit();
+                        $('#btn_submit_registrasi').prop('disabled', true);
+                        $.LoadingOverlay("show");
+                        sleep(2000).then(() => {
+                            // Do something after the sleep!
+                            form.submit();
+                        });
                     });;
                 });
 
@@ -358,6 +361,11 @@
                 }
             });
         });
+
+
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
 
         </script>
   </body>

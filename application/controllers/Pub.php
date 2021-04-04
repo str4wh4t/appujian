@@ -10,11 +10,14 @@ use Orm\Mujian_orm;
 use Orm\Topik_orm;
 use Orm\Soal_orm;
 use Orm\Jawaban_ujian_orm;
-use Ratchet\Server\IoServer;
-use Ratchet\Http\HttpServer;
-use Ratchet\WebSocket\WsServer;
-use Wsock\Chat;
-use Ratchet\Client;
+use Orm\Trx_payment_orm;
+use Orm\Users_orm;
+use Orm\Membership_orm;
+use Orm\Membership_history_orm;
+use Orm\Paket_orm;
+use Orm\Paket_history_orm;
+use Orm\Trx_midtrans_orm;
+use GuzzleHttp\Client;
 
 class Pub extends MY_Controller {
 
@@ -108,6 +111,7 @@ class Pub extends MY_Controller {
 	
 	public function asign_prodi(){
 		if(!is_cli()) show_404();
+
 		$mhs_source = Mhs_source_orm::all();
 		$i = 0;
 		foreach($mhs_source as $m){
@@ -134,6 +138,7 @@ class Pub extends MY_Controller {
 	
 	public function perbaiki(){
 		if(!is_cli()) show_404();
+
 		$mhs_list = Mhs_orm::whereNotNull('no_billkey')->get();
 		$i = 0;
 		foreach($mhs_list as $mhs){
@@ -388,6 +393,7 @@ class Pub extends MY_Controller {
 	
 	public function submit_ujian($h_ujian){
 		if(!is_cli()) show_404();
+
 		$this->load->model('Ujian_model', 'ujian');
 		$this->load->model('Master_model', 'master');
 		// $id_h_ujian = $h_ujian->id;
@@ -449,8 +455,9 @@ class Pub extends MY_Controller {
 	}
 	
 	public function fix_nilai($app_id){
-		
 		if(!is_cli()) show_404();
+
+		die; // FITUR DISABLED
 		
 		$h_ujian_list = new Hujian_orm();
 		
@@ -534,6 +541,472 @@ class Pub extends MY_Controller {
 			}
 		}
 		
+	}
+
+	public function notify_midtrans(){
+
+		// $post = $this->input->post();
+
+		\Midtrans\Config::$isProduction = false;
+		\Midtrans\Config::$serverKey = MIDTRANS_SERVER_KEY;
+		$notif = new \Midtrans\Notification();
+
+		// $transaction = $notif->transaction_status;
+		// $type = $notif->payment_type;
+		// $order_id = $notif->order_id;
+		// $fraud = $notif->fraud_status;
+
+		// if ($transaction == 'capture') {
+		// 	// Untuk transaksi kartu kredit, anda perlu memeriksa apakah transaksi terdapat challenge status dari FDS
+		// 	if ($type == 'credit_card'){
+		// 		if($fraud == 'challenge'){
+		// 			// TODO set payment status in merchant's database to 'Challenge by FDS'
+		// 			// TODO merchant should decide whether this transaction is authorized or not in MAP
+		// 			echo "Transaction order_id: " . $order_id ." is challenged by FDS";
+		// 		}
+		// 		else {
+		// 			// TODO set payment status in merchant's database to 'Success'
+		// 			echo "Transaction order_id: " . $order_id ." successfully captured using " . $type;
+		// 		}
+		// 	}
+		// }
+		// else if ($transaction == 'settlement'){
+		// 	// TODO set payment status in merchant's database to 'Settlement'
+		// 	echo "Transaction order_id: " . $order_id ." successfully transfered using " . $type;
+		// }
+		// else if($transaction == 'pending'){
+		// 	// TODO set payment status in merchant's database to 'Pending'
+		// 	echo "Waiting customer to finish transaction order_id: " . $order_id . " using " . $type;
+		// }
+		// else if ($transaction == 'deny') {
+		// 	// TODO set payment status in merchant's database to 'Denied'
+		// 	echo "Payment using " . $type . " for transaction order_id: " . $order_id . " is denied.";
+		// }
+		// else if ($transaction == 'expire') {
+		// 	// TODO set payment status in merchant's database to 'expire'
+		// 	echo "Payment using " . $type . " for transaction order_id: " . $order_id . " is expired.";
+		// }
+		// else if ($transaction == 'cancel') {
+		// 	// TODO set payment status in merchant's database to 'Denied'
+		// 	echo "Payment using " . $type . " for transaction order_id: " . $order_id . " is canceled.";
+		// }
+		
+		$log_status = null ;
+		try{
+			begin_db_trx();
+			if($notif->transaction_status == 'pending'){
+				// CREATE ORDER HISTORY
+				
+				$info = explode('-', $notif->order_id);
+				$username = $info[0] ; // 
+				$user_beli = Users_orm::where('username', $username)->firstOrFail();
+
+				$trx_payment = Trx_payment_orm::where('order_number', $notif->order_id)->first();
+
+				if(empty($trx_payment)){
+					$trx_payment = new Trx_payment_orm();
+					$trx_payment->users_id = $user_beli->id;
+					$trx_payment->order_number = $notif->order_id;
+					$trx_payment->stts = 0;
+					$trx_payment->tgl_order = $notif->transaction_time;
+					$trx_payment->jml_bayar = $notif->gross_amount;
+
+					$keterangan = '';
+					if(substr($info[1], 0, 1) == 'M'){
+						$keterangan = 'Pembelian membership ' . strtoupper(get_membership_text(substr($info[1], 1))) ;
+					}
+
+					if(substr($info[1], 0, 1) == 'P'){
+						$paket = Paket_orm::findOrFail(substr($info[1], 1));
+						$keterangan = 'Pembelian paket ' . strtoupper($paket->name) ;
+					}
+
+					$trx_payment->keterangan = $keterangan;
+
+					$trx_payment->save();
+				}
+
+				// SET EXPIRE UNTUK TRX MIDTRANS PENDING SEBELUMNYA JIKA TRX TSB UNTUK MEMBERSHIP
+
+				$term = null ;
+				if(substr($info[1], 0, 1) == 'M'){
+					$term = substr($notif->order_id, 0, 14); // SAMPE HURUF M
+				}
+					
+				if(substr($info[1], 0, 1) == 'P'){
+					$term = $info[0] . '-' . $info[1]; // SAMPE HURUF M
+				}
+
+				$trx_midtrans_before = Trx_midtrans_orm::where('transaction_status', 'pending')
+													->where('order_id', 'like', $term . '%')
+													->where('is_expire_processed', 0)
+													->get();
+
+				if($trx_midtrans_before->isNotEmpty()){
+					$client = new Client();
+					foreach($trx_midtrans_before AS $trx){
+						$order_number = $trx->order_id;
+						$client->request('POST', MIDTRANS_API_URL . $order_number . '/expire', [
+							'auth' => [MIDTRANS_SERVER_KEY, '']
+						]);
+						$trx->is_expire_processed = 1;
+						$trx->save();
+						// echo $res->getBody()->getContents(); die;
+					}
+				}
+			}
+
+			commit_db_trx();
+			$log_status = "SUCCESS";
+		}catch(Exception $e){
+			rollback_db_trx();
+			$log_status = "FAIL";
+		}
+
+		$trx_midtrans = new Trx_midtrans_orm();
+		
+		$trx_midtrans->transaction_id = $notif->transaction_id;
+		$trx_midtrans->transaction_status = $notif->transaction_status;
+		$trx_midtrans->transaction_time = $notif->transaction_time;
+		$trx_midtrans->status_code = $notif->status_code;
+		$trx_midtrans->payment_type = $notif->payment_type;
+		$trx_midtrans->order_id = $notif->order_id;
+		$trx_midtrans->fraud_status = $notif->fraud_status;
+		$trx_midtrans->gross_amount = $notif->gross_amount;
+		$trx_midtrans->signature_key = $notif->signature_key;
+
+		$trx_midtrans->log_status = $log_status ;
+		
+		// $combination_text = $notif->order_id . $notif->status_code . $notif->gross_amount . MIDTRANS_SERVER_KEY ;
+		// $signature_key_srv = hash("sha512", $combination_text);
+		
+		// $trx_midtrans->signature_key_check = $signature_key_srv == $notif->signature_key ? 1 : 0 ;
+
+		// $va_number = null ;
+		// $bank = 'lainnya' ;
+
+		// if(isset($notif->va_numbers)){
+		// 	$bank = $notif->va_numbers->bank ;
+		// 	$va_number = $notif->va_numbers->va_number ;
+		// }
+
+		// if(isset($notif->biller_code)){
+		// 	if($notif->biller_code == '70012'){
+		// 		$bank = 'mandiri';
+		// 		$va_number = $notif->bill_key ;
+		// 	}
+		// }
+
+		// if(isset($notif->permata_va_number)){
+		// 	$bank = 'permata';
+		// 	$va_number = $notif->permata_va_number ;
+		// }
+		
+		// $trx_midtrans->bank = strtoupper($bank);
+		// $trx_midtrans->va_number = $va_number;
+
+		$trx_midtrans->save();
+
+	}
+
+	public function cron_trx_midtrans(){
+		if(!is_cli()) show_404();
+
+		$trx_midtrans_list = Trx_midtrans_orm::where(['transaction_status' => 'settlement', 'is_settlement_processed' => 0])->get();
+		if($trx_midtrans_list->isNotEmpty()){
+			$cron_end = date("Y-m-d H:i:s", strtotime("+1 minutes"));
+			foreach($trx_midtrans_list as $trx_midtrans){
+				$today = date('Y-m-d H:i:s');
+				if($today > $cron_end){
+					break;
+				}
+
+				$order_id = $trx_midtrans->order_id;
+		
+				$trx_payment = Trx_payment_orm::where('order_number', $order_id)->where('stts', 0)->firstOrFail();
+		
+				$info = explode('-', $order_id);
+				$username = $info[0] ; // 
+		
+				$user_beli = Users_orm::where('username', $username)->firstOrFail();
+		
+				$membership_history_id = null ;
+				$paket_history_id = null ;
+
+				try {
+					begin_db_trx();
+
+					if(substr($info[1], 0, 1) == 'M'){
+						// JIKA PEMBELIAN MEMBERSHIP
+						$membership_id = substr($info[1], 1);
+
+						$membership = Membership_orm::findOrFail($membership_id);
+			
+						$where = [
+							'users_id' => $user_beli->id,
+							'stts' => MEMBERSHIP_STTS_AKTIF,
+						];
+						$membership_history_before = Membership_history_orm::where($where)->first();
+						$membership_sisa_kuota_latihan_soal = 0;
+						$membership_expiration_date = date('Y-m-d', strtotime("-1 days", strtotime(date('Y-m-d'))));
+
+						if(!empty($membership_history_before)){
+							$membership_history_before->stts = MEMBERSHIP_STTS_NON_AKTIF ;
+	
+							$membership_expiration_date = $membership_history_before->expired_at;
+							$membership_sisa_kuota_latihan_soal = $membership_history_before->sisa_kuota_latihan_soal;
+							
+							$membership_history_before->save();
+						}
+			
+						$where = [
+							'users_id' => $user_beli->id,
+							'membership_id' => $membership->id,
+						];
+				
+						$membership_count = Membership_history_orm::where($where)->get()->count();
+
+						$sisa_kuota_latihan_soal = 0;
+						$expired_at  = null;
+			
+						if($membership->is_limit_by_kuota)
+							$sisa_kuota_latihan_soal = $membership_sisa_kuota_latihan_soal + $membership->kuota_latian_soal ;
+			
+						if($membership->is_limit_by_durasi){
+							$today = date('Y-m-d');
+
+							if($today > $membership_expiration_date){
+								$expired_at = date('Y-m-d', strtotime("+". $membership->durasi ." months", strtotime(date('Y-m-d'))));
+							}else{
+								$expired_at = date('Y-m-d', strtotime("+". $membership->durasi ." months", strtotime($membership_expiration_date)));
+							}
+						}
+				
+						$membership_history = new Membership_history_orm();
+						$membership_history->users_id = $user_beli->id;
+						$membership_history->membership_id = $membership_id ;
+						$membership_history->upgrade_ke = $membership_count++ ;
+						$membership_history->sisa_kuota_latihan_soal = $sisa_kuota_latihan_soal ;
+						$membership_history->expired_at = $expired_at ;
+						$membership_history->stts =  MEMBERSHIP_STTS_AKTIF ;
+						$membership_history->save();
+			
+						$membership_history_id = $membership_history->id;
+
+						// LAST CHANGE MEMBERSHIP IN TABLE USERS
+						$user_beli->membership_id = $membership->id;
+						$user_beli->save();
+			
+					}
+					
+					if(substr($info[1], 0, 1) == 'P'){
+						// JIKA PEMBELIAN PAKET
+						$paket_id = substr($info[1], 1);
+
+						$paket = Paket_orm::findOrFail($paket_id);
+			
+						$where = [
+							'users_id' => $user_beli->id,
+							'stts' => PAKET_STTS_AKTIF,
+						];
+						$paket_history_before = Paket_history_orm::where($where)->first();
+						$paket_sisa_kuota_latihan_soal = 0;
+						$paket_expiration_date = date('Y-m-d', strtotime("-1 days", strtotime(date('Y-m-d'))));
+
+						if(!empty($paket_history_before)){
+							$paket_history_before->stts = PAKET_STTS_NON_AKTIF ;
+	
+							$paket_expiration_date = $paket_history_before->expired_at;
+							$paket_sisa_kuota_latihan_soal = $paket_history_before->sisa_kuota_latihan_soal;
+							
+							$paket_history_before->save();
+						}
+			
+						$where = [
+							'users_id' => $user_beli->id,
+							'paket_id' => $paket->id,
+						];
+				
+						$paket_count = Paket_history_orm::where($where)->get()->count();
+
+						$sisa_kuota_latihan_soal = 0;
+						$expired_at  = null;
+			
+						if($paket->is_limit_by_kuota)
+							$sisa_kuota_latihan_soal = $paket_sisa_kuota_latihan_soal + $paket->kuota_latian_soal ;
+			
+						if($paket->is_limit_by_durasi){
+							$today = date('Y-m-d');
+
+							if($today > $paket_expiration_date){
+								$expired_at = date('Y-m-d', strtotime("+". $paket->durasi ." months", strtotime(date('Y-m-d'))));
+							}else{
+								$expired_at = date('Y-m-d', strtotime("+". $paket->durasi ." months", strtotime($paket_expiration_date)));
+							}
+						}
+				
+						$paket_history = new Paket_history_orm();
+						$paket_history->users_id = $user_beli->id;
+						$paket_history->paket_id = $paket_id ;
+						$paket_history->upgrade_ke = $paket_count++ ;
+						$paket_history->sisa_kuota_latihan_soal = $sisa_kuota_latihan_soal ;
+						$paket_history->expired_at = $expired_at ;
+						$paket_history->stts =  PAKET_STTS_AKTIF ;
+						$paket_history->save();
+			
+						$paket_history_id = $paket_history->id;
+
+						// ASSIGN USER TO MHS_MATKUL BERDASARKAN PAKET DIBELI
+						$mhs = Mhs_orm::where('nim', $user_beli->username)->firstOrFail();
+						foreach($paket->matkul as $matkul){
+							$mhs_matkul = new Mhs_matkul_orm();
+							$mhs_matkul->mahasiswa_id = $mhs->id_mahasiswa;
+							$mhs_matkul->matkul_id = $matkul->id_matkul;
+							$mhs_matkul->save();
+							
+							if($matkul->m_ujian->isNotEmpty()){
+								foreach($matkul->m_ujian as $m_ujian){
+									$mhs_ujian = new Mhs_ujian_orm();
+									$mhs_ujian->mahasiswa_matkul_id = $mhs_matkul->id;
+									$mhs_ujian->ujian_id = $m_ujian->id_ujian;
+									$mhs_ujian->save();
+								}
+							}
+						}
+			
+					}
+			
+					$trx_payment->stts = 1;
+					$trx_payment->membership_history_id = $membership_history_id;
+					$trx_payment->paket_history_id = $paket_history_id;
+					$trx_payment->tgl_bayar = $trx_midtrans->transaction_time;
+					$trx_payment->save();
+
+
+					$trx_midtrans->is_settlement_processed = 1 ;
+					$trx_midtrans->save();
+
+					
+					echo 'sukses' . "\n";
+					commit_db_trx();
+				} catch (Exception $e) {
+					rollback_db_trx();
+					echo $trx_midtrans->id . '===>' . $e->getMessage() . "\n";
+					break;
+				}
+
+			}
+		}
+
+	}
+
+
+	// public function tes(){
+
+	// 	$order_number = '210331163113-M2-210403-7';
+	// 	$term = substr($order_number,0,14);
+
+	// 	$trx_midtrans_before = Trx_midtrans_orm::where('transaction_status', 'pending')
+	// 											->where('order_id', 'like', $term . '%')
+	// 											->where('is_expire_processed', 0)
+	// 											->get();
+
+	// 		if($trx_midtrans_before->isNotEmpty()){
+	// 			$client = new Client();
+	// 			foreach($trx_midtrans_before AS $trx){
+	// 				$order_number = $trx->order_id;
+	// 				echo $order_number . " ==> ";
+	// 				$res = $client->request('POST', MIDTRANS_API_URL . $order_number . '/expire', [
+	// 					'auth' => [MIDTRANS_SERVER_KEY, '']
+	// 				]);
+	// 				$trx->is_expire_processed = 1;
+	// 				$trx->save();
+	// 				echo $res->getBody()->getContents() . "\n";
+	// 			}
+	// 		}
+
+	// }
+
+
+	public function tes2(){
+		$client = new Client();
+		$order_number = '210331163113-M2-210403-20';
+		echo $order_number . " ==> ";
+		$res = $client->request('POST', MIDTRANS_API_URL . $order_number . '/expire', [
+			'auth' => [MIDTRANS_SERVER_KEY, '']
+		]);
+		echo $res->getBody()->getContents() . "\n";
+
+	}
+
+	public function tes3(){
+		$membership_expiration_date = date('Y-m-d', strtotime("-1 days", strtotime(date('Y-m-d'))));
+		echo $membership_expiration_date;
+	}
+
+	public function tes4(){
+		$paket = Paket_orm::find(1);
+		// vdebug($paket->matkul);
+		foreach($paket->matkul as $m){
+			if($m->m_ujian->isNotEmpty()){
+				foreach($m->m_ujian as $u){
+					echo $u->nama_ujian . "\n";
+				}
+			
+			}
+		}
+	}
+
+	public function tes5(){
+		// $soal = Soal_orm::find(279);
+		// $soal = Soal_orm::find(282);
+		$soal = Soal_orm::find(281);
+		$img = $soal->soal;
+
+		$doc = new DOMDocument('1.0', 'UTF-8');
+		$doc->loadHTML($img);
+		// $xpath = new DOMXPath($doc);
+		// $src = $xpath->evaluate("img");
+		$i = 0 ;
+		foreach ($doc->getElementsByTagName('img') as $img_node) {
+			$src = $img_node->getAttribute('src') ;
+			if(strpos($src, 'data:image/png;base64,') !== false){
+				$img = str_replace('data:image/png;base64,', '', $src);
+				$img = str_replace(' ', '+', $img);
+				$data = base64_decode($img);
+				$file = UPLOAD_DIR . $soal->id_soal . '_soal_' . mt_rand() . '.png';
+				$success = file_put_contents($file, $data);
+				if($success){
+					$img_node->setAttribute('src', asset($file)) ;
+					$doc->saveHTML($img_node);
+				}
+				// print $success ? $file : 'Unable to save the file.';
+				$i++;
+			}
+		}
+		
+		$xpath = new DOMXPath($doc);
+		// $body = $xpath->evaluate('string(//body/)');
+		// $body = $doc->saveHTML();
+
+		$body = '';
+		foreach ($xpath->evaluate('//body/node()') as $node) {
+			$body .= $doc->saveHtml($node);
+		}
+
+		$soal->soal = $body;
+		$soal->save();
+
+		// echo $body;
+		
+		// vdebug($soal->soal);
+	}
+
+	public function tes6(){
+		$this->load->helper('file');
+		$fi = get_filenames(UPLOAD_DIR);
+		vdebug($fi);
+
 	}
 
 	//	public function coba(){

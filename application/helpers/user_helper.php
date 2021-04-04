@@ -4,6 +4,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 use Orm\Tahun;
 use Orm\Users_orm;
 use Orm\Membership_orm;
+use Orm\Membership_history_orm;
+use Carbon\Carbon;
 
 function get_nama_lengkap_user($user = null){
 	if(null == $user){
@@ -86,6 +88,8 @@ function get_membership_text(int $membership_id): string{
 	return $membership->name;
 }
 
+
+
 function  get_membership_star(int $membership_id, string $size = 'medium'): string{
 	
 	// $return = '';
@@ -117,4 +121,59 @@ function  get_membership_color(int $membership_id): string{
 	
 	$membership = Membership_orm::findOrFail($membership_id);
 	return $membership->text_color;
+}
+
+
+function get_user_aktif_membership(int $user_id){
+	$ci =& get_instance();
+	$user = Users_orm::findOrFail($user_id);
+
+	$membership_history = $user->membership_history()->where('stts', MEMBERSHIP_STTS_AKTIF)->firstOrFail(); 
+	return $membership_history ;
+
+}
+
+function is_valid_order_membership($membership_id, $user_id){
+	$is_valid_order_membership = false ;
+	$user_aktif_membership = get_user_aktif_membership($user_id);
+
+	if($membership_id != MEMBERSHIP_ID_DEFAULT){
+		if($user_aktif_membership->membership_id < $membership_id){
+			// JIKA PEMBELIAN DIATAS MEMBERSHIP TIDAK MELIHAT TGL EXPIRED
+			$is_valid_order_membership = true;
+		}else{
+			// JIKA PEMBELIAN SAMA / DIBAWAH MEMBERSHIP TIDAK MELIHAT TGL EXPIRED
+			$expired_at = new Carbon($user_aktif_membership->expired_at);
+			$today = new Carbon();
+
+			if($today->greaterThan($expired_at)){
+				$is_valid_order_membership = true;
+			}
+		}
+	}
+
+	return $is_valid_order_membership;
+}
+
+
+function is_user_membership_expired(int $user_id = null): bool{
+	$ci =& get_instance();
+
+	$user = $ci->ion_auth->user()->row();
+
+	if($ci->ion_auth->in_group('mahasiswa'))
+		$user_orm = Users_orm::findOrFail($user->id);
+	else
+		$user_orm = Users_orm::findOrFail($user_id);
+
+	$user_membership = get_user_aktif_membership($user_orm->id);
+	$expired_at = new Carbon($user_membership->expired_at);
+	$today = new Carbon();
+
+	$expired = false ;
+	if($today->greaterThan($expired_at)){
+		$expired = true;
+	}
+
+	return $expired;
 }

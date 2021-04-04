@@ -23,5 +23,15 @@ class Matkul_orm extends Eloquent
     {
         return $this->belongsToMany('Orm\Mhs_orm','mahasiswa_matkul','matkul_id','mahasiswa_id');
     }
+
+    public function paket_matkul()
+    {
+        return $this->hasMany('Orm\Paket_matkul_orm','matkul_id');
+    }
+
+    public function m_ujian()
+    {
+        return $this->hasMany('Orm\Mujian_orm','matkul_id');
+    }
     
 }

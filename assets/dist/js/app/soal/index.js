@@ -83,7 +83,7 @@ $(document).ready(function() {
       },
       {
         data: "id_soal",
-        orderable: false,
+        // orderable: false,
         searchable: false
       },
       { data: "nama_matkul" },
@@ -129,10 +129,10 @@ $(document).ready(function() {
       var index = page * length + (iDisplayIndex + 1);
       $("td:eq(1)", row).html(index);
     },
-    scrollX:        true,
-    fixedColumns:   {
-        leftColumns: 3,
-    }
+    // scrollX:        true,
+    // fixedColumns:   {
+    //     leftColumns: 3,
+    // }
   });
 
   // table
@@ -141,11 +141,11 @@ $(document).ready(function() {
   //   .appendTo("#soal_wrapper .col-md-6:eq(0)");
 
     $(document).on('change', '.select_all', function () {
-        $(this).is(':checked') ? $('.DTFC_LeftBodyLiner table .check').prop('checked', true) : $('.DTFC_LeftBodyLiner table .check').prop('checked', false);
+        $(this).is(':checked') ? $('table .check').prop('checked', true) : $('table .check').prop('checked', false);
         $('.DTFC_LeftBodyLiner table .check').trigger('change');
     });
 
-    $(document).on('change','.DTFC_LeftBodyLiner table .check',function () {
+    $(document).on('change','table .check',function () {
         $(this).is(':checked') ? null : $('.select_all').prop('checked', false);
     });
 
@@ -216,7 +216,7 @@ $(document).ready(function() {
 function bulk_delete() {
   // console.log("$('#bulk').serialize()", $('#bulk').serialize());
   // if ($('#ujian tbody tr .check:checked').length == 0) {
-  if ($('.DTFC_LeftBodyLiner table .check:checked').length == 0) {
+  if ($('table .check:checked').length == 0) {
     Swal.fire({
       title: "Gagal",
       text: "Tidak ada data yang dipilih",

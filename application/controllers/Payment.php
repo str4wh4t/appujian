@@ -1,0 +1,338 @@
+<?php
+defined('BASEPATH') or exit('No direct script access allowed');
+
+use Orm\Users_orm;
+use Orm\Membership_orm;
+use Orm\Membership_history_orm;
+use Orm\Mhs_orm;
+use Orm\Trx_payment_orm;
+use Orm\Paket_orm;
+use Illuminate\Database\Capsule\Manager as DB;
+
+use GuzzleHttp\Client;
+
+class Payment extends MY_Controller
+{
+
+	public function __construct(){
+        parent::__construct();
+		if (!$this->ion_auth->logged_in()) {
+			redirect('auth');
+		}
+
+
+        if (!$this->ion_auth->is_admin() && !$this->ion_auth->in_group('mahasiswa'))
+            show_404();
+
+
+    }
+
+    public function index(){
+        show_404();
+    }
+
+    // public function checkout($membership_id, $user_id = null){
+
+    //     $user = $this->ion_auth->user()->row();
+    //     if($membership_id < $user->membership_id){
+    //         show_error('Terjadi kesalahan pembelian', 500, 'Perhatian');
+    //     }
+
+    //     if (!$this->ion_auth->is_admin() && !$this->ion_auth->in_group('mahasiswa'))
+    //         show_404();
+
+    //     if($this->ion_auth->in_group('mahasiswa')){
+    //         $user_beli = Users_orm::findOrFail($user->id);
+    //     }else{
+    //         $user_beli = Users_orm::findOrFail($user_id);
+    //     }
+    //     try {
+    //         begin_db_trx();
+    //         $user_beli->membership_id = $membership_id ;
+    //         $user_beli->save();
+
+    //         $where = [
+    //             'users_id' => $user_beli->id,
+    //             'stts' => MEMBERSHIP_STTS_AKTIF,
+    //         ];
+
+    //         $membership_history_before = Membership_history_orm::where($where)->firstOrFail();
+    //         $membership_history_before->stts = MEMBERSHIP_STTS_NON_AKTIF ;
+    //         $membership_history_before->save();
+            
+    //         $membership = Membership_orm::findOrFail($membership_id);
+
+    //         $sisa_kuota_latihan_soal = 0;
+    //         $expired_at  = null;
+
+    //         if($membership->is_limit_by_kuota)
+    //             $sisa_kuota_latihan_soal = $membership->kuota_latian_soal ;
+
+    //         if($membership->is_limit_by_durasi)
+    //             $expired_at = date('Y-m-d', strtotime("+". $membership->durasi ." months", strtotime(date('Y-m-d'))));
+
+    //         $where = [
+    //             'users_id' => $user_beli->id,
+    //             'membership_id' => $membership_id,
+    //         ];
+
+    //         $membership_count = Membership_history_orm::where($where)->get()->count();
+
+    //         $membership_history = new Membership_history_orm();
+    //         $membership_history->users_id = $user_beli->id;
+    //         $membership_history->membership_id = $membership_id ;
+    //         $membership_history->upgrade_ke = $membership_count++ ;
+    //         $membership_history->sisa_kuota_latihan_soal = $sisa_kuota_latihan_soal ;
+    //         $membership_history->expired_at = $expired_at ;
+    //         $membership_history->stts =  MEMBERSHIP_STTS_AKTIF ;
+    //         $membership_history->save();
+
+    //         commit_db_trx();
+
+
+    //         $message_rootpage = [
+    //             'header' => 'Selamat',
+    //             'content' => 'Pembelian membership berhasil, sekarang anda berada didalam membership ' . strtoupper($membership->name),
+    //             'type' => 'success'
+    //         ];
+
+    //         $this->session->set_flashdata('message_rootpage', $message_rootpage);
+
+    //         redirect('/membership/list', 'refresh');
+
+    //     }catch(Exception $e){
+    //         rollback_db_trx();
+    //         show_error($e->getMessage(), 500, 'Perhatian');
+    //     }
+
+    // }
+
+    public function beli($m_or_p, $membership_or_paket_id, $user_id = null){
+
+        if(!in_array($m_or_p, ['M', 'P']))
+            show_404();
+
+        
+
+        $user = $this->ion_auth->user()->row();
+
+        $membership_or_paket_id = integer_read_from_uuid($membership_or_paket_id);
+
+        if($this->ion_auth->in_group('mahasiswa')){
+            $user_beli = Users_orm::findOrFail($user->id);
+        }else{
+            $user_beli = Users_orm::findOrFail($user_id);
+        }
+
+        $item = null ;
+
+        if($m_or_p == 'M'){
+            $membership = Membership_orm::findOrFail($membership_or_paket_id);
+
+            $is_valid_order_membership = is_valid_order_membership($membership->id, $user->id) ;
+
+            if(!$is_valid_order_membership){
+                show_error('Terjadi kesalahan pembelian', 500, 'Perhatian');
+            }
+
+            $item = $membership;
+
+        }
+        
+        if($m_or_p == 'P'){
+            $paket = Paket_orm::findOrFail($membership_or_paket_id);
+
+            $is_valid_paket = false ;
+            if(!in_array($paket->id, PAKET_MATERI_ID_DEFAULT)){
+                if($user_beli->paket_dibeli($paket->id)->get()->isEmpty()){
+                    $is_valid_paket = true;
+                }
+            }
+
+            if(!$is_valid_paket){
+                show_error('Terjadi kesalahan pembelian', 500, 'Perhatian');
+            }
+            
+            $item = $paket;
+        }
+
+
+        $data['info'] = $m_or_p . $membership_or_paket_id;
+        $data['item'] = $item;
+        $data['user']   = $user_beli;
+
+        view('payment/beli', $data);
+
+    }
+
+    protected function _snap(){
+        
+        $user = $this->ion_auth->user()->row();
+        $info =  $this->input->post('info');
+
+        if($this->ion_auth->in_group('mahasiswa'))
+            $user_beli = Users_orm::findOrFail($user->id);
+        else
+            $user_beli = Users_orm::findOrFail($user_id);
+            
+        $gross_amount = 0;
+        
+        if(substr($info, 0, 1) == 'M'){
+            // JIKA PEMBELIAN MEMBERSHIP
+            $membership_id = substr($info, 1);
+            $membership = Membership_orm::findOrFail($membership_id);
+
+            $is_valid_order_membership = is_valid_order_membership($membership->id, $user->id) ;
+
+            if(!$is_valid_order_membership){
+                show_error('Terjadi kesalahan pembelian', 500, 'Perhatian');
+            }
+
+            $gross_amount = $membership->price;
+
+        }
+
+        if(substr($info, 0, 1) == 'P'){
+            // JIKA PEMBELIAN PAKET
+            $paket_id = substr($info, 1);
+            $paket = Paket_orm::findOrFail($paket_id);
+
+            $is_valid_paket = false ;
+            if(!in_array($paket_id, PAKET_MATERI_ID_DEFAULT)){
+                if($user_beli->paket_dibeli($paket->id)->get()->isEmpty()){
+                    $is_valid_paket = true;
+                }
+            }
+
+            if(!$is_valid_paket){
+                show_error('Terjadi kesalahan pembelian', 500, 'Perhatian');
+            }
+
+            $gross_amount = $paket->price;
+
+        }
+        
+        
+        $order_number_pattern = $user_beli->username . '-' . $info . '-' . date('ymd') ;
+
+        $trx_payment_existing_count = Trx_payment_orm::where(DB::raw('substr(order_number, 1, 22)'), '=', $order_number_pattern)->get()->count();
+        
+        $order_number = $order_number_pattern . '-' . ($trx_payment_existing_count++);
+
+        // Set your Merchant Server Key
+        \Midtrans\Config::$serverKey = MIDTRANS_SERVER_KEY;
+        // Set to Development/Sandbox Environment (default). Set to true for Production Environment (accept real transaction).
+        \Midtrans\Config::$isProduction = MIDTRANS_IS_PRODUCTION;
+        // Set sanitization on (default)
+        \Midtrans\Config::$isSanitized = true;
+        // Set 3DS transaction for credit card to true
+        \Midtrans\Config::$is3ds = true;
+        
+        $params = array(
+            'transaction_details' => [
+                'order_id' => $order_number,
+                'gross_amount' => $gross_amount,
+            ],
+            'customer_details' => [
+                'first_name' => $user_beli->first_name,
+                'last_name' => $user_beli->last_name,
+                'email' => $user_beli->email,
+                'phone' => $user_beli->phone,
+            ],
+            // 'callbacks' => [
+            //   'finish' => url('payment/history'),
+            // ]
+        );
+            
+        $snapToken = \Midtrans\Snap::getSnapToken($params);
+
+        $this->_json(['token' => $snapToken]);
+    }
+
+    public function history($user_id = null){
+        $user = $this->ion_auth->user()->row();
+
+        if($this->ion_auth->in_group('mahasiswa'))
+            $user = Users_orm::findOrFail($user->id);
+        else
+            $user = Users_orm::findOrFail($user_id);
+
+        
+        $trx_payment_list = Trx_payment_orm::where('users_id', $user->id)->orderBy('id', 'DESC')->get();
+        $data['trx_payment_list']   = $trx_payment_list;
+
+        view('payment/history', $data);
+
+    }
+
+    protected function _status(){
+        $order_number = $this->input->post('id');
+        $client = new Client();
+        $res = $client->request('GET', MIDTRANS_API_URL . $order_number . '/status', [
+            'auth' => [MIDTRANS_SERVER_KEY, '']
+        ]);
+
+        // $res = $client->get(MIDTRANS_API_URL . $order_number . '/status', [
+        //     'auth' => [
+        //         MIDTRANS_SERVER_KEY, 
+        //         ''
+        //     ]
+        // ]);
+
+
+        // $credentials = base64_encode(MIDTRANS_SERVER_KEY . ':');
+        // $res = $client->get(MIDTRANS_API_URL . $order_number . '/status', [
+        //     'Authorization' => ['Basic '.$credentials]
+        // ]);
+
+        $notif = $res->getBody()->getContents();
+
+
+        $va_number = null ;
+		$bank = 'lainnya' ;
+
+        // vdebug(json_decode($notif));
+
+        $notif = json_decode($notif);
+
+		if(isset($notif->va_numbers)){
+			$bank = $notif->va_numbers[0]->bank ;
+			$va_number = $notif->va_numbers[0]->va_number ;
+		}
+
+		if(isset($notif->biller_code)){
+			if($notif->biller_code == '70012'){
+				$bank = 'mandiri ('. $notif->biller_code .')';
+				$va_number = $notif->bill_key ;
+			}
+		}
+
+        if($notif->payment_type == 'cstore'){
+            if(isset($notif->payment_code)){
+                $bank = $notif->store;
+                $va_number = $notif->payment_code;
+            }
+        }
+
+        if($notif->payment_type == 'qris'){
+            // if(isset($notif->payment_code)){
+                $bank = $notif->acquirer;
+                // $va_number = $notif->payment_code;
+            // }
+        }
+
+		// if(isset($notif->permata_va_number)){
+		// 	$bank = 'permata';
+		// 	$va_number = $notif->permata_va_number ;
+		// }
+
+        $data['bank'] = strtoupper($bank);
+        $data['va_number'] = strtoupper($va_number);
+        $data['status'] = strtoupper($notif->transaction_status);
+        $data['payment_type'] = strtoupper($notif->payment_type);
+        $data['order_id'] = $notif->order_id;
+
+        $this->_json($data);
+    }
+
+}

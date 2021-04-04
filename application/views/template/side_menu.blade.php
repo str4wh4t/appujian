@@ -140,20 +140,25 @@
 			@endif
 
 			@if( in_group('mahasiswa') )
-				@if( APP_ID == 'tryout.undip.ac.id' )
+				@if( APP_ID == 'tryout.undip.id' )
+				<li class="{{ $page === 'membership' ? "active" : "" }} nav-item">
+					<a href="{{ site_url('membership/list') }}">
+						<i class="icon-diamond"></i><span class="menu-title" data-i18n="nav.dash.main">Membership</span>
+					</a>
+				</li>
 				<li class="{{ $page === 'paket' ? "active" : "" }} nav-item">
 					<a href="{{ site_url('paket/list') }}">
-						<i class="icon-basket-loaded"></i><span class="menu-title" data-i18n="nav.dash.main">Paket</span>
+						<i class="icon-basket-loaded"></i><span class="menu-title" data-i18n="nav.dash.main">Paket Materi</span>
 					</a>
 				</li>
 				<li class="{{ ($page === 'ujian' && $method === 'latian_soal' ) ? "active" : "" }} nav-item">
 					<a href="{{ site_url('ujian/latian_soal') }}">
-						<i class="ft-bar-chart-2"></i><span class="menu-title" data-i18n="nav.dash.main">Latian Soal</span>
+						<i class="ft-edit-3"></i><span class="menu-title" data-i18n="nav.dash.main">Latian Soal</span>
 					</a>
 				</li>
 				<li class="{{ ($page === 'ujian' && $method === 'tryout' ) ? "active" : "" }} nav-item">
 					<a href="{{ site_url('ujian/tryout') }}">
-						<i class="ft-edit-3"></i><span class="menu-title" data-i18n="nav.dash.main">Tryout</span>
+						<i class="fa fa-trophy"></i><span class="menu-title" data-i18n="nav.dash.main">Tryout</span>
 					</a>
 				</li>
 				@else
@@ -194,7 +199,7 @@
 {{--			</li>--}}
 			@endif
 
-			@if( in_group('dosen') || in_group('mahasiswa') )
+			@if( in_group('dosen') || in_group('mahasiswa') || in_group('penyusun_soal') )
 			{{-- <li class="navigation-header" style="background-color: #ffcb60;text-align: left;">
 				<span data-i18n="nav.category.ui">SETTING</span>
 				<i class="ft-more-horizontal ft-minus" data-toggle="tooltip" data-placement="right" data-original-title="ADMINISTRATOR"></i>

@@ -71,7 +71,7 @@ function init_page_level(){
     </div>
 </div>
 <div class="row">
-    <div class="col-sm-8">
+    <div class="col-sm-12">
         <table class="table table-bordered">
             <tr>
                 <td>Matkul</td><td>{{ $soal_orm->topik->matkul->nama_matkul }}</td>
@@ -80,7 +80,10 @@ function init_page_level(){
                 <td>Topik</td><td>{{ $soal_orm->topik->nama_topik }}</td>
             </tr>
             <tr>
-                <td>Dibuat Oleh</td><td>{{ $soal->created_by }}</td>
+                <td>Bobot</td><td>{{ $soal_orm->bobot_soal->bobot }}</td>
+            </tr>
+            <tr>
+                <td>Dibuat Oleh</td><td>{{ get_nama_lengkap_user($user) }}</td>
             </tr>
             <tr>
                 <td>Dibuat Pada</td><td>{{ $soal->created_at }}</td>
@@ -126,6 +129,12 @@ function init_page_level(){
             <?php endif;?>
 
         <?php endforeach;?>
+        <div class="alert bg-warning mb-2" role="alert">
+            <strong>Penjelasan</strong>
+        </div>
+        <div class="alert border-warning rounded-0" style="">
+            {{ !empty($soal->penjelasan) ? $soal->penjelasan : 'Belum ada penjelasan' }}
+        </div>
         <hr>
     </div>
 </div>

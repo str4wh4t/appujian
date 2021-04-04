@@ -149,39 +149,41 @@
 		</div>
 	</div>
 	<?=form_open('', array('id'=>'bulk'))?>
-	<div class="table-responsive pb-3" style="border: 0">
-		<table id="soal" class="table table-striped table-bordered table-hover">
-		<thead>
-			<tr>
-				<th class="text-center">
-					<input type="checkbox" class="select_all">
-				</th>
-				<th>No.</th>
-				<th>Materi Ujian</th>
-				<th>Topik</th>
-				<th>Soal</th>
-				<th>Bobot</th>
-				<th>Tgl Dibuat</th>
-				<th>Oleh</th>
-				<th>Aksi</th>
-			</tr>
-		</thead>
-{{--		<tfoot>--}}
-{{--			<tr>--}}
-{{--				<th class="text-center">--}}
-{{--					<input type="checkbox" class="select_all">--}}
-{{--				</th>--}}
-{{--				<th>No.</th>--}}
-{{--				<th>Materi Ujian</th>--}}
-{{--				<th>Topik</th>--}}
-{{--				<th>Soal</th>--}}
-{{--				<th>Bobot</th>--}}
-{{--				<th>Tgl Dibuat</th>--}}
-{{--				<th>Oleh</th>--}}
-{{--				<th>Aksi</th>--}}
-{{--			</tr>--}}
-{{--		</tfoot>--}}
-		</table>
+	<div style="overflow-x: ">
+		<div class="table-responsive pb-3 w-100" style="border: 0">
+			<table id="soal" class="table table-striped table-bordered table-hover">
+			<thead>
+				<tr>
+					<th class="text-center">
+						<input type="checkbox" class="select_all">
+					</th>
+					<th>Urut</th>
+					<th>Materi Ujian</th>
+					<th>Topik</th>
+					<th>Soal</th>
+					<th>Bobot</th>
+					<th>Tgl Dibuat</th>
+					<th>Oleh</th>
+					<th>Aksi</th>
+				</tr>
+			</thead>
+	{{--		<tfoot>--}}
+	{{--			<tr>--}}
+	{{--				<th class="text-center">--}}
+	{{--					<input type="checkbox" class="select_all">--}}
+	{{--				</th>--}}
+	{{--				<th>No.</th>--}}
+	{{--				<th>Materi Ujian</th>--}}
+	{{--				<th>Topik</th>--}}
+	{{--				<th>Soal</th>--}}
+	{{--				<th>Bobot</th>--}}
+	{{--				<th>Tgl Dibuat</th>--}}
+	{{--				<th>Oleh</th>--}}
+	{{--				<th>Aksi</th>--}}
+	{{--			</tr>--}}
+	{{--		</tfoot>--}}
+			</table>
+		</div>
 	</div>
 	<?=form_close();?>
 </div>

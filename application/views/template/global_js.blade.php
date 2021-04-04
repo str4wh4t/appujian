@@ -167,6 +167,7 @@ $(document).ready(function(){
             toastr.info('', 'latency : ' + latency + 'ms', {positionClass: 'toast-bottom-right', containerId: 'toast-bottom-right', timeOut: 0});
         });
 
+        @if(PING_ENABLE)
         setInterval(function() {
             // let mctime = moment().valueOf();
             p.ping("{{ url('/') }}", function(err, data) {
@@ -184,6 +185,7 @@ $(document).ready(function(){
                 toastr.info('', 'latency : ' + latency + 'ms', {positionClass: 'toast-bottom-right', containerId: 'toast-bottom-right', timeOut: 0});
             });
         },{{ PING_INTERVAL }});
+        @endif
 
 
           // Also display error if err is returned.
@@ -223,13 +225,16 @@ $(document).ready(function(){
         latency = data;
         toastr.info('', 'latency : ' + latency + 'ms', {positionClass: 'toast-bottom-right', containerId: 'toast-bottom-right', timeOut: 0});
     });
-    setInterval(function() {
-        p.ping("{{ url('/') }}", function(err, data) {
-            latency = data;
-            toastr.remove();
-            toastr.info('', 'latency : ' + latency + 'ms', {positionClass: 'toast-bottom-right', containerId: 'toast-bottom-right', timeOut: 0});
-        });
-    },{{ PING_INTERVAL }});
+
+        @if(PING_ENABLE)
+        setInterval(function() {
+            p.ping("{{ url('/') }}", function(err, data) {
+                latency = data;
+                toastr.remove();
+                toastr.info('', 'latency : ' + latency + 'ms', {positionClass: 'toast-bottom-right', containerId: 'toast-bottom-right', timeOut: 0});
+            });
+        },{{ PING_INTERVAL }});
+        @endif
     @endif
 
 });

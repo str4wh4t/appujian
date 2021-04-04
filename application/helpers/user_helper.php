@@ -171,8 +171,10 @@ function is_user_membership_expired(int $user_id = null): bool{
 	$today = new Carbon();
 
 	$expired = false ;
-	if($today->greaterThan($expired_at)){
-		$expired = true;
+	if($user_membership->membership->is_limit_by_durasi){
+		if($today->greaterThan($expired_at)){
+			$expired = true;
+		}
 	}
 
 	return $expired;

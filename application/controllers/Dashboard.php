@@ -94,7 +94,7 @@ class Dashboard extends CI_Controller {
 //		$this->load->view('dashboard');
 //		$this->load->view('_templates/dashboard/_footer.php');
 
-		if(APP_ID == 'tryout.undip.id'){
+		if(APP_TYPE == 'tryout'){
 			if($this->ion_auth->in_group('mahasiswa')){
 				view('dashboard/tryout/mhs/index',$data);
 			}else{

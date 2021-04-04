@@ -140,7 +140,7 @@
 			@endif
 
 			@if( in_group('mahasiswa') )
-				@if( APP_ID == 'tryout.undip.id' )
+				@if( APP_TYPE == 'tryout' )
 				<li class="{{ $page === 'membership' ? "active" : "" }} nav-item">
 					<a href="{{ site_url('membership/list') }}">
 						<i class="icon-diamond"></i><span class="menu-title" data-i18n="nav.dash.main">Membership</span>
@@ -152,8 +152,8 @@
 					</a>
 				</li>
 				<li class="{{ ($page === 'ujian' && $method === 'latian_soal' ) ? "active" : "" }} nav-item">
-					<a href="{{ site_url('ujian/latian_soal') }}">
-						<i class="ft-edit-3"></i><span class="menu-title" data-i18n="nav.dash.main">Latian Soal</span>
+					<a href="{{ site_url('ujian/latihan_soal') }}">
+						<i class="ft-edit-3"></i><span class="menu-title" data-i18n="nav.dash.main">Latihan Soal</span>
 					</a>
 				</li>
 				<li class="{{ ($page === 'ujian' && $method === 'tryout' ) ? "active" : "" }} nav-item">

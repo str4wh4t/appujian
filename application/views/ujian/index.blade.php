@@ -659,7 +659,7 @@ function selesai(ended_by = '') {
                                     </th>
                                 </tr>
                                 <tr>
-                                    <th colspan="2" style="text-align: center"><img src="{{ $h_ujian->mhs->foto }}" style="height: 150px; width: 120px;" /></th>
+                                    <th colspan="2" style="text-align: center"><img src="{{ APP_TYPE == 'tryout' ? asset('assets/imgs/no_profile_120_150.jpg') : $h_ujian->mhs->foto }}" style="height: 150px; width: 120px;" /></th>
                                 </tr>
                                 <tr>
                                     <th>Ujian</th>

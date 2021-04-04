@@ -38,7 +38,6 @@
 @push('page_level_js')
     <!-- BEGIN PAGE LEVEL JS-->
     <script type="text/javascript">
-
         let datetime_el = $("#time_now");
         let curr_date;
 
@@ -206,8 +205,8 @@
 <div class="box box-primary">
     <div class="box-body">
         <div class="row">
-            <div class="col-sm-6">
-                <a href="{{ site_url('ujian/list') }}" class="btn btn-warning mb-1"><i class="fa fa-arrow-left"></i> Kembali</a>
+            <div class="col-sm-4">
+                <a href="{{ $_SERVER['HTTP_REFERER'] ?? site_url('ujian/list') }}" class="btn btn-warning mb-1"><i class="fa fa-arrow-left"></i> Kembali</a>
                 <div class="alert bg-info">
                     <p style="font-size: 20px">Tata Tertib Ujian<i class="pull-right fa fa-exclamation-triangle"></i></p>
                     <hr>
@@ -225,7 +224,7 @@
                     </p>
                 </div>
             </div>
-            <div class="col-sm-6">
+            <div class="col-sm-8">
                 <div class="alert bg-danger mt-5">
                     <span style="font-size: 20px">Waktu<i class="pull-right fa fa-clock-o"></i></span>
                     <hr>
@@ -241,12 +240,27 @@
                         <td><?=$mhs->nama?></td>
                     </tr>
                     <tr>
+                        <th>Nama Ujian</th>
+                        <td><?=$ujian->nama_ujian?></td>
+                    </tr>
+                    <tr>
                         <th>Materi Ujian</th>
                         <td><?=$ujian->matkul->nama_matkul?></td>
                     </tr>
                     <tr>
-                        <th>Nama Ujian</th>
-                        <td><?=$ujian->nama_ujian?></td>
+                        <th>Topik Ujian</th>
+                        <td>
+                            @php( $i = 1)
+                            @foreach($urutan_topik as $topik_id => $val)
+                            <dl class="row">
+                                <dt class="col-sm-8">{{ $i }}. {{ $topik_orm->findOrFail($topik_id)->nama_topik }}</dt>
+                                @if ($ujian->is_sekuen_topik)
+                                <dd class="col-sm-4">{{ $val['waktu'] }} Menit</dd>
+                                @endif
+                            </dl>
+                            @php( $i++)
+                            @endforeach
+                        </td>
                     </tr>
                     <tr>
                         <th>Jumlah Soal</th>

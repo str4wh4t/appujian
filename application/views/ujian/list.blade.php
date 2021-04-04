@@ -85,6 +85,12 @@
 					success: function (data) {
 						if (data.status == 'ok') {
 							location.href = '{{ url('ujian/token/') }}' + mid ;
+						}else if (data.status == 'ko') {
+							Swal.fire({
+								title: "Perhatian",
+								text: data.msg,
+								icon: "warning"
+							});
 						}else{
 							Swal.fire({
 								title: "Perhatian",
@@ -169,6 +175,7 @@
                                         <div class="card-body">
                                             {{-- [START] FOREACH UJIAN AKTIF  --}}
                                             <div class="row">
+                                                @if ($is_show_tutorial)
                                                 <div class="col-md-4 col-sm-12">
                                                     <div class="card box-shadow-0 border-success" style="background-color: #ffffcc;">
                                                         <div class="card-header " style="min-height: 85px;">
@@ -206,6 +213,7 @@
                                                         </div>
                                                     </div>
                                                 </div>
+                                                @endif
                                                 @forelse ($mhs_ujian_aktif as $mhs_ujian)
                                                 <div class="col-md-4 col-sm-12">
                                                     <div class="card box-shadow-0 border-success">
@@ -287,10 +295,10 @@
                                                     </div>
                                                 </div>
                                                 @empty
-                                                {{-- <div class="alert bg-warning alert-icon-left alert-arrow-left w-100" role="alert">
+                                                <div class="alert bg-warning alert-icon-left alert-arrow-left w-100" role="alert">
                                                     <span class="alert-icon"><i class="fa fa-warning"></i></span> 
                                                     <b>Belum ada ujian aktif.</b>
-                                                </div> --}}
+                                                </div>
                                                 @endforelse
                                             </div>
                                             {{-- [STOP] FOREACH UJIAN AKTIF  --}}

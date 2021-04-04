@@ -4,8 +4,6 @@ defined('BASEPATH') or exit('No direct script access allowed');
 use Orm\Users_orm;
 use Orm\Membership_orm;
 use Orm\Membership_history_orm;
-use Orm\Mhs_orm;
-use Illuminate\Database\Capsule\Manager as DB;
 
 use Carbon\Carbon;
 

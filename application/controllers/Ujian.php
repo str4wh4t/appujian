@@ -23,6 +23,9 @@ use Orm\Users_groups_orm;
 use Orm\Daftar_hadir_orm;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Capsule\Manager as DB;
+use Orm\Users_orm;
+use Orm\Membership_history_orm;
+use Carbon\Carbon;
 
 class Ujian extends MY_Controller
 {
@@ -931,6 +934,9 @@ class Ujian extends MY_Controller
 
 	public function list()
 	{
+		if(APP_TYPE == 'tryout')
+			redirect('ujian/latihan_soal');
+
 		$this->_akses_mahasiswa();
 
 		$user = $this->ion_auth->user()->row();
@@ -988,6 +994,131 @@ class Ujian extends MY_Controller
 
 		$data['mhs_ujian_aktif'] = $mhs_ujian_aktif;
 		$data['mhs_ujian_riwayat'] = $mhs_ujian_riwayat;
+		$data['is_show_tutorial'] = true;
+
+		view('ujian/list', $data);
+	}
+
+	public function latihan_soal()
+	{
+		if(APP_TYPE == 'ujian')
+			redirect('ujian/list');
+
+		$this->_akses_mahasiswa();
+
+		$user = $this->ion_auth->user()->row();
+
+		$data = [
+			'user' 		=> $user,
+			'judul'		=> 'Ujian',
+			'subjudul'	=> 'List Latihan Soal',
+			'mhs' 		=> $this->ujian->getIdMahasiswa($user->username),
+		];
+
+		$user = $this->ion_auth->user()->row();
+		$mhs_orm = Mhs_orm::where('nim', $user->username)->firstOrFail();
+
+		$mhs_ujian_aktif = Mhs_ujian_orm::whereHas(
+			'mhs_matkul',
+			function (Builder $query) use ($mhs_orm) {
+				$query->where('mahasiswa_id', $mhs_orm->id_mahasiswa);
+			}
+		)->whereHas(
+			'm_ujian',
+			function (Builder $query){
+				$query->where('status_ujian', 1);
+				$query->where('repeatable', 1); // LATIHAN SOAL JIKA UJIAN IS REPEATABLE
+			}
+		)->whereDoesntHave(
+			'h_ujian',
+			function (Builder $query){
+				$query->where('ujian_selesai', 'Y');
+			}
+		)->get();
+
+		$mhs_ujian_riwayat = Mhs_ujian_orm::whereHas(
+			'mhs_matkul',
+			function (Builder $query) use ($mhs_orm) {
+				$query->where('mahasiswa_id', $mhs_orm->id_mahasiswa);
+			}
+		)->whereHas(
+			'm_ujian',
+			function (Builder $query){
+				$query->where('status_ujian', 1);
+				$query->where('repeatable', 1); // LATIHAN SOAL JIKA UJIAN IS REPEATABLE
+			}
+		)->whereHas(
+			'h_ujian',
+			function (Builder $query){
+				$query->where('ujian_selesai', 'Y');
+			}
+		)->get();
+
+		$data['mhs_ujian_aktif'] = $mhs_ujian_aktif;
+		$data['mhs_ujian_riwayat'] = $mhs_ujian_riwayat;
+		$data['is_show_tutorial'] = true;
+
+		view('ujian/list', $data);
+	}
+
+	public function tryout()
+	{
+		if(APP_TYPE == 'ujian')
+			redirect('ujian/list');
+
+		$this->_akses_mahasiswa();
+
+		$user = $this->ion_auth->user()->row();
+
+		$data = [
+			'user' 		=> $user,
+			'judul'		=> 'Ujian',
+			'subjudul'	=> 'List Latihan Soal',
+			'mhs' 		=> $this->ujian->getIdMahasiswa($user->username),
+		];
+
+		$user = $this->ion_auth->user()->row();
+		$mhs_orm = Mhs_orm::where('nim', $user->username)->firstOrFail();
+
+		$mhs_ujian_aktif = Mhs_ujian_orm::whereHas(
+			'mhs_matkul',
+			function (Builder $query) use ($mhs_orm) {
+				$query->where('mahasiswa_id', $mhs_orm->id_mahasiswa);
+			}
+		)->whereHas(
+			'm_ujian',
+			function (Builder $query){
+				$query->where('status_ujian', 1);
+				$query->where('repeatable', 0); // TRYOUT SOAL JIKA UJIAN IS NOT REPEATABLE
+			}
+		)->whereDoesntHave(
+			'h_ujian',
+			function (Builder $query){
+				$query->where('ujian_selesai', 'Y');
+			}
+		)->get();
+
+		$mhs_ujian_riwayat = Mhs_ujian_orm::whereHas(
+			'mhs_matkul',
+			function (Builder $query) use ($mhs_orm) {
+				$query->where('mahasiswa_id', $mhs_orm->id_mahasiswa);
+			}
+		)->whereHas(
+			'm_ujian',
+			function (Builder $query){
+				$query->where('status_ujian', 1);
+				$query->where('repeatable', 0); // TRYOUT SOAL JIKA UJIAN IS NOT REPEATABLE
+			}
+		)->whereHas(
+			'h_ujian',
+			function (Builder $query){
+				$query->where('ujian_selesai', 'Y');
+			}
+		)->get();
+
+		$data['mhs_ujian_aktif'] = $mhs_ujian_aktif;
+		$data['mhs_ujian_riwayat'] = $mhs_ujian_riwayat;
+		$data['is_show_tutorial'] = false;
 
 		view('ujian/list', $data);
 	}
@@ -995,10 +1126,74 @@ class Ujian extends MY_Controller
 	public function token($id = null)
 	{
 		$id = integer_read_from_uuid($id);
-		Mujian_orm::findOrFail($id);
-
+		
 		$this->_akses_mahasiswa();
 		$user = $this->ion_auth->user()->row();
+		
+		$m_ujian = Mujian_orm::findOrFail($id);
+
+		if(APP_TYPE == 'tryout'){
+			$user_aktif_membership = get_user_aktif_membership($user->id);
+			if($m_ujian->repeatable){
+				// JIKA PADA LATIHAN SOAL
+
+				if($user_aktif_membership->membership->is_limit_by_kuota){
+					if(empty($user_aktif_membership->sisa_kuota_latihan_soal)){
+						$message_rootpage = [
+							'header' => 'Perhatian',
+							'content' => 'Sisa kuota latihan soal anda sudah habis',
+							'type' => 'error'
+						];
+						$this->session->set_flashdata('message_rootpage', $message_rootpage);
+						redirect('ujian/latihan_soal');
+					}
+				}
+
+				if($user_aktif_membership->membership->is_limit_by_durasi){
+					$expired_at = new Carbon($user_aktif_membership->expired_at);
+					$today = Carbon::now();
+					if($today->greaterThan($expired_at)){
+						$message_rootpage = [
+							'header' => 'Perhatian',
+							'content' => 'Membership anda sudah expired',
+							'type' => 'error'
+						];
+						$this->session->set_flashdata('message_rootpage', $message_rootpage);
+						redirect('ujian/latihan_soal');
+					}
+				}
+
+				
+			}else{
+				// JIKA PADA TRYOUT
+
+				if($user_aktif_membership->membership_id == MEMBERSHIP_ID_DEFAULT){
+					// JIKA USER GRATIS
+					$message_rootpage = [
+						'header' => 'Perhatian',
+						'content' => 'Anda tidak di ijinkan mengakses halaman ini',
+						'type' => 'error'
+					];
+					$this->session->set_flashdata('message_rootpage', $message_rootpage);
+					redirect('ujian/tryout');
+				}
+
+				if($user_aktif_membership->membership->is_limit_by_durasi){
+					$expired_at = new Carbon($user_aktif_membership->expired_at);
+					$today = Carbon::now();
+					if($today->greaterThan($expired_at)){
+						$message_rootpage = [
+							'header' => 'Perhatian',
+							'content' => 'Membership anda sudah expired',
+							'type' => 'error'
+						];
+						$this->session->set_flashdata('message_rootpage', $message_rootpage);
+						redirect('ujian/tryout');
+					}
+				}
+			}
+			
+		}
 
 		$this->session->unset_userdata('one_time_token');
 		$one_time_token = Uuid::uuid1()->toString();
@@ -1006,7 +1201,7 @@ class Ujian extends MY_Controller
 
 		$mhs = $this->ujian->getIdMahasiswa($user->username);
 
-		$m_ujian = Mujian_orm::findOrFail($id);
+		
 		$data = [
 			'user' 		=> $user,
 			'judul'		=> 'Ujian',
@@ -1035,6 +1230,15 @@ class Ujian extends MY_Controller
 
 			$data['h_ujian'] = $h_ujian;
 		}
+
+		$urutan_topik = $m_ujian->urutan_topik;
+		$urutan_topik = json_decode($urutan_topik, true);
+		uasort($urutan_topik, function($a, $b){
+			return $a['urutan'] <=> $b['urutan'];
+		});
+
+		$data['urutan_topik'] = $urutan_topik;
+		$data['topik_orm'] = new Topik_orm();
 
 		//		$this->load->view('_templates/topnav/_header.php', $data);
 		////		$this->load->view('ujian/token');
@@ -1104,13 +1308,27 @@ class Ujian extends MY_Controller
 			show_404();
 		}
 
-		$user = $this->ion_auth->user()->row();
+		$user = $this->ion_auth->user()->row();		
 		$mhs		= Mhs_orm::where('nim', $user->username)->firstOrFail();
 		$h_ujian 	= Hujian_orm::where('ujian_id', $ujian->id_ujian)->where('mahasiswa_id', $mhs->id_mahasiswa)->first();
 
 		$cek_sudah_ikut = $h_ujian == null ? false : true;
 
 		if (!$cek_sudah_ikut) {
+
+			// CEK UNTUK TRYOUT
+			if(APP_TYPE == 'tryout'){
+				$user_aktif_membership = get_user_aktif_membership($user->id);
+				if($ujian->repeatable){
+					// JIKA UJIAN LATIHAN SOAL
+					if($user_aktif_membership->membership->is_limit_by_kuota){
+						$membership_history_user = Membership_history_orm::findOrFail($user_aktif_membership->id);
+						$membership_history_user->sisa_kuota_latihan_soal = ($membership_history_user->sisa_kuota_latihan_soal - 1);
+						$membership_history_user->save();
+					}
+
+				}
+			}
 
 			/*
 			 * [START]CHECK VALID TIME M_UJIAN
@@ -2088,6 +2306,27 @@ class Ujian extends MY_Controller
 
 		if($h_ujian->ujian_selesai != 'Y'){ // JIKA UJIAN BELUM SELESAI
 			show_404();
+		}
+
+		if(APP_TYPE == 'tryout'){
+			$user = $this->ion_auth->user()->row();
+			$user_aktif_membership = get_user_aktif_membership($user->id);
+
+			if($user_aktif_membership->membership->is_limit_by_kuota){
+				if(empty($user_aktif_membership->sisa_kuota_latihan_soal)){
+					$this->_json(['status' => 'ko', 'msg' => 'Sisa kuota latihan soal anda sudah habis']);
+					return ;
+				}
+			}
+
+			if($user_aktif_membership->membership->is_limit_by_durasi){
+				$expired_at = new Carbon($user_aktif_membership->expired_at);
+				$today = Carbon::now();
+				if($today->greaterThan($expired_at)){
+					$this->_json(['status' => 'ko', 'msg' => 'Membership anda sudah expired']);
+					return ;
+				}
+			}
 		}
 
 		$today = date('Y-m-d H:i:s');

@@ -93,10 +93,15 @@ $query_builder = TRUE;
 $db['default'] = array(
 	'dsn'	=> '',
 
-    'hostname' => '10.37.19.27', 
-	'username' => 'idris',
-	'password' => 'q1w2e3r4',
-	'database' => 'tryout_01',
+    // 'hostname' => '10.37.19.27', 
+	// 'username' => 'idris',
+	// 'password' => 'q1w2e3r4',
+	// 'database' => 'tryout_01',
+
+    'hostname' => 'localhost', 
+	'username' => 'root',
+	'password' => 'root',
+	'database' => 'ujianundip',
 
 	'dbdriver' => 'mysqli',
 	'dbprefix' => '',

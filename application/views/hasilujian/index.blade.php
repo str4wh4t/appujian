@@ -41,26 +41,22 @@
                 <div class="card-content">
                     <div class="card-body">
 <!---- --->
-<div class="box">
-    <div class="table-responsive" style="border: 0">
-        <table id="hasil" class="table table-striped table-bordered table-hover">
-        <thead>
-            <tr>
-                <th>No.</th>
-                <th>Nama Ujian</th>
-                <th>Materi Ujian</th>
-                <th>Jumlah Soal</th>
-                <th>Waktu</th>
-                <th>Tanggal</th>
-                <th class="text-center">
+<table id="hasil" class="table table-striped table-bordered table-hover">
+    <thead>
+        <tr>
+            <th>No.</th>
+            <th>Nama Ujian</th>
+            <th>Materi Ujian</th>
+            <th>Jumlah Soal</th>
+            <th>Waktu</th>
+            <th>Tanggal</th>
+            <th class="text-center">
 {{--                    <i class="fa fa-search"></i>--}}
-                    Aksi
-                </th>
-            </tr>
-        </thead>
-        </table>
-    </div>
-</div>
+                Aksi
+            </th>
+        </tr>
+    </thead>
+</table>
 <!---- --->
 				</div>
             </div>

@@ -55,7 +55,7 @@
 </div>
 <div class="row">
     <div class="col-md-12">
-        <table id="bobot_soal" class="table table-striped table-bordered table-hover pb-3">
+        <table id="bobot_soal" class="table table-striped table-bordered table-hover">
 			<thead>
 				<tr>
 					<th>Bobot</th>
@@ -66,16 +66,6 @@
 					</th>
 				</tr>
 			</thead>
-			<tfoot>
-				<tr>
-					<th>Bobot</th>
-					<th>Nilai</th>
-                    <th>Jml Soal</th>
-					<th>
-						Aksi
-					</th>
-				</tr>
-			</tfoot>
 		</table>
     </div>
 </div>

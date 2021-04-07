@@ -112,8 +112,6 @@ class Payment extends MY_Controller
         if(!in_array($m_or_p, ['M', 'P']))
             show_404();
 
-        
-
         $user = $this->ion_auth->user()->row();
 
         $membership_or_paket_id = integer_read_from_uuid($membership_or_paket_id);
@@ -129,7 +127,7 @@ class Payment extends MY_Controller
         if($m_or_p == 'M'){
             $membership = Membership_orm::findOrFail($membership_or_paket_id);
 
-            $is_valid_order_membership = is_valid_order_membership($membership->id, $user->id) ;
+            $is_valid_order_membership = is_valid_order_membership($membership->id, $user_beli->mhs) ;
 
             if(!$is_valid_order_membership){
                 show_error('Terjadi kesalahan pembelian', 500, 'Perhatian');
@@ -142,16 +140,14 @@ class Payment extends MY_Controller
         if($m_or_p == 'P'){
             $paket = Paket_orm::findOrFail($membership_or_paket_id);
 
-            $is_valid_paket = false ;
-            if(!in_array($paket->id, PAKET_MATERI_ID_DEFAULT)){
-                if($user_beli->paket_dibeli($paket->id)->get()->isEmpty()){
-                    $is_valid_paket = true;
-                }
-            }
+            // $is_valid_paket = false ;
+            // if(empty($user_beli->mhs->paket_history()->where('paket_id', $paket->id)->first())){
+            //     $is_valid_paket = true;
+            // }
 
-            if(!$is_valid_paket){
-                show_error('Terjadi kesalahan pembelian', 500, 'Perhatian');
-            }
+            // if(!$is_valid_paket){
+            //     show_error('Terjadi kesalahan pembelian', 500, 'Perhatian');
+            // }
             
             $item = $paket;
         }
@@ -182,7 +178,7 @@ class Payment extends MY_Controller
             $membership_id = substr($info, 1);
             $membership = Membership_orm::findOrFail($membership_id);
 
-            $is_valid_order_membership = is_valid_order_membership($membership->id, $user->id) ;
+            $is_valid_order_membership = is_valid_order_membership($membership->id, $user_beli->mhs) ;
 
             if(!$is_valid_order_membership){
                 show_error('Terjadi kesalahan pembelian', 500, 'Perhatian');
@@ -197,16 +193,14 @@ class Payment extends MY_Controller
             $paket_id = substr($info, 1);
             $paket = Paket_orm::findOrFail($paket_id);
 
-            $is_valid_paket = false ;
-            if(!in_array($paket_id, PAKET_MATERI_ID_DEFAULT)){
-                if($user_beli->paket_dibeli($paket->id)->get()->isEmpty()){
-                    $is_valid_paket = true;
-                }
-            }
+            // $is_valid_paket = false ;
+            // if(empty($user_beli->mhs->paket_history()->where('paket_id', $paket_id)->first())){
+            //     $is_valid_paket = true;
+            // }
 
-            if(!$is_valid_paket){
-                show_error('Terjadi kesalahan pembelian', 500, 'Perhatian');
-            }
+            // if(!$is_valid_paket){
+            //     show_error('Terjadi kesalahan pembelian', 500, 'Perhatian');
+            // }
 
             $gross_amount = $paket->price;
 
@@ -258,7 +252,8 @@ class Payment extends MY_Controller
             $user = Users_orm::findOrFail($user_id);
 
         
-        $trx_payment_list = Trx_payment_orm::where('users_id', $user->id)->orderBy('id', 'DESC')->get();
+        $trx_payment_list = $user->mhs->trx_payment->sortByDesc('id');
+
         $data['trx_payment_list']   = $trx_payment_list;
 
         view('payment/history', $data);

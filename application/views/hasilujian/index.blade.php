@@ -42,7 +42,7 @@
                     <div class="card-body">
 <!---- --->
 <div class="box">
-    <div class="table-responsive pb-3" style="border: 0">
+    <div class="table-responsive" style="border: 0">
         <table id="hasil" class="table table-striped table-bordered table-hover">
         <thead>
             <tr>

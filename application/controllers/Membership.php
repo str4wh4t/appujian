@@ -31,24 +31,25 @@ class Membership extends MY_Controller
         $data = [];
 
         $user = $this->ion_auth->user()->row();
+        $user = Users_orm::findOrFail($user->id);
         $data['user'] = $user;
 
         $membership_list = Membership_orm::where('show', 1)->get();
 
         $data['membership_list'] = $membership_list;
 
-        $user_aktif_membership = get_user_aktif_membership($user->id);
+        $mhs_aktif_membership = get_mhs_aktif_membership($user->mhs);
 
-        $data['user_aktif_membership']  = $user_aktif_membership ;
+        $data['mhs_aktif_membership']  = $mhs_aktif_membership ;
 
         $is_valid_membership = true ;
 
-        // vdebug($user_aktif_membership->expired_at);
+        // vdebug($mhs_aktif_membership->expired_at);
 
-        $expired_at = new Carbon($user_aktif_membership->expired_at);
+        $expired_at = new Carbon($mhs_aktif_membership->expired_at);
         $today = new Carbon();
 
-        if($user_aktif_membership->membership_id != MEMBERSHIP_ID_DEFAULT){
+        if($mhs_aktif_membership->membership_id != MEMBERSHIP_ID_DEFAULT){
             if($today->greaterThan($expired_at)){
                 $is_valid_membership = false;
             }
@@ -59,36 +60,36 @@ class Membership extends MY_Controller
         view('membership/list', $data);
     }
 
-    public function beli($membership_id, $user_id = null){
+    // public function beli($membership_id, $user_id = null){
 
-        $user = $this->ion_auth->user()->row();
-        // if($membership_id < $user->membership_id){
-        //     show_error('Terjadi kesalahan pembelian', 500, 'Perhatian');
-        // }
+    //     $user = $this->ion_auth->user()->row();
+    //     // if($membership_id < $user->membership_id){
+    //     //     show_error('Terjadi kesalahan pembelian', 500, 'Perhatian');
+    //     // }
 
-        $membership_id = integer_read_from_uuid($membership_id);
-        $membership = Membership_orm::findOrFail($membership_id);
+    //     $membership_id = integer_read_from_uuid($membership_id);
+    //     $membership = Membership_orm::findOrFail($membership_id);
 
-        $is_valid_order_membership = is_valid_order_membership($membership->id, $user->id) ;
+    //     $is_valid_order_membership = is_valid_order_membership($membership->id, $user->id) ;
 
-        if(!$is_valid_order_membership){
-            show_error('Terjadi kesalahan pembelian', 500, 'Perhatian');
-        }
+    //     if(!$is_valid_order_membership){
+    //         show_error('Terjadi kesalahan pembelian', 500, 'Perhatian');
+    //     }
 
-        if($this->ion_auth->in_group('mahasiswa')){
-            $user_beli = Users_orm::findOrFail($user->id);
-        }else{
-            $user_beli = Users_orm::findOrFail($user_id);
-        }
+    //     if($this->ion_auth->in_group('mahasiswa')){
+    //         $user_beli = Users_orm::findOrFail($user->id);
+    //     }else{
+    //         $user_beli = Users_orm::findOrFail($user_id);
+    //     }
 
-        $data['info'] = 'M' . $membership->id ;
-        $data['item'] = $membership;
-        $data['user']   = $user_beli;
+    //     $data['info'] = 'M' . $membership->id ;
+    //     $data['item'] = $membership;
+    //     $data['user']   = $user_beli;
 
-        view('payment/beli', $data);
+    //     view('payment/beli', $data);
 
 
-    }
+    // }
 
     public function history($user_id = null){
         $user = $this->ion_auth->user()->row();
@@ -99,23 +100,24 @@ class Membership extends MY_Controller
             $user = Users_orm::findOrFail($user_id);
 
         
-        $membership_history_list = Membership_history_orm::where('users_id', $user->id)->orderBy('id', 'DESC')->get();
+        $membership_history_list = $user->mhs->membership_history->sortByDesc('id');
 
         $data['membership_history_list']   = $membership_history_list;
 
-        $user_membership = get_user_aktif_membership($user->id);
+        $mhs_membership = get_mhs_aktif_membership($user->mhs);
 
         $today = Carbon::now();
         $count_expire_days = 'UNLIMITED' ;
 
-        if($user_membership->membership_id != MEMBERSHIP_ID_DEFAULT){
-            $expired_at = new Carbon($user_membership->expired_at);
+        if($mhs_membership->membership_id != MEMBERSHIP_ID_DEFAULT){
+            $expired_at = new Carbon($mhs_membership->expired_at);
             if($expired_at->greaterThan($today))
                 $count_expire_days = $expired_at->diffInDays($today) . ' Hari Lagi';
             else
                 $count_expire_days = '0 Hari Lagi';
         }
 
+        $data['mhs_membership'] = $mhs_membership ;
         $data['count_expire_days'] = $count_expire_days ;
 
         view('membership/history', $data);

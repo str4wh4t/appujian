@@ -91,7 +91,7 @@
 <div class="row">
     <div class="col-md-12">
 	<?=form_open('ujian/delete', array('id'=>'bulk'))?>
-    <div class="table-responsive pb-3" style="">
+    <div class="table-responsive" style="">
         <table id="ujian" class="table table-striped table-bordered table-hover w-100">
         <thead>
             <tr>

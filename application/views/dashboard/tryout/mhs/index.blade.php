@@ -54,62 +54,18 @@
 <!---- --->
 <div class="row">
     <div class="col-xl-4 col-lg-12">
-        <div class="card height-600 profile-card-with-cover border-grey border-lighten-2">
-            <div class="card-img-top img-fluid bg-cover height-200" style="background: url('{{ asset('assets/template/robust/app-assets/images/carousel/12.jpg') }}');"></div>
-            <div class="card-profile-image">
-                @if ($mahasiswa->jenis_kelamin == 'L')
-                <img src="{{ asset('assets/imgs/user_default_112x112.jpg') }}" class="rounded-circle img-border" alt="Card image">
-                @else
-                <img src="{{ asset('assets/imgs/user_default_female_112x112.jpg') }}" class="rounded-circle img-border" alt="Card image">
-                @endif
-            </div>
-            <div class="profile-card-with-cover-content text-center">
-                <div class="card-body">
-                    <h4 class="card-title">{{ $mahasiswa->nama }}<hr>{{ $mahasiswa->nim }}</h4>
-                    <p class="text-muted m-0">{{ $mahasiswa->email }}</p>
-                </div>
-                {{-- <div class="card-body">
-                    <a href="#" class="btn btn-social-icon mr-1 mb-1 btn-outline-facebook"><span class="ft-facebook"></span></a>
-                    <a href="#" class="btn btn-social-icon mr-1 mb-1 btn-outline-twitter"><span class="ft-twitter"></span></a>
-                    <a href="#" class="btn btn-social-icon mr-1 mb-1 btn-outline-linkedin"><span class="ft-github font-medium-4"></span></a>
-                </div> --}}
-            </div>
-            {{-- <div class="card-body">
-                <dl class="row">
-                    <dt class="col-md-3">NIK</dt>
-                    <dd class="col-md-9">: <?=$mahasiswa->nik?></dd>
-                </dl>
-                <dl class="row">
-                    <dt class="col-md-3">TTL</dt>
-                    <dd class="col-md-9">: <?=$mahasiswa->tmp_lahir?> / <?=$mahasiswa->tgl_lahir?></dd>
-                </dl>
-            </div> --}}
-            <div class="card-body">
-                <div class="alert bg-info rounded-0 text-center">Paket Materi</div>
-                <div class="chart-stats text-center">
-                    @forelse($mahasiswa->matkul as $matkul)
-                        <li><?=$matkul->nama_matkul?></li>
-                    @empty
-                        <li>Belum ada paket materi</li>
-                    @endforelse
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="col-xl-8 col-lg-12">
         <div class="row">
-            <div class="col-8">
-                <a href="{{ url('membership/history') }}" >
-                    <div class="card bg-{{ get_membership_color($user->membership_id) }}">
+            <div class="col-lg-12">
+                <a href="{{ url('paket/history') }}" >
+                    <div class="card bg-info">
                         <div class="card-content">
                             <div class="card-body">
                                 <div class="media">
-                                    <div class="media-left media-middle">
-                                        <i class="icon-diamond white font-medium-3 float-left"></i>
-                                    </div>
                                     <div class="media-body white text-center">
-                                        <h6 class="white mb-0">MEMBERSHIP : {!! get_membership_star($user->membership_id) !!} <b style="text-transform: uppercase">{{ get_membership_text($user->membership_id) }} {{ is_user_membership_expired() ? '(EXPIRED)' : '' }}</b></h6>
+                                        <h6 class="white mb-0">PAKET DIBELI</h6>
+                                    </div>
+                                    <div class="media-right media-middle">
+                                        <i class="fa fa-hand-pointer-o white font-medium-3"></i>
                                     </div>
                                 </div>
                             </div>
@@ -117,14 +73,82 @@
                     </div>
                 </a>
             </div>
-            <div class="col-4">
+            <div class="col-12">
+                <div class="card height-450 profile-card-with-cover border-grey border-lighten-2">
+                    <div class="card-img-top img-fluid bg-cover height-200" style="background: url('{{ asset('assets/template/robust/app-assets/images/carousel/12.jpg') }}');"></div>
+                    <div class="card-profile-image">
+                        @if ($mahasiswa->jenis_kelamin == 'L')
+                        <img src="{{ asset('assets/imgs/user_default_112x112.jpg') }}" class="rounded-circle img-border" alt="Card image">
+                        @else
+                        <img src="{{ asset('assets/imgs/user_default_female_112x112.jpg') }}" class="rounded-circle img-border" alt="Card image">
+                        @endif
+                    </div>
+                    <div class="profile-card-with-cover-content text-center">
+                        <div class="card-body">
+                            <h4 class="card-title">{{ $mahasiswa->nama }}<hr>{{ $mahasiswa->nim }}</h4>
+                            <p class="text-muted m-0">{{ $mahasiswa->email }}</p>
+                        </div>
+                        {{-- <div class="card-body">
+                            <a href="#" class="btn btn-social-icon mr-1 mb-1 btn-outline-facebook"><span class="ft-facebook"></span></a>
+                            <a href="#" class="btn btn-social-icon mr-1 mb-1 btn-outline-twitter"><span class="ft-twitter"></span></a>
+                            <a href="#" class="btn btn-social-icon mr-1 mb-1 btn-outline-linkedin"><span class="ft-github font-medium-4"></span></a>
+                        </div> --}}
+                    </div>
+                    {{-- <div class="card-body">
+                        <dl class="row">
+                            <dt class="col-md-3">NIK</dt>
+                            <dd class="col-md-9">: <?=$mahasiswa->nik?></dd>
+                        </dl>
+                        <dl class="row">
+                            <dt class="col-md-3">TTL</dt>
+                            <dd class="col-md-9">: <?=$mahasiswa->tmp_lahir?> / <?=$mahasiswa->tgl_lahir?></dd>
+                        </dl>
+                    </div> --}}
+                    {{-- <div class="card-body">
+                        <div class="alert bg-success rounded-0 text-center">PAKET MATERI</div>
+                        <div class="chart-stats ml-4">
+                            @forelse($mahasiswa->matkul as $matkul)
+                                <li class="pb-1"><?=$matkul->nama_matkul?></li>
+                            @empty
+                                <li class="pb-1">Belum ada paket materi</li>
+                            @endforelse
+                        </div>
+                    </div> --}}
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-8 col-lg-12">
+        <div class="row">
+            <div class="col-lg-8 col-sm-12">
+                <a href="{{ url('membership/history') }}" >
+                    <div class="card bg-{{ get_membership_color($mahasiswa->membership_aktif->membership_id) }}">
+                        <div class="card-content">
+                            <div class="card-body">
+                                <div class="media">
+                                    <div class="media-body white text-center">
+                                        <h6 class="white mb-0">MEMBERSHIP : {!! get_membership_star($mahasiswa->membership_aktif->membership_id) !!} <b style="text-transform: uppercase">{{ get_membership_text($mahasiswa->membership_aktif->membership_id) }} {{ is_mhs_membership_expired() ? '(EXPIRED)' : '' }}</b></h6>
+                                    </div>
+                                    <div class="media-right media-middle">
+                                        <i class="fa fa-hand-pointer-o white font-medium-3"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            <div class="col-lg-4 col-sm-12">
                 <a href="{{ url('payment/history') }}" >
                     <div class="card bg-info">
                         <div class="card-content">
                             <div class="card-body">
                                 <div class="media">
                                     <div class="media-body white text-center">
-                                        <h6 class="white mb-0">ORDER HISTORY <i class="fa fa-hand-pointer-o white font-medium-3"></i></h6>
+                                        <h6 class="white mb-0">ORDER HISTORY</h6>
+                                    </div>
+                                    <div class="media-right media-middle">
+                                        <i class="fa fa-hand-pointer-o white font-medium-3"></i>
                                     </div>
                                 </div>
                             </div>

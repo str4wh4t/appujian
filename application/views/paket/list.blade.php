@@ -54,7 +54,7 @@ $(document).on('click', '.btn_sudah_beli', function(){
 <!---- --->
 <div class="row">
     <div class="col-12">
-        <div class="card bg-{{ get_membership_color($user->membership_id) }}">
+        <div class="card bg-{{ get_membership_color($user->mhs->membership_aktif->membership_id) }}">
             <div class="card-content">
                 <div class="card-body">
                     <div class="media">
@@ -64,8 +64,8 @@ $(document).on('click', '.btn_sudah_beli', function(){
                         <div class="media-body white text-center">
                             <h3 class="white">Membership</h3>
                             <span>Saat ini anda terdaftar dalam paket : 
-                                {!! get_membership_star($user->membership_id) !!}
-                                <b style="text-transform: uppercase">{{ get_membership_text($user->membership_id) }} {{ is_user_membership_expired() ? '(EXPIRED)' : '' }}</b></span>
+                                {!! get_membership_star($user->mhs->membership_aktif->membership_id) !!}
+                                <b style="text-transform: uppercase">{{ get_membership_text($user->mhs->membership_aktif->membership_id) }} {{ is_mhs_membership_expired() ? '(EXPIRED)' : '' }}</b></span>
                         </div>
                     </div>
                 </div>
@@ -85,18 +85,26 @@ $(document).on('click', '.btn_sudah_beli', function(){
                 <h3 class="text-center mb-3" style="{{ !empty($paket->delete_price) ? 'margin-bottom: 0.8rem !important;' : '' }}">
                     Rp {{ number_format($paket->price, 0, ",", ".") }}
                 </h3>
-                @if($user->paket_dibeli($paket->id)->get()->isEmpty())
+                {{-- @if(empty($user->mhs->paket_history()->where('paket_id', $paket->id)->first())) --}}
+                {{-- @if(is_mhs_limit_by_kuota()) --}}
                 <a href="{{ url('payment/beli/P/' . uuid_create_from_integer($paket->id)) }}"
                     class="btn btn-glow round w-100 fw-600 my-2 text-white btn-primary">
                     <i class="ft-shopping-cart text-white icon-md "></i> Beli sekarang
                 </a>
-                @else
+                {{-- @else
                 <button type="button" class="btn btn-glow round w-100 fw-600 my-2 text-white btn-secondary btn_sudah_beli" disabled="disabled">
                     <i class="ft-shopping-cart text-white icon-md "></i> Sudah dibeli
                     </button>
-                @endif
+                @endif --}}
                 <hr>
                 {!! $paket->description !!}
+                <hr>
+                <h6 class="text-danger"><b>Materi Include :</b></h6>
+                <ol>
+                    @foreach ($paket->paket_matkul as $paket_matkul)
+                    <li>{{ $paket_matkul->matkul->nama_matkul }}</li>
+                    @endforeach
+                </ol>
             </div>
         </div>
     </div>

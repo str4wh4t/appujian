@@ -9,9 +9,9 @@ class Paket_orm extends Eloquent
     protected $dateFormat = 'Y-m-d H:i:s';
 
 
-    public function users()
+    public function mhs()
     {
-        return $this->belongsToMany('Orm\Users_orm','paket_history', 'paket_id', 'users_id');
+        return $this->belongsToMany('Orm\Mhs_orm','paket_history', 'paket_id', 'mahasiswa_id');
     }
     
     public function paket_history()

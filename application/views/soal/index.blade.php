@@ -150,7 +150,7 @@
 	</div>
 	<?=form_open('', array('id'=>'bulk'))?>
 	<div style="overflow-x: ">
-		<div class="table-responsive pb-3 w-100" style="border: 0">
+		<div class="table-responsive pb-2 w-100" style="border: 0">
 			<table id="soal" class="table table-striped table-bordered table-hover">
 			<thead>
 				<tr>

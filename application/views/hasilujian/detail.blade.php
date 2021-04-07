@@ -1,6 +1,3 @@
-@php
-    use Illuminate\Database\Eloquent\Builder;
-@endphp
 @extends('template.main')
 
 @push('page_level_css')
@@ -178,11 +175,13 @@ $(document).on('click','.btn_reset_hasil',function(){
             <?php 
             $h_ujian = $ujian->h_ujian()->where('mahasiswa_id', $mhs->id_mahasiswa)->first();
             ?>
+            @if(!empty($h_ujian))
             <div class="col-md-12 mt-2" style="text-align: center">
                 <a class="btn btn-danger btn-lg" href="{{ url('hasilujian/history/' . uuid_create_from_integer($h_ujian->mahasiswa_ujian_id)) }}" title="Lihat Jawaban">
                     <i class="fa fa-list-alt"></i> Jawaban Ujian
                 </a>
             </div>
+            @endif
         @endif
         
         

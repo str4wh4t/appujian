@@ -8,9 +8,9 @@ class Membership_history_orm extends Eloquent
     protected $table = 'membership_history';
     protected $dateFormat = 'Y-m-d H:i:s';
 
-    public function users()
+    public function mhs()
     {
-        return $this->belongsTo('Orm\Users_orm', 'users_id');
+        return $this->belongsTo('Orm\Mhs_orm', 'mahasiswa_id');
     }
 
     public function membership()

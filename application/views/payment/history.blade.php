@@ -84,7 +84,7 @@ function init_page_level(){
 <!---- --->
 <div class="row">
     <div class="col-12">
-        <div class="alert bg-info"><i class="fa fa-exclamation-triangle"></i> Pembayaran terbaru diproses sekitar 1 menit untuk proses update data</div>
+        <div class="alert bg-info mb-3"><i class="fa fa-exclamation-triangle"></i> Pembayaran terbaru diproses sekitar 1 menit untuk proses update data</div>
         <div class="table-responsive col-sm-12">
             <table class="table table-striped" id="tb_history">
                 <thead>
@@ -122,9 +122,7 @@ function init_page_level(){
                         </td>
                     </tr>
                     @empty
-                    <tr>
-                        <td colspan="7" class="text-danger text-center">Belum ada transaksi</td>
-                    </tr>   
+
                     @endforelse
                 </tbody>
                 {{-- <tfoot>
@@ -160,7 +158,7 @@ function init_page_level(){
                 <table class="w-100 table">
                     <thead>
                         <tr>
-                            <th>Order Nmbr</th>
+                            <th>Order Nmr</th>
                             <th id="th_order_id" class="text-danger"></th>
                         </tr>
                         <tr>

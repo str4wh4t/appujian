@@ -37,7 +37,7 @@ class Uuid_generator
 
 		$uuid3 = Uuid::uuid3(Uuid::NAMESPACE_DNS, $return_text);
 
-    	return $uuid3 == $uuid_to_check ? $return_text : '' ;
+    	return $uuid3 == $uuid_to_check ? $return_text : null ;
 	}
 
 }

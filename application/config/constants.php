@@ -108,8 +108,6 @@ defined('FLAG_AKTIF')      OR define('FLAG_AKTIF', 1);
 defined('JML_SOAL_TUTORIAL')      OR define('JML_SOAL_TUTORIAL', 3);
 defined('JML_WAKTU_TUTORIAL')      OR define('JML_WAKTU_TUTORIAL', 5);
 
-defined('PREFIX_ID_MHS')      OR define('PREFIX_ID_MHS', 3);
-defined('JML_DIGIT_ID_MHS')      OR define('JML_DIGIT_ID_MHS', 10);
 defined('PASSWORD_MIN_LENGTH')      OR define('PASSWORD_MIN_LENGTH', 8);
 defined('PASSWORD_MAX_LENGTH')      OR define('PASSWORD_MAX_LENGTH', 50);
 
@@ -126,3 +124,6 @@ defined('MEMBERSHIP_STTS_NON_AKTIF')      OR define('MEMBERSHIP_STTS_NON_AKTIF',
 
 defined('PAKET_STTS_AKTIF')      OR define('PAKET_STTS_AKTIF', 1);
 defined('PAKET_STTS_NON_AKTIF')      OR define('PAKET_STTS_NON_AKTIF', 0);
+
+defined('PAYMENT_ORDER_TELAH_DIPROSES')      OR define('PAYMENT_ORDER_TELAH_DIPROSES', 1);
+defined('PAYMENT_ORDER_BELUM_DIPROSES')      OR define('PAYMENT_ORDER_BELUM_DIPROSES', 0);

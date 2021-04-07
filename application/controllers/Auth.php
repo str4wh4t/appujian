@@ -6,6 +6,7 @@ use Orm\Mhs_orm;
 use Orm\Users_orm;
 use Orm\Membership_orm;
 use Orm\Membership_history_orm;
+use Orm\Paket_history_orm;
 use Orm\Mhs_matkul_orm;
 use Orm\Paket_orm;
 use Orm\Mhs_ujian_orm;
@@ -297,7 +298,6 @@ class Auth extends CI_Controller
 						'full_name'  => $full_name,
 						'phone'		=> $this->input->post('telp'),
 						'no_billkey'		=> $username, // BILLKEY DISAMAKAN DENGN USERNAME
-						'membership_id'	=> MEMBERSHIP_ID_DEFAULT, // OTOMATIS DI ASSIGN SBG MEMBERSHIP GRATIS
 					];
 					$group           = [MHS_GROUP_ID]; // Sets user to mhs.
 
@@ -336,34 +336,35 @@ class Auth extends CI_Controller
 						$mhs->save();
 
 						$membership = Membership_orm::findOrFail(MEMBERSHIP_ID_DEFAULT);
-
-						$sisa_kuota_latihan_soal = 0;
-						$expired_at  = null;
-			
-						if($membership->is_limit_by_kuota)
-							$sisa_kuota_latihan_soal = $membership->kuota_latihan_soal ;
-			
-						if($membership->is_limit_by_durasi)
-							$expired_at = date('Y-m-d', strtotime("+". $membership->durasi ." months", strtotime(date('Y-m-d'))));
+						
+						$membership_expiration_date = date('Y-m-d', strtotime("+". $membership->durasi ." months", strtotime(date('Y-m-d'))));
 
 						$membership_history = new Membership_history_orm();
-						$membership_history->users_id = $return_id_user;
-						$membership_history->membership_id = MEMBERSHIP_ID_DEFAULT ;
+						$membership_history->mahasiswa_id = $id_mahasiswa;
+						$membership_history->membership_id = $membership->id ;
 						$membership_history->upgrade_ke = 0 ;
-						$membership_history->sisa_kuota_latihan_soal = $sisa_kuota_latihan_soal ;
-						$membership_history->expired_at = $expired_at;
+						// $membership_history->sisa_kuota_latihan_soal = $membership_sisa_kuota_latihan_soal ;
+						$membership_history->expired_at = $membership_expiration_date;
 						$membership_history->stts =  MEMBERSHIP_STTS_AKTIF ;
 						$membership_history->save();
 
+						$paket_bonus_membership = get_paket_bonus_membership($membership);
 
-						if (!empty(PAKET_MATERI_ID_DEFAULT)) {
-							foreach (PAKET_MATERI_ID_DEFAULT as $paket_id) {
-								$paket = Paket_orm::findOrFail($paket_id);
+						if (!empty($paket_bonus_membership)) {
+							foreach ($paket_bonus_membership as $paket) {
+
+								$paket_history = new Paket_history_orm();
+								$paket_history->mahasiswa_id = $id_mahasiswa;
+								$paket_history->paket_id = $paket->id ;
+								$paket_history->upgrade_ke = 0 ;
+								$paket_history->stts =  PAKET_STTS_AKTIF ;
+								$paket_history->save();
 
 								foreach($paket->matkul as $matkul){
 									$mhs_matkul_orm = new Mhs_matkul_orm();
 									$mhs_matkul_orm->mahasiswa_id = $id_mahasiswa;
 									$mhs_matkul_orm->matkul_id = $matkul->id_matkul;
+									$mhs_matkul_orm->sisa_kuota_latihan_soal = $paket->kuota_latihan_soal ;
 									$mhs_matkul_orm->save();
 
 									if($matkul->m_ujian->isNotEmpty()){

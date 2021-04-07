@@ -130,73 +130,57 @@ $(document).on('change','#tahun_filter', function(){
 
 
 <!---- --->
-<div class="box">
-    <div class="box-body">
-        <div class="row">
-        	<div class="col-md-4">
-                @if(APP_ID == 'cat.undip.ac.id')
-                <a href="{{ site_url('mahasiswa/add') }}" class="btn btn-sm btn-flat btn-outline-primary"><i class="fa fa-plus"></i> Tambah</a>
-                <a href="{{ site_url('mahasiswa/import') }}" class="btn btn-sm btn-flat btn-success"><i class="fa fa-upload"></i> Import</a>
-                @endif
-                <button type="button" onclick="reload_ajax()" class="btn btn-sm btn-flat btn-outline-secondary"><i class="fa fa-refresh"></i> Reload</button>
-            </div>
-            <div class="col-md-4">
-                <div class="form-group text-center">
-                    <select id="tahun_filter" class="form-control select2" style="width:100% !important">
-                        <option value="null">Semua Tahun</option>
-                        <?php foreach ($tahun as $t) :?>
-                            <option value="{{ $t }}" {{ $t == get_selected_tahun() ? "selected" : "" }}>{{ $t }}</option>
-                        <?php endforeach; ?>
-                    </select>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="pull-right">
-                    @if(APP_ID == 'ujian.undip.ac.id')
-                    <button class="btn btn-sm btn-flat btn-danger" id="btn_sync_pendaftaran" type="button"><i class="fa fa-refresh"></i> Syncron Data</button>
-                    @endif
-                    <button onclick="bulk_delete()" class="btn btn-sm btn-flat btn-danger" type="button"><i class="fa fa-trash"></i> Delete</button>
-                </div>
-            </div>
+<div class="row">
+    <div class="col-md-4">
+        @if(ENABLE_TAMBAH_MHS)
+        <a href="{{ site_url('mahasiswa/add') }}" class="btn btn-sm btn-flat btn-outline-primary"><i class="fa fa-plus"></i> Tambah</a>
+        <a href="{{ site_url('mahasiswa/import') }}" class="btn btn-sm btn-flat btn-success"><i class="fa fa-upload"></i> Import</a>
+        @endif
+        <button type="button" onclick="reload_ajax()" class="btn btn-sm btn-flat btn-outline-secondary"><i class="fa fa-refresh"></i> Reload</button>
+    </div>
+    <div class="col-md-4">
+        <div class="form-group text-center">
+            <select id="tahun_filter" class="form-control select2" style="width:100% !important">
+                <option value="null">Semua Tahun</option>
+                <?php foreach ($tahun as $t) :?>
+                    <option value="{{ $t }}" {{ $t == get_selected_tahun() ? "selected" : "" }}>{{ $t }}</option>
+                <?php endforeach; ?>
+            </select>
         </div>
-        <?= form_open('', array('id' => 'bulk')); ?>
-{{--        <div class="table-responsive">--}}
-{{--            <table id="mahasiswa" class="table table-striped table-bordered table-hover pb-3">--}}
-        <div class="table-responsive pb-3" style="border: 0">
-		    <table id="mahasiswa" class="table table-striped table-bordered table-hover w-100">
-                <thead>
-                    <tr>
-                        <th>No.</th>
-                        <th>No Peserta</th>
-                        <th>Nama</th>
-{{--                        <th>Email</th>--}}
-                        <th>Materi Ujian</th>
-{{--                        <th>Kelas</th>--}}
-                        <th>Prodi</th>
-                        <th>Aksi</th>
-                        <th class="text-center">
-                            <input class="select_all" type="checkbox">
-                        </th>
-                    </tr>
-                </thead>
-{{--                <tfoot>--}}
-{{--                    <tr>--}}
-{{--                        <th>No.</th>--}}
-{{--                        <th>No Peserta</th>--}}
-{{--                        <th>Nama</th>--}}
-{{--                        <th>Email</th>--}}
-{{--                        <th>Materi Ujian</th>--}}
-{{--                        <th>Aksi</th>--}}
-{{--                        <th class="text-center">--}}
-{{--                            <input class="select_all" type="checkbox">--}}
-{{--                        </th>--}}
-{{--                    </tr>--}}
-{{--                </tfoot>--}}
-            </table>
+    </div>
+    <div class="col-md-4">
+        <div class="pull-right">
+            @if(APP_ID == 'ujian.undip.ac.id')
+            <button class="btn btn-sm btn-flat btn-danger" id="btn_sync_pendaftaran" type="button"><i class="fa fa-refresh"></i> Syncron Data</button>
+            @endif
+            <button onclick="bulk_delete()" class="btn btn-sm btn-flat btn-danger" type="button"><i class="fa fa-trash"></i> Delete</button>
         </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+    <?= form_open('', array('id' => 'bulk')); ?>
+        <table id="mahasiswa" class="table table-striped table-bordered table-hover w-100">
+            <thead>
+                <tr>
+                    <th>No.</th>
+                    <th>No Peserta</th>
+                    <th>Nama</th>
+    {{--                        <th>Email</th>--}}
+                    <th>Materi Ujian</th>
+    {{--                        <th>Kelas</th>--}}
+                    <th>Prodi</th>
+                    <th>Aksi</th>
+                    <th class="text-center">
+                        <input class="select_all" type="checkbox">
+                    </th>
+                </tr>
+            </thead>
+        </table>
         <?= form_close() ?>
     </div>
 </div>
+
 
 <!-- Modal -->
 <div class="modal text-left"

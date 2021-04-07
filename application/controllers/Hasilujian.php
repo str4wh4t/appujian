@@ -138,6 +138,8 @@ class HasilUjian extends MY_Controller {
 			$user = $this->ion_auth->user()->row();
 			$mhs = Mhs_orm::where('nim', $user->username)->firstOrFail();
 		}
+
+		// vdebug($mhs);
 		
 		$ujian = Mujian_orm::findOrFail($id);
 		
@@ -225,7 +227,7 @@ class HasilUjian extends MY_Controller {
 		            $return .= '<tr>';
 		            $tpk    = Topik_orm::findOrFail($t);
 		            $return .= '<td width="80%">' . $tpk->nama_topik . '</td>';
-		            if(APP_ID == 'cat.undip.ac.id')
+		            if(SHOW_DETAIL_HASIL)
                         $return .= '<td width="20%">' . $v . '</td>';
 		            $return .= '</tr>';
 	            }

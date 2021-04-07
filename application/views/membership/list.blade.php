@@ -54,7 +54,7 @@ $(document).on('click', '.btn_sudah_beli', function(){
 <!---- --->
 <div class="row">
     <div class="col-12">
-        <div class="card bg-{{ get_membership_color($user->membership_id) }}">
+        <div class="card bg-{{ get_membership_color($user->mhs->membership_aktif->membership_id) }}">
             <div class="card-content">
                 <div class="card-body">
                     <div class="media">
@@ -64,8 +64,8 @@ $(document).on('click', '.btn_sudah_beli', function(){
                         <div class="media-body white text-center">
                             <h3 class="white">Membership</h3>
                             <span>Saat ini anda terdaftar dalam paket : 
-                                {!! get_membership_star($user->membership_id) !!}
-                                <b style="text-transform: uppercase">{{ get_membership_text($user->membership_id) }} {{ is_user_membership_expired() ? '(EXPIRED)' : '' }}</b></span>
+                                {!! get_membership_star($user->mhs->membership_aktif->membership_id) !!}
+                                <b style="text-transform: uppercase">{{ get_membership_text($user->mhs->membership_aktif->membership_id) }} {{ is_mhs_membership_expired() ? '(EXPIRED)' : '' }}</b></span>
                         </div>
                     </div>
                 </div>
@@ -91,7 +91,7 @@ $(document).on('click', '.btn_sudah_beli', function(){
                     </button>
                     @else
                         @if($is_valid_membership)
-                            @if($membership->id > $user->membership_id)
+                            @if($membership->id > $user->mhs->membership_aktif->membership_id)
                             <a href="{{ url('payment/beli/M/' . uuid_create_from_integer($membership->id)) }}"
                                 class="btn btn-glow round w-100 fw-600 my-2 text-white btn-primary">
                                 <i class="ft-shopping-cart text-white icon-md "></i> Beli sekarang

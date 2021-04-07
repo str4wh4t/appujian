@@ -57,7 +57,7 @@
 			</div>
 		</div>
         <?= form_open('', array('id' => 'bulk')) ?>
-		<table id="matkul" class="table table-striped table-bordered table-hover pb-3">
+		<table id="matkul" class="table table-striped table-bordered table-hover">
 			<thead>
 				<tr>
 					<th class="text-center">
@@ -69,17 +69,6 @@
 					<th>Aksi</th>
 				</tr>
 			</thead>
-			<tfoot>
-				<tr>
-					<th class="text-center">
-						<input type="checkbox" class="select_all">
-					</th>
-					<th>No.</th>
-					<th>Materi Ujian</th>
-					<th>Jml Peserta</th>
-					<th>Aksi</th>
-				</tr>
-			</tfoot>
 		</table>
 		<?= form_close() ?>
     </div>

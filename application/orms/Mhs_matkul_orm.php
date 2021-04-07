@@ -22,5 +22,10 @@ class Mhs_matkul_orm extends Eloquent
     {
         return $this->belongsTo('Orm\Mhs_orm','mahasiswa_id','id_mahasiswa');
     }
+
+    public function matkul()
+    {
+        return $this->belongsTo('Orm\Matkul_orm', 'matkul_id', 'id_matkul');
+    }
     
 }

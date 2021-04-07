@@ -9,9 +9,9 @@ class Membership_orm extends Eloquent
     protected $dateFormat = 'Y-m-d H:i:s';
 
 
-    public function users()
+    public function mhs()
     {
-        return $this->belongsToMany('Orm\Users_orm','membership_history', 'membership_id', 'users_id');
+        return $this->belongsToMany('Orm\Mhs_orm','membership_history', 'membership_id', 'mahasiswa_id');
     }
     
     public function membership_history()

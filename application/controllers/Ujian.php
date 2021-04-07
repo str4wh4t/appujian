@@ -1129,45 +1129,67 @@ class Ujian extends MY_Controller
 		
 		$this->_akses_mahasiswa();
 		$user = $this->ion_auth->user()->row();
+
+		$mhs_orm = Mhs_orm::where('nim', $user->username)->firstOrFail();
 		
 		$m_ujian = Mujian_orm::findOrFail($id);
 
 		if(APP_TYPE == 'tryout'){
-			$user_aktif_membership = get_user_aktif_membership($user->id);
+			$mhs_aktif_membership = get_mhs_aktif_membership($mhs_orm);
 			if($m_ujian->repeatable){
 				// JIKA PADA LATIHAN SOAL
 
-				if($user_aktif_membership->membership->is_limit_by_kuota){
-					if(empty($user_aktif_membership->sisa_kuota_latihan_soal)){
-						$message_rootpage = [
-							'header' => 'Perhatian',
-							'content' => 'Sisa kuota latihan soal anda sudah habis',
-							'type' => 'error'
-						];
-						$this->session->set_flashdata('message_rootpage', $message_rootpage);
-						redirect('ujian/latihan_soal');
-					}
-				}
+				// if(empty($mhs_aktif_membership->sisa_kuota_latihan_soal)){
+				// 	$message_rootpage = [
+				// 		'header' => 'Perhatian',
+				// 		'content' => 'Sisa kuota latihan soal anda sudah habis',
+				// 		'type' => 'error'
+				// 	];
+				// 	$this->session->set_flashdata('message_rootpage', $message_rootpage);
+				// 	redirect('ujian/latihan_soal');
+				// }
 
-				if($user_aktif_membership->membership->is_limit_by_durasi){
-					$expired_at = new Carbon($user_aktif_membership->expired_at);
-					$today = Carbon::now();
-					if($today->greaterThan($expired_at)){
-						$message_rootpage = [
-							'header' => 'Perhatian',
-							'content' => 'Membership anda sudah expired',
-							'type' => 'error'
-						];
-						$this->session->set_flashdata('message_rootpage', $message_rootpage);
-						redirect('ujian/latihan_soal');
+				// $allow_1 = true ;
+				// $allow_2 = true ;
+
+				// $expired_at = new Carbon($mhs_aktif_membership->expired_at);
+				// $today = Carbon::now();
+				// if($today->greaterThanOrEqualTo($expired_at)){
+				// 	$allow_1 = false ;
+				// }
+
+				// if($mhs_orm->mhs_matkul()
+				// 	->where('matkul_id', $m_ujian->matkul_id)
+				// 	->first()
+				// 	->sisa_kuota_latihan_soal <= 0){
+				// 		$allow_2 = false ;
+				// }
+
+				// if(!$allow_1 && !$allow_2){
+					
+				// }
+
+				if(is_mhs_limit_by_kuota()){
+					if($mhs_orm->mhs_matkul()
+						->where('matkul_id', $m_ujian->matkul_id)
+						->first()
+						->sisa_kuota_latihan_soal <= 0){
+							$message_rootpage = [
+								'header' => 'Perhatian',
+								'content' => 'Membership anda sudah expired / kuota latihan sudah habis',
+								'type' => 'error'
+							];
+							$this->session->set_flashdata('message_rootpage', $message_rootpage);
+							redirect('ujian/latihan_soal');
 					}
+
 				}
 
 				
 			}else{
 				// JIKA PADA TRYOUT
 
-				if($user_aktif_membership->membership_id == MEMBERSHIP_ID_DEFAULT){
+				if($mhs_aktif_membership->membership_id == MEMBERSHIP_ID_DEFAULT){
 					// JIKA USER GRATIS
 					$message_rootpage = [
 						'header' => 'Perhatian',
@@ -1178,18 +1200,16 @@ class Ujian extends MY_Controller
 					redirect('ujian/tryout');
 				}
 
-				if($user_aktif_membership->membership->is_limit_by_durasi){
-					$expired_at = new Carbon($user_aktif_membership->expired_at);
-					$today = Carbon::now();
-					if($today->greaterThan($expired_at)){
-						$message_rootpage = [
-							'header' => 'Perhatian',
-							'content' => 'Membership anda sudah expired',
-							'type' => 'error'
-						];
-						$this->session->set_flashdata('message_rootpage', $message_rootpage);
-						redirect('ujian/tryout');
-					}
+				$expired_at = new Carbon($mhs_aktif_membership->expired_at);
+				$today = Carbon::now();
+				if($today->greaterThan($expired_at)){
+					$message_rootpage = [
+						'header' => 'Perhatian',
+						'content' => 'Membership anda sudah expired',
+						'type' => 'error'
+					];
+					$this->session->set_flashdata('message_rootpage', $message_rootpage);
+					redirect('ujian/tryout');
 				}
 			}
 			
@@ -1318,15 +1338,19 @@ class Ujian extends MY_Controller
 
 			// CEK UNTUK TRYOUT
 			if(APP_TYPE == 'tryout'){
-				$user_aktif_membership = get_user_aktif_membership($user->id);
+				$mhs_aktif_membership = get_mhs_aktif_membership($mhs);
 				if($ujian->repeatable){
 					// JIKA UJIAN LATIHAN SOAL
-					if($user_aktif_membership->membership->is_limit_by_kuota){
-						$membership_history_user = Membership_history_orm::findOrFail($user_aktif_membership->id);
-						$membership_history_user->sisa_kuota_latihan_soal = ($membership_history_user->sisa_kuota_latihan_soal - 1);
-						$membership_history_user->save();
+					// if($mhs_aktif_membership->membership->is_limit_by_kuota){
+						// $membership_history_user = Membership_history_orm::findOrFail($mhs_aktif_membership->id);
+						// $membership_history_user->sisa_kuota_latihan_soal = ($membership_history_user->sisa_kuota_latihan_soal - 1);
+						// $membership_history_user->save();
+					// }
+					if(is_mhs_limit_by_kuota()){
+						$mhs_matkul = $mhs->mhs_matkul()->where('matkul_id', $ujian->matkul_id)->first();
+						$mhs_matkul->sisa_kuota_latihan_soal = ($mhs_matkul->sisa_kuota_latihan_soal - 1);
+						$mhs_matkul->save();
 					}
-
 				}
 			}
 
@@ -2310,21 +2334,32 @@ class Ujian extends MY_Controller
 
 		if(APP_TYPE == 'tryout'){
 			$user = $this->ion_auth->user()->row();
-			$user_aktif_membership = get_user_aktif_membership($user->id);
+			$mhs = Mhs_orm::where('nim', $user->username)->firstOrFail();
+			// $mhs_aktif_membership = get_mhs_aktif_membership($h_ujian->mhs);
 
-			if($user_aktif_membership->membership->is_limit_by_kuota){
-				if(empty($user_aktif_membership->sisa_kuota_latihan_soal)){
-					$this->_json(['status' => 'ko', 'msg' => 'Sisa kuota latihan soal anda sudah habis']);
-					return ;
-				}
-			}
+			// if($mhs_aktif_membership->membership->is_limit_by_kuota){
+			// 	if(empty($mhs_aktif_membership->sisa_kuota_latihan_soal)){
+			// 		$this->_json(['status' => 'ko', 'msg' => 'Sisa kuota latihan soal anda sudah habis']);
+			// 		return ;
+			// 	}
+			// }
 
-			if($user_aktif_membership->membership->is_limit_by_durasi){
-				$expired_at = new Carbon($user_aktif_membership->expired_at);
-				$today = Carbon::now();
-				if($today->greaterThan($expired_at)){
-					$this->_json(['status' => 'ko', 'msg' => 'Membership anda sudah expired']);
-					return ;
+			// if($mhs_aktif_membership->membership->is_limit_by_durasi){
+			// 	$expired_at = new Carbon($mhs_aktif_membership->expired_at);
+			// 	$today = Carbon::now();
+			// 	if($today->greaterThan($expired_at)){
+			// 		$this->_json(['status' => 'ko', 'msg' => 'Membership anda sudah expired']);
+			// 		return ;
+			// 	}
+			// }
+
+			if(is_mhs_limit_by_kuota()){
+				if($mhs->mhs_matkul()
+					->where('matkul_id', $h_ujian->m_ujian->matkul_id)
+					->first()
+					->sisa_kuota_latihan_soal <= 0){
+						$this->_json(['status' => 'ko', 'msg' => 'Membership anda sudah expired / kuota latihan sudah habis']);
+						return ;
 				}
 			}
 		}

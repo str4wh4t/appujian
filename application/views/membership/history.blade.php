@@ -52,7 +52,7 @@
 
 function init_page_level(){
     $('#tb_history').DataTable({
-        "order": [[ 4, "desc" ]]
+        "order": [[ 3, "desc" ]]
     });
 }
 
@@ -84,7 +84,7 @@ function init_page_level(){
 <!---- --->
 <div class="row">
     <div class="col-12">
-        <div class="alert bg-yellow text-danger border-danger"><i class="fa fa-exclamation-triangle"></i> Perhatian akun membership anda akan expire dalam : <b>{{ $count_expire_days }}</b></div>
+        <div class="alert bg-yellow text-danger border-danger mb-3"><i class="fa fa-exclamation-triangle"></i> Anda berada dalam membership <b style="text-transform: uppercase">{{ $mhs_membership->membership->name }}</b> dan akan expire dalam : <b>{{ $count_expire_days }}</b></div>
         <div class="table-responsive col-sm-12">
             <table class="table table-striped" id="tb_history">
                 <thead>
@@ -92,7 +92,6 @@ function init_page_level(){
                         <th>Membership</th>
                         <th>Upgrade Ke</th>
                         <th>Tgl Expire</th>
-                        <th>Kuota Latihan Soal</th>
                         <th>Tgl Upgrade</th>
                         <th>Status</th>
                     </tr>
@@ -102,8 +101,7 @@ function init_page_level(){
                     <tr>
                         <td>{{ strtoupper($item->membership->name) }}</td>
                         <td>{{ $item->upgrade_ke }}</td>
-                        <td>{{ $item->membership->is_limit_by_durasi ? date('M d, Y', strtotime($item->expired_at)) : 'UNLIMITED' }}</td>
-                        <td>{{ $item->membership->is_limit_by_kuota ? $item->sisa_kuota_latihan_soal : 'UNLIMITED' }}</td>
+                        <td>{{ date('M d, Y', strtotime($item->expired_at)) }}</td>
                         <td>{{ $item->created_at }}</td>
                         <td>
                             @if ($item->stts)
@@ -114,9 +112,7 @@ function init_page_level(){
                         </td>
                     </tr>
                     @empty
-                    <tr>
-                        <td colspan="5" class="text-danger text-center">Belum ada history</td>
-                    </tr>   
+
                     @endforelse
                 </tbody>
                 {{-- <tfoot>

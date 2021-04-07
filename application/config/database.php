@@ -75,13 +75,28 @@ use Illuminate\Container\Container;
 $active_group = 'default';
 $query_builder = TRUE;
 
+// 'hostname' => '10.170.0.6', 
+// 'username' => 'db_tryout_dev',
+// 'password' => '2E5uViDA1Oyu',
+// 'database' => 'db_tryout',
+
+// 'hostname' => '10.37.19.27', 
+// 'username' => 'idris',
+// 'password' => 'q1w2e3r4',
+// 'database' => 'tryout_01',
+
+// 'hostname' => 'localhost', 
+// 'username' => 'idris',
+// 'password' => 'q1w2e3r4',
+// 'database' => 'tryout_01',
+
 $db['default'] = array(
 	'dsn'	=> '',
 
-    'hostname' => DB_HOSTNAME, 
-	'username' => DB_USERNAME,
-	'password' => DB_PASSWORD,
-	'database' => DB_NAME,
+    'hostname' => '10.37.19.27', 
+	'username' => 'idris',
+	'password' => 'q1w2e3r4',
+	'database' => 'tryout_01',
 
 	'dbdriver' => 'mysqli',
 	'dbprefix' => '',
@@ -111,27 +126,27 @@ $capsule->addConnection([
     'prefix'    => $db['default']['dbprefix'],
 ]);
 
-$capsule->addConnection([
-    'driver'    => 'mysql',
-    'host'      => $db['default']['hostname'],
-    'database'  => 'oltest',
-    'username'  => $db['default']['username'],
-    'password'  => $db['default']['password'],
-    'charset'   => $db['default']['char_set'],
-    'collation' => $db['default']['dbcollat'],
-    'prefix'    => $db['default']['dbprefix'],
-], 'cat');
+// $capsule->addConnection([
+//     'driver'    => 'mysql',
+//     'host'      => $db['default']['hostname'],
+//     'database'  => 'oltest',
+//     'username'  => $db['default']['username'],
+//     'password'  => $db['default']['password'],
+//     'charset'   => $db['default']['char_set'],
+//     'collation' => $db['default']['dbcollat'],
+//     'prefix'    => $db['default']['dbprefix'],
+// ], 'cat');
 
-$capsule->addConnection([
-    'driver'    => 'mysql',
-    'host'      => $db['default']['hostname'],
-    'database'  => 'ujian',
-    'username'  => $db['default']['username'],
-    'password'  => $db['default']['password'],
-    'charset'   => $db['default']['char_set'],
-    'collation' => $db['default']['dbcollat'],
-    'prefix'    => $db['default']['dbprefix'],
-], 'ujian');
+// $capsule->addConnection([
+//     'driver'    => 'mysql',
+//     'host'      => $db['default']['hostname'],
+//     'database'  => 'ujian',
+//     'username'  => $db['default']['username'],
+//     'password'  => $db['default']['password'],
+//     'charset'   => $db['default']['char_set'],
+//     'collation' => $db['default']['dbcollat'],
+//     'prefix'    => $db['default']['dbprefix'],
+// ], 'ujian');
 
 // Set the event dispatcher used by Eloquent models... (optional)
 $capsule->setEventDispatcher(new Dispatcher(new Container));

@@ -406,7 +406,7 @@ class Soal extends MY_Controller
 							$img = str_replace('data:image/png;base64,', '', $src);
 							$img = str_replace(' ', '+', $img);
 							$data = base64_decode($img);
-							$file_name = $soal_temp->id_soal . '_soal_' . mt_rand() . '.png';
+							$file_name = $soal_temp->id_soal . '_soal.png';
 							$file = UPLOAD_DIR . $file_name;
 							$success = file_put_contents($file, $data);
 							if($success){
@@ -439,7 +439,7 @@ class Soal extends MY_Controller
 								$img = str_replace('data:image/png;base64,', '', $src);
 								$img = str_replace(' ', '+', $img);
 								$data = base64_decode($img);
-								$file_name = $soal_temp->id_soal . '_jawaban_'. $opsi .'_' . mt_rand() . '.png';
+								$file_name = $soal_temp->id_soal . '_jawaban_'. $opsi .'.png';
 								$file = UPLOAD_DIR . $file_name;
 								$success = file_put_contents($file, $data);
 								if($success){
@@ -472,7 +472,7 @@ class Soal extends MY_Controller
 							$img = str_replace('data:image/png;base64,', '', $src);
 							$img = str_replace(' ', '+', $img);
 							$data = base64_decode($img);
-							$file_name = $soal_temp->id_soal . '_penjelasan_' . mt_rand() . '.png';
+							$file_name = $soal_temp->id_soal . '_penjelasan.png';
 							$file = UPLOAD_DIR . $file_name;
 							$success = file_put_contents($file, $data);
 							if($success){
@@ -544,7 +544,7 @@ class Soal extends MY_Controller
 							$img = str_replace('data:image/png;base64,', '', $src);
 							$img = str_replace(' ', '+', $img);
 							$data = base64_decode($img);
-							$file_name = $soal_temp->id_soal . '_soal_' . mt_rand() . '.png';
+							$file_name = $soal_temp->id_soal . '_soal.png';
 							$file = UPLOAD_DIR . $file_name;
 							$success = file_put_contents($file, $data);
 							if($success){
@@ -577,7 +577,7 @@ class Soal extends MY_Controller
 								$img = str_replace('data:image/png;base64,', '', $src);
 								$img = str_replace(' ', '+', $img);
 								$data = base64_decode($img);
-								$file_name = $soal_temp->id_soal . '_jawaban_'. $opsi .'_' . mt_rand() . '.png';
+								$file_name = $soal_temp->id_soal . '_jawaban_'. $opsi .'.png';
 								$file = UPLOAD_DIR . $file_name;
 								$success = file_put_contents($file, $data);
 								if($success){
@@ -610,7 +610,7 @@ class Soal extends MY_Controller
 							$img = str_replace('data:image/png;base64,', '', $src);
 							$img = str_replace(' ', '+', $img);
 							$data = base64_decode($img);
-							$file_name = $soal_temp->id_soal . '_penjelasan_' . mt_rand() . '.png';
+							$file_name = $soal_temp->id_soal . '_penjelasan.png';
 							$file = UPLOAD_DIR . $file_name;
 							$success = file_put_contents($file, $data);
 							if($success){

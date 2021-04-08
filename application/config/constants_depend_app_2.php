@@ -3,6 +3,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 /*** CAT KERJASAMA */
 
+defined('SITE_TITLE')               OR define('SITE_TITLE', 'CAT UNDIP');
+defined('SITE_DESC')                OR define('SITE_DESC', 'Aplikasi untuk ujian meliputi ujian masuk UM, UTBK, SBMPTN dan UJIAN LAIN secara online di lingkungan Universitas Diponegoro Semarang');
+
 defined('APP_ID')                       OR define('APP_ID', 'catkerjasama.undip.ac.id');
 defined('APP_TYPE')                     OR define('APP_TYPE', 'ujian');
 defined('EMAIL_ACTIVATION')             OR define('EMAIL_ACTIVATION',  false);

@@ -5,6 +5,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 defined('APP_ID')                   OR define('APP_ID', 'cat.undip.id');
 defined('APP_TYPE')                 OR define('APP_TYPE', 'tryout');
+defined('SITE_TITLE')               OR define('SITE_TITLE', 'Tryout Undip');
+defined('SITE_DESC')                OR define('SITE_DESC', 'Tryout Undip');
 defined('EMAIL_ACTIVATION')         OR define('EMAIL_ACTIVATION',  true);
 
 defined('APP_NAME')                 OR define('APP_NAME', 'UNDIP TRYOUT');

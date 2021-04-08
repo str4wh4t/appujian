@@ -281,8 +281,8 @@ $(document).on('click','#btn_simpan_penyusun_soal',function(){
 
 
 <!---- --->
-<div class="box">
-    <div class="box-body">
+<div class="row">
+    <div class="col-12">
         <div class="mb-3">
             <button type="button" onclick="reload_ajax()" class="btn btn-sm btn-flat btn-outline-secondary"><i class="fa fa-refresh"></i> Reload</button>
             <button type="button" class="btn btn-sm btn-flat btn-primary" id="btn_tambah_pengawas"><i class="fa fa-plus-circle"></i> Tambah Pengawas</button>
@@ -295,7 +295,7 @@ $(document).on('click','#btn_simpan_penyusun_soal',function(){
             </div>
         </div>
     </div>
-    <div class="table-responsive pb-3" style="">
+    <div class="col-12">
         <table id="users" class="table table-striped table-bordered table-hover w-100">
             <thead>
                 <tr>
@@ -309,18 +309,6 @@ $(document).on('click','#btn_simpan_penyusun_soal',function(){
                     <th class="text-center">Action</th>
                 </tr>
             </thead>
-{{--            <tfoot>--}}
-{{--                <tr>--}}
-{{--                    <th>No.</th>--}}
-{{--                    <th>Nama</th>--}}
-{{--                    <th>Username</th>--}}
-{{--                    <th>Email</th>--}}
-{{--                    <th>Level</th>--}}
-{{--                    <th>Created On</th>--}}
-{{--                    <th class="text-center">Status</th>--}}
-{{--                    <th class="text-center">Action</th>--}}
-{{--                </tr>--}}
-{{--            </tfoot>--}}
         </table>
     </div>
 </div>

@@ -747,3 +747,18 @@ from
     `tryout_01`.`mahasiswa` `m`
 group by
     `m`.`kodeps`;
+
+
+INSERT INTO `groups` (id, name, description) VALUES(1, 'admin', 'Administrator');
+INSERT INTO `groups` (id, name, description) VALUES(2, 'dosen', 'Pembuat Soal dan ujian');
+INSERT INTO `groups` (id, name, description) VALUES(3, 'mahasiswa', 'Peserta Ujian');
+INSERT INTO `groups` (id, name, description) VALUES(4, 'pengawas', 'Pengawas Ujian');
+INSERT INTO `groups` (id, name, description) VALUES(5, 'penyusun_soal', 'Penyusun Soal');
+
+INSERT INTO `users` (id, ip_address, username, password, email, tgl_lahir, no_billkey, activation_selector, activation_code, forgotten_password_selector, forgotten_password_code, forgotten_password_time, remember_selector, remember_code, created_on, last_login, active, first_name, last_name, full_name, company, phone, is_online, created_at, updated_at)
+VALUES(1, '127.0.0.1', 'admin', '$2y$12$5RvCbsM.8/tX.E3bAv1F7OuRM4zl7pCGmM0Ue9hkcoIPtskloWdxq', 'admin@admin.com', '01010101', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1268889823, 1617782351, 1, 'Administrator', 'Administrator', 'Administrator', 'ADMIN', '0', 0, NULL, NULL);
+
+
+INSERT INTO `users_groups` (id, user_id, group_id, created_at, updated_at) VALUES(1, 1, 1, NULL, NULL);
+
+

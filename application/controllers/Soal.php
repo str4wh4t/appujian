@@ -298,7 +298,7 @@ class Soal extends MY_Controller
 				'gel'     => $this->input->post('gel', true),
 				'smt'     => $this->input->post('smt', true),
 				'tahun'     => $this->input->post('tahun', true),
-				'penjelasan'     => $this->input->post('penjelasan', true),
+				'penjelasan'     => $this->input->post('penjelasan'),
 			];
 
 			$abjad = ['a', 'b', 'c', 'd', 'e'];
@@ -390,14 +390,15 @@ class Soal extends MY_Controller
 						$soal->$opsi = $data[$opsi];
 					}
 					$soal->topik_id = $data['topik_id'];
+					$soal->penjelasan = $data['penjelasan'];
 					$soal->created_by = $this->ion_auth->user()->row()->username;
 					$soal->save();
 
 					$soal_temp = Soal_orm::findOrFail($soal->id_soal);
 
-					$soal = $soal_temp->soal;
+					$html = $soal_temp->soal;
 					$doc = new DOMDocument('1.0', 'UTF-8');
-					$doc->loadHTML($soal);
+					$doc->loadHTML($html);
 					$i = 0 ;
 					foreach ($doc->getElementsByTagName('img') as $img_node) {
 						$src = $img_node->getAttribute('src') ;
@@ -405,10 +406,12 @@ class Soal extends MY_Controller
 							$img = str_replace('data:image/png;base64,', '', $src);
 							$img = str_replace(' ', '+', $img);
 							$data = base64_decode($img);
-							$file = UPLOAD_DIR . $soal_temp->id_soal . '_soal_' . mt_rand() . '.png';
+							$file_name = $soal_temp->id_soal . '_soal_' . mt_rand() . '.png';
+							$file = UPLOAD_DIR . $file_name;
 							$success = file_put_contents($file, $data);
 							if($success){
-								$img_node->setAttribute('src', asset($file)) ;
+								$file_url =  'uploads/img_soal/' . $file_name ;
+								$img_node->setAttribute('src', asset($file_url)) ;
 								$doc->saveHTML($img_node);
 							}
 							$i++;
@@ -436,10 +439,12 @@ class Soal extends MY_Controller
 								$img = str_replace('data:image/png;base64,', '', $src);
 								$img = str_replace(' ', '+', $img);
 								$data = base64_decode($img);
-								$file = UPLOAD_DIR . $soal_temp->id_soal . '_jawaban_'. $opsi .'_' . mt_rand() . '.png';
+								$file_name = $soal_temp->id_soal . '_jawaban_'. $opsi .'_' . mt_rand() . '.png';
+								$file = UPLOAD_DIR . $file_name;
 								$success = file_put_contents($file, $data);
 								if($success){
-									$img_node->setAttribute('src', asset($file)) ;
+									$file_url =  'uploads/img_soal/' . $file_name ;
+									$img_node->setAttribute('src', asset($file_url)) ;
 									$doc->saveHTML($img_node);
 								}
 								$i++;
@@ -456,6 +461,37 @@ class Soal extends MY_Controller
 						$soal_temp->$opsi = $body;
 
 					}
+
+					$html = $soal_temp->penjelasan;
+					$doc = new DOMDocument('1.0', 'UTF-8');
+					$doc->loadHTML($html);
+					$i = 0 ;
+					foreach ($doc->getElementsByTagName('img') as $img_node) {
+						$src = $img_node->getAttribute('src') ;
+						if(strpos($src, 'data:image/png;base64,') !== false){
+							$img = str_replace('data:image/png;base64,', '', $src);
+							$img = str_replace(' ', '+', $img);
+							$data = base64_decode($img);
+							$file_name = $soal_temp->id_soal . '_penjelasan_' . mt_rand() . '.png';
+							$file = UPLOAD_DIR . $file_name;
+							$success = file_put_contents($file, $data);
+							if($success){
+								$file_url =  'uploads/img_soal/' . $file_name ;
+								$img_node->setAttribute('src', asset($file_url)) ;
+								$doc->saveHTML($img_node);
+							}
+							$i++;
+						}
+					}
+					
+					$xpath = new DOMXPath($doc);
+
+					$body = '';
+					foreach ($xpath->evaluate('//body/node()') as $node) {
+						$body .= $doc->saveHtml($node);
+					}
+
+					$soal_temp->penjelasan = $body;
 					
 					$soal_temp->save();
 
@@ -492,6 +528,7 @@ class Soal extends MY_Controller
 						$soal->$opsi = $data[$opsi];
 					}
 					$soal->topik_id = $data['topik_id'];
+					$soal->penjelasan = $data['penjelasan'];
 					$soal->created_by = $this->ion_auth->user()->row()->username;
 					$soal->save();
 
@@ -507,10 +544,12 @@ class Soal extends MY_Controller
 							$img = str_replace('data:image/png;base64,', '', $src);
 							$img = str_replace(' ', '+', $img);
 							$data = base64_decode($img);
-							$file = UPLOAD_DIR . $soal_temp->id_soal . '_soal_' . mt_rand() . '.png';
+							$file_name = $soal_temp->id_soal . '_soal_' . mt_rand() . '.png';
+							$file = UPLOAD_DIR . $file_name;
 							$success = file_put_contents($file, $data);
 							if($success){
-								$img_node->setAttribute('src', asset($file)) ;
+								$file_url =  'uploads/img_soal/' . $file_name ;
+								$img_node->setAttribute('src', asset($file_url)) ;
 								$doc->saveHTML($img_node);
 							}
 							$i++;
@@ -538,10 +577,12 @@ class Soal extends MY_Controller
 								$img = str_replace('data:image/png;base64,', '', $src);
 								$img = str_replace(' ', '+', $img);
 								$data = base64_decode($img);
-								$file = UPLOAD_DIR . $soal_temp->id_soal . '_jawaban_'. $opsi .'_' . mt_rand() . '.png';
+								$file_name = $soal_temp->id_soal . '_jawaban_'. $opsi .'_' . mt_rand() . '.png';
+								$file = UPLOAD_DIR . $file_name;
 								$success = file_put_contents($file, $data);
 								if($success){
-									$img_node->setAttribute('src', asset($file)) ;
+									$file_url =  'uploads/img_soal/' . $file_name ;
+									$img_node->setAttribute('src', asset($file_url)) ;
 									$doc->saveHTML($img_node);
 								}
 								$i++;
@@ -558,6 +599,37 @@ class Soal extends MY_Controller
 						$soal_temp->$opsi = $body;
 
 					}
+
+					$html = $soal_temp->penjelasan;
+					$doc = new DOMDocument('1.0', 'UTF-8');
+					$doc->loadHTML($html);
+					$i = 0 ;
+					foreach ($doc->getElementsByTagName('img') as $img_node) {
+						$src = $img_node->getAttribute('src') ;
+						if(strpos($src, 'data:image/png;base64,') !== false){
+							$img = str_replace('data:image/png;base64,', '', $src);
+							$img = str_replace(' ', '+', $img);
+							$data = base64_decode($img);
+							$file_name = $soal_temp->id_soal . '_penjelasan_' . mt_rand() . '.png';
+							$file = UPLOAD_DIR . $file_name;
+							$success = file_put_contents($file, $data);
+							if($success){
+								$file_url =  'uploads/img_soal/' . $file_name ;
+								$img_node->setAttribute('src', asset($file_url)) ;
+								$doc->saveHTML($img_node);
+							}
+							$i++;
+						}
+					}
+					
+					$xpath = new DOMXPath($doc);
+
+					$body = '';
+					foreach ($xpath->evaluate('//body/node()') as $node) {
+						$body .= $doc->saveHtml($node);
+					}
+
+					$soal_temp->penjelasan = $body;
 
 					$soal_temp->save();
 

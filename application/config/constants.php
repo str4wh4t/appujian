@@ -87,7 +87,7 @@ defined('EXIT__AUTO_MAX')      OR define('EXIT__AUTO_MAX', 125); // highest auto
 // CONSTANT DEFINED BY APP
 include 'constants_depend_app.php';
 
-defined('UPLOAD_DIR') OR define('UPLOAD_DIR', 'uploads/img_soal/');
+defined('UPLOAD_DIR') OR define('UPLOAD_DIR', FCPATH . 'uploads/img_soal/');
 
 defined('DOSEN_GROUP_ID')      OR define('DOSEN_GROUP_ID', 2);
 defined('MHS_GROUP_ID')      OR define('MHS_GROUP_ID', 3);

@@ -62,34 +62,34 @@ class Auth extends CI_Controller
 		view('auth/login',$this->data);
 	}
 
-	public function cek_login_orginal()
-	{
-		$this->form_validation->set_rules('identity', str_replace(':', '', $this->lang->line('login_identity_label')), 'required|trim');
-		$this->form_validation->set_rules('password', str_replace(':', '', $this->lang->line('login_password_label')), 'required|trim');
+	// public function cek_login_orginal()
+	// {
+	// 	$this->form_validation->set_rules('identity', str_replace(':', '', $this->lang->line('login_identity_label')), 'required|trim');
+	// 	$this->form_validation->set_rules('password', str_replace(':', '', $this->lang->line('login_password_label')), 'required|trim');
 
-		if ($this->form_validation->run() === TRUE)	{
-			$remember = (bool)$this->input->post('remember');
-			if ($this->ion_auth->login($this->input->post('identity'), $this->input->post('password'), $remember)){
-				$this->cek_akses();
-			}else {
-				$data = [
-					'status' => false,
-					'failed' => 'Incorrect Login',
-				];
-				$this->_output_json($data);
-			}
-		}else{
-			$invalid = [
-				'identity' => form_error('identity'),
-				'password' => form_error('password')
-			];
-			$data = [
-				'status' 	=> false,
-				'invalid' 	=> $invalid
-			];
-			$this->_output_json($data);
-		}
-	}
+	// 	if ($this->form_validation->run() === TRUE)	{
+	// 		$remember = (bool)$this->input->post('remember');
+	// 		if ($this->ion_auth->login($this->input->post('identity'), $this->input->post('password'), $remember)){
+	// 			$this->cek_akses();
+	// 		}else {
+	// 			$data = [
+	// 				'status' => false,
+	// 				'failed' => 'Incorrect Login',
+	// 			];
+	// 			$this->_output_json($data);
+	// 		}
+	// 	}else{
+	// 		$invalid = [
+	// 			'identity' => form_error('identity'),
+	// 			'password' => form_error('password')
+	// 		];
+	// 		$data = [
+	// 			'status' 	=> false,
+	// 			'invalid' 	=> $invalid
+	// 		];
+	// 		$this->_output_json($data);
+	// 	}
+	// }
 	
 	public function cek_login()
 	{

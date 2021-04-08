@@ -133,7 +133,7 @@ function init_page_level(){
             <strong>Penjelasan</strong>
         </div>
         <div class="alert border-warning rounded-0" style="">
-            {{ !empty($soal->penjelasan) ? $soal->penjelasan : 'Belum ada penjelasan' }}
+            {!! !empty($soal->penjelasan) ? $soal->penjelasan : 'Belum ada penjelasan' !!}
         </div>
         <hr>
     </div>

@@ -349,7 +349,7 @@ function init_page_level(){
                                 <legend class="col-form-label col-sm-2" style="border: 1px solid #ccc; background-color: #f6ffd4;">Penjelasan</legend>
                                 <label for="penjelasan"><small class="help-block text-info"><span class="text-danger"><b>***</b> Penjelasan mengenai jawaban pada soal yang tertera</span></small></label>
                                 <div class="form-group">
-                                    <textarea name="penjelasan" id="penjelasan" class="form-control froala-editor t_editor"></textarea>
+                                    <textarea name="penjelasan" id="penjelasan" class="form-control froala-editor t_editor"><?=set_value('penjelasan')?></textarea>
                                     <small class="help-block" style="color: #dc3545"><?=form_error('penjelasan')?></small>
                                 </div>
                             </fieldset>

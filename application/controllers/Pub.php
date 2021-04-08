@@ -1259,6 +1259,7 @@ class Pub extends MY_Controller {
 
 		$log_status = null ;
 		try{
+			begin_db_trx();
 			// GEN USER GROUP
 			$this->ion_auth->create_group('admin', 'Administrator'); // 1
 			$this->ion_auth->create_group('dosen', 'Pembuat Soal dan ujian'); // 2
@@ -1284,12 +1285,12 @@ class Pub extends MY_Controller {
 			$user->active = 1;
 			$user->save();
 
-			$log_status = 'SUCCESS' ;
+			commit_db_trx();
 
+			$log_status = 'SUCCESS' ;
 		}catch(Exception $e){
 			rollback_db_trx();
 			$log_status = "FAIL : " . $e->getMessage();
-
 		}
 
 		echo 'STATUS : ' . $log_status . "\n";
@@ -1297,5 +1298,17 @@ class Pub extends MY_Controller {
 		echo 'END <<=' . "\n" ;
 
 	}
+
+	// function tes(){
+		
+	// 	$mhs = Mhs_orm::find(1000009908);
+	// 	$mhs_matkul_orm = $mhs->mhs_matkul()->where('matkul_id', 20)->first();
+
+	// 	vdebug($mhs_matkul_orm);
+
+	// 	// echo $this->config->item('composer_autoload');
+
+	// 	// echo __FILE__ ;
+	// }
 	
 }

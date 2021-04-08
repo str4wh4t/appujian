@@ -166,10 +166,7 @@ class Payment extends MY_Controller
         $user = $this->ion_auth->user()->row();
         $info =  $this->input->post('info');
 
-        if($this->ion_auth->in_group('mahasiswa'))
-            $user_beli = Users_orm::findOrFail($user->id);
-        else
-            $user_beli = Users_orm::findOrFail($user_id);
+        $user_beli = Users_orm::findOrFail($user->id);
             
         $gross_amount = 0;
         

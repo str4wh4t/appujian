@@ -85,7 +85,7 @@ defined('EXIT__AUTO_MIN')      OR define('EXIT__AUTO_MIN', 9); // lowest automat
 defined('EXIT__AUTO_MAX')      OR define('EXIT__AUTO_MAX', 125); // highest automatically-assigned error code
 
 // CONSTANT DEFINED BY APP
-include 'constants_depend_app.php';
+include 'constants_depend_app_'. APP_INDEX .'.php'; // APP_INDEX set in index.php
 
 defined('UPLOAD_DIR') OR define('UPLOAD_DIR', FCPATH . 'uploads/img_soal/');
 

@@ -32,14 +32,8 @@ body {
 .card.card-fullscreen{
     z-index: 9995 !important;
 }
-.enjoyhint{
-    z-index: 9996 !important;
-}
 .swal2-container{
     z-index: 9997 !important;
-}
-.enjoyhint_close_btn{
-    display: none;
 }
 .modal {
     z-index: 9996;

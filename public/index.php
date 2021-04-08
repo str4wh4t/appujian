@@ -53,6 +53,7 @@
  *
  * NOTE: If you change these, also change the error_reporting() code below
  */
+	define('APP_INDEX', isset($_SERVER['APP_INDEX']) ? $_SERVER['APP_INDEX'] : '3'); // APLIKASI DEFAULT = TRYOUT
 	define('ENVIRONMENT', isset($_SERVER['CI_ENV']) ? $_SERVER['CI_ENV'] : 'development');
 
 /*

@@ -1,3 +1,5 @@
+.DS_STORE
+.idea
 /application/cache/*
 !/application/cache/index.html
 /application/config/config.php
@@ -5,12 +7,8 @@
 /application/config/constants_depend_app.php
 /vendor
 composer.phar
-/.idea
-/assets/yarn/node_modules/*
 /public/sessions
 /public/uploads/img_soal/*
 !/public/uploads/img_soal/index.html
-.DS_STORE
-/public/assets/*
-!/public/assets/yarn/package.json
-!/public/assets/yarn/yarn.lock
+/public/assets
+/writeable/yarn/node_modules

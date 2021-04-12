@@ -4,7 +4,10 @@ composer.phar
 /application/cache/*
 !/application/cache/index.html
 /application/config/config.php
-/application/config/database.php
+/application/config/constants_depend_app_1.php
+/application/config/constants_depend_app_2.php
+/application/config/constants_depend_app_3.php
+/application/config/constants_depend_app_4.php
 /vendor
 /public/sessions
 /public/uploads/img_soal/*

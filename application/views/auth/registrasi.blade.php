@@ -13,12 +13,15 @@
     <title>{{ APP_NAME }}</title>
     <link rel="apple-touch-icon" href="{{ asset('assets/icon/'. APP_FAVICON_APPLE .'.png') }}">
 	<link rel="shortcut icon" type="image/x-icon" href="{{ asset('assets/icon/'. APP_FAVICON .'.ico') }}">
-    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i%7CMuli:300,400,500,700" rel="stylesheet">
+    {{-- <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i%7CMuli:300,400,500,700" rel="stylesheet"> --}}
+    <link href="{{ asset('assets/yarn/node_modules/typeface-muli/index.css') }}" rel="stylesheet">
+	<link href="{{ asset('assets/yarn/node_modules/typeface-open-sans/index.css') }}" rel="stylesheet">
     <!-- BEGIN VENDOR CSS-->
     <link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/css/vendors.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/vendors/css/ui/jquery-ui.min.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/vendors/css/forms/icheck/icheck.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/vendors/css/forms/icheck/custom.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/vendors/css/forms/selects/select2.min.css') }}">
     <!-- END VENDOR CSS-->
     <!-- BEGIN ROBUST CSS-->
     <link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/css/app.css') }}">
@@ -46,6 +49,9 @@
         }
         #ul_error li{
             list-style-type: disc;
+        }
+        .select2-selection__rendered{
+            padding-left: 2rem !important;
         }
     </style>
 
@@ -130,18 +136,28 @@
                             </div>
                             <div class="col-md-6 col-sm-12">
                                 <fieldset class="form-group position-relative has-icon-left">
-                                    <input type="text" name="kota_asal" value="{{ set_value('kota_asal') }}" id="kota_asal" placeholder="Kota / daerah asal" autofocus="autofocus" class="form-control" autocomplete="off">
+                                    <select name="kota_asal" id="kota_asal" class="form-control only_input_select2single">
+                                        <option value="" disabled {{ empty(set_value('kota_asal')) ? 'selected' : '' }}>- Pilih kota asal -</option>
+                                        @foreach ($kota_kab_list as $item)
+                                        <option value="{{ $item->kota_kab }}" {{ set_value('kota_asal') == $item->kota_kab ? 'selected="selected"' : '' }}>{{ $item->kota_kab }}</option>
+                                        @endforeach
+                                    </select>
                                     <div class="form-control-position" style="line-height: 2.8rem;">
                                         <i class="ft-chevron-right"></i>
                                     </div>
-                                    <span class="help-block"></span>
+                                    <span class="help-block error_select2"></span>
                                 </fieldset>
                                 <fieldset class="form-group position-relative has-icon-left">
-                                    <input type="text" name="tmp_lahir" value="{{ set_value('tmp_lahir') }}" id="tmp_lahir" placeholder="Tempat lahir" autofocus="autofocus" class="form-control" autocomplete="off">
+                                    <select name="tmp_lahir" id="tmp_lahir" class="form-control only_input_select2single">
+                                        <option value="" disabled {{ empty(set_value('tmp_lahir')) ? 'selected' : '' }}>- Pilih tempat lahir -</option>
+                                        @foreach ($kota_kab_list as $item)
+                                        <option value="{{ $item->kota_kab }}" {{ set_value('tmp_lahir') == $item->kota_kab ? 'selected="selected"' : '' }}>{{ $item->kota_kab }}</option>
+                                        @endforeach
+                                    </select>
                                     <div class="form-control-position" style="line-height: 2.8rem;">
                                         <i class="ft-chevron-right"></i>
                                     </div>
-                                    <span class="help-block"></span>
+                                    <span class="help-block error_select2"></span>
                                 </fieldset>
                                 <fieldset class="form-group position-relative has-icon-left">
                                     <input type="text" name="tgl_lahir" value="{{ set_value('tgl_lahir') }}" id="tgl_lahir" placeholder="Tgl lahir" class="datetimepicker form-control">
@@ -199,6 +215,7 @@
     <script src="{{ asset('assets/yarn/node_modules/moment/min/moment.min.js') }}"></script>
     <script src="{{ asset('assets/yarn/node_modules/bootstrap4-datetimepicker/build/js/bootstrap-datetimepicker.min.js') }}"></script>
     <script src="{{ asset('assets/yarn/node_modules/gasparesganga-jquery-loading-overlay/dist/loadingoverlay.min.js') }}"></script>
+    <script src="{{ asset('assets/template/robust/app-assets/vendors/js/forms/select/select2.full.min.js') }}"></script>
     <!-- END PAGE VENDOR JS-->
     <!-- BEGIN ROBUST JS-->
     <script src="{{ asset('assets/template/robust/app-assets/js/core/app-menu.js') }}"></script>
@@ -343,6 +360,8 @@
         $(document).ready(function(){
             $('#btn_submit_registrasi').show();
             $('#btn_link_login').show();
+            $('#kota_asal').select2();
+            $('#tmp_lahir').select2();
 
             $('.datetimepicker').datetimepicker({
                 format: 'YYYY-MM-DD',

@@ -17,6 +17,7 @@ use Orm\Membership_history_orm;
 use Orm\Paket_orm;
 use Orm\Paket_history_orm;
 use Orm\Trx_midtrans_orm;
+use Orm\Data_daerah_orm;
 use GuzzleHttp\Client;
 
 class Pub extends MY_Controller {
@@ -1309,6 +1310,45 @@ class Pub extends MY_Controller {
 	// 	// echo $this->config->item('composer_autoload');
 
 	// 	// echo __FILE__ ;
+	// }
+
+
+	// public function generate_data_daerah(){
+	// 	$api_url_provinsi = 'https://dev.farizdotid.com/api/daerahindonesia/provinsi' ;
+	// 	$api_url_kota_kab = 'https://dev.farizdotid.com/api/daerahindonesia/kota?id_provinsi=' ;
+
+	// 	$client = new Client();
+    //     $res = $client->request('GET', $api_url_provinsi);
+
+	// 	$provinsi_list = $res->getBody()->getContents();
+
+	// 	$provinsi_list = json_decode($provinsi_list);
+
+	// 	if(!empty($provinsi_list)){
+	// 		foreach($provinsi_list->provinsi as $provinsi){
+
+	// 			$res = $client->request('GET', $api_url_kota_kab . $provinsi->id);
+
+	// 			$kota_kab_list = $res->getBody()->getContents();
+
+	// 			$kota_kab_list = json_decode($kota_kab_list);
+
+	// 			if(!empty($kota_kab_list)){
+	// 				foreach($kota_kab_list->kota_kabupaten as $kota_kab){
+	// 					echo $kota_kab->nama . ' ====> '; 
+	// 					$data_daerah = new Data_daerah_orm();
+	// 					$data_daerah->provinsi_id = $provinsi->id ;
+	// 					$data_daerah->provinsi = $provinsi->nama ;
+	// 					$data_daerah->kota_kab_id = $kota_kab->id;
+	// 					$data_daerah->kota_kab = $kota_kab->nama;
+	// 					$ret = $data_daerah->save();
+	// 					echo ($ret ? 'SUCCESS' : 'FAIL') . "\n" ;
+	// 				}
+	// 			}
+
+	// 		}
+	// 	}
+
 	// }
 	
 }

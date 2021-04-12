@@ -185,7 +185,7 @@ function init_page_level(){
 
 <div class="row">
         <div class="col-md-8">
-        <?=form_open_multipart('soal/save', array('id'=>'formsoal'), array('method'=>'edit', 'id_soal'=>$soal->id_soal));?>
+        <?=form_open_multipart('soal/save', array('id'=>'formsoal'), array('method'=>'post', 'action' => 'edit' , 'id_soal'=>$soal->id_soal));?>
             <label>Materi Ujian</label>
             <div class="form-group">
                 <select name="matkul_id" id="matkul_id" class="select2 form-group" style="width:100% !important">
@@ -217,7 +217,7 @@ function init_page_level(){
 {{--                                        <?php endif;?>--}}
 {{--                                    </div>--}}
         <div class="form-group">
-            <textarea name="soal" id="soal" class="form-control froala-editor t_editor"><?=$soal->soal?></textarea>
+            <textarea name="soal" id="soal" class="form-control froala-editor t_editor">{!! $soal->soal !!}</textarea>
             <small class="help-block" style="color: #dc3545"><?=form_error('soal')?></small>
         </div>
 
@@ -229,8 +229,7 @@ function init_page_level(){
             Membuat perulangan A-E
         -->
         <?php
-        $abjad = ['a', 'b', 'c', 'd', 'e'];
-        foreach ($abjad as $abj) :
+        foreach (OPSI_SOAL as $abj) :
             $ABJ = strtoupper($abj); // Abjad Kapital
             $file = 'file_'.$abj;
             $opsi = 'opsi_'.$abj;
@@ -245,7 +244,7 @@ function init_page_level(){
 {{--                                        <?php endif;?>--}}
 {{--                                    </div>--}}
                 <div class="form-group">
-                    <textarea name="jawaban_<?= $abj; ?>" id="jawaban_<?= $abj; ?>" class="form-control froala-editor t_editor"><?=$soal->$opsi?></textarea>
+                    <textarea name="jawaban_<?= $abj; ?>" id="jawaban_<?= $abj; ?>" class="form-control froala-editor t_editor">{!! $soal->$opsi !!}</textarea>
                     <small class="help-block" style="color: #dc3545"><?=form_error('jawaban_'.$abj)?></small>
                 </div>
 
@@ -319,7 +318,7 @@ function init_page_level(){
             <legend class="col-form-label col-sm-2" style="border: 1px solid #ccc; background-color: #f6ffd4;">Penjelasan</legend>
             <label for="penjelasan"><small class="help-block text-info"><span class="text-danger"><b>***</b> Penjelasan mengenai jawaban pada soal yang tertera</span></small></label>
             <div class="form-group">
-                <textarea name="penjelasan" id="penjelasan" class="form-control froala-editor t_editor"><?=$soal->penjelasan?></textarea>
+                <textarea name="penjelasan" id="penjelasan" class="form-control froala-editor t_editor">{!! $soal->penjelasan !!}</textarea>
                 <small class="help-block" style="color: #dc3545"><?=form_error('penjelasan')?></small>
             </div>
         </fieldset>

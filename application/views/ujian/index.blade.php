@@ -409,20 +409,23 @@ const setting_up_view = () => {
                 buka(1);
             }
 
-            $('#ol_topik_ujian').html('');
+            $('#div_topik_ujian').html('');
             if(is_sekuen_topik){
                 $.each(urutan_topik, function(i, v){
                     if(v){
-                        let el = $('<li></li>').text(topik_nama[v]);   
-                        $('#ol_topik_ujian').append(el);
+                        let sub_el_1 = $('<dt class="col-md-8"></dt>').text((i+1) + '. ' + topik_nama[v]);
+                        let sub_el_2 = $('<dd class="col-md-4"></dd>').text(topik[v] + ' menit');
+                        let el = $('<dl class="row"></dl>').html(sub_el_1.prop('outerHTML') + sub_el_2.prop('outerHTML'));   
+                        $('#div_topik_ujian').append(el);
                     }
                 });
             }else{
                 $('.legend_topik').each(function(i,v){
                     let id = $(this).data('id');
                     if(v){
-                        let el = $('<li></li>').text(topik_nama[id]);   
-                        $('#ol_topik_ujian').append(el);
+                        let sub_el_1 = $('<dt class="col-md-12"></dt>').text((i+1) + '. ' + topik_nama[id]);
+                        let el = $('<dl class="row"></dl>').html(sub_el_1.prop('outerHTML'));   
+                        $('#div_topik_ujian').append(el);
 
                     }
                 });
@@ -682,7 +685,7 @@ function selesai(ended_by = '') {
                                 </tr>
                                 <tr>
                                     <td colspan="2">
-                                        <ol id="ol_topik_ujian"></ol>
+                                        <div id="div_topik_ujian"></div>
                                     </td>
                                 </tr>
                             </table>

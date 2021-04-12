@@ -205,6 +205,7 @@ class Soal extends MY_Controller
 		$this->form_validation->set_rules('jawaban', 'Kunci Jawaban', 'required');
 		//        $this->form_validation->set_rules('bobot', 'Bobot Soal', 'required|is_natural_no_zero|max_length[2]');
 		$this->form_validation->set_rules('bobot_soal_id', 'Bobot Soal', 'required|is_natural_no_zero');
+		$this->form_validation->set_rules('penjelasan', 'Penjelasan', 'trim');
 		$this->form_validation->set_rules(
 			'gel',
 			'Gel',
@@ -280,14 +281,14 @@ class Soal extends MY_Controller
 
 		//    	vdebug($this->input->post());
 
-		$method = $this->input->post('method', true);
+		$action = $this->input->post('action', true);
 		$id_soal = $this->input->post('id_soal', true);
 		$this->_validasi();
 		// $this->_file_config();
 
 		if ($this->form_validation->run() === FALSE) {
 			// VALIDASI SALAH
-			$method === 'add' ? $this->add() : $this->edit($id_soal);
+			$action === 'add' ? $this->add() : $this->edit($id_soal);
 		} else {
 			// VALIDASI BENAR
 			$data = [
@@ -301,12 +302,14 @@ class Soal extends MY_Controller
 				'penjelasan'     => $this->input->post('penjelasan'),
 			];
 
-			$abjad = ['a', 'b', 'c', 'd', 'e'];
+			// vdebug($data['penjelasan']);
+
+			// $abjad = OPSI_SOAL;
 
 			// Inputan Opsi
-			foreach ($abjad as $abj) {
-				$data['opsi_' . $abj]    = $this->input->post('jawaban_' . $abj);
-			}
+			// foreach (OPSI_SOAL as $abj) {
+			// 	$data['opsi_' . $abj]    = $this->input->post('jawaban_' . $abj);
+			// }
 
 			//            $i = 0;
 			//            foreach ($_FILES as $key => $val) {
@@ -321,7 +324,7 @@ class Soal extends MY_Controller
 			//                            show_error($error, 500, 'File Soal Error');
 			//                            exit();
 			//                        }else{
-			//                            if($method === 'edit'){
+			//                            if($action === 'edit'){
 			//                                if(!unlink($img_src.$getsoal->file)){
 			//                                    show_error('Error saat delete gambar <br/>'.var_dump($getsoal), 500, 'Error Edit Gambar');
 			//                                    exit();
@@ -339,7 +342,7 @@ class Soal extends MY_Controller
 			//                            show_error($error, 500, 'File Opsi '.strtoupper($abjad[$i]).' Error');
 			//                            exit();
 			//                        }else{
-			//                            if($method === 'edit'){
+			//                            if($action === 'edit'){
 			//                                if(!unlink($img_src.$getsoal->$file_abj)){
 			//                                    show_error('Error saat delete gambar', 500, 'Error Edit Gambar');
 			//                                    exit();
@@ -368,7 +371,7 @@ class Soal extends MY_Controller
 			$ok = true ;
 			$error = null ;
 
-			if ($method === 'add') {
+			if ($action === 'add') {
 				//push array
 				// $data['created_at'] = date('Y-m-d H:i:s');
 				// $data['created_by']   = $this->ion_auth->user()->row()->username;
@@ -378,25 +381,25 @@ class Soal extends MY_Controller
 					begin_db_trx();
 
 					$soal = new Soal_orm();
-					$soal->soal = $data['soal'];
+					// $soal->soal = $data['soal'];
 					$soal->jawaban = $data['jawaban'];
 					$soal->bobot_soal_id = $data['bobot_soal_id'];
 					$soal->gel = $data['gel'];
 					$soal->smt = $data['smt'];
 					$soal->tahun = $data['tahun'];
-					foreach ($abjad as $abj) {
+					// foreach (OPSI_SOAL as $abj) {
 						// $data['opsi_' . $abj]    = $this->input->post('jawaban_' . $abj);
-						$opsi = 'opsi_' . $abj ;
-						$soal->$opsi = $data[$opsi];
-					}
+						// $opsi = 'opsi_' . $abj ;
+						// $soal->$opsi = $data[$opsi];
+					// }
 					$soal->topik_id = $data['topik_id'];
-					$soal->penjelasan = $data['penjelasan'];
+					// $soal->penjelasan = $data['penjelasan'];
 					$soal->created_by = $this->ion_auth->user()->row()->username;
 					$soal->save();
 
 					$soal_temp = Soal_orm::findOrFail($soal->id_soal);
 
-					$html = $soal_temp->soal;
+					$html = $data['soal'];
 					$doc = new DOMDocument('1.0', 'UTF-8');
 					$doc->loadHTML($html);
 					$i = 0 ;
@@ -405,10 +408,10 @@ class Soal extends MY_Controller
 						if(strpos($src, 'data:image/png;base64,') !== false){
 							$img = str_replace('data:image/png;base64,', '', $src);
 							$img = str_replace(' ', '+', $img);
-							$data = base64_decode($img);
-							$file_name = $soal_temp->id_soal . '_soal.png';
+							$img_64 = base64_decode($img);
+							$file_name = $soal_temp->id_soal .'_soal_'. mt_rand()  .'.png';
 							$file = UPLOAD_DIR . $file_name;
-							$success = file_put_contents($file, $data);
+							$success = file_put_contents($file, $img_64);
 							if($success){
 								$file_url =  'uploads/img_soal/' . $file_name ;
 								$img_node->setAttribute('src', asset($file_url)) ;
@@ -427,9 +430,10 @@ class Soal extends MY_Controller
 
 					$soal_temp->soal = $body;
 
-					foreach ($abjad as $abj) {
+					foreach (OPSI_SOAL as $abj) {
 						$opsi = 'opsi_' . $abj ;
-						$html = $soal_temp->$opsi;
+						// $html = $soal_temp->$opsi;
+						$html = $this->input->post('jawaban_' . $abj);
 						$doc = new DOMDocument('1.0', 'UTF-8');
 						$doc->loadHTML($html);
 						$i = 0 ;
@@ -438,10 +442,10 @@ class Soal extends MY_Controller
 							if(strpos($src, 'data:image/png;base64,') !== false){
 								$img = str_replace('data:image/png;base64,', '', $src);
 								$img = str_replace(' ', '+', $img);
-								$data = base64_decode($img);
-								$file_name = $soal_temp->id_soal . '_jawaban_'. $opsi .'.png';
+								$img_64 = base64_decode($img);
+								$file_name = $soal_temp->id_soal .'_jawaban_'. $opsi .'_'. mt_rand()  .'.png';
 								$file = UPLOAD_DIR . $file_name;
-								$success = file_put_contents($file, $data);
+								$success = file_put_contents($file, $img_64);
 								if($success){
 									$file_url =  'uploads/img_soal/' . $file_name ;
 									$img_node->setAttribute('src', asset($file_url)) ;
@@ -462,7 +466,9 @@ class Soal extends MY_Controller
 
 					}
 
-					$html = $soal_temp->penjelasan;
+					/////////////
+
+					$html = $data['penjelasan'];
 					$doc = new DOMDocument('1.0', 'UTF-8');
 					$doc->loadHTML($html);
 					$i = 0 ;
@@ -471,10 +477,10 @@ class Soal extends MY_Controller
 						if(strpos($src, 'data:image/png;base64,') !== false){
 							$img = str_replace('data:image/png;base64,', '', $src);
 							$img = str_replace(' ', '+', $img);
-							$data = base64_decode($img);
-							$file_name = $soal_temp->id_soal . '_penjelasan.png';
+							$img_64 = base64_decode($img);
+							$file_name = $soal_temp->id_soal .'_penjelasan_'. mt_rand()  .'.png';
 							$file = UPLOAD_DIR . $file_name;
-							$success = file_put_contents($file, $data);
+							$success = file_put_contents($file, $img_64);
 							if($success){
 								$file_url =  'uploads/img_soal/' . $file_name ;
 								$img_node->setAttribute('src', asset($file_url)) ;
@@ -492,6 +498,8 @@ class Soal extends MY_Controller
 					}
 
 					$soal_temp->penjelasan = $body;
+
+					/////////////
 					
 					$soal_temp->save();
 
@@ -504,7 +512,7 @@ class Soal extends MY_Controller
 					$ok = false ;
 				}
 
-			} else if ($method === 'edit') {
+			} else if ($action === 'edit') {
 				//push array
 				// $data['updated_at'] = date('Y-m-d H:i:s');
 				/// $data['updated_by']   = $this->ion_auth->user()->row()->username;
@@ -516,25 +524,26 @@ class Soal extends MY_Controller
 					// $this->master->update('tb_soal', $data, 'id_soal', $id_soal);
 
 					$soal = Soal_orm::findOrFail($id_soal);
-					$soal->soal = $data['soal'];
+					// $soal->soal = $data['soal'];
 					$soal->jawaban = $data['jawaban'];
 					$soal->bobot_soal_id = $data['bobot_soal_id'];
 					$soal->gel = $data['gel'];
 					$soal->smt = $data['smt'];
 					$soal->tahun = $data['tahun'];
-					foreach ($abjad as $abj) {
+					// foreach ($abjad as $abj) {
 						// $data['opsi_' . $abj]    = $this->input->post('jawaban_' . $abj);
-						$opsi = 'opsi_' . $abj ;
-						$soal->$opsi = $data[$opsi];
-					}
+						// $opsi = 'opsi_' . $abj ;
+						// $soal->$opsi = $data[$opsi];
+					// }
 					$soal->topik_id = $data['topik_id'];
-					$soal->penjelasan = $data['penjelasan'];
+					// $soal->penjelasan = $data['penjelasan'];
 					$soal->created_by = $this->ion_auth->user()->row()->username;
-					$soal->save();
+					// $soal->save();
 
-					$soal_temp = Soal_orm::findOrFail($id_soal);
+					// $soal_temp = Soal_orm::findOrFail($id_soal);
 
-					$html = $soal_temp->soal;
+					// $html = $soal_temp->soal;
+					$html = $data['soal'];
 					$doc = new DOMDocument('1.0', 'UTF-8');
 					$doc->loadHTML($html);
 					$i = 0 ;
@@ -543,10 +552,11 @@ class Soal extends MY_Controller
 						if(strpos($src, 'data:image/png;base64,') !== false){
 							$img = str_replace('data:image/png;base64,', '', $src);
 							$img = str_replace(' ', '+', $img);
-							$data = base64_decode($img);
-							$file_name = $soal_temp->id_soal . '_soal.png';
+							$img_64 = base64_decode($img);
+							// $file_name = $soal_temp->id_soal . '_soal.png';
+							$file_name = $id_soal .'_soal_'. mt_rand()  .'.png';
 							$file = UPLOAD_DIR . $file_name;
-							$success = file_put_contents($file, $data);
+							$success = file_put_contents($file, $img_64);
 							if($success){
 								$file_url =  'uploads/img_soal/' . $file_name ;
 								$img_node->setAttribute('src', asset($file_url)) ;
@@ -563,11 +573,13 @@ class Soal extends MY_Controller
 						$body .= $doc->saveHtml($node);
 					}
 
-					$soal_temp->soal = $body;
+					// $soal_temp->soal = $body;
+					$soal->soal = $body;
 
-					foreach ($abjad as $abj) {
+					foreach (OPSI_SOAL as $abj) {
 						$opsi = 'opsi_' . $abj ;
-						$html = $soal_temp->$opsi;
+						// $html = $soal_temp->$opsi;
+						$html = $this->input->post('jawaban_' . $abj);
 						$doc = new DOMDocument('1.0', 'UTF-8');
 						$doc->loadHTML($html);
 						$i = 0 ;
@@ -576,10 +588,11 @@ class Soal extends MY_Controller
 							if(strpos($src, 'data:image/png;base64,') !== false){
 								$img = str_replace('data:image/png;base64,', '', $src);
 								$img = str_replace(' ', '+', $img);
-								$data = base64_decode($img);
-								$file_name = $soal_temp->id_soal . '_jawaban_'. $opsi .'.png';
+								$img_64 = base64_decode($img);
+								// $file_name = $soal_temp->id_soal . '_jawaban_'. $opsi .'.png';
+								$file_name = $id_soal .'_jawaban_'. $opsi .'_'. mt_rand()  .'.png';
 								$file = UPLOAD_DIR . $file_name;
-								$success = file_put_contents($file, $data);
+								$success = file_put_contents($file, $img_64);
 								if($success){
 									$file_url =  'uploads/img_soal/' . $file_name ;
 									$img_node->setAttribute('src', asset($file_url)) ;
@@ -596,11 +609,14 @@ class Soal extends MY_Controller
 							$body .= $doc->saveHtml($node);
 						}
 
-						$soal_temp->$opsi = $body;
+						// $soal_temp->$opsi = $body;
+						$soal->$opsi = $body;
 
 					}
 
-					$html = $soal_temp->penjelasan;
+					/////////
+
+					$html = $data['penjelasan'];
 					$doc = new DOMDocument('1.0', 'UTF-8');
 					$doc->loadHTML($html);
 					$i = 0 ;
@@ -609,10 +625,11 @@ class Soal extends MY_Controller
 						if(strpos($src, 'data:image/png;base64,') !== false){
 							$img = str_replace('data:image/png;base64,', '', $src);
 							$img = str_replace(' ', '+', $img);
-							$data = base64_decode($img);
-							$file_name = $soal_temp->id_soal . '_penjelasan.png';
+							$img_64 = base64_decode($img);
+							// $file_name = $soal_temp->id_soal . '_soal.png';
+							$file_name = $id_soal .'_penjelasan_'. mt_rand()  .'.png';
 							$file = UPLOAD_DIR . $file_name;
-							$success = file_put_contents($file, $data);
+							$success = file_put_contents($file, $img_64);
 							if($success){
 								$file_url =  'uploads/img_soal/' . $file_name ;
 								$img_node->setAttribute('src', asset($file_url)) ;
@@ -629,9 +646,13 @@ class Soal extends MY_Controller
 						$body .= $doc->saveHtml($node);
 					}
 
-					$soal_temp->penjelasan = $body;
+					// $soal_temp->soal = $body;
+					$soal->penjelasan = $body;
 
-					$soal_temp->save();
+					////////
+
+					// $soal_temp->save();
+					$soal->save();
 
 					commit_db_trx();
 
@@ -660,7 +681,7 @@ class Soal extends MY_Controller
 			}
 
 			$this->session->set_flashdata('message_rootpage', $message_rootpage);
-			$method === 'add' ? redirect('soal/add') : redirect('soal/edit/' . $id_soal);
+			$action === 'add' ? redirect('soal/add') : redirect('soal/edit/' . $id_soal);
 		}
 	}
 

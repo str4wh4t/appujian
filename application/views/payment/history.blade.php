@@ -115,7 +115,7 @@ function init_page_level(){
                         </td>
                         <td>
                             @if ($item->stts)
-                                <button class="btn btn-default btn-sm" disabled="disabled"> Bayar</button>
+                                <button class="btn btn-success btn-sm bayar" data-id="{{ $item->order_number }}"> Bayar</button>
                             @else
                                 <button class="btn btn-danger btn-sm bayar" data-id="{{ $item->order_number }}"> Bayar</button>
                             @endif

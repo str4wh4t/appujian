@@ -100,6 +100,7 @@ defined('NO_BILLKEY_LENGTH')      OR define('NO_BILLKEY_LENGTH', 20);
 defined('JML_KOLOM_EXCEL_IMPOR_PESERTA')      OR define('JML_KOLOM_EXCEL_IMPOR_PESERTA', 16);
 defined('JML_KOLOM_EXCEL_IMPOR_SOAL')      OR define('JML_KOLOM_EXCEL_IMPOR_SOAL', 13);
 
+defined('OPSI_SOAL')      OR define('OPSI_SOAL', ['a', 'b', 'c', 'd', 'e']);
 defined('GEL_AVAIL')      OR define('GEL_AVAIL', [1, 2, 3, 4, 5]);
 defined('SMT_AVAIL')      OR define('SMT_AVAIL', [1, 2]);
 defined('TAHUN_AVAIL')      OR define('TAHUN_AVAIL', [2020, 2021, 2022, 2023, 2024, 2025]);

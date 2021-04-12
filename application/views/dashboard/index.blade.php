@@ -45,12 +45,12 @@
     <div class="col-md-4">
         <div class="row mb-1 pt-1">
             <div class="col-md-4">
-                <img src="{{ asset('assets/imgs/'. APP_ICON .'.png') }}" style="width: 85px" alt="avatar">
+                <img src="{{ asset('assets/imgs/') . APP_LOGO }}" style="width: 85px" alt="avatar">
             </div>
             <div class="col-md-8">
                 <span style="font-size: 18px;">Computer Assisted Test</span>
                 <hr>
-                <span style="font-size: 18px;">Universitas Diponegoro</span>
+                <span style="font-size: 18px;">{{ APP_NAME }}</span>
             </div>
             <hr>
         </div>
@@ -59,7 +59,7 @@
                 <div class="card" style="margin-bottom: 0px">
                     <div class="card-body" style="padding: 1rem">
                         <blockquote class="blockquote pl-1 border-left-red border-left-3 mt-1">
-                            <h4>Mengenal CAT UNDIP</h4>
+                            <h4>Mengenal Aplikasi CAT</h4>
                             <span style="font-size: 15px">
                             Dalam ujian dengan CAT UNDIP setiap aksi peserta pada setiap soal termonitor dalam sistem yang memudahkan dalam audit jika terjadi hal tak terduga selama ujian berlangsung.
                             </span>
@@ -262,12 +262,12 @@
             <div class="card-body">
         <div class="row">
             <div class="col-md-4">
-                        <img src="{{ asset('assets/imgs/android-chrome-512x512.png') }}" style="width: 85px" alt="avatar">
+                        <img src="{{ asset('assets/imgs/') . APP_LOGO }}" style="width: 85px" alt="avatar">
             </div>
             <div class="col-md-8">
                 <span style="font-size: 18px;">Computer Assisted Test</span>
                 <hr>
-                <span style="font-size: 18px;">Universitas Diponegoro</span>
+                <span style="font-size: 18px;">{{ APP_NAME }}</span>
             </div>
             <hr>
         </div>
@@ -281,7 +281,7 @@
         <div class="row">
             <div class="col-md-12">
                 <blockquote class="blockquote pl-1 border-left-red border-left-3">
-                    <h4>Mengenal CAT UNDIP</h4>
+                    <h4>Mengenal Apilkasi CAT</h4>
                     <span style="font-size: 15px">
                     Dalam ujian dengan CAT UNDIP setiap aksi peserta pada setiap soal termonitor dalam sistem yang memudahkan dalam audit jika terjadi hal tak terduga selama ujian berlangsung.
                     </span>
@@ -378,7 +378,7 @@
         <h3 class="box-title">Pengumuman</h3>
         <hr>
                 <p>
-                    Computer Assisted Test (CAT) Universitas Diponegoro yang dikelola oleh Lembaga Pengembangan dan Penjaminan Mutu Pendidikan memberikan kemudahan dalam pelayanan test baik secara online maupun offline.</p>
+                    Computer Assisted Test (CAT) {{ APP_NAME }} yang dikelola oleh Lembaga Pengembangan dan Penjaminan Mutu Pendidikan memberikan kemudahan dalam pelayanan test baik secara online maupun offline.</p>
                 <p>Test yang diadakan meliputi : Tes Potensi Akademik (TPA), Tes Substansi Bidang, Tes Prediksi dan lain-lain. Sistem ujian menggunakan CAT akan diperoleh hasil seleksi yang kredible, akurat dan cepat. </p>
                 <p>Informasi layanan CAT dapat menghubungi layanan ujian Undip di : </p>
                 <p><i class="fa fa-phone-square"></i> +62-24 7460041</p>

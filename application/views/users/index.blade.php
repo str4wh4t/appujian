@@ -200,18 +200,9 @@ let validator = $("#form_tambah_penyusun_soal").validate({
         $(element).removeClass('border-danger');
     },
     submitHandler: function(form) {
-        // if(confirm('Yakin akan mensubmit jawaban ?')){
-            // form.submit();
-        // }
-
-        grecaptcha.ready(function() {
-            grecaptcha.execute('{{ RECAPTCHA_V3_SITE_KEY }}', {action: 'submit_registration'}).then(function(token) {
-                $('input[name="token"]').val(token);
-                $('input[name="action"]').val('submit_registration');
-                form.submit();
-            });;
-        });
-
+        if(confirm('Yakin akan menambah penyusun soal ?')){
+            form.submit();
+        }
     }
 });
 

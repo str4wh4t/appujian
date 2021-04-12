@@ -1,6 +1,7 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
+use Orm\Data_daerah_orm;
 use Orm\Matkul_orm;
 use Orm\Mhs_orm;
 use Orm\Users_orm;
@@ -324,15 +325,22 @@ class Auth extends CI_Controller
 							}
 						}
 
+						$tmp_lahir = $this->input->post('tmp_lahir');
+						$kota_asal = $this->input->post('kota_asal');
+
+						// CEK NAMA KOTA 
+						Data_daerah_orm::where('kota_kab', $tmp_lahir)->firstOrFail();
+						Data_daerah_orm::where('kota_kab', $kota_asal)->firstOrFail();
+
 						$mhs->id_mahasiswa = $id_mahasiswa;
 						$mhs->nim = $username;
 						$mhs->nama = $this->input->post('full_name');
 						$mhs->nik = $this->input->post('nik');
-						$mhs->tmp_lahir = $this->input->post('tmp_lahir');
+						$mhs->tmp_lahir = $tmp_lahir;
 						$mhs->tgl_lahir = $this->input->post('tgl_lahir');
 						$mhs->email = $email;
 						$mhs->jenis_kelamin = $this->input->post('jenis_kelamin');
-						$mhs->kota_asal = $this->input->post('kota_asal');
+						$mhs->kota_asal = $kota_asal;
 						$mhs->save();
 
 						$membership = Membership_orm::findOrFail(MEMBERSHIP_ID_DEFAULT);
@@ -401,6 +409,9 @@ class Auth extends CI_Controller
 			}
 
 		}
+
+		$data['kota_kab_list'] = Data_daerah_orm::all();
+
 		view('auth/registrasi', $data);
 	}
 

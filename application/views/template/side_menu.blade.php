@@ -151,7 +151,7 @@
 						<i class="icon-basket-loaded"></i><span class="menu-title" data-i18n="nav.dash.main">Paket Materi</span>
 					</a>
 				</li>
-				<li class="{{ ($page === 'ujian' && $method === 'latian_soal' ) ? "active" : "" }} nav-item">
+				<li class="{{ ($page === 'ujian' && $method === 'latihan_soal' ) ? "active" : "" }} nav-item">
 					<a href="{{ site_url('ujian/latihan_soal') }}">
 						<i class="ft-edit-3"></i><span class="menu-title" data-i18n="nav.dash.main">Latihan Soal</span>
 					</a>

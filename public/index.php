@@ -53,7 +53,7 @@
  *
  * NOTE: If you change these, also change the error_reporting() code below
  */
-	define('APP_INDEX', isset($_SERVER['APP_INDEX']) ? $_SERVER['APP_INDEX'] : '4'); // APLIKASI DEFAULT = TRYOUT
+	define('APP_INDEX', getenv('APP_INDEX') != null ? getenv('APP_INDEX') : '1'); // APLIKASI DEFAULT = UJIAN
 	define('ENVIRONMENT', isset($_SERVER['CI_ENV']) ? $_SERVER['CI_ENV'] : 'development');
 
 /*

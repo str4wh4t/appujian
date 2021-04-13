@@ -129,6 +129,12 @@ class Soal extends MY_Controller
 
 		$data['bobot_soal'] = Bobot_soal_orm::All();
 
+		$tahun_avail = [];
+		$tahun_avail = Soal_orm::distinct()->pluck('tahun')->toArray();
+		$tahun_avail[] = get_selected_tahun();
+		$tahun_avail = array_unique($tahun_avail);
+		$data['tahun_avail'] = $tahun_avail;
+
 		//		$this->load->view('_templates/dashboard/_header.php', $data);
 		//		$this->load->view('soal/add');
 		//		$this->load->view('_templates/dashboard/_footer.php');
@@ -170,6 +176,12 @@ class Soal extends MY_Controller
 		}
 
 		$data['bobot_soal'] = Bobot_soal_orm::All();
+		
+		$tahun_avail = [];
+		$tahun_avail = Soal_orm::distinct()->pluck('tahun')->toArray();
+		$tahun_avail[] = get_selected_tahun();
+		$tahun_avail = array_unique($tahun_avail);
+		$data['tahun_avail'] = $tahun_avail;
 
 
 		//		$this->load->view('_templates/dashboard/_header.php', $data);
@@ -238,6 +250,12 @@ class Soal extends MY_Controller
 				'is_valid_smt' => 'Smt yg dimasukan salah',
 			]
 		);
+
+		$tahun_avail = [];
+		$tahun_avail = Soal_orm::distinct()->pluck('tahun')->toArray();
+		$tahun_avail[] = get_selected_tahun();
+		$tahun_avail = array_unique($tahun_avail);
+		
 		$this->form_validation->set_rules(
 			'tahun',
 			'Tahun',
@@ -245,8 +263,8 @@ class Soal extends MY_Controller
 				'required',
 				[
 					'is_valid_tahun',
-					function ($tahun) {
-						return in_array($tahun, TAHUN_AVAIL);
+					function ($tahun) use($tahun_avail) {
+						return in_array($tahun, $tahun_avail);
 					}
 				]
 			],

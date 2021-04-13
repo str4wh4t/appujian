@@ -306,7 +306,7 @@ function init_page_level(){
                 <label for="tahun" class="control-label">Tahun</label>
                 <select name="tahun" id="tahun" class="form-control select2"
                     style="width:100%!important">
-                    @foreach (TAHUN_AVAIL as $tahun)
+                    @foreach ($tahun_avail as $tahun)
                     <option value="{{ $tahun }}" {{ $tahun == $soal->tahun ? "selected" : "" }}>{{ $tahun }}</option>    
                     @endforeach
                 </select>

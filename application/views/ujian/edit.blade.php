@@ -598,9 +598,9 @@ $('#is_sekuen_topik').on('switchChange.bootstrapSwitch', function(event, state) 
                         <label for="tahun" class="control-label">Tahun</label>
                         <select name="tahun" id="tahun" class="form-control select2"
                             style="width:100%!important">
-                            <option value="null" {{ empty($ujian->soal_smt) ? 'selected' : '' }}>Semua Tahun</option>
-                            @foreach (TAHUN_AVAIL as $tahun)
-                            <option value="{{ $tahun }}" {{ $tahun == $ujian->soal_tahun ? 'selected' : '' }}>{{ $tahun }}</option>    
+                            <option value="null" {{ empty($ujian->soal_tahun) ? 'selected' : '' }}>Semua Tahun</option>
+                            @foreach ($tahun_soal as $tahun)
+                            <option value="{{ $tahun }}" {{ $tahun == $ujian->soal_tahun ? "selected" : "" }}>{{ $tahun }}</option>    
                             @endforeach
                         </select>
                         <small class="help-block" style="color: #dc3545"><?=form_error('tahun')?></small>

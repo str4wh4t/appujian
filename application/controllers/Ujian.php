@@ -133,7 +133,7 @@ class Ujian extends MY_Controller
 		$data['peserta_avail'] = [];
 
 		$data['tahun_soal'] = Soal_orm::distinct()->pluck('tahun')->toArray();
-		$data['tahun_mhs'] = Mhs_orm::distinct()->pluck('tahun')->toArray();
+		$data['tahun_mhs'] = Mhs_orm::distinct()->pluck('tahun')->filter()->toArray();
 
 		view('ujian/add', $data);
 	}
@@ -204,7 +204,7 @@ class Ujian extends MY_Controller
 		$data['bobot_soal'] = Bobot_soal_orm::all();
 
 		$data['tahun_soal'] = Soal_orm::distinct()->pluck('tahun')->toArray();
-		$data['tahun_peserta'] = Mhs_orm::distinct()->pluck('tahun')->toArray();
+		$data['tahun_mhs'] = Mhs_orm::distinct()->pluck('tahun')->filter()->toArray();
 
 		view('ujian/edit', $data);
 	}

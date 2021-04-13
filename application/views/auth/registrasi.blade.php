@@ -123,20 +123,21 @@
                                     <span class="help-block"></span>
                                 </fieldset>
                                 <fieldset class="form-group position-relative has-icon-left">
-                                    <select name="jenis_kelamin" id="jenis_kelamin" class="form-control">
-                                        <option value="" {{ empty(set_value('jenis_kelamin')) ? 'selected' : '' }} hidden>Jenis kelamin</option>
+                                    <select name="jenis_kelamin" id="jenis_kelamin" class="form-control select2 only_input_select2single">
+                                        {{-- <option value="" {{ empty(set_value('jenis_kelamin')) ? 'selected' : '' }} hidden>Jenis kelamin</option> --}}
+                                        <option value="" {{ empty(set_value('jenis_kelamin')) ? 'selected' : '' }} disabled>Jenis kelamin</option>
                                         <option value="L" {{ set_value('jenis_kelamin') == 'L' ? 'selected' : '' }}>Laki-laki</option>
                                         <option value="P" {{ set_value('jenis_kelamin') == 'P' ? 'selected' : '' }}>Perempuan</option>
                                     </select>
                                     <div class="form-control-position" style="line-height: 2.8rem;">
                                         <i class="ft-chevron-right"></i>
                                     </div>
-                                    <span class="help-block"></span>
+                                    <span class="help-block error_select2"></span>
                                 </fieldset>
                             </div>
                             <div class="col-md-6 col-sm-12">
                                 <fieldset class="form-group position-relative has-icon-left">
-                                    <select name="kota_asal" id="kota_asal" class="form-control only_input_select2single">
+                                    <select name="kota_asal" id="kota_asal" class="form-control select2 only_input_select2single">
                                         <option value="" disabled {{ empty(set_value('kota_asal')) ? 'selected' : '' }}>- Pilih kota asal -</option>
                                         @foreach ($kota_kab_list as $item)
                                         <option value="{{ $item->kota_kab }}" {{ set_value('kota_asal') == $item->kota_kab ? 'selected="selected"' : '' }}>{{ $item->kota_kab }}</option>
@@ -148,7 +149,7 @@
                                     <span class="help-block error_select2"></span>
                                 </fieldset>
                                 <fieldset class="form-group position-relative has-icon-left">
-                                    <select name="tmp_lahir" id="tmp_lahir" class="form-control only_input_select2single">
+                                    <select name="tmp_lahir" id="tmp_lahir" class="form-control select2 only_input_select2single">
                                         <option value="" disabled {{ empty(set_value('tmp_lahir')) ? 'selected' : '' }}>- Pilih tempat lahir -</option>
                                         @foreach ($kota_kab_list as $item)
                                         <option value="{{ $item->kota_kab }}" {{ set_value('tmp_lahir') == $item->kota_kab ? 'selected="selected"' : '' }}>{{ $item->kota_kab }}</option>
@@ -360,8 +361,7 @@
         $(document).ready(function(){
             $('#btn_submit_registrasi').show();
             $('#btn_link_login').show();
-            $('#kota_asal').select2();
-            $('#tmp_lahir').select2();
+            $('.select2').select2();
 
             $('.datetimepicker').datetimepicker({
                 format: 'YYYY-MM-DD',

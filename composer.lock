@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "1da760adabad68d4b40488bc36d3ea90",
+    "content-hash": "9d3b7ee60883af121a5d5ccc56d2b431",
     "packages": [
         {
             "name": "brick/math",
@@ -938,6 +938,72 @@
                 "view"
             ],
             "time": "2020-09-17T08:25:26+00:00"
+        },
+        {
+            "name": "lulco/phoenix",
+            "version": "1.6.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/lulco/phoenix.git",
+                "reference": "3118619af8e80af2612163e90c332e5975adf488"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/lulco/phoenix/zipball/3118619af8e80af2612163e90c332e5975adf488",
+                "reference": "3118619af8e80af2612163e90c332e5975adf488",
+                "shasum": ""
+            },
+            "require": {
+                "ext-json": "*",
+                "ext-pdo": "*",
+                "php": ">= 7.1",
+                "symfony/console": "^3.1|^4.0|^5.0",
+                "symfony/finder": "^3.1|^4.0|^5.0"
+            },
+            "conflict": {
+                "symfony/console": "3.4.31|4.3.4"
+            },
+            "require-dev": {
+                "nette/neon": "^2.3|^3.0",
+                "phpunit/phpunit": ">7.2",
+                "ramsey/uuid": "^3.7|^4.0",
+                "symfony/yaml": "^3.1|^4.0|^5.0"
+            },
+            "suggest": {
+                "nette/neon": "Allows use *.neon file as config file and class Phoenix\\Config\\Parser\\NeonConfigParser to parse it",
+                "symfony/yaml": "Allows use *.yml / *.yaml file as config file and class Phoenix\\Config\\Parser\\YamlConfigParser to parse it"
+            },
+            "bin": [
+                "bin/phoenix"
+            ],
+            "type": "library",
+            "autoload": {
+                "classmap": [
+                    "src/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "Database Migrations for PHP",
+            "keywords": [
+                "Multiple folders",
+                "create",
+                "database",
+                "dump",
+                "migrate",
+                "migrations",
+                "php",
+                "query builder",
+                "rollback",
+                "status"
+            ],
+            "support": {
+                "issues": "https://github.com/lulco/phoenix/issues",
+                "source": "https://github.com/lulco/phoenix/tree/1.6.0"
+            },
+            "time": "2021-04-03T21:21:18+00:00"
         },
         {
             "name": "midtrans/midtrans-php",

@@ -67,7 +67,7 @@ function init_page_level(){
                 </div>
                 <div class="text-center">
                     <a data-toggle="modal" href="#materiId" style="text-decoration:none" class="btn btn-outline-primary btn-glow">ID MATKUL</a>
-                    <a href="<?= base_url('uploads/import/format/mahasiswa.xlsx') ?>" class="btn btn-outline-info btn-glow">FORMAT EXCEL</a>
+                    <a href="<?= base_url('assets/dist/format/mahasiswa.xlsx') ?>" class="btn btn-outline-info btn-glow">FORMAT EXCEL</a>
                     <a href="<?= site_url('mahasiswa/edit_on_table') ?>" class="btn btn-outline-success btn-glow">TABEL</a>
                 </div>
                 <br>

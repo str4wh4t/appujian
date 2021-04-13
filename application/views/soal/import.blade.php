@@ -85,7 +85,7 @@
                                             class="btn btn-outline-primary btn-glow">ID TOPIK</a>
                                         <a data-toggle="modal" href="#bobotId" style="text-decoration:none"
                                             class="btn btn-outline-primary btn-glow">ID BOBOT</a>
-                                        <a href="<?= base_url('uploads/import/format/soal.xlsx') ?>"
+                                        <a href="<?= base_url('assets/dist/format/soal.xlsx') ?>"
                                             class="btn btn-outline-info btn-glow">FORMAT EXCEL</a>
                                         <!-- <a href="<?= site_url('soal/edit_on_table') ?>" class="btn btn-outline-success btn-glow">TABEL</a> -->
                                     </div>

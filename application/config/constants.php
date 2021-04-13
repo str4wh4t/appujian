@@ -85,7 +85,7 @@ defined('EXIT__AUTO_MIN')      OR define('EXIT__AUTO_MIN', 9); // lowest automat
 defined('EXIT__AUTO_MAX')      OR define('EXIT__AUTO_MAX', 125); // highest automatically-assigned error code
 
 // CONSTANT DEFINED BY APP
-include 'constants_depend_app_'. APP_INDEX .'.php'; // APP_INDEX set in index.php
+require_once(APPPATH.'config/constants_depend_app_'. APP_INDEX .'.php');
 
 defined('UPLOAD_DIR') OR define('UPLOAD_DIR', FCPATH . 'uploads/img_soal/');
 
@@ -116,8 +116,6 @@ defined('FOTO_DEFAULT_URL')      OR define('FOTO_DEFAULT_URL', 'assets/imgs/no_p
 
 $regex_date = '^\d{4}\-(0[1-9]|1[012])\-(0[1-9]|[12][0-9]|3[01])$';
 defined('REGEX_DATE_VALID')      OR define('REGEX_DATE_VALID', $regex_date ); // YYYY-MM-DD
-defined('PING_ENABLE')      OR define('PING_ENABLE', false);
-defined('PING_INTERVAL')      OR define('PING_INTERVAL', 30000 ); // IN MS
 
 defined('SOCKET_PORT')      OR define('SOCKET_PORT', 8080 ); // IN MS
 defined('MEMBERSHIP_STTS_AKTIF')      OR define('MEMBERSHIP_STTS_AKTIF', 1);

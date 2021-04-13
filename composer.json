@@ -24,7 +24,8 @@
         "google/recaptcha": "^1.2",
         "tecnickcom/tcpdf": "^6.3",
         "midtrans/midtrans-php": "^2.3",
-        "nesbot/carbon": "^2.46"
+        "nesbot/carbon": "^2.46",
+        "lulco/phoenix": "^1.6"
     },
     "suggest": {
         "paragonie/random_compat": "Provides better randomness in PHP 5.x"

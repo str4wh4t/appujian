@@ -103,7 +103,7 @@ waitForConnection = function (callback, interval) {
             if(i_reconnect_socket > batas_reconnect_socket){
                 Swal.fire({
                     title: "Perhatian",
-                    text: "Koneksi ke sistem terputus",
+                    text: "Koneksi ke server terputus",
                     icon: "warning",
                     confirmButtonText: "Refresh",
                     allowOutsideClick: false,

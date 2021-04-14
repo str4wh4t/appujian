@@ -116,7 +116,6 @@ defined('FOTO_DEFAULT_URL')      OR define('FOTO_DEFAULT_URL', 'assets/imgs/no_p
 $regex_date = '^\d{4}\-(0[1-9]|1[012])\-(0[1-9]|[12][0-9]|3[01])$';
 defined('REGEX_DATE_VALID')      OR define('REGEX_DATE_VALID', $regex_date ); // YYYY-MM-DD
 
-defined('SOCKET_PORT')      OR define('SOCKET_PORT', 8080 ); // IN MS
 defined('MEMBERSHIP_STTS_AKTIF')      OR define('MEMBERSHIP_STTS_AKTIF', 1);
 defined('MEMBERSHIP_STTS_NON_AKTIF')      OR define('MEMBERSHIP_STTS_NON_AKTIF', 0);
 

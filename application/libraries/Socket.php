@@ -15,14 +15,14 @@ class Socket
         
 	}
 
-    public function run(){
+    public function run($port): void{
         $wsServer = new WsServer(new Chat());
 		
 		$server = IoServer::factory(
 		    new HttpServer(
 		        $wsServer
 		    ),
-		    SOCKET_PORT
+		    $port
 		);
 		
 		$wsServer->enableKeepAlive($server->loop, 30);

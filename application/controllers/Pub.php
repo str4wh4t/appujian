@@ -195,10 +195,10 @@ class Pub extends MY_Controller {
 	}
 	
 	
-	public function socket(){
+	public function socket($port){
 		if(!is_cli()) show_404();
 
-		$this->socket->run();
+		$this->socket->run($port);
 	}
 	
 	public function cron_auto_start_ujian_for_unstarted_participants(){

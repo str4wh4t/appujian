@@ -128,6 +128,7 @@ waitForConnection = function (callback, interval) {
 
 let latency = 0;
 let p = new Ping();
+let ip = '{{ '-' }}' ; <?php /* get_client_ip() ;  */ ?>
 
 $(document).ready(function(){
 
@@ -135,17 +136,16 @@ $(document).ready(function(){
     @if(in_group('mahasiswa'))
     @php($identifier = mt_rand())
 
-    <?php $ip = '-'; /* get_client_ip() ;  */ ?>
     
     if(socket_enable){
-        
+
         conn = new WebSocket('{{ ws_url() }}');
         conn.onopen = function(e) {
             sendmsg(JSON.stringify({
                 'nim':'{{ get_logged_user()->username }}',
                 'as':'{{ get_selected_role()->name }}',
                 'identifier': '{{ $identifier }}',
-                'ip': '{{ $ip }}',
+                'ip': ip,
                 'cmd':'MHS_ONLINE',
                 'app_id': '{{ APP_ID }}',
             }));
@@ -195,7 +195,7 @@ $(document).ready(function(){
                 'nim':'{{ get_logged_user()->username }}',
                 'as':'{{ get_selected_role()->name }}',
                 'cmd':'PING',
-                'ip': '{{ $ip }}',
+                'ip': ip,
                 'app_id': '{{ APP_ID }}',
                 'latency': data ,
             }));
@@ -213,7 +213,7 @@ $(document).ready(function(){
                             'nim':'{{ get_logged_user()->username }}',
                             'as':'{{ get_selected_role()->name }}',
                             'cmd':'PING',
-                            'ip': '{{ $ip }}',
+                            'ip': ip,
                             'app_id': '{{ APP_ID }}',
                             'latency': data ,
                         }));

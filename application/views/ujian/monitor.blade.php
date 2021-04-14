@@ -310,6 +310,30 @@ body {
         conn.onclose = function(e) {
             // console.log('conn.onclose', e.data);
         };
+
+        sendmsg(JSON.stringify({
+            'nim':'{{ get_logged_user()->username }}',
+            'as':'{{ get_selected_role()->name }}',
+            'cmd':'PING',
+            'ip': '-',
+            'app_id': '{{ APP_ID }}',
+            'latency': '-' ,
+        }));
+
+        if(enable_ping){
+            setInterval(function() {
+                if(!stop_ping){
+                    sendmsg(JSON.stringify({
+                        'nim':'{{ get_logged_user()->username }}',
+                        'as':'{{ get_selected_role()->name }}',
+                        'cmd':'PING',
+                        'ip': '-',
+                        'app_id': '{{ APP_ID }}',
+                        'latency': '-' ,
+                    }));
+                }
+            },{{ PING_INTERVAL }});
+        }
     }
 
 

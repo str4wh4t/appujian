@@ -8,7 +8,6 @@ class Chat implements MessageComponentInterface {
     protected $clients;
     protected $data_clients_mhs;
     protected $data_clients_mhs_ips;
-    private $_is_debug ;
 
     public function __construct() {
         // $this->clients = new \SplObjectStorage;
@@ -21,7 +20,6 @@ class Chat implements MessageComponentInterface {
 		$this->data_clients_mhs = [];
         $this->data_clients_mhs_ips = [];
         
-        $this->_is_debug = true ;
     }
 
     public function onOpen(ConnectionInterface $conn) {
@@ -412,7 +410,7 @@ class Chat implements MessageComponentInterface {
 	}
 	
 	private function _debug_msg($msg){
-    	if($this->_is_debug){
+    	if(IS_DEBUG_SOCKET){
     		echo $msg."\n";
 	    }
 	}

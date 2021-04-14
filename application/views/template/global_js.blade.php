@@ -31,6 +31,9 @@
 
 let base_url = '{{ site_url('/') }}';
 let conn ;
+let enable_ping = {{ PING_INTERVAL > 0 ? 'true' : 'false' }};
+let stop_ping = false ;
+let socket_enable = {{ SOCKET_ENABLE ? 'true' : 'false' }};
 
 function print_page(data) {
     let mywindow = window.open('', 'new div', 'height=600,width=600');
@@ -75,9 +78,14 @@ function reload_ajax(){
     }, false);
 }
 
+let i_reconnect_socket = 0;
+let batas_reconnect_socket = 3;
+
 sendmsg = function (message, callback) {
     waitForConnection(function () {
-        conn.send(message);
+        if (typeof conn !== 'undefined') {
+            conn.send(message);
+        }
         if (typeof callback !== 'undefined') {
           callback();
         }
@@ -85,14 +93,36 @@ sendmsg = function (message, callback) {
 };
 
 waitForConnection = function (callback, interval) {
-    if (conn.readyState === 1) {
-        callback();
-    } else {
-        // var that = this;
-        // optional: implement backoff for interval here
-        setTimeout(function () {
-            waitForConnection(callback, interval);
-        }, interval);
+
+    // console.log('conn.readyState', conn.readyState);
+
+    if (typeof conn !== 'undefined') {
+        if (conn.readyState === 1) {
+            callback();
+        } else {
+            if(i_reconnect_socket > batas_reconnect_socket){
+                Swal.fire({
+                    title: "Perhatian",
+                    text: "Koneksi ke sistem terputus",
+                    icon: "warning",
+                    confirmButtonText: "Refresh",
+                    allowOutsideClick: false,
+                    allowEscapeKey: false,
+                }).then(result => {
+                    if (result.value) {
+                        window.location.href = '{{ current_url() }}';
+                    }
+                });
+                stop_ping = true;
+            }else{
+                // var that = this;
+                // optional: implement backoff for interval here
+                setTimeout(function () {
+                    waitForConnection(callback, interval);
+                }, interval);
+            }
+            i_reconnect_socket++;
+        }
     }
 };
 
@@ -104,7 +134,11 @@ $(document).ready(function(){
     /* [START] WEBSOCKET BOOTSTRAP */
     @if(in_group('mahasiswa'))
     @php($identifier = mt_rand())
-    @php($ip = get_client_ip())
+
+    <?php $ip = '-'; /* get_client_ip() ;  */ ?>
+    
+    if(socket_enable){
+        
         conn = new WebSocket('{{ ws_url() }}');
         conn.onopen = function(e) {
             sendmsg(JSON.stringify({
@@ -154,6 +188,8 @@ $(document).ready(function(){
             }));
         };
 
+    }
+
         p.ping("{{ url('/') }}", function(err, data) {
             sendmsg(JSON.stringify({
                 'nim':'{{ get_logged_user()->username }}',
@@ -167,25 +203,27 @@ $(document).ready(function(){
             toastr.info('', 'latency : ' + latency + 'ms', {positionClass: 'toast-bottom-right', containerId: 'toast-bottom-right', timeOut: 0});
         });
 
-        @if(PING_ENABLE)
-        setInterval(function() {
-            // let mctime = moment().valueOf();
-            p.ping("{{ url('/') }}", function(err, data) {
-                // console.log('ping', data);
-                sendmsg(JSON.stringify({
-                    'nim':'{{ get_logged_user()->username }}',
-                    'as':'{{ get_selected_role()->name }}',
-                    'cmd':'PING',
-                    'ip': '{{ $ip }}',
-                    'app_id': '{{ APP_ID }}',
-                    'latency': data ,
-                }));
-                latency = data;
-                toastr.remove();
-                toastr.info('', 'latency : ' + latency + 'ms', {positionClass: 'toast-bottom-right', containerId: 'toast-bottom-right', timeOut: 0});
-            });
-        },{{ PING_INTERVAL }});
-        @endif
+        if(enable_ping){
+            setInterval(function() {
+                // let mctime = moment().valueOf();
+                if(!stop_ping){
+                    p.ping("{{ url('/') }}", function(err, data) {
+                        // console.log('ping', data);
+                        sendmsg(JSON.stringify({
+                            'nim':'{{ get_logged_user()->username }}',
+                            'as':'{{ get_selected_role()->name }}',
+                            'cmd':'PING',
+                            'ip': '{{ $ip }}',
+                            'app_id': '{{ APP_ID }}',
+                            'latency': data ,
+                        }));
+                        latency = data;
+                        toastr.remove();
+                        toastr.info('', 'latency : ' + latency + 'ms', {positionClass: 'toast-bottom-right', containerId: 'toast-bottom-right', timeOut: 0});
+                    });
+                }
+            },{{ PING_INTERVAL }});
+        }
 
 
           // Also display error if err is returned.
@@ -216,7 +254,8 @@ $(document).ready(function(){
         Swal.fire({
            title: "{{ $msg['header'] }}",
            text: "{{ $msg['content'] }}",
-           icon: "{{ $msg['type'] }}"
+           icon: "{{ $msg['type'] }}",
+        //    heightAuto: false,
         });
     @endif
     
@@ -226,15 +265,17 @@ $(document).ready(function(){
         toastr.info('', 'latency : ' + latency + 'ms', {positionClass: 'toast-bottom-right', containerId: 'toast-bottom-right', timeOut: 0});
     });
 
-        @if(PING_ENABLE)
+    if(enable_ping){
         setInterval(function() {
-            p.ping("{{ url('/') }}", function(err, data) {
-                latency = data;
-                toastr.remove();
-                toastr.info('', 'latency : ' + latency + 'ms', {positionClass: 'toast-bottom-right', containerId: 'toast-bottom-right', timeOut: 0});
-            });
+            if(!stop_ping){
+                p.ping("{{ url('/') }}", function(err, data) {
+                    latency = data;
+                    toastr.remove();
+                    toastr.info('', 'latency : ' + latency + 'ms', {positionClass: 'toast-bottom-right', containerId: 'toast-bottom-right', timeOut: 0});
+                });
+            }
         },{{ PING_INTERVAL }});
-        @endif
+    }
     @endif
 
 });

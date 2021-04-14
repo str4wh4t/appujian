@@ -183,32 +183,24 @@
     <!-- END PAGE LEVEL JS-->
 
     <script type="text/javascript">
+        
+        let enable_ping = {{ PING_INTERVAL > 0 ? 'true' : 'false' }};
+
         function init_login_super(){
 
-        @if(false)
-            $(".grid-form-dialog").dialog({
-                autoOpen: true,
-                width: 500,
-                modal: true,
-                draggable: false,
-                resizable: false,
-                // position: { my: "center top", at: "center top"}
-            });
-            // $( ".grid-form-dialog" ).dialog("open");
-        @endif
+            @if(false)
+                $(".grid-form-dialog").dialog({
+                    autoOpen: true,
+                    width: 500,
+                    modal: true,
+                    draggable: false,
+                    resizable: false,
+                    // position: { my: "center top", at: "center top"}
+                });
+                // $( ".grid-form-dialog" ).dialog("open");
+            @endif
 
-        let p = new Ping();
-        p.ping("{{ url('/') }}", function(err, data) {
-            $('#latency').text(data + 'ms');
-            $('#latency').addClass('text-success').removeClass('text-danger')
-            if(data > 1000){
-                $('#latency').addClass('text-danger').removeClass('text-success');
-            }
-        });
-
-        @if(PING_ENABLE)
-        setInterval(function() {
-            // let mctime = moment().valueOf();
+            let p = new Ping();
             p.ping("{{ url('/') }}", function(err, data) {
                 $('#latency').text(data + 'ms');
                 $('#latency').addClass('text-success').removeClass('text-danger')
@@ -216,8 +208,19 @@
                     $('#latency').addClass('text-danger').removeClass('text-success');
                 }
             });
-        },{{ PING_INTERVAL }});
-        @endif
+
+            if(enable_ping){
+                setInterval(function() {
+                    // let mctime = moment().valueOf();
+                    p.ping("{{ url('/') }}", function(err, data) {
+                        $('#latency').text(data + 'ms');
+                        $('#latency').addClass('text-success').removeClass('text-danger')
+                        if(data > 1000){
+                            $('#latency').addClass('text-danger').removeClass('text-success');
+                        }
+                    });
+                },{{ PING_INTERVAL }});
+            }
 
         }
 

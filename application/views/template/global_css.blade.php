@@ -56,14 +56,19 @@
     .has-error .select2-selection {
         border: 1px solid #dd4b39 !important;
     }
-    body { &.swal2-shown { &.swal2-shown { height: 100% !important; } } }
+    
+    /* body { &.swal2-shown { &.swal2-shown { height: 100% !important; } } } */
+
+    body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) {
+        height: 100% !important;
+    }
 
     .header-navbar .navbar-header .navbar-brand {
         padding-top: 17px;
     }
 
     .header-navbar.navbar-brand-center .navbar-header {
-        left: 20%;
+        /* left: 20%; */
     }
 
     footer.footer-dark {
@@ -72,6 +77,10 @@
 
     #toast-bottom-right > div {
         width: 175px;
+    }
+
+    html body .content.app-content {
+        margin-top: -12.5px;
     }
 
 </style>

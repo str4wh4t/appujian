@@ -2176,7 +2176,7 @@ class Ujian extends MY_Controller
 			'database' => $this->db->database,
 		];
 
-		$this->db->select('a.id, c.nim, c.nama, c.nik, c.jenis_kelamin, c.tgl_lahir, c.prodi, d.absen_by, "OFFLINE" AS koneksi, e.ujian_selesai AS status, "AKSI" AS aksi');
+		$this->db->select('a.id, c.nim, c.nama, c.nik, c.jenis_kelamin, c.tgl_lahir, c.prodi, d.absen_by, "OFFLINE" AS koneksi, "0ms" AS latency, e.ujian_selesai AS status, "AKSI" AS aksi');
 		$this->db->from('mahasiswa_ujian AS a');
 		$this->db->join('mahasiswa_matkul AS b', 'a.mahasiswa_matkul_id = b.id');
 		$this->db->join('mahasiswa AS c', 'b.mahasiswa_id = c.id_mahasiswa');
@@ -2216,8 +2216,11 @@ class Ujian extends MY_Controller
 
 		$dt->edit('koneksi', function ($data) {
 			return '<span class="badge bg-danger" id="badge_koneksi_' . $data['nim'] . '">' . $data['koneksi'] . '</span>
-					<span class="badge bg-info" id="badge_ip_' . $data['nim'] . '" style="display: none">-</span>
-					<span class="badge bg-primary" id="badge_latency_' . $data['nim'] . '" style="display: none">-</span>';
+					<span class="badge bg-info" id="badge_ip_' . $data['nim'] . '" style="display: none">-</span>';
+		});
+
+		$dt->edit('latency', function ($data) {
+			return '<span class="badge bg-grey" id="badge_latency_' . $data['nim'] . '">' . $data['latency'] . '</span>';
 		});
 
 		$dt->edit('status', function ($data) {
@@ -2229,7 +2232,7 @@ class Ujian extends MY_Controller
 				$status_badge = $data['status'] == null ? 'secondary' : 'success';
 			} else {
 				$status = $data['status'] == 'N' ? 'SEDANG UJIAN' : 'SUDAH UJIAN';
-				$status_badge = $data['status'] == 'N' ? 'info' : 'success';
+				$status_badge = $data['status'] == 'N' ? 'danger' : 'success';
 				// $status = 'BELUM UJIAN' ;
 				// $status_badge = 'secondary' ;
 			}

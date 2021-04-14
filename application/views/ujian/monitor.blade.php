@@ -55,6 +55,7 @@ body {
     let jml_daftar_hadir_by_pengawas = {{ $jml_daftar_hadir_by_pengawas }};
     let as = null ;
     let user_id = null ;
+    
     function init_page_level() {
         ajaxcsrf();
 
@@ -72,12 +73,15 @@ body {
                 return false;
               }
             });
-            init_socket();
+
+            if(socket_enable)
+                init_socket();
+
         },
         "drawCallback": function( settings ) {
             $.each(list_mhs_online, function(index, item){
                 $('#badge_koneksi_' + item).text('ONLINE').removeClass('bg-danger').addClass('bg-success');
-                $('#badge_ip_' + item).text(list_mhs_online_ips[item]).show();
+                // $('#badge_ip_' + item).text(list_mhs_online_ips[item]).show();
             });
             // $.each(list_absensi, function(index, item){
             //     $('#badge_absensi_' + item).text('SUDAH').removeClass('danger').removeClass('border-danger').addClass('border-success').addClass('success');
@@ -124,43 +128,48 @@ body {
             {
                 "data": 'absensi',
                 "orderable": false,
-                "searchable": false
+                "searchable": false,
+                "width": "5%"
             },
             {
                 "data": 'absen_by',
                 "orderable": false,
-                "searchable": false
+                "searchable": false,
+                "width": "5%"
             },
             {
                 "data": 'koneksi',
                 "orderable": false,
-                "searchable": false
+                "searchable": false,
+                "width": "5%"
+            },
+            {
+                "data": 'latency',
+                "orderable": false,
+                "searchable": false,
+                "width": "5%"
             },
             {
                 "data": 'status',
                 "orderable": false,
-                "searchable": false
+                "searchable": false,
+                "width": "5%"
             },
             {
                 "data": 'aksi',
                 "orderable": false,
-                "searchable": false
+                "searchable": false,
+                "width": "5%"
             },
-            { "data": 'nim' },
+            { "data": 'nim', "width": "10%" },
             { "data": 'nama' },
-            { "data": 'nik' },
-            {
-                "data": 'tgl_lahir',
-                "orderable": false,
-                "searchable": false
-            },
             {
                 "data": 'prodi',
                 "orderable": false,
                 "searchable": false
             }
         ],
-        order: [[5, "asc"], [9, "asc"]],
+        order: [[6, "asc"], [8, "asc"]],
         rowId: function(a) {
           return a;
         },
@@ -219,24 +228,24 @@ body {
                         let nim = index;
                         push_mhs_online(nim);
                         $('#badge_koneksi_' + nim).text('ONLINE').removeClass('bg-danger').removeClass('bg-warning').addClass('bg-success');
-                        push_mhs_online_ips(nim, data.mhs_online_ips[nim]);
-                        $('#badge_ip_' + nim).text(data.mhs_online_ips[nim]).show();
+                        // push_mhs_online_ips(nim, data.mhs_online_ips[nim]);
+                        // $('#badge_ip_' + nim).text(data.mhs_online_ips[nim]).show();
                     });
                     $('#jml_mhs_online').text(list_mhs_online.length);
                     // console.log('list_mhs_online', list_mhs_online);
                 } else if (data.cmd == 'MHS_ONLINE') {
                     push_mhs_online(data.nim);
                     $('#badge_koneksi_' + data.nim).text('ONLINE').removeClass('bg-danger').removeClass('bg-warning').addClass('bg-success');
-                    $('#badge_ip_' + data.nim).text(data.ip).show();
+                    // $('#badge_ip_' + data.nim).text(data.ip).show();
                     $('#jml_mhs_online').text(list_mhs_online.length);
                 } else if (data.cmd == 'MHS_LOST_FOCUS') {
                     $('#badge_focus_' + data.nim).show();
                 } else if (data.cmd == 'MHS_GET_FOCUS') {
                     $('#badge_focus_' + data.nim).hide();
                 } else if (data.cmd == 'MHS_START_UJIAN') {
-                    $('#badge_status_' + data.nim).text('SEDANG UJIAN').removeClass('bg-secondary').removeClass('bg-success').addClass('bg-info');
+                    $('#badge_status_' + data.nim).text('SEDANG UJIAN').removeClass('bg-secondary').removeClass('bg-success').addClass('bg-danger');
                 } else if (data.cmd == 'MHS_STOP_UJIAN') {
-                    $('#badge_status_' + data.nim).text('SUDAH UJIAN').removeClass('bg-secondary').removeClass('bg-info').addClass('bg-success');
+                    $('#badge_status_' + data.nim).text('SUDAH UJIAN').removeClass('bg-secondary').removeClass('bg-danger').addClass('bg-success');
                 } else if (data.cmd == 'DO_ABSENSI') {
                     if (data.ok) {
 
@@ -282,18 +291,18 @@ body {
                     }
                 } else if (data.cmd == 'PING') {
                     $('#badge_koneksi_' + data.nim).text('ONLINE').removeClass('bg-danger').removeClass('bg-warning').addClass('bg-success');
-                    $('#badge_ip_' + data.nim).text(data.ip).show();
-                    $('#badge_latency_' + data.nim).text(data.latency + 'ms').show();
+                    // $('#badge_ip_' + data.nim).text(data.ip).show();
+                    $('#badge_latency_' + data.nim).text(data.latency + 'ms').removeClass('bg-grey').show();
                     if(data.latency > 1000)
-                        $('#badge_latency_' + data.nim).removeClass('bg-primary').addClass('bg-danger');
+                        $('#badge_latency_' + data.nim).removeClass('bg-success').addClass('bg-danger');
                     else
-                        $('#badge_latency_' + data.nim).removeClass('bg-danger').addClass('bg-primary');
+                        $('#badge_latency_' + data.nim).removeClass('bg-danger').addClass('bg-success');
                 }
             }else if (data.cmd == 'MHS_OFFLINE') {
                 pop_mhs_online(data.nim);
                 $('#badge_koneksi_' + data.nim).text('OFFLINE').removeClass('bg-success').removeClass('bg-warning').addClass('bg-danger');
-                $('#badge_ip_' + data.nim).hide();
-                $('#badge_latency_' + data.nim).hide();
+                // $('#badge_ip_' + data.nim).hide();
+                $('#badge_latency_' + data.nim).text('0ms').removeClass('bg-success').removeClass('bg-danger').addClass('bg-grey');
                 $('#jml_mhs_online').text(list_mhs_online.length);
             }
         };
@@ -487,7 +496,7 @@ body {
                                 'cmd':'DO_KICK',
                                 'app_id': '{{ APP_ID }}',
                             }));
-                            $('#badge_status_' + nim).text('SUDAH UJIAN').removeClass('bg-secondary').removeClass('bg-info').addClass('bg-success');
+                            $('#badge_status_' + nim).text('SUDAH UJIAN').removeClass('bg-secondary').removeClass('bg-danger').addClass('bg-success');
                             $('#badge_focus_' + nim).hide();
 
                             Swal.fire({
@@ -627,15 +636,16 @@ $(document).on('click','#btn_absensi_semua',function(){
         <table id="tb_daftar_hadir" class="table table-striped table-bordered table-hover">
         <thead>
             <tr>
-                <th class="text-center">Absensi</th>
+                <th class="text-center">&nbsp;</th>
                 <th>Absensi</th>
                 <th>Online</th>
+                <th>Latency</th>
                 <th>Status</th>
                 <th>Aksi</th>
                 <th>No Peserta</th>
                 <th>Nama</th>
-                <th>NIK</th>
-                <th>Tgl Lahir</th>
+                {{-- <th>NIK</th> --}}
+                {{-- <th>Tgl Lahir</th> --}}
                 <th>Prodi</th>
             </tr>
         </thead>

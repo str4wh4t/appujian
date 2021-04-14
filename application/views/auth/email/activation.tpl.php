@@ -206,7 +206,7 @@
                     <tr>
                         <td bgcolor="#FFECD1" align="center" style="padding: 30px 30px 30px 30px; border-radius: 4px 4px 4px 4px; color: #666666; font-family: 'Lato', Helvetica, Arial, sans-serif; font-size: 18px; font-weight: 400; line-height: 25px;">
                             <h2 style="font-size: 20px; font-weight: 400; color: #666666; margin: 0;">
-                            UNDIP CAT <?= get_selected_tahun() ?>
+                            <?= strtoupper(APP_NAME) ?>
                             </h2>
                         </td>
                     </tr>

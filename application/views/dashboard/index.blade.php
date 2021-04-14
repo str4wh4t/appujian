@@ -61,7 +61,7 @@
                         <blockquote class="blockquote pl-1 border-left-red border-left-3 mt-1">
                             <h4>Mengenal Aplikasi CAT</h4>
                             <span style="font-size: 15px">
-                            Dalam ujian dengan CAT UNDIP setiap aksi peserta pada setiap soal termonitor dalam sistem yang memudahkan dalam audit jika terjadi hal tak terduga selama ujian berlangsung.
+                            CAT (Computer Assisted Test) merupakan salah metode ujian yang menggunakan media komputer sehingga setiap aksi peserta pada setiap soal termonitor dalam sistem yang memudahkan dalam audit jika terjadi hal tak terduga selama ujian berlangsung.
                             </span>
                         </blockquote>
                     </div>
@@ -283,7 +283,7 @@
                 <blockquote class="blockquote pl-1 border-left-red border-left-3">
                     <h4>Mengenal Apilkasi CAT</h4>
                     <span style="font-size: 15px">
-                    Dalam ujian dengan CAT UNDIP setiap aksi peserta pada setiap soal termonitor dalam sistem yang memudahkan dalam audit jika terjadi hal tak terduga selama ujian berlangsung.
+                    CAT (Computer Assisted Test) merupakan salah metode ujian yang menggunakan media komputer sehingga setiap aksi peserta pada setiap soal termonitor dalam sistem yang memudahkan dalam audit jika terjadi hal tak terduga selama ujian berlangsung.
                     </span>
                 </blockquote>
             </div>

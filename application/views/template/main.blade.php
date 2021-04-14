@@ -9,8 +9,8 @@
 	
 	<meta name="{{ csrf_name() }}" content="{{ csrf_token() }}">
 	
-	<title>@yield('title', SITE_TITLE)</title>
-	<meta name="description" content="{{ SITE_DESC }}">
+	<title>@yield('title', APP_NAME)</title>
+	<meta name="description" content="{{ APP_DESC }}">
 
 	<link rel="apple-touch-icon" href="{{ asset('assets/icon/'. APP_FAVICON_APPLE .'.png') }}">
 	<link rel="shortcut icon" type="image/x-icon" href="{{ asset('assets/icon/'. APP_FAVICON .'.ico') }}">
@@ -20,7 +20,7 @@
 	@include('template.global_css')
 
 </head>
-<body class="vertical-layout vertical-compact-menu 2-columns   menu-expanded fixed-navbar" data-open="click" data-menu="vertical-compact-menu" data-col="2-columns">
+<body class="vertical-layout vertical-compact-menu 2-columns menu-expanded fixed-navbar" data-open="click" data-menu="vertical-compact-menu" data-col="2-columns">
 
 	@include('template.top_nav')
 

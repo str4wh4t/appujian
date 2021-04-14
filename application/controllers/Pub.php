@@ -62,7 +62,10 @@ class Pub extends MY_Controller {
 	}
 	
 	public function c_user(){
-		show_404(); /* <--- DISABLED FUNCTION */
+		if(!is_cli()) show_404();
+
+		die('DISABLED');; /* <--- DISABLED FUNCTION */
+
 		$data_mhs = Mhs_orm::all();
 		foreach($data_mhs as $data) {
 			$nama       = explode(' ', $data->nama, 2);
@@ -113,6 +116,8 @@ class Pub extends MY_Controller {
 	public function asign_prodi(){
 		if(!is_cli()) show_404();
 
+		die('DISABLED');; /* <--- DISABLED FUNCTION */
+
 		$mhs_source = Mhs_source_orm::all();
 		$i = 0;
 		foreach($mhs_source as $m){
@@ -140,6 +145,8 @@ class Pub extends MY_Controller {
 	public function perbaiki(){
 		if(!is_cli()) show_404();
 
+		die('DISABLED');; /* <--- DISABLED FUNCTION */
+
 		$mhs_list = Mhs_orm::whereNotNull('no_billkey')->get();
 		$i = 0;
 		foreach($mhs_list as $mhs){
@@ -153,11 +160,14 @@ class Pub extends MY_Controller {
 				echo "\n";
 				$i++;
 		}
-		die('DONE, j = ' . $i);
+		die('DONE, jml diproses = ' . $i);
 	}
 	
 	public function asign_ujian(){
 		if(!is_cli()) show_404();
+
+		die('DISABLED');; /* <--- DISABLED FUNCTION */
+
 		$mhs_list = Mhs_orm::whereNotNull('no_billkey')->get();
 		$i = 0;
 		$matkul_id = 25;
@@ -181,28 +191,14 @@ class Pub extends MY_Controller {
 				}
 			}
 		}
-		die('DONE, j = ' . $i);
+		die('DONE, jml diproses = ' . $i);
 	}
 	
 	
 	public function socket(){
 		if(!is_cli()) show_404();
-		
-		// $wsServer = new WsServer(new Chat());
-		
-		// $server = IoServer::factory(
-		//     new HttpServer(
-		//         $wsServer
-		//     ),
-		//     8080
-		// );
-		
-		// $wsServer->enableKeepAlive($server->loop, 30);
-		
-		// $server->run();
 
 		$this->socket->run();
-
 	}
 	
 	public function cron_auto_start_ujian_for_unstarted_participants(){
@@ -229,6 +225,11 @@ class Pub extends MY_Controller {
 			$cron_end = date("Y-m-d H:i:s", strtotime("+1 minutes"));
 			foreach ($mhs_ujian_list as $mu) {
 
+				$today = date('Y-m-d H:i:s');
+				if($today > $cron_end){
+					die('Waktu cron habis');
+				}
+
 				echo 'ID : Mujian : ' . $mu->ujian_id . "\n";
 
 				$m_ujian = $m_ujian_orm->where(['id_ujian' => $mu->ujian_id, 'status_ujian' => 1])->first();
@@ -238,11 +239,6 @@ class Pub extends MY_Controller {
 					break;
 				}
 				
-				$today = date('Y-m-d H:i:s');
-				if($today > $cron_end){
-					echo 'break';
-					break;
-				}
 				
 				$date_end = date('Y-m-d H:i:s', strtotime($m_ujian->terlambat));
 				if ($today < $date_end){
@@ -369,8 +365,7 @@ class Pub extends MY_Controller {
 			foreach($h_ujian_list as $h_ujian){
 				$today = date('Y-m-d H:i:s');
 				if($today > $cron_end){
-					echo 'break';
-					break;
+					die('Waktu cron habis');
 				}
 				// $date_end = date('Y-m-d H:i:s', strtotime($h_ujian->m_ujian->terlambat));
 				$date_end = date('Y-m-d H:i:s', strtotime($h_ujian->tgl_selesai));
@@ -1299,6 +1294,12 @@ class Pub extends MY_Controller {
 		echo 'END <<=' . "\n" ;
 
 	}
+
+	// function tess(){
+
+	// 	// $localIP = getHostByName(getHostName());
+	// 	// echo get_client_ip(); 
+	// }
 
 	// function tes(){
 		

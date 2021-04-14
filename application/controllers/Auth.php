@@ -11,6 +11,7 @@ use Orm\Paket_history_orm;
 use Orm\Mhs_matkul_orm;
 use Orm\Paket_orm;
 use Orm\Mhs_ujian_orm;
+use Orm\Users_temp_orm;
 
 class Auth extends CI_Controller
 {
@@ -223,8 +224,12 @@ class Auth extends CI_Controller
 		// return $current_date ;
 	}
 
-	
 	public function registrasi(){
+
+		if ($this->ion_auth->logged_in()){
+			redirect('dashboard');
+		}
+					
 		$data = [];
 		$data['error_register_user'] = null;
 
@@ -243,7 +248,7 @@ class Auth extends CI_Controller
 				$this->form_validation->set_rules('full_name', 'Email', 'required|trim|min_length[3]|max_length[250]');
 				$this->form_validation->set_rules('nik', 'Nik', 'exact_length[' . NIK_LENGTH . ']|is_unique[mahasiswa.nik]');
 				$this->form_validation->set_rules('email', 'Email', 'required|trim|max_length[250]|valid_email|is_unique[users.email]');
-				$this->form_validation->set_rules('telp', 'Telp', 'required');
+				$this->form_validation->set_rules('telp', 'Telp', 'required|max_length[20]');
 				$this->form_validation->set_rules('jenis_kelamin', 'Jenis Kelamin', 'required|in_list[L,P]');
 				$this->form_validation->set_rules('kota_asal', 'Kota Asal', 'required|trim|min_length[3]|max_length[250]');
 				$this->form_validation->set_rules('tmp_lahir', 'Tmp Lahir', 'required|trim|min_length[3]|max_length[250]');
@@ -280,132 +285,34 @@ class Auth extends CI_Controller
 					// redirect('auth/registrasi', 'refresh');
 				}else{
 
-					// MENDAFTARKAN SBG USER
-					$nama       = explode(' ', $this->input->post('full_name'), 2);
-					$first_name = $nama[0];
-					$last_name  = end($nama);
-					$full_name  = $this->input->post('full_name');
-	
-	
-	
-					$username        = date('ymdHis'); // USERNAME DIGENERATE OTOMATIS
-					$password        = $this->input->post('password');
-					$email           = $this->input->post('email');
-					$email = strtolower($email); // KARAKTER DIKECILKAN
-	
-					$additional_data = [
-						'first_name' => $first_name,
-						'last_name'  => $last_name,
-						'full_name'  => $full_name,
-						'phone'		=> $this->input->post('telp'),
-						'no_billkey'		=> $username, // BILLKEY DISAMAKAN DENGN USERNAME
-					];
-					$group           = [MHS_GROUP_ID]; // Sets user to mhs.
-
-					$return_id_user = null ;
-	
 					try {
 
-						$return_id_user = $this->ion_auth->register($username, $password, $email, $additional_data, $group);
-	
-						if($return_id_user == false){
-							throw new Exception('Pendaftaran gagal, silahkan ulangi.');
-						}
-
 						begin_db_trx();
-	
-						$mhs = new Mhs_orm;
-						$id_mahasiswa = $return_id_user;
 
-						while(strlen($id_mahasiswa) < JML_DIGIT_ID_MHS){
-							if(strlen($id_mahasiswa) == 9){
-								$id_mahasiswa = PREFIX_ID_MHS . $id_mahasiswa ;
-							}else{
-								$id_mahasiswa = '0' . $id_mahasiswa ;
-							}
-						}
+						$users_temp = new Users_temp_orm();
+						$users_temp->full_name = $this->input->post('full_name');
+						$users_temp->nik = $this->input->post('nik');
+						$users_temp->email = $this->input->post('email');
+						$users_temp->phone = $this->input->post('telp');
+						$users_temp->jenis_kelamin = $this->input->post('jenis_kelamin');
+						$users_temp->kota_asal = $this->input->post('kota_asal');
+						$users_temp->tmp_lahir = $this->input->post('tmp_lahir');
+						$users_temp->tgl_lahir = $this->input->post('tgl_lahir');
+						$users_temp->password = $this->input->post('password');
+						$users_temp->save();
 
-						$tmp_lahir = $this->input->post('tmp_lahir');
-						$kota_asal = $this->input->post('kota_asal');
-
-						// CEK NAMA KOTA 
-						Data_daerah_orm::where('kota_kab', $tmp_lahir)->firstOrFail();
-						Data_daerah_orm::where('kota_kab', $kota_asal)->firstOrFail();
-
-						$mhs->id_mahasiswa = $id_mahasiswa;
-						$mhs->nim = $username;
-						$mhs->nama = $this->input->post('full_name');
-						$mhs->nik = $this->input->post('nik');
-						$mhs->tmp_lahir = $tmp_lahir;
-						$mhs->tgl_lahir = $this->input->post('tgl_lahir');
-						$mhs->email = $email;
-						$mhs->jenis_kelamin = $this->input->post('jenis_kelamin');
-						$mhs->kota_asal = $kota_asal;
-						$mhs->save();
-
-						$membership = Membership_orm::findOrFail(MEMBERSHIP_ID_DEFAULT);
-						
-						$membership_expiration_date = date('Y-m-d', strtotime("+". $membership->durasi ." months", strtotime(date('Y-m-d'))));
-
-						$membership_history = new Membership_history_orm();
-						$membership_history->mahasiswa_id = $id_mahasiswa;
-						$membership_history->membership_id = $membership->id ;
-						$membership_history->upgrade_ke = 0 ;
-						// $membership_history->sisa_kuota_latihan_soal = $membership_sisa_kuota_latihan_soal ;
-						$membership_history->expired_at = $membership_expiration_date;
-						$membership_history->stts =  MEMBERSHIP_STTS_AKTIF ;
-						$membership_history->save();
-
-						$paket_bonus_membership = get_paket_bonus_membership($membership);
-
-						if (!empty($paket_bonus_membership)) {
-							foreach ($paket_bonus_membership as $paket) {
-
-								$paket_history = new Paket_history_orm();
-								$paket_history->mahasiswa_id = $id_mahasiswa;
-								$paket_history->paket_id = $paket->id ;
-								$paket_history->upgrade_ke = 0 ;
-								$paket_history->stts =  PAKET_STTS_AKTIF ;
-								$paket_history->save();
-
-								foreach($paket->matkul as $matkul){
-									$mhs_matkul_orm = new Mhs_matkul_orm();
-									$mhs_matkul_orm->mahasiswa_id = $id_mahasiswa;
-									$mhs_matkul_orm->matkul_id = $matkul->id_matkul;
-									$mhs_matkul_orm->sisa_kuota_latihan_soal = $paket->kuota_latihan_soal ;
-									$mhs_matkul_orm->save();
-
-									if($matkul->m_ujian->isNotEmpty()){
-										foreach($matkul->m_ujian as $m_ujian){
-											$mhs_ujian = new Mhs_ujian_orm();
-											$mhs_ujian->mahasiswa_matkul_id = $mhs_matkul_orm->id;
-											$mhs_ujian->ujian_id = $m_ujian->id_ujian;
-											$mhs_ujian->save();
-										}
-									}
-								}
-							}
-						}
-						
 						commit_db_trx();
 
 						$this->session->set_flashdata('success_registrasi_msg', 'Pendaftaran berhasil, silahkan cek email untuk aktivasi');
 						redirect('auth/registrasi', 'refresh');
-	
+
 					} catch (Exception $e) {
 						rollback_db_trx();
-						$this->ion_auth->delete_user($return_id_user); // UNREGISTER USER
-						// $this->session->set_flashdata('error_registrasi_msg', '<li>' . $e->getMessage();  . '</li>');
-						// redirect('auth/registrasi', 'refresh');
 						$data['error_register_user'] = $e->getMessage(); 
 					}
+				
 				}
 
-
-			} else {
-				// $errors = $resp->getErrorCodes();
-				$this->session->set_flashdata('error_registrasi_msg', 'Oops, maaf ulangi isian anda.');
-				redirect('auth/registrasi', 'refresh');
 			}
 
 		}
@@ -413,6 +320,145 @@ class Auth extends CI_Controller
 		$data['kota_kab_list'] = Data_daerah_orm::all();
 
 		view('auth/registrasi', $data);
+
+	}
+
+	
+	public function bot_registrasi(){
+
+		if(!is_cli()) show_404();
+
+		$users_temp_list = Users_temp_orm::where('is_processed', 0)->orderBy('created_at')->get();
+		
+		if($users_temp_list->isNotEmpty()) {
+			$cron_end = date("Y-m-d H:i:s", strtotime("+1 minutes"));
+
+			foreach ($users_temp_list as $users_temp) {
+				$today = date('Y-m-d H:i:s');
+				if($today > $cron_end){
+					die('Waktu cron habis');
+				}
+
+				echo 'Nama : '. strtoupper($users_temp->full_name) ." ===> ";
+
+				// MENDAFTARKAN SBG USER
+				$nama       = explode(' ', $users_temp->full_name, 2);
+				$first_name = $nama[0];
+				$last_name  = end($nama);
+				$full_name  = $users_temp->full_name;
+		
+		
+		
+				$username        = date('ymdHis'); // USERNAME DIGENERATE OTOMATIS
+				$password        = $users_temp->password;
+				$email           = $users_temp->email;
+				$email = strtolower($email); // KARAKTER DIKECILKAN
+		
+				$additional_data = [
+					'first_name' => $first_name,
+					'last_name'  => $last_name,
+					'full_name'  => $full_name,
+					'phone'		 => $users_temp->phone,
+					'no_billkey' => $username, // BILLKEY DISAMAKAN DENGN USERNAME
+				];
+				$group           = [MHS_GROUP_ID]; // Sets user to mhs.
+		
+				$return_id_user = null ;
+		
+				try {
+		
+					$return_id_user = $this->ion_auth->register($username, $password, $email, $additional_data, $group);
+		
+					if($return_id_user == false){
+						throw new Exception('Pendaftaran gagal, silahkan ulangi.');
+					}
+		
+					begin_db_trx();
+		
+					$mhs = new Mhs_orm;
+					$id_mahasiswa = $return_id_user;
+		
+					while(strlen($id_mahasiswa) < JML_DIGIT_ID_MHS){
+						if(strlen($id_mahasiswa) == 9){
+							$id_mahasiswa = PREFIX_ID_MHS . $id_mahasiswa ;
+						}else{
+							$id_mahasiswa = '0' . $id_mahasiswa ;
+						}
+					}
+		
+					$mhs->id_mahasiswa = $id_mahasiswa;
+					$mhs->nim = $username;
+					$mhs->nama = $users_temp->full_name;
+					$mhs->nik = $users_temp->nik;
+					$mhs->tmp_lahir = $users_temp->tmp_lahir;
+					$mhs->tgl_lahir = $users_temp->tgl_lahir;
+					$mhs->email = $email;
+					$mhs->jenis_kelamin = $users_temp->jenis_kelamin;
+					$mhs->kota_asal = $users_temp->kota_asal;
+					$mhs->save();
+		
+					$membership = Membership_orm::findOrFail(MEMBERSHIP_ID_DEFAULT);
+					
+					$membership_expiration_date = date('Y-m-d', strtotime("+". $membership->durasi ." months", strtotime(date('Y-m-d'))));
+		
+					$membership_history = new Membership_history_orm();
+					$membership_history->mahasiswa_id = $id_mahasiswa;
+					$membership_history->membership_id = $membership->id ;
+					$membership_history->upgrade_ke = 0 ;
+					// $membership_history->sisa_kuota_latihan_soal = $membership_sisa_kuota_latihan_soal ;
+					$membership_history->expired_at = $membership_expiration_date;
+					$membership_history->stts =  MEMBERSHIP_STTS_AKTIF ;
+					$membership_history->save();
+
+					$paket_bonus_membership = get_paket_bonus_membership($membership);
+		
+					if (!empty($paket_bonus_membership)) {
+						foreach ($paket_bonus_membership as $paket) {
+		
+							$paket_history = new Paket_history_orm();
+							$paket_history->mahasiswa_id = $id_mahasiswa;
+							$paket_history->paket_id = $paket->id ;
+							$paket_history->upgrade_ke = 0 ;
+							$paket_history->stts =  PAKET_STTS_AKTIF ;
+							$paket_history->save();
+		
+							foreach($paket->matkul as $matkul){
+								$mhs_matkul_orm = new Mhs_matkul_orm();
+								$mhs_matkul_orm->mahasiswa_id = $id_mahasiswa;
+								$mhs_matkul_orm->matkul_id = $matkul->id_matkul;
+								$mhs_matkul_orm->sisa_kuota_latihan_soal = $paket->kuota_latihan_soal ;
+								$mhs_matkul_orm->save();
+		
+								if($matkul->m_ujian->isNotEmpty()){
+									foreach($matkul->m_ujian as $m_ujian){
+										$mhs_ujian = new Mhs_ujian_orm();
+										$mhs_ujian->mahasiswa_matkul_id = $mhs_matkul_orm->id;
+										$mhs_ujian->ujian_id = $m_ujian->id_ujian;
+										$mhs_ujian->save();
+									}
+								}
+							}
+						}
+					}
+
+
+					$users_temp->is_processed = 1 ; //  FLAG SUDAH DIPROSES
+					$users_temp->save();
+
+					echo 'DONE' . "\n";
+					
+					commit_db_trx();
+		
+				} catch (Exception $e) {
+					rollback_db_trx();
+					$this->ion_auth->delete_user($return_id_user); // UNREGISTER USER
+					echo 'Terjadi kesalahan : ' . $e->getMessage() . "\n";
+					continue;
+				}
+			}
+
+		}
+
 	}
 
 	public function resend_password()

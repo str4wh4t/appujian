@@ -571,7 +571,9 @@ function selesai(ended_by = '') {
                     title: "Perhatian",
                     text: "Ujian telah selesai, anda akan keluar ujian dalam 3 detik",
                     icon: "success",
-                    confirmButtonText: "Keluar Sekarang"
+                    confirmButtonText: "Keluar Sekarang",
+                    allowOutsideClick: false,
+                    allowEscapeKey: false,
                 }).then(result => {
 			        if (result.value) {
                         window.location.href = '{{ url('ujian/list') }}';
@@ -586,7 +588,9 @@ function selesai(ended_by = '') {
             Swal.fire({
                 title: "Perhatian",
                 text: "Ujian telah selesai, Anda akan keluar ujian dalam 3 detik", // INI TERJADI JIKA TELAH FINISH OLEH CRON TP FUNGSI SELESAI TELAT DITRIGER PESERTA
-                icon: "warning"
+                icon: "warning",
+                allowOutsideClick: false,
+                allowEscapeKey: false,
             });
             setTimeout(function() {
                 window.location.href = '{{ url('ujian/list') }}';

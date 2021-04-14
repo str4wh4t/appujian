@@ -213,7 +213,6 @@ $('form#form_reset_password_by_admin').on('submit', function (e) {
                             <div class="box-body pb-0">
                                 <div class="form-group">
                                     <select id="status" name="status" class="form-control select2" style="width: 100%!important">
-                                        <option value="">Pilih Status</option>
                                         @php($status_list = ["0" => "Non Aktif", "1" => "Aktif"])
                                         @foreach ($status_list as $val => $status)
                                             <option {{ $users->active == $val ? 'selected="selected"' : '' }} value="{{ $val }}">{{ $status }}</option>

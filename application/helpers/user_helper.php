@@ -163,23 +163,26 @@ function is_valid_order_membership($membership_id,Mhs_orm $mhs){
 }
 
 
-function is_mhs_membership_expired(int $user_id = null): bool{
-	$ci =& get_instance();
-
-	$user = $ci->ion_auth->user()->row();
-
-	if($ci->ion_auth->in_group('mahasiswa'))
+# function is_mhs_membership_expired(int $user_id = null): bool{
+function is_mhs_membership_expired(Mhs_orm $mhs = null): bool{
+	
+	if(null === $mhs){
+		$ci =& get_instance();
+		$user = $ci->ion_auth->user()->row();
 		$user_orm = Users_orm::findOrFail($user->id);
-	else
-		$user_orm = Users_orm::findOrFail($user_id);
+		$mhs = $user_orm->mhs ;
+	}
 
-	$mhs_membership = get_mhs_aktif_membership($user_orm->mhs);
-	$expired_at = new Carbon($mhs_membership->expired_at);
-	$today = new Carbon();
+	$mhs_membership = get_mhs_aktif_membership($mhs);
 
 	$expired = false ;
-	if($today->greaterThan($expired_at)){
-		$expired = true;
+	if($mhs_membership->membership_id != MEMBERSHIP_ID_DEFAULT){
+		$expired_at = new Carbon($mhs_membership->expired_at);
+		$today = new Carbon();
+
+		if($today->greaterThan($expired_at)){
+			$expired = true;
+		}
 	}
 
 	return $expired;
@@ -190,13 +193,22 @@ function get_paket_bonus_membership(Membership_orm $membership){
 	return Paket_orm::whereIn('id', $membership_id)->get();
 }
 
-function is_mhs_limit_by_kuota(): bool{
+function is_mhs_limit_by_kuota(Mhs_orm $mhs = null): bool{
 	$is_limit_by_kuota = false ;
-	$mhs_aktif_membership = get_mhs_aktif_membership();
+
+	if(null === $mhs){
+		$ci =& get_instance();
+		$user = $ci->ion_auth->user()->row();
+		$user_orm = Users_orm::findOrFail($user->id);
+		$mhs = $user_orm->mhs ;
+	}
+
+	$mhs_aktif_membership = get_mhs_aktif_membership($mhs);
+
 	if($mhs_aktif_membership->membership_id == MEMBERSHIP_ID_DEFAULT){
 		$is_limit_by_kuota = true ;
 	}else{
-		if(is_mhs_membership_expired()){
+		if(is_mhs_membership_expired($mhs)){
 			$is_limit_by_kuota = true ;
 		}
 	}

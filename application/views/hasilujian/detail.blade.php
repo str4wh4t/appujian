@@ -187,9 +187,9 @@ $(document).on('click','.btn_reset_hasil',function(){
         
     @endif
 
-    <div class="col-md-12 mb-4 mt-2">
-        <div class="table-responsive pb-3" style="border: 0">
-            <table id="detail_hasil" class="w-100 table table-striped table-bordered table-hover">
+    <div class="col-md-12 mt-2">
+        <div class="table-responsive pb-2">
+            <table id="detail_hasil" class="table table-striped table-bordered table-hover w-100">
             <thead>
                 <tr>
                     <th>No.</th>
@@ -202,18 +202,6 @@ $(document).on('click','.btn_reset_hasil',function(){
                     <th>Aksi</th>
                 </tr>
             </thead>
-            <tfoot>
-                <tr>
-                    <th>No.</th>
-                    <th>No Peserta</th>
-                    <th>Nama</th>
-                    <th>Nilai Per Topik</th>
-{{--                    <th>Jml Salah</th>--}}
-                    <th>Bobot</th>
-                    <th>Nilai</th>
-                    <th>Aksi</th>
-                </tr>
-            </tfoot>
             </table>
         </div>
     </div>

@@ -10,7 +10,6 @@
 <!-- BEGIN PAGE VENDOR JS-->
 <script src="{{ asset('assets/template/robust/app-assets/vendors/js/tables/datatable/datatables.min.js') }}"></script>
 <script src="{{ asset('assets/yarn/node_modules/datatables.net-plugins/api/fnPagingInfo.js') }}"></script>
-<script type="text/javascript" src="{{ MIDTRANS_SNAP_JS_URL }}" data-client-key="{{ MIDTRANS_CLIENT_KEY }}"></script>
 <!-- END PAGE LEVEL JS-->
 @endpush
 
@@ -85,8 +84,8 @@ function init_page_level(){
 <div class="row">
     <div class="col-12">
         <div class="alert bg-info mb-3"><i class="fa fa-exclamation-triangle"></i> Pembayaran terbaru diproses sekitar 1 menit untuk proses update data</div>
-        <div class="table-responsive col-sm-12">
-            <table class="table table-striped" id="tb_history">
+        <div class="table-responsive">
+            <table class="table table-striped w-100" id="tb_history">
                 <thead>
                     <tr>
                         <th>Order Nmr</th>

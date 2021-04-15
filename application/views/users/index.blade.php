@@ -286,7 +286,10 @@ $(document).on('click','#btn_simpan_penyusun_soal',function(){
             </div>
         </div>
     </div>
+</div>
+<div class="row">
     <div class="col-12">
+        <div class="table-responsive pb-2">
         <table id="users" class="table table-striped table-bordered table-hover w-100">
             <thead>
                 <tr>
@@ -301,6 +304,7 @@ $(document).on('click','#btn_simpan_penyusun_soal',function(){
                 </tr>
             </thead>
         </table>
+        </div>
     </div>
 </div>
 <!---- --->

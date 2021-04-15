@@ -160,6 +160,7 @@ $(document).on('change','#tahun_filter', function(){
 <div class="row">
     <div class="col-md-12">
     <?= form_open('', array('id' => 'bulk')); ?>
+    <div class="table-responsive pb-2">
         <table id="mahasiswa" class="table table-striped table-bordered table-hover w-100">
             <thead>
                 <tr>
@@ -177,7 +178,8 @@ $(document).on('change','#tahun_filter', function(){
                 </tr>
             </thead>
         </table>
-        <?= form_close() ?>
+    </div>
+    <?= form_close() ?>
     </div>
 </div>
 

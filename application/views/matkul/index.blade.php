@@ -42,8 +42,8 @@
 
 
 <!---- --->
-<div class="box">
-    <div class="box-body">
+<div class="row">
+    <div class="col-md-12">
 		<div class="mb-4">
 			<button type="button" data-toggle="modal" data-target="#myModal" class="btn btn-sm btn-flat btn-outline-primary"><i class="fa fa-plus"></i> Tambah Data</button>
 {{--			<a href="{{ site_url('matkul/import') }}" class="btn btn-sm btn-flat btn-success"><i class="fa fa-upload"></i> Import</a>--}}
@@ -53,8 +53,13 @@
 				<button onclick="bulk_delete()" class="btn btn-sm btn-flat btn-danger" type="button"><i class="fa fa-trash"></i> Delete</button>
 			</div>
 		</div>
+	</div>
+</div>
+<div class="row">
+    <div class="col-md-12">
         <?= form_open('', array('id' => 'bulk')) ?>
-		<table id="matkul" class="table table-striped table-bordered table-hover">
+		<div class="table-responsive pb-2">
+		<table id="matkul" class="table table-striped table-bordered table-hover w-100">
 			<thead>
 				<tr>
 					<th class="text-center">
@@ -67,6 +72,7 @@
 				</tr>
 			</thead>
 		</table>
+		</div>
 		<?= form_close() ?>
     </div>
 </div>

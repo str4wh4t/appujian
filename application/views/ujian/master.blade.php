@@ -62,14 +62,14 @@
 
 <!---- --->
 <div class="row pb-3">
-    <div class="col-md-4">
+    <div class="col-sm-4">
     @if(is_admin())
         <a href="{{ site_url('ujian/add') }}" class="btn btn-outline-primary btn-sm btn-flat"><i class="fa fa-file-text-o"></i> Ujian Baru</a>
     @endif
     <button type="button" onclick="reload_ajax()" class="btn btn-sm btn-flat btn-outline-secondary"><i class="fa fa-refresh"></i> Reload</button>
     </div>
 
-    <div class="col-md-4" style="text-align: center">
+    <div class="col-sm-4" style="text-align: center">
         <select name="status_ujian" id="status_ujian" class="select2" >
             <option value="active">ACTIVE</option>
             <option value="close">CLOSE</option>
@@ -78,7 +78,7 @@
         </select>
     </div>
 
-    <div class="col-md-4">
+    <div class="col-sm-4">
     @if(is_admin())
     <div class="pull-right">
         <button type="button" onclick="bulk_delete()" class="btn btn-sm btn-flat btn-danger"><i class="fa fa-trash"></i> Bulk Delete</button>
@@ -91,7 +91,7 @@
 <div class="row">
     <div class="col-md-12">
 	<?=form_open('ujian/delete', array('id'=>'bulk'))?>
-    <div class="table-responsive" style="">
+    <div class="table-responsive pb-2">
         <table id="ujian" class="table table-striped table-bordered table-hover w-100">
         <thead>
             <tr>

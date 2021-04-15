@@ -134,8 +134,8 @@ $(document).on('click', '#btn_checkout', function(){
 <div class="row">
     <div class="col-12">
         <div class="alert bg-info">Rincian Pembelian</div>
-        <div class="table-responsive col-sm-12">
-            <table class="table">
+        <div class="table-responsive">
+            <table class="table w-100">
                 <thead>
                     <tr>
                         <th>{{ substr($info, 0, 1) == 'M' ? 'Membership' : 'Paket' }}</th>

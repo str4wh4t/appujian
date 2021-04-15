@@ -14,9 +14,9 @@ $(document).ready(function() {
         },
         lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
         dom:
-            "<'row'<'col-sm-3'l><'col-sm-6 text-center'B><'col-sm-3'f>>" +
-            "<'row'<'col-sm-12'tr>>" +
-            "<'row'<'col-sm-5'i><'col-sm-7'p>>",
+            "<'row'<'col-lg-3'l><'col-lg-6 text-center'B><'col-lg-3'f>>" +
+            "<'row'<'col-lg-12'tr>>" +
+            "<'row'<'col-lg-5'i><'col-lg-7'p>>",
         buttons: [
             {
                 extend: "copy",
@@ -110,10 +110,10 @@ $(document).ready(function() {
             var index = page * length + (iDisplayIndex + 1);
             $("td:eq(0)", row).html(index);
         },
-        scrollX:        true,
-        fixedColumns:   {
-            leftColumns: 3,
-        }
+        // scrollX:        true,
+        // fixedColumns:   {
+        //     leftColumns: 3,
+        // }
     });
 
     // table

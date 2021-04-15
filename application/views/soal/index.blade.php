@@ -149,9 +149,8 @@
 		</div>
 	</div>
 	<?=form_open('', array('id'=>'bulk'))?>
-	<div style="overflow-x: ">
-		<div class="table-responsive pb-2 w-100" style="border: 0">
-			<table id="soal" class="table table-striped table-bordered table-hover">
+		<div class="table-responsive pb-2">
+			<table id="soal" class="table table-striped table-bordered table-hover w-100">
 			<thead>
 				<tr>
 					<th class="text-center">
@@ -184,7 +183,6 @@
 	{{--		</tfoot>--}}
 			</table>
 		</div>
-	</div>
 	<?=form_close();?>
 </div>
 

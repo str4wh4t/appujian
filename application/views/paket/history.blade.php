@@ -10,7 +10,6 @@
 <!-- BEGIN PAGE VENDOR JS-->
 <script src="{{ asset('assets/template/robust/app-assets/vendors/js/tables/datatable/datatables.min.js') }}"></script>
 <script src="{{ asset('assets/yarn/node_modules/datatables.net-plugins/api/fnPagingInfo.js') }}"></script>
-<script type="text/javascript" src="{{ MIDTRANS_SNAP_JS_URL }}" data-client-key="{{ MIDTRANS_CLIENT_KEY }}"></script>
 <!-- END PAGE LEVEL JS-->
 @endpush
 
@@ -101,8 +100,8 @@ function init_page_level(){
         <div class="tab-content px-1 pt-1">
             <div role="tabpanel" class="tab-pane active" id="active1" aria-labelledby="active-tab1" aria-expanded="true">
                 <div class="alert bg-info text-center">Riwayat pembelian paket anda</div>
-                <div class="table-responsive col-sm-12">
-                    <table class="table table-striped" id="tb_history">
+                <div class="table-responsive">
+                    <table class="table table-striped w-100" id="tb_history">
                         <thead>
                             <tr>
                                 <th>Paket</th>

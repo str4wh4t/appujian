@@ -212,6 +212,7 @@ use Illuminate\Database\Capsule\Manager as DB;
                             </ul>
                         </div>
                     </div>
+                    <div class="table-responsive pb-2">
                     <table class="table table-striped w-100">
                         <thead>
                             <tr>
@@ -299,6 +300,7 @@ use Illuminate\Database\Capsule\Manager as DB;
 
                         </tbody>
                     </table>
+                    </div>
                     <!---- --->
                 </div>
             </div>

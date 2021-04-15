@@ -42,8 +42,8 @@
 
 
 <!---- --->
-<div class="box">
-    <div class="box-body">
+<div class="row">
+    <div class="col-md-12">
 		<div class="mb-4">
             <a href="{{ site_url('dosen/add') }}" class="btn btn-sm btn-outline-primary btn-flat"><i class="fa fa-plus"></i> Tambah Data</a>
 {{--            <a href="{{ site_url('dosen/import') }}" class="btn btn-sm btn-flat btn-success"><i class="fa fa-upload"></i> Import</a>--}}
@@ -52,22 +52,28 @@
                 <button onclick="bulk_delete()" class="btn btn-sm btn-danger btn-flat" type="button"><i class="fa fa-trash"></i> Delete</button>
             </div>
 		</div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12">
         <?= form_open('', array('id' => 'bulk')) ?>
-        <table id="dosen" class="table table-striped table-bordered table-hover w-100">
-            <thead>
-                <tr>
-                    <th>No.</th>
-                    <th>NIP</th>
-                    <th>Nama Dosen</th>
-                    <th>Email</th>
-                    <th>Materi Ujian</th>
-                    <th>Aksi</th>
-                    <th class="text-center">
-                        <input type="checkbox" class="select_all">
-                    </th>
-                </tr>
-            </thead>
-        </table>
+        <div class="table-responsive pb-2">
+            <table id="dosen" class="table table-striped table-bordered table-hover w-100">
+                <thead>
+                    <tr>
+                        <th>No.</th>
+                        <th>NIP</th>
+                        <th>Nama Dosen</th>
+                        <th>Email</th>
+                        <th>Materi Ujian</th>
+                        <th>Aksi</th>
+                        <th class="text-center">
+                            <input type="checkbox" class="select_all">
+                        </th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
         <?= form_close() ?>
     </div>
 </div>

@@ -41,8 +41,8 @@
             <div class="card-content">
                 <div class="card-body">
 <!---- --->
-<div class="box">
-    <div class="box-body">
+<div class="row">
+    <div class="col-md-12">
 		<div class="mb-4">
 			<a href="{{ site_url('soal/add_bobot_soal') }}" class="btn btn-sm btn-flat btn-outline-primary"><i class="fa fa-plus"></i> Tambah Data</a>
 			<button type="button" onclick="reload_ajax()" class="btn btn-sm btn-flat btn-outline-secondary"><i class="fa fa-refresh"></i> Reload</button>
@@ -55,18 +55,20 @@
 </div>
 <div class="row">
     <div class="col-md-12">
-        <table id="bobot_soal" class="table table-striped table-bordered table-hover">
-			<thead>
-				<tr>
-					<th>Bobot</th>
-					<th>Nilai</th>
-                    <th>Jml Soal</th>
-					<th>
-						Aksi
-					</th>
-				</tr>
-			</thead>
-		</table>
+		<div class="table-responsive pb-2">
+			<table id="bobot_soal" class="table table-striped table-bordered table-hover w-100">
+				<thead>
+					<tr>
+						<th>Bobot</th>
+						<th>Nilai</th>
+						<th>Jml Soal</th>
+						<th>
+							Aksi
+						</th>
+					</tr>
+				</thead>
+			</table>
+		</div>
     </div>
 </div>
 <!---- --->

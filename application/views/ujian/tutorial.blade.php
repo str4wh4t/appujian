@@ -428,19 +428,21 @@ function wrap_navigasi(){
 /** [START] FUNGSI SELESAI UJIAN */
 function selesai(ended_by = '') {
 
-ajx_overlay(true);
+    ajx_overlay(true);
 
-setTimeout(function(){
-    Swal.fire({
-        title: "Perhatian",
-        text: "Ujian telah selesai, anda akan keluar ujian dalam 3 detik",
-        icon: "success"
-    });
-    ajx_overlay(false);
     setTimeout(function(){
-        location.href = '{{ url('ujian/list') }}' ;
-    }, 3000);
- }, 2000);
+        Swal.fire({
+            title: "Perhatian",
+            text: "Ujian telah selesai, anda akan keluar ujian dalam 3 detik",
+            icon: "success",
+            allowOutsideClick: false,
+            allowEscapeKey: false,
+        });
+        ajx_overlay(false);
+        setTimeout(function(){
+            location.href = '{{ url('ujian/list') }}' ;
+        }, 3000);
+    }, 2000);
 
 }
 

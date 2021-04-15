@@ -149,7 +149,7 @@ function is_valid_order_membership($membership_id,Mhs_orm $mhs){
 			// JIKA PEMBELIAN DIATAS MEMBERSHIP TIDAK MELIHAT TGL EXPIRED
 			$is_valid_order_membership = true;
 		}else{
-			// JIKA PEMBELIAN SAMA / DIBAWAH MEMBERSHIP TIDAK MELIHAT TGL EXPIRED
+			// JIKA PEMBELIAN SAMA / DIBAWAH MEMBERSHIP MELIHAT TGL EXPIRED
 			$expired_at = new Carbon($mhs_aktif_membership->expired_at);
 			$today = new Carbon();
 

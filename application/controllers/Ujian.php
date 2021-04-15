@@ -1338,7 +1338,7 @@ class Ujian extends MY_Controller
 
 			// CEK UNTUK TRYOUT
 			if(APP_TYPE == 'tryout'){
-				$mhs_aktif_membership = get_mhs_aktif_membership($mhs);
+				// $mhs_aktif_membership = get_mhs_aktif_membership($mhs);
 				if($ujian->repeatable){
 					// JIKA UJIAN LATIHAN SOAL
 					// if($mhs_aktif_membership->membership->is_limit_by_kuota){

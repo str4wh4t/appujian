@@ -101,8 +101,8 @@ function init_page_level(){
                     <tr>
                         <td>{{ strtoupper($item->membership->name) }}</td>
                         <td>{{ $item->upgrade_ke }}</td>
-                        <td>{{ date('M d, Y', strtotime($item->expired_at)) }}</td>
-                        <td>{{ $item->created_at }}</td>
+                        <td>{{ $item->membership->id == MEMBERSHIP_ID_DEFAULT ? '-' : date('M d, Y', strtotime($item->expired_at)) }}</td>
+                        <td>{{ $item->membership->id == MEMBERSHIP_ID_DEFAULT ? '-' : $item->created_at }}</td>
                         <td>
                             @if ($item->stts)
                                 <span class="text-success"><b>AKTIF</b></span>

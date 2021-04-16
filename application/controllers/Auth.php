@@ -323,8 +323,7 @@ class Auth extends CI_Controller
 
 	}
 
-	
-	public function bot_registrasi(){
+	public function cron_auto_registrasi(){
 
 		if(!is_cli()) show_404();
 
@@ -451,8 +450,18 @@ class Auth extends CI_Controller
 		
 				} catch (Exception $e) {
 					rollback_db_trx();
-					$this->ion_auth->delete_user($return_id_user); // UNREGISTER USER
-					echo 'Terjadi kesalahan : ' . $e->getMessage() . "\n";
+
+					if(!empty($return_id_user)){
+						$users_temp->is_processed = 2 ; //  FLAG GAGAL DIPROSES
+						$this->ion_auth->delete_user($return_id_user); // UNREGISTER USER
+						echo 'Terjadi kesalahan memproses user : ' . $e->getMessage() . "\n";
+					}else{
+						$users_temp->is_processed = 3 ; //  FLAG GAGAL DIPROSES
+						echo 'Terjadi kesalahan menyimpan user : ' . $e->getMessage() . "\n";
+					}
+
+					$users_temp->save();
+
 					continue;
 				}
 			}

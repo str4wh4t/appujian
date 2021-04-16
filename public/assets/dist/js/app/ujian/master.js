@@ -170,14 +170,48 @@ $(document).ready(function () {
         // }
     });
 
-    $(document).on('change', '.select_all', function () {
-        $(this).is(':checked') ? $('.DTFC_LeftBodyLiner table .check').prop('checked', true) : $('.DTFC_LeftBodyLiner table .check').prop('checked', false);
-        $('.DTFC_LeftBodyLiner table .check').trigger('change');
-    });
+    // $(document).on('change', '.select_all', function () {
+        // $(this).is(':checked') ? $('.DTFC_LeftBodyLiner table .check').prop('checked', true) : $('.DTFC_LeftBodyLiner table .check').prop('checked', false);
+        // $('.DTFC_LeftBodyLiner table .check').trigger('change');
+    // });
 
-    $(document).on('change','.DTFC_LeftBodyLiner table .check',function () {
-        $(this).is(':checked') ? null : $('.select_all').prop('checked', false);
-    });
+    // $(document).on('change', '.select_all', function () {
+    //     $(this).is(':checked') ? $('#ujian tbody tr .check').prop('checked', true) : $('#ujian tbody tr .check').prop('checked', false);
+    //     // $('#ujian tbody tr .check').trigger('change');
+    // });
+
+    // $(document).on('change','.DTFC_LeftBodyLiner table .check',function () {
+        // $(this).is(':checked') ? null : $('.select_all').prop('checked', false);
+    // });
+
+    // $(document).on('change','#ujian tbody tr .check',function () {
+    //     $(this).is(':checked') ? null : $('.select_all').prop('checked', false);
+    // });
+
+    $(".select_all").on("click", function() {
+        if (this.checked) {
+          $(".check").each(function() {
+            this.checked = true;
+            $(".select_all").prop("checked", true);
+          });
+        } else {
+          $(".check").each(function() {
+            this.checked = false;
+            $(".select_all").prop("checked", false);
+          });
+        }
+      });
+    
+      $("#ujian tbody").on("click", "tr .check", function() {
+        var check = $("#ujian tbody tr .check").length;
+        var checked = $("#ujian tbody tr .check:checked").length;
+        if (check === checked) {
+          $(".select_all").prop("checked", true);
+        } else {
+          $(".select_all").prop("checked", false);
+        }
+      });
+
 
     // $('.select_all').on('click', function () {
     //     if (this.checked) {
@@ -265,8 +299,8 @@ $(document).ready(function () {
 
 function bulk_delete() {
     // console.log("$('#bulk').serialize()", $('#bulk').serialize());
-    // if ($('#ujian tbody tr .check:checked').length == 0) {
-    if ($('.DTFC_LeftBodyLiner table .check:checked').length == 0) {
+    if ($('#ujian tbody tr .check:checked').length == 0) {
+    // if ($('.DTFC_LeftBodyLiner table .check:checked').length == 0) {
         Swal.fire({
             title: "Gagal",
             text: 'Tidak ada data yang dipilih',

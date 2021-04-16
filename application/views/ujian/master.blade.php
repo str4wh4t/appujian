@@ -43,6 +43,7 @@
 		status_ujian = $(this).val();
 		table.ajax.reload();
 	});
+
 </script>
 <script src="{{ asset('assets/dist/js/app/ujian/master.js') }}"></script>
 <!-- END PAGE LEVEL JS-->

@@ -140,13 +140,37 @@ $(document).ready(function() {
   //   .container()
   //   .appendTo("#soal_wrapper .col-md-6:eq(0)");
 
-    $(document).on('change', '.select_all', function () {
-        $(this).is(':checked') ? $('table .check').prop('checked', true) : $('table .check').prop('checked', false);
-        $('.DTFC_LeftBodyLiner table .check').trigger('change');
-    });
+    // $(document).on('change', '.select_all', function () {
+    //     $(this).is(':checked') ? $('table .check').prop('checked', true) : $('table .check').prop('checked', false);
+    //     $('.DTFC_LeftBodyLiner table .check').trigger('change');
+    // });
 
-    $(document).on('change','table .check',function () {
-        $(this).is(':checked') ? null : $('.select_all').prop('checked', false);
+    // $(document).on('change','table .check',function () {
+    //     $(this).is(':checked') ? null : $('.select_all').prop('checked', false);
+    // });
+
+    $(".select_all").on("click", function() {
+      if (this.checked) {
+        $(".check").each(function() {
+          this.checked = true;
+          $(".select_all").prop("checked", true);
+        });
+      } else {
+        $(".check").each(function() {
+          this.checked = false;
+          $(".select_all").prop("checked", false);
+        });
+      }
+    });
+  
+    $("table tbody").on("click", "tr .check", function() {
+      var check = $("table tbody tr .check").length;
+      var checked = $("table tbody tr .check:checked").length;
+      if (check === checked) {
+        $(".select_all").prop("checked", true);
+      } else {
+        $(".select_all").prop("checked", false);
+      }
     });
 
   // $(".select_all").on("click", function() {

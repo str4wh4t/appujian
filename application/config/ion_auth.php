@@ -131,7 +131,7 @@ $config['argon2_admin_params']		= [
 | This is an arbitrary (long) value to protect against DOS attack.
 */
 $config['site_title']                 = APP_NAME;  // TAMPIL SBG PENGIRIM PADA EMAIL KONFIRMASI      // Site Title, example.com
-$config['admin_email']                = "ujian@undip.ac.id"; // Admin Email, admin@example.com
+$config['admin_email']                = ADMIN_EMAIL; // Admin Email, admin@example.com
 $config['default_group']              = 'members';           // Default group, use name
 $config['admin_group']                = 'admin';             // Default administrators group, use name
 $config['identity']                   = 'username';         /* You can use any unique column in your table as identity column.
@@ -173,19 +173,7 @@ $config['remember_cookie_name'] = 'remember_code';
  | 	  array  = Manually set your email config settings
  */
 $config['use_ci_email'] = TRUE; // Send Email using the builtin CI email class, if false it will return the code and the identity
-$config['email_config'] = [
-	// 'mailtype' => 'html',
-	'protocol'    => 'smtp',
-	'smtp_host'   => 'smtp.office365.com',
-	'smtp_port'   => '587',
-	'smtp_user'   => 'ujian@undip.ac.id',
-	'smtp_pass'   => 'Jog46661',
-	'smtp_crypto' => 'tls',
-	'mailtype'    => 'html',
-	'charset'     => 'utf-8',
-	'newline'     => "\r\n",
-	'crlf'        => "\r\n"
-];
+$config['email_config'] = EMAIL_CONFIG;
 
 
 /*

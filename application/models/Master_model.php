@@ -227,7 +227,7 @@ class Master_model extends CI_Model {
         $this->datatables->from('topik AS a');
         $this->datatables->join('matkul AS b', 'a.matkul_id = b.id_matkul');
         $this->datatables->join('tb_soal AS c', 'c.topik_id = a.id','left');
-        $this->datatables->add_column('bulk_select', '<div class="text-center"><input type="checkbox" class="check" name="checked[]" value="$1"/></div>', 'id, nama_topik, id_matkul, nama_matkul');
+        // $this->datatables->add_column('bulk_select', '<div class="text-center"><input type="checkbox" class="check" name="checked[]" value="$1"/></div>', 'id, nama_topik, id_matkul, nama_matkul');
         $this->datatables->group_by('a.id');
         return $this->datatables->generate();
     }

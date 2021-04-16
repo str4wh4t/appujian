@@ -92,9 +92,14 @@ $(document).ready(function() {
         searchable: false,
       },
       {
-        data: "bulk_select",
+        data: "id",
         orderable: false,
-        searchable: false
+        searchable: false,
+        render: function(data, type, row, meta) {
+          return `<div class="text-center">
+									<input name="checked[]" class="check" value="${data}" type="checkbox">
+								</div>`;
+        }
       }
     ],
     order: [[1, "asc"]],
@@ -119,7 +124,7 @@ $(document).ready(function() {
     $(':input[name="banyak"]').select();
   });
 
- $(".select_all").on("click", function() {
+  $(".select_all").on("click", function() {
     if (this.checked) {
       $(".check").each(function() {
         this.checked = true;
@@ -133,9 +138,11 @@ $(document).ready(function() {
     }
   });
 
-  $("#topic tbody").on("click", "tr .check", function() {
-    var check = $("#topic tbody tr .check").length;
-    var checked = $("#topic tbody tr .check:checked").length;
+  $("#topik tbody").on("click", "tr .check", function() {
+    var check = $("#topik tbody tr .check").length;
+    console.log('check', check);
+    var checked = $("#topik tbody tr .check:checked").length;
+    console.log('checked', checked);
     if (check === checked) {
       $(".select_all").prop("checked", true);
     } else {

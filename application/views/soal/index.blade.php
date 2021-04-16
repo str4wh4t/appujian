@@ -101,8 +101,8 @@
                 <div class="card-body">
 
 <!---- --->
-<div class="box">
-    <div class="box-body">
+<div class="row">
+	<div class="col-lg-12 pb-1">
 		<div class="row">
         	<div class="col-sm-4">
 				<a href="{{ site_url('soal/add') }}" class="btn btn-outline-primary btn-flat btn-sm"><i class="fa fa-plus"></i> Buat Soal</a>
@@ -126,64 +126,63 @@
 			</div>
 		</div>
 		<div class="row">
-			<div class="form-group col-sm-12 text-center">
-				<select id="gel_filter" class="form-control select2" style="width:15% !important">
-					<option value="null">Semua Gel</option>
-					<?php foreach ($gel as $g) :?>
-						<option value="{{ $g }}">{{ 'GEL-'. $g }}</option>
-					<?php endforeach; ?>
-				</select>
-				<select id="smt_filter" class="form-control select2" style="width:15% !important">
-					<option value="null">Semua Smt</option>
-					<?php foreach ($smt as $s) :?>
-						<option value="{{ $s }}">{{ 'SMT-'. $s }}</option>
-					<?php endforeach; ?>
-				</select>
-				<select id="tahun_filter" class="form-control select2" style="width:15% !important">
-					<option value="null">Semua Tahun</option>
-					<?php foreach ($tahun as $t) :?>
-						<option value="{{ $t }}">{{ $t }}</option>
-					<?php endforeach; ?>
-				</select>
+			<div class="col-lg-12 text-center">
+				<div class="row">
+					<div class="offset-lg-2 col-lg-8 col-sm-12">
+						<div class="row">
+							<div class="col-lg-4 col-sm-12">
+								<select id="gel_filter" class="form-control select2" style="">
+									<option value="null">Semua Gel</option>
+									<?php foreach ($gel as $g) :?>
+										<option value="{{ $g }}">{{ 'GEL-'. $g }}</option>
+									<?php endforeach; ?>
+								</select>
+							</div>
+							<div class="col-lg-4 col-sm-12">
+								<select id="smt_filter" class="form-control select2" style="">
+									<option value="null">Semua Smt</option>
+									<?php foreach ($smt as $s) :?>
+										<option value="{{ $s }}">{{ 'SMT-'. $s }}</option>
+									<?php endforeach; ?>
+								</select>
+							</div>
+							<div class="col-lg-4 col-sm-12">
+								<select id="tahun_filter" class="form-control select2" style="">
+									<option value="null">Semua Tahun</option>
+									<?php foreach ($tahun as $t) :?>
+										<option value="{{ $t }}">{{ $t }}</option>
+									<?php endforeach; ?>
+								</select>
+							</div>
+						</div>
+					</div>
+				</div>
 			</div>
 		</div>
 	</div>
-	<?=form_open('', array('id'=>'bulk'))?>
-		<div class="table-responsive pb-2">
-			<table id="soal" class="table table-striped table-bordered table-hover w-100">
-			<thead>
-				<tr>
-					<th class="text-center">
-						<input type="checkbox" class="select_all">
-					</th>
-					<th>Urut</th>
-					<th>Materi Ujian</th>
-					<th>Topik</th>
-					<th>Soal</th>
-					<th>Bobot</th>
-					<th>Tgl Dibuat</th>
-					<th>Oleh</th>
-					<th>Aksi</th>
-				</tr>
-			</thead>
-	{{--		<tfoot>--}}
-	{{--			<tr>--}}
-	{{--				<th class="text-center">--}}
-	{{--					<input type="checkbox" class="select_all">--}}
-	{{--				</th>--}}
-	{{--				<th>No.</th>--}}
-	{{--				<th>Materi Ujian</th>--}}
-	{{--				<th>Topik</th>--}}
-	{{--				<th>Soal</th>--}}
-	{{--				<th>Bobot</th>--}}
-	{{--				<th>Tgl Dibuat</th>--}}
-	{{--				<th>Oleh</th>--}}
-	{{--				<th>Aksi</th>--}}
-	{{--			</tr>--}}
-	{{--		</tfoot>--}}
-			</table>
-		</div>
-	<?=form_close();?>
+	<div class="col-lg-12">
+		<?=form_open('', array('id'=>'bulk'))?>
+			<div class="table-responsive pb-2">
+				<table id="soal" class="table table-striped table-bordered table-hover w-100">
+					<thead>
+						<tr>
+							<th class="text-center">
+								<input type="checkbox" class="select_all">
+							</th>
+							<th>Urut</th>
+							<th>Materi Ujian</th>
+							<th>Topik</th>
+							<th>Soal</th>
+							<th>Bobot</th>
+							<th>Tgl Dibuat</th>
+							<th>Oleh</th>
+							<th>Aksi</th>
+						</tr>
+					</thead>
+				</table>
+			</div>
+		<?=form_close();?>
+	</div>
 </div>
 
 <!---- --->

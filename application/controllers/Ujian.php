@@ -454,8 +454,8 @@ class Ujian extends MY_Controller
 					function ($tgl_ujian) {
 						$return = true;
 						if(!empty($tgl_ujian)){
-							$d = DateTime::createFromFormat('Y-m-d', $tgl_ujian);
-							if (!($d && $d->format('Y-m-d') == $tgl_ujian)) {
+							$d = DateTime::createFromFormat('Y-m-d H:i:s', $tgl_ujian);
+							if (!($d && $d->format('Y-m-d H:i:s') == $tgl_ujian)) {
 								$return = false;
 							}
 						}

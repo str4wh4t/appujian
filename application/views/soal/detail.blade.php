@@ -50,7 +50,7 @@ function init_page_level(){
 <!---- --->
 
 <div class="row">
-    <div class="col-sm-8">
+    <div class="col-lg-12">
         <div class="mb-2">
             <a href="{{ site_url('soal') }}" class="btn btn-flat btn-warning">
                 <i class="fa fa-arrow-left"></i> Kembali
@@ -136,6 +136,17 @@ function init_page_level(){
             {!! !empty($soal->penjelasan) ? $soal->penjelasan : 'Belum ada penjelasan' !!}
         </div>
         <hr>
+    </div>
+    <div class="col-lg-12 text-center">
+        <div class="">
+            @if (!empty($prev))
+            <a href="{{ url('soal/detail/' . $prev) }}" class="btn btn-info"><i class="fa fa-chevron-left"></i> Prev</a>
+            @endif
+
+            @if (!empty($next))
+            <a href="{{ url('soal/detail/' . $next) }}" class="btn btn-info">Next <i class="fa fa-chevron-right"></i></a>
+            @endif
+        </div>
     </div>
 </div>
 

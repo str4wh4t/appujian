@@ -64,7 +64,7 @@ let banyak = '{{ $banyak }}';
 
 <!---- --->
 <div class="row">
-    <div class="col-md-8">
+    <div class="col-lg-12">
         <div class="alert alert-info mb-2" role="alert">
             <strong>Jumlah data :</strong> {{ $banyak }}
         </div>

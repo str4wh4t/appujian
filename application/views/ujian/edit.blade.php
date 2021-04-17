@@ -484,7 +484,7 @@ $(document).on('change','#kelompok_ujian', function(){
     });
 });
 
-$(document).on('focusout','#tgl_ujian', function(){ /** DATEPICKER WORKS ON FOCUSOUT */
+$(document).on('dp.hide','#tgl_ujian', function(){
     let tgl_ujian = $(this).val() == '' ? 'null' : $(this).val();
     filter_mhs.tgl_ujian = tgl_ujian;
     ajx_overlay(true);
@@ -769,7 +769,7 @@ $('#is_sekuen_topik').on('switchChange.bootstrapSwitch', function(event, state) 
                     </div>
                     <div class="form-group">
                         <label for="tgl_ujian" class="control-label">Tgl Ujian</label> <small class="help-block text-danger"><b>***</b> Diisi sesuai dengan tgl ujian peserta jika ada</small>
-                        <input value="{{ $ujian->mhs_tgl_ujian }}" id="tgl_ujian" name="tgl_ujian" type="text" class="datepicker form-control" placeholder="Tanggal Ujian">
+                        <input value="{{ $ujian->mhs_tgl_ujian }}" id="tgl_ujian" name="tgl_ujian" type="text" class="datetimepicker form-control" placeholder="Tanggal Ujian">
                         <small class="help-block" style="color: #dc3545"><?=form_error('tgl_ujian')?></small>
                     </div>
                     <div class="form-group">

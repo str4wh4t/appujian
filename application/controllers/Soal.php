@@ -418,8 +418,10 @@ class Soal extends MY_Controller
 					$soal_temp = Soal_orm::findOrFail($soal->id_soal);
 
 					$html = $data['soal'];
-					$doc = new DOMDocument('1.0', 'UTF-8');
-					$doc->loadHTML($html);
+					// $doc = new DOMDocument('1.0', 'UTF-8');
+					// $doc->loadHTML($html);
+					$doc = new DOMDocument();
+					$doc->loadHTML(mb_convert_encoding($html, 'HTML-ENTITIES', 'UTF-8'));
 					$i = 0 ;
 					foreach ($doc->getElementsByTagName('img') as $img_node) {
 						$src = $img_node->getAttribute('src') ;
@@ -452,8 +454,10 @@ class Soal extends MY_Controller
 						$opsi = 'opsi_' . $abj ;
 						// $html = $soal_temp->$opsi;
 						$html = $this->input->post('jawaban_' . $abj);
-						$doc = new DOMDocument('1.0', 'UTF-8');
-						$doc->loadHTML($html);
+						// $doc = new DOMDocument('1.0', 'UTF-8');
+						// $doc->loadHTML($html);
+						$doc = new DOMDocument();
+						$doc->loadHTML(mb_convert_encoding($html, 'HTML-ENTITIES', 'UTF-8'));
 						$i = 0 ;
 						foreach ($doc->getElementsByTagName('img') as $img_node) {
 							$src = $img_node->getAttribute('src') ;
@@ -487,8 +491,10 @@ class Soal extends MY_Controller
 					/////////////
 
 					$html = $data['penjelasan'];
-					$doc = new DOMDocument('1.0', 'UTF-8');
-					$doc->loadHTML($html);
+					// $doc = new DOMDocument('1.0', 'UTF-8');
+					// $doc->loadHTML($html);
+					$doc = new DOMDocument();
+					$doc->loadHTML(mb_convert_encoding($html, 'HTML-ENTITIES', 'UTF-8'));
 					$i = 0 ;
 					foreach ($doc->getElementsByTagName('img') as $img_node) {
 						$src = $img_node->getAttribute('src') ;
@@ -520,6 +526,8 @@ class Soal extends MY_Controller
 					/////////////
 					
 					$soal_temp->save();
+
+					$id_soal = $soal->id_soal ;
 
 					commit_db_trx();
 
@@ -562,8 +570,10 @@ class Soal extends MY_Controller
 
 					// $html = $soal_temp->soal;
 					$html = $data['soal'];
-					$doc = new DOMDocument('1.0', 'UTF-8');
-					$doc->loadHTML($html);
+					// $doc = new DOMDocument('1.0', 'UTF-8');
+					// $doc->loadHTML($html);
+					$doc = new DOMDocument();
+					$doc->loadHTML(mb_convert_encoding($html, 'HTML-ENTITIES', 'UTF-8'));
 					$i = 0 ;
 					foreach ($doc->getElementsByTagName('img') as $img_node) {
 						$src = $img_node->getAttribute('src') ;
@@ -598,8 +608,10 @@ class Soal extends MY_Controller
 						$opsi = 'opsi_' . $abj ;
 						// $html = $soal_temp->$opsi;
 						$html = $this->input->post('jawaban_' . $abj);
-						$doc = new DOMDocument('1.0', 'UTF-8');
-						$doc->loadHTML($html);
+						// $doc = new DOMDocument('1.0', 'UTF-8');
+						// $doc->loadHTML($html);
+						$doc = new DOMDocument();
+						$doc->loadHTML(mb_convert_encoding($html, 'HTML-ENTITIES', 'UTF-8'));
 						$i = 0 ;
 						foreach ($doc->getElementsByTagName('img') as $img_node) {
 							$src = $img_node->getAttribute('src') ;
@@ -635,8 +647,10 @@ class Soal extends MY_Controller
 					/////////
 
 					$html = $data['penjelasan'];
-					$doc = new DOMDocument('1.0', 'UTF-8');
-					$doc->loadHTML($html);
+					// $doc = new DOMDocument('1.0', 'UTF-8');
+					// $doc->loadHTML($html);
+					$doc = new DOMDocument();
+					$doc->loadHTML(mb_convert_encoding($html, 'HTML-ENTITIES', 'UTF-8'));
 					$i = 0 ;
 					foreach ($doc->getElementsByTagName('img') as $img_node) {
 						$src = $img_node->getAttribute('src') ;
@@ -699,7 +713,7 @@ class Soal extends MY_Controller
 			}
 
 			$this->session->set_flashdata('message_rootpage', $message_rootpage);
-			$action === 'add' ? redirect('soal/add') : redirect('soal/edit/' . $id_soal);
+			$action === 'add' ? redirect('soal/detail/' . $id_soal ) : redirect('soal/detail/' . $id_soal);
 		}
 	}
 

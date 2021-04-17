@@ -208,9 +208,41 @@ function init_page_level(){
                 <div class="card-body">
                     <!---- --->
                     <div class="row">
-                        <div class="col-md-8">
+                        <div class="col-lg-12">
                             <?=form_open_multipart('soal/save', array('id'=>'formsoal'), array('method'=>'post', 'action' => 'add'));?>
-
+                            <fieldset class="form-group" style="padding: 10px; border: 1px solid #ccc;">
+                                <legend class="col-form-label col-sm-2" style="border: 1px solid #ccc; background-color: #d4fdff;">Cluster Soal</legend>
+                                <div class="form-group">
+                                    <label for="gel" class="control-label">Gel</label>
+                                    <select name="gel" id="gel" class="form-control select2"
+                                        style="width:100%!important">
+                                        @foreach (GEL_AVAIL as $gel)
+                                        <option value="{{ $gel }}" {{ $gel == get_selected_gel() ? "selected" : "" }}>GEL-{{ $gel }}</option>    
+                                        @endforeach
+                                    </select>
+                                    <small class="help-block" style="color: #dc3545"><?=form_error('gel')?></small>
+                                </div>
+                                <div class="form-group">
+                                    <label for="smt" class="control-label">Smt</label>
+                                    <select name="smt" id="smt" class="form-control select2"
+                                        style="width:100%!important">
+                                        @foreach (SMT_AVAIL as $smt)
+                                        <option value="{{ $smt }}" {{ $smt == get_selected_smt() ? "selected" : "" }}>SMT-{{ $smt }}</option>    
+                                        @endforeach
+                                    </select>
+                                    <small class="help-block" style="color: #dc3545"><?=form_error('smt')?></small>
+                                </div>
+                                <div class="form-group">
+                                    <label for="tahun" class="control-label">Tahun</label>
+                                    <select name="tahun" id="tahun" class="form-control select2"
+                                        style="width:100%!important">
+                                        @foreach ($tahun_avail as $tahun)
+                                        <option value="{{ $tahun }}" {{ $tahun == get_selected_tahun() ? "selected" : "" }}>{{ $tahun }}</option>    
+                                        @endforeach
+                                    </select>
+                                    <small class="help-block" style="color: #dc3545"><?=form_error('tahun')?></small>
+                                </div>
+                            </fieldset>
                             <label>Materi Ujian</label>
                             <div class="form-group">
                                 <select name="matkul_id" id="matkul_id" class="select2 form-group"
@@ -309,40 +341,6 @@ function init_page_level(){
                                 <small class="help-block"
                                     style="color: #dc3545"><?=form_error('bobot_soal_id')?></small>
                             </div>
-
-                            <fieldset class="form-group" style="padding: 10px; border: 1px solid #ccc;">
-                                <legend class="col-form-label col-sm-2" style="border: 1px solid #ccc; background-color: #d4fdff;">Cluster Soal</legend>
-                                <div class="form-group">
-                                    <label for="gel" class="control-label">Gel</label>
-                                    <select name="gel" id="gel" class="form-control select2"
-                                        style="width:100%!important">
-                                        @foreach (GEL_AVAIL as $gel)
-                                        <option value="{{ $gel }}" {{ $gel == get_selected_gel() ? "selected" : "" }}>GEL-{{ $gel }}</option>    
-                                        @endforeach
-                                    </select>
-                                    <small class="help-block" style="color: #dc3545"><?=form_error('gel')?></small>
-                                </div>
-                                <div class="form-group">
-                                    <label for="smt" class="control-label">Smt</label>
-                                    <select name="smt" id="smt" class="form-control select2"
-                                        style="width:100%!important">
-                                        @foreach (SMT_AVAIL as $smt)
-                                        <option value="{{ $smt }}" {{ $smt == get_selected_smt() ? "selected" : "" }}>SMT-{{ $smt }}</option>    
-                                        @endforeach
-                                    </select>
-                                    <small class="help-block" style="color: #dc3545"><?=form_error('smt')?></small>
-                                </div>
-                                <div class="form-group">
-                                    <label for="tahun" class="control-label">Tahun</label>
-                                    <select name="tahun" id="tahun" class="form-control select2"
-                                        style="width:100%!important">
-                                        @foreach ($tahun_avail as $tahun)
-                                        <option value="{{ $tahun }}" {{ $tahun == get_selected_tahun() ? "selected" : "" }}>{{ $tahun }}</option>    
-                                        @endforeach
-                                    </select>
-                                    <small class="help-block" style="color: #dc3545"><?=form_error('tahun')?></small>
-                                </div>
-                            </fieldset>
 
                             <fieldset class="form-group" style="padding: 10px; border: 1px solid #ccc;">
                                 <legend class="col-form-label col-sm-2" style="border: 1px solid #ccc; background-color: #f6ffd4;">Penjelasan</legend>

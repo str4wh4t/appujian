@@ -241,7 +241,7 @@
                                                                 </dl>
                                                                 <dl class="row">
                                                                     <dt class="col-sm-5 text-left">Wkt Selesai</dt>
-                                                                    <dd class="col-sm-7">{{ $mhs_ujian->m_ujian->terlambat }}</dd>
+                                                                    <dd class="col-sm-7">{!! empty($mhs_ujian->m_ujian->terlambat) ? '&infin;' : $mhs_ujian->m_ujian->terlambat  !!}</dd>
                                                                 </dl>
                                                             </div>
                                                         </div>
@@ -250,15 +250,17 @@
                                                                 $today = date('Y-m-d H:i:s');
                                                                 //echo $paymentDate; // echos today!
                                                                 $data_start = date('Y-m-d H:i:s', strtotime($mhs_ujian->m_ujian->tgl_mulai));
-                                                                $date_end = date('Y-m-d H:i:s', strtotime($mhs_ujian->m_ujian->terlambat));
-                                                                $status_ujian = null;
-                                                                if (($today >= $data_start) && ($today <= $date_end)){
-                                                                    $status_ujian = 'active';
-                                                                }else{
-                                                                    if($today < $data_start)
-                                                                        $status_ujian = 'upcoming';
-                                                                    else
-                                                                        $status_ujian = 'expired';
+                                                                $status_ujian = 'active';
+                                                                if(!empty($mhs_ujian->m_ujian->terlambat)){
+                                                                    $date_end = date('Y-m-d H:i:s', strtotime($mhs_ujian->m_ujian->terlambat));
+                                                                    if (($today >= $data_start) && ($today <= $date_end)){
+                                                                        // $status_ujian = 'active';
+                                                                    }else{
+                                                                        if($today < $data_start)
+                                                                            $status_ujian = 'upcoming';
+                                                                        else
+                                                                            $status_ujian = 'expired';
+                                                                    }
                                                                 }
                                                             @endphp
                                                             {{-- @if ($status_ujian == 'active')
@@ -352,7 +354,7 @@
                                                                 </dl>
                                                                 <dl class="row">
                                                                     <dt class="col-sm-5 text-left">Wkt Selesai</dt>
-                                                                    <dd class="col-sm-7">{{ $mhs_ujian->m_ujian->terlambat }}</dd>
+                                                                    <dd class="col-sm-7">{!! empty($mhs_ujian->m_ujian->terlambat) ? '&infin;' : $mhs_ujian->m_ujian->terlambat  !!}</dd>
                                                                 </dl>
                                                             </div>
                                                             <div class="card-footer border-top-blue-grey border-top-lighten-5 text-muted">
@@ -372,7 +374,10 @@
                                                                     $today = date('Y-m-d H:i:s');
                                                                     //echo $paymentDate; // echos today!
                                                                     $date_start = date('Y-m-d H:i:s', strtotime($mhs_ujian->m_ujian->tgl_mulai));
-                                                                    $date_end = date('Y-m-d H:i:s', strtotime($mhs_ujian->m_ujian->terlambat));
+                                                                    if(!empty($mhs_ujian->m_ujian->terlambat))
+                                                                        $date_end = date('Y-m-d H:i:s', strtotime($mhs_ujian->m_ujian->terlambat));
+                                                                    else
+                                                                        $date_end = date('Y-m-d H:i:s', strtotime('+1 days'));
                                                                 ?>
 
                                                                 @if (($today >= $date_start) && ($today < $date_end)) 

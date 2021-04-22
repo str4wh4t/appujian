@@ -1,4 +1,4 @@
-var table;
+let table;
 
 $(document).ready(function() {
   ajaxcsrf();
@@ -15,15 +15,25 @@ $(document).ready(function() {
           }
         });
     },
-    lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
+    lengthChange: false,
+    // lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]],
     dom:
       "<'row'<'col-lg-3'l><'col-lg-6 text-center'B><'col-lg-3'f>>" +
       "<'row'<'col-lg-12'tr>>" +
       "<'row'<'col-lg-5'i><'col-lg-7'p>>",
     buttons: [
       {
+          text: 'Show Entries',
+          action: function ( e, dt, node, config ) {
+              $('#show_length_number').val(10).trigger('change');
+              $('#show_length_number_custom').val('');
+              $('#modal_page_length').modal('show');
+          },
+          className: 'btn-info'
+      },
+      {
         extend: "copy",
-        exportOptions: { columns: [1, 2, 3, 4, 5, 6], format: {
+        exportOptions: { columns: [1, 2, 3, 4, 5, 6, 7, 8], format: {
               body: function ( data, columnIdx, rowIdx ) {
                 if(rowIdx == 0)
                   return (columnIdx + 1);
@@ -34,7 +44,7 @@ $(document).ready(function() {
       },
       {
         extend: "print",
-        exportOptions: { columns: [1, 2, 3, 4, 5, 6], format: {
+        exportOptions: { columns: [1, 2, 3, 4, 5, 6, 7, 8], format: {
               body: function ( data, columnIdx, rowIdx ) {
                 if(rowIdx == 0)
                   return (columnIdx + 1);
@@ -45,7 +55,7 @@ $(document).ready(function() {
       },
       {
         extend: "excel",
-        exportOptions: { columns: [1, 2, 3, 4, 5, 6], format: {
+        exportOptions: { columns: [1, 2, 3, 4, 5, 6, 7, 8], format: {
               body: function ( data, columnIdx, rowIdx ) {
                 if(rowIdx == 0)
                   return (columnIdx + 1);
@@ -56,7 +66,7 @@ $(document).ready(function() {
       },
       {
         extend: "pdf",
-        exportOptions: { columns: [1, 2, 3, 4, 5, 6], format: {
+        exportOptions: { columns: [1, 2, 3, 4, 5, 6, 7, 8], format: {
               body: function ( data, columnIdx, rowIdx ) {
                 if(rowIdx == 0)
                   return (columnIdx + 1);
@@ -82,7 +92,7 @@ $(document).ready(function() {
         searchable: false
       },
       {
-        data: "id_soal",
+        data: "no_urut",
         // orderable: false,
         searchable: false
       },
@@ -90,6 +100,7 @@ $(document).ready(function() {
       { data: "nama_topik" },
       { data: "soal" },
       { data: "bobot" },
+      { data: "bundle" },
       { data: "created_at" },
       { data: "oleh" }
     ],
@@ -104,7 +115,21 @@ $(document).ready(function() {
         }
       },
       {
-        targets: 8,
+        targets: 6,
+        data: "bundle",
+        render: function(data, type, row, meta) {
+          let str_return = '';
+          if(data != null) {
+            let data_array = data.split('---');
+            data_array.forEach(function (item, index) {
+              str_return += '<span class="badge bg-info">' + item + '</span> ';
+            });
+          }
+          return str_return;
+        }
+      },
+      {
+        targets: 9,
         data: "id_soal",
         render: function(data, type, row, meta) {
           return `<div class="btn-group btn-group-sm" role="group" aria-label="">
@@ -118,16 +143,16 @@ $(document).ready(function() {
         }
       }
     ],
-    order: [[3, "desc"]],
+    order: [[2, "asc"], [3, "asc"], [7, "asc"]],
     rowId: function(a) {
       return a;
     },
     rowCallback: function(row, data, iDisplayIndex) {
-      var info = this.fnPagingInfo();
-      var page = info.iPage;
-      var length = info.iLength;
-      var index = page * length + (iDisplayIndex + 1);
-      $("td:eq(1)", row).html(index);
+      // var info = this.fnPagingInfo();
+      // var page = info.iPage;
+      // var length = info.iLength;
+      // var index = page * length + (iDisplayIndex + 1);
+      // $("td:eq(1)", row).html(index);
     },
     // scrollX:        true,
     // fixedColumns:   {
@@ -263,3 +288,13 @@ function bulk_delete() {
     });
   }
 }
+
+$(document).on('click', '#submit_show_length', function(){
+  let jml_data = $('#show_length_number').val();
+  let jml_data_custom = $('#show_length_number_custom').val();
+
+  let jml_data_valid = jml_data_custom ? jml_data_custom : jml_data ;
+  table.page.len( jml_data_valid ).draw();
+  $('#modal_page_length').modal('hide');
+
+});

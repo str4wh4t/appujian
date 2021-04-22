@@ -38,10 +38,15 @@ class Mujian_orm extends Eloquent
     {
         return $this->hasMany('Orm\Mhs_ujian_orm','ujian_id');
     }
-    
-    public function mhs_matkul()
+
+    public function ujian_bundle()
     {
-        return $this->belongsToMany('Orm\Mhs_matkul_orm','mahasiswa_ujian','ujian_id','mahasiswa_matkul_id');
+        return $this->hasMany('Orm\Ujian_bundle_orm','ujian_id');
+    }
+
+    public function bundle()
+    {
+        return $this->belongsToMany('Orm\Bundle_orm','ujian_bundle','ujian_id','bundle_id');
     }
     
 }

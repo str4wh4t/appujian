@@ -238,7 +238,7 @@ $(document).on('click','#btn_set_materi',function(){
         </div>
         <div class="form-group">
             <label for="no_billkey">No Billkey</label>
-            <input value="<?=$mahasiswa->no_billkey?>" placeholder="No Billkey" type="text" name="no_billkey" id="no_billkey" class="form-control">
+            <input value="<?=$mahasiswa->no_billkey?>" placeholder="No Billkey" type="text" name="no_billkey" id="no_billkey" class="form-control" disabled="disabled">
             <small class="help-block"></small>
         </div>
         <div class="form-group">

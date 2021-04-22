@@ -55,6 +55,9 @@ function init_page_level(){
             <a href="{{ site_url('soal') }}" class="btn btn-flat btn-warning">
                 <i class="fa fa-arrow-left"></i> Kembali
             </a>
+            <a href="{{ site_url('soal/add') }}" class="btn btn-flat btn-outline-primary">
+                <i class="fa fa-plus"></i> Tambah Soal
+            </a>
             <a href="{{ site_url('soal/edit/' . segment(3)) }}" class="btn btn-flat btn-outline-primary">
                 <i class="fa fa-edit"></i> Edit
             </a>

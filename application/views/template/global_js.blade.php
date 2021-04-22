@@ -3,7 +3,6 @@
 <!-- BEGIN VENDOR JS-->
 
 <!-- BEGIN PAGE VENDOR JS (GLOBAL)-->
-{{--<script src="{{ asset('assets/template/robust/app-assets/vendors/js/forms/icheck/icheck.min.js') }}"></script>--}}
 {{--<script src="{{ asset('assets/template/robust/app-assets/vendors/js/extensions/sweetalert.min.js') }}"></script>--}}
 {{--<script src="{{ asset('assets/bower_components/sweetalert2/sweetalert2.all.min.js') }}"></script>--}}
 <script src="{{ asset('assets/yarn/node_modules/sweetalert2/dist/sweetalert2.all.min.js') }}"></script>

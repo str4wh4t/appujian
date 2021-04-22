@@ -404,7 +404,7 @@ class HasilUjian extends MY_Controller {
 			show_404();
 		}
 
-		$data['mhs'] = $mhs_ujian->mhs_matkul->mhs;
+		$data['mhs'] = $mhs_ujian->mhs;
 		$data['m_ujian'] = $mhs_ujian->m_ujian;
 		$data['h_ujian'] = $h_ujian;
 		$data['h_ujian_history'] = $h_ujian_history;

@@ -78,8 +78,9 @@
                     let interval = 1000;
 
                     @if(!@$h_ujian)
+                        @php($terlambat = empty($ujian->terlambat) ? date('Y-m-d H:i:s', strtotime('+1 days')) : $ujian->terlambat)
                         let jadwal_mulai = moment('{{ date('Y-m-d H:i:s', strtotime($ujian->tgl_mulai)) }}', "YYYY-MM-DD HH:mm:ss");
-                        let jadwal_selesai = moment('{{ date('Y-m-d H:i:s', strtotime($ujian->terlambat)) }}', "YYYY-MM-DD HH:mm:ss");
+                        let jadwal_selesai = moment('{{ date('Y-m-d H:i:s', strtotime($terlambat)) }}', "YYYY-MM-DD HH:mm:ss");
                         let diffTime = jadwal_selesai.unix() - curr_date.unix();
                     @else
                         let ujian_selesai = moment('{{ date('Y-m-d H:i:s', strtotime($h_ujian->tgl_selesai)) }}', "YYYY-MM-DD HH:mm:ss");
@@ -243,13 +244,18 @@
                         <th>Nama Ujian</th>
                         <td><?=$ujian->nama_ujian?></td>
                     </tr>
+                    @if($ujian->sumber_ujian == 'materi')
                     <tr>
                         <th>Materi Ujian</th>
                         <td><?=$ujian->matkul->nama_matkul?></td>
                     </tr>
                     <tr>
-                        <th>Topik Ujian</th>
+                        <th>&nbsp;</th>
                         <td>
+                            <dl class="row">
+                            <dt class="col-sm-12">Topik Ujian :</dt>
+                            </dl>
+                            <hr/>
                             @php( $i = 1)
                             @foreach($urutan_topik as $topik_id => $val)
                             <dl class="row">
@@ -262,6 +268,38 @@
                             @endforeach
                         </td>
                     </tr>
+                    @elseif($ujian->sumber_ujian == 'bundle')
+                    @php( $j = 1)
+                    @foreach($matkul_bundle_list as $matkul)
+                    <tr>
+                        <th>Materi Ujian ({{ $j }})</th>
+                        <td><?=$matkul->nama_matkul?></td>
+                    </tr>
+                    <tr>
+                        <th>&nbsp;</th>
+                        <td>
+                            <dl class="row">
+                            <dt class="col-sm-12">Topik Ujian :</dt>
+                            </dl>
+                            <hr/>
+                            @php( $i = 1)
+                            @foreach($urutan_topik as $topik_id => $val)
+                            @php($topik = $topik_orm->findOrFail($topik_id))
+                            @if($matkul->id_matkul == $topik->matkul_id)
+                            <dl class="row">
+                                <dt class="col-sm-8">{{ $i }}. {{ $topik->nama_topik }}</dt>
+                                @if ($ujian->is_sekuen_topik)
+                                <dd class="col-sm-4">{{ $val['waktu'] }} Menit</dd>
+                                @endif
+                            </dl>
+                            @php( $i++)
+                            @endif
+                            @endforeach
+                        </td>
+                    </tr>
+                    @php( $j++)
+                    @endforeach
+                    @endif
                     <tr>
                         <th>Jumlah Soal</th>
                         <td><?=$ujian->jumlah_soal?> soal</td>
@@ -276,8 +314,7 @@
                     <tr>
                         <th>Jadwal Selesai</th>
                         <td>
-                            <?=strftime('%d %B %Y', strtotime($ujian->terlambat))?>
-                            <?=date('H:i:s', strtotime($ujian->terlambat))?>
+                            {!! empty($ujian->terlambat) ? '&infin;' : strftime('%d %B %Y %H:%M:%S', strtotime($ujian->terlambat)) !!}
                         </td>
                     </tr>
                     <tr>
@@ -287,7 +324,11 @@
                     @if(!@$h_ujian)
                         <tr>
                             <th>Sisa Waktu</th>
+                            @if(!empty($ujian->terlambat))
                             <td id="sisa_waktu">0:0:0</td>
+                            @else
+                            <td >-</td>
+                            @endif
                         </tr>
                         @if($ujian->pakai_token == 1)
                         <tr>
@@ -318,7 +359,11 @@
                         </tr>
                         <tr>
                             <th>Sisa Waktu</th>
+                            @if(!empty($ujian->terlambat))
                             <td id="sisa_waktu">0:0:0</td>
+                            @else
+                            <td >-</td>
+                            @endif
                         </tr>
                     @endif
                 </table>

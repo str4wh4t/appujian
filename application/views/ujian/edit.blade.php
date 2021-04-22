@@ -1,15 +1,17 @@
 @extends('template.main')
 
 @push('page_level_css')
-<!-- BEGIN PAGE LEVEL JS-->
+<!-- BEGIN PAGE LEVEL CSS-->
 {{--<link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/vendors/css/tables/datatable/datatables.min.css') }}">--}}
 {{--<link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/vendors/css/tables/datatable/dataTables.bootstrap4.min.css') }}">--}}
 {{--<link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/vendors/css/tables/extensions/rowReorder.dataTables.min.css') }}">--}}
 {{--<link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/vendors/css/tables/extensions/responsive.dataTables.min.css') }}">--}}
+<link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/vendors/css/forms/icheck/icheck.css') }}">
+<link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/vendors/css/forms/icheck/custom.css') }}">
 <link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/vendors/css/forms/selects/select2.min.css') }}">
 <link rel="stylesheet" type="text/css" href="{{ asset('assets/yarn/node_modules/bootstrap4-datetimepicker/build/css/bootstrap-datetimepicker.css') }}">
 <link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/vendors/css/forms/toggle/bootstrap-switch.min.css') }}">
-<!-- END PAGE LEVEL JS-->
+<!-- END PAGE LEVEL CSS-->
 @endpush
 
 @push('page_vendor_level_js')
@@ -20,12 +22,13 @@
 {{--<script src="{{ asset('assets/template/robust/app-assets/vendors/js/tables/datatable/dataTables.bootstrap4.min.js') }}"></script>--}}
 {{--<script src="{{ asset('assets/template/robust/app-assets/vendors/js/tables/datatable/dataTables.responsive.min.js') }}"></script>--}}
 {{--<script src="{{ asset('assets/template/robust/app-assets/vendors/js/tables/datatable/dataTables.rowReorder.min.js') }}"></script>--}}
+<script src="{{ asset('assets/template/robust/app-assets/vendors/js/forms/icheck/icheck.min.js') }}"></script>
 <script src="{{ asset('assets/template/robust/app-assets/vendors/js/forms/select/select2.full.min.js') }}"></script>
 <script src="{{ asset('assets/plugins/select2-cascade.js') }}"></script>
 <script src="{{ asset('assets/yarn/node_modules/moment/min/moment.min.js') }}"></script>
 <script src="{{ asset('assets/yarn/node_modules/bootstrap4-datetimepicker/build/js/bootstrap-datetimepicker.min.js') }}"></script>
 <script src="{{ asset('assets/template/robust/app-assets/vendors/js/forms/toggle/bootstrap-switch.min.js') }}"></script>
-<!-- END PAGE VENDOR -->
+<!-- END PAGE VENDOR JS-->
 @endpush
 
 @push('page_level_js')
@@ -38,6 +41,9 @@ let topik_jumlah_soal_asli = [];
 let topik_jumlah_waktu = [];
 let topik_urutan = [];
 let topik_avail = [];
+let topik_ids_from_selected_bundle  = [];
+let topik_ids_from_selected_bundle_key  = [];
+let bundle_id_list = [];
 
 let filter = {
 		gel: null,
@@ -55,7 +61,14 @@ function init_page_level(){
     ajaxcsrf();
     $('.select2').select2();
     $('#matkul_id').select2();
-    $('#topik_id').select2({placeholder : 'Pilih Topik'});
+    $('#topik_id').select2({placeholder : '- Pilih topik -'});
+    $('#bundle').select2({placeholder : '- Pilih bundle soal -'});
+
+
+    $('.icheck').iCheck({
+        checkboxClass: 'icheckbox_square-red',
+        radioClass: 'iradio_square-red',
+    });
 
     filter.gel      = $('#gel').val();
     filter.smt      = $('#smt').val();
@@ -66,35 +79,14 @@ function init_page_level(){
     filter_mhs.tahun    = $('#tahun_mhs').val();
 
     let options = {};
-    ajx_overlay(true);
+    // ajx_overlay(true);
     cascadLoading = new Select2Cascade($('#matkul_id'), $('#topik_id'), '{{ site_url('soal/ajax/get_topic_by_matkul/') }}?id=:parentId:', options);
     cascadLoading.then( function(parent, child, items) {
         topik_id_dipilih = [];
-        topik_jumlah_soal = [];
-        topik_jumlah_soal_asli = [];
-        topik_jumlah_waktu = [];
-        topik_urutan = [];
 
         @foreach($topik as $topik_id => $t)
         topik_id_dipilih.push('{{ $topik_id }}');
         @endforeach
-
-        @foreach($jumlah_soal as $topik_id => $t)
-            @foreach($t as $bobot_soal_id => $jml_soal)
-            topik_jumlah_soal[{{ $topik_id }}] = topik_jumlah_soal[{{ $topik_id }}] ? topik_jumlah_soal[{{ $topik_id }}] : [] ;
-            topik_jumlah_soal[{{ $topik_id }}][{{ $bobot_soal_id }}] = {{ $jml_soal }};
-            topik_jumlah_soal_asli[{{ $topik_id }}] = topik_jumlah_soal[{{ $topik_id }}] ? topik_jumlah_soal[{{ $topik_id }}] : [] ;
-            topik_jumlah_soal_asli[{{ $topik_id }}][{{ $bobot_soal_id }}] = {{ $jml_soal }};
-            @endforeach
-        @endforeach
-            // console.log('topik_jumlah_soal',topik_jumlah_soal);
-
-        @if(!empty($urutan_topik))
-        @foreach($urutan_topik as $topik_id => $urutan_dan_waktu)
-            topik_urutan[{{ $topik_id  }}] = {{ $urutan_dan_waktu['urutan'] }};
-            topik_jumlah_waktu[{{ $topik_id  }}] = {{ $urutan_dan_waktu['waktu'] }};
-        @endforeach
-        @endif
 
         topik_avail = items;
         child.select2({placeholder : 'Pilih Topik'});
@@ -108,14 +100,14 @@ function init_page_level(){
             }
         });
         child.val(topik_id_dipilih_baru);
-        // child.trigger('select2:select');
         child.trigger('change');
+        // child.trigger('select2:select');
         // init_topik_table_value();
         // init_peserta_table_value();
         
         init_topik_table_value().then(
             function(){
-                init_peserta_table_value().then(function(){
+                init_peserta_table_value(bundle_id_list).then(function(){
                     ajx_overlay(false);
                 });
             }
@@ -123,7 +115,37 @@ function init_page_level(){
 
     });
 
-    $('#matkul_id').val('{{ $matkul_dipilih }}').trigger('change');
+    topik_jumlah_soal = [];
+    topik_jumlah_soal_asli = [];
+    topik_jumlah_waktu = [];
+    topik_urutan = [];
+
+    @foreach($jumlah_soal as $topik_id => $t)
+        @foreach($t as $bobot_soal_id => $jml_soal)
+        topik_jumlah_soal[{{ $topik_id }}] = topik_jumlah_soal[{{ $topik_id }}] ? topik_jumlah_soal[{{ $topik_id }}] : [] ;
+        topik_jumlah_soal[{{ $topik_id }}][{{ $bobot_soal_id }}] = {{ $jml_soal }};
+        topik_jumlah_soal_asli[{{ $topik_id }}] = topik_jumlah_soal[{{ $topik_id }}] ? topik_jumlah_soal[{{ $topik_id }}] : [] ;
+        topik_jumlah_soal_asli[{{ $topik_id }}][{{ $bobot_soal_id }}] = {{ $jml_soal }};
+        @endforeach
+    @endforeach
+        // console.log('topik_jumlah_soal',topik_jumlah_soal);
+
+    @if(!empty($urutan_topik))
+    @foreach($urutan_topik as $topik_id => $urutan_dan_waktu)
+        topik_urutan[{{ $topik_id  }}] = {{ $urutan_dan_waktu['urutan'] }};
+        topik_jumlah_waktu[{{ $topik_id  }}] = {{ $urutan_dan_waktu['waktu'] }};
+    @endforeach
+    @endif
+
+    @if($ujian->sumber_ujian == 'materi')
+    // $('#matkul_id').val('{{ $matkul_dipilih }}').trigger('change');
+    @endif
+
+    @if($ujian->sumber_ujian == 'bundle')
+    // init_selected_bundle();
+    @endif
+
+    {!! $ujian->sumber_ujian == 'materi' ? "$('#sumber_materi').iCheck('check');" : "$('#sumber_bundle').iCheck('check');" !!} 
 
     $(".switchBootstrap").bootstrapSwitch();
 
@@ -166,9 +188,21 @@ function init_page_level(){
     @endif
 }
 
+const init_selected_bundle = () => {
+    let bundle_ids = [];
+        @if(!empty($bundle_selected))
+            @foreach($bundle_selected as $bundle_id)
+                bundle_ids.push({{ $bundle_id }});
+            @endforeach
+        @endif
+
+    $('#bundle').val(bundle_ids).trigger('change').trigger('select2:select'); // ==> IDK WHY SHOULD TRIGGER TWICE
+};
+
 $('#matkul_id').on('select2:select', function (e) {
     // init_topik_table_value();
     ajx_overlay(true);
+    // overlay(false) ==> is triggered on init_page_level()
 });
 
 $('#topik_id').on('select2:select', function (e) {
@@ -194,10 +228,50 @@ $('#topik_id').on('select2:select', function (e) {
     });
 });
 
-const get_jml_soal_per_topik = (selected_ids) => {
+$('#bundle').on('select2:select', function (e) {
+    let bundle_ids = $(this).val();
+    bundle_id_list = bundle_ids;
+    ajx_overlay(true);
+    init_topik_table_value(bundle_ids).then(function(){
+        init_peserta_table_value(bundle_ids).then(function(){
+            ajx_overlay(false);
+        });
+    });
+});
+
+$('#bundle').on('select2:unselect', function (e) {
+    let data = e.params.data;
+
+    delete topik_ids_from_selected_bundle_key[data.id] ;
+
+    let topik_ids_from_selected_bundle_temp = []
+    let bundle_ids = [];
+    $.each(topik_ids_from_selected_bundle_key, function(i, j){
+        bundle_ids.push(i);
+        $.each(j, function(ii, jj){
+            topik_ids_from_selected_bundle_temp.push(jj);
+        });
+    });
+
+    bundle_id_list = bundle_ids;
+
+    topik_ids_from_selected_bundle = topik_ids_from_selected_bundle_temp;
+
+    ajx_overlay(true);
+    init_topik_table_value(bundle_ids).then(function(){
+        init_peserta_table_value(bundle_ids).then(function(){
+            ajx_overlay(false);
+        });
+    });
+});
+
+const get_jml_soal_per_topik = (selected_ids, bundle_ids) => {
+    if(bundle_ids === undefined){
+        bundle_ids = [];
+    }
     return $.ajax({
         url: "{{ site_url('soal/ajax/get_jml_soal_per_topik') }}",
-        data: { 'topik_ids' : JSON.stringify(selected_ids), 'filter' : filter },
+        data: { 'topik_ids' : JSON.stringify(selected_ids), 'bundle_ids' : JSON.stringify(bundle_ids), 'filter' : filter },
         type: 'POST',
         success: function (response) {
             data_jml_soal = response;
@@ -205,16 +279,38 @@ const get_jml_soal_per_topik = (selected_ids) => {
     });
 };
 
-async function init_topik_table_value(){
-    let selected_ids = $('#topik_id').val();
-    if($.inArray('ALL', selected_ids) !== -1){
-        selected_ids = [];
-        $.each(topik_avail,function(i,v){
-            selected_ids.push(i);
-        });
+const get_topik_from_selected_bundle = (bundle_ids) => {
+    return $.ajax({
+        url: "{{ site_url('soal/ajax/get_topik_from_selected_bundle') }}",
+        data: { 'bundle_ids' : JSON.stringify(bundle_ids) },
+        type: 'POST',
+        success: function (response) {
+            topik_ids_from_selected_bundle = response.ids;
+            topik_avail = response.topik;
+            topik_ids_from_selected_bundle_key  = response.topik_id_ref_bundle;
+        }
+    });
+};
+
+async function init_topik_table_value(bundle_ids){
+    let selected_ids ;
+    if(bundle_ids === undefined){
+        selected_ids = $('#topik_id').val();
+        if($.inArray('ALL', selected_ids) !== -1){
+            selected_ids = [];
+            $.each(topik_avail, function(i,v){
+                selected_ids.push(i);
+            });
+        }
+    }else{
+        if(bundle_ids.length){
+            await get_topik_from_selected_bundle(bundle_ids);
+            selected_ids = topik_ids_from_selected_bundle ;
+        }
     }
-    data_jml_soal = {};
-    await get_jml_soal_per_topik(selected_ids);
+    // console.log('bundle_ids', bundle_ids);
+    data_jml_soal = [];
+    await get_jml_soal_per_topik(selected_ids, bundle_ids);
     $('.tr-cloned-topik').remove();
     $('#jumlah_soal_total').text('0');
     $('input[name="jumlah_soal_total"]').val('0');
@@ -224,7 +320,7 @@ async function init_topik_table_value(){
         //     val = topik_jumlah_soal[v] ;
         // }
         let clone  = $('#tr-master-topik').clone().attr('id','tr-cloned-topik-' + topik_id).addClass('tr-cloned-topik');
-        clone.find('label.label_topik').text(nama);
+        clone.find('label.label_topik').html(nama);
         // let bobot_soal_id = clone.data('bobot_soal_id');
         clone.find('.input_jml').each(function(j){
             let bobot_soal_id = $(this).data('bobot_soal_id');
@@ -327,11 +423,13 @@ function sum_input_jumlah_waktu(){
 let tgl_mulai = '{{ $ujian->tgl_mulai }}';
 let terlambat = '{{ $ujian->terlambat }}';
 
-const init_peserta_table_value = () => {
+const init_peserta_table_value = (bundle_ids) => {
+    let sumber_ujian = $('input[name="sumber_ujian"]:checked').val();
     let id_matkul = $('#matkul_id').val();
+
     return $.ajax({
         url: "{{ site_url('matkul/ajax/get_peserta_ujian_matkul_not_ujian') }}",
-        data: { 'id' : id_matkul, 'ujian_id': '{{ $ujian->id_ujian }}', 'filter' : filter_mhs },
+        data: { 'id' : id_matkul, 'bundle_ids' : JSON.stringify(bundle_ids), 'sumber_ujian' : sumber_ujian,  'ujian_id': '{{ $ujian->id_ujian }}', 'filter' : filter_mhs },
         type: 'POST',
         success: function (response) {
             $('#tbody_tb_peserta').html('');
@@ -341,8 +439,8 @@ const init_peserta_table_value = () => {
                     mhs_ujian_existing.push(item.mahasiswa_id);
                 });
             }
-            if(!$.isEmptyObject(response.mhs_matkul)) {
-                $.each(response.mhs_matkul, function (i, item) {
+            if(!$.isEmptyObject(response.mhs)) {
+                $.each(response.mhs, function (i, item) {
                     let chkbox = $('<input>').attr('class', 'chkbox_pilih_peserta').attr('type', 'checkbox').attr('name', 'peserta[]').attr('value', item.id_mahasiswa);
                     if(mhs_ujian_existing.includes(item.id_mahasiswa))
                         chkbox.prop('checked', true);
@@ -479,7 +577,7 @@ $(document).on('change','#kelompok_ujian', function(){
     let kelompok_ujian = $(this).val();
     filter_mhs.kelompok_ujian = kelompok_ujian;
     ajx_overlay(true);
-    init_peserta_table_value().then(function(){
+    init_peserta_table_value(bundle_id_list).then(function(){
         ajx_overlay(false);
     });
 });
@@ -488,7 +586,7 @@ $(document).on('dp.hide','#tgl_ujian', function(){
     let tgl_ujian = $(this).val() == '' ? 'null' : $(this).val();
     filter_mhs.tgl_ujian = tgl_ujian;
     ajx_overlay(true);
-    init_peserta_table_value().then(function(){
+    init_peserta_table_value(bundle_id_list).then(function(){
         ajx_overlay(false);
     });
 });
@@ -497,7 +595,7 @@ $(document).on('change','#tahun_mhs', function(){
     let tahun = $(this).val();
     filter_mhs.tahun = tahun;
     ajx_overlay(true);
-    init_peserta_table_value().then(function(){
+    init_peserta_table_value(bundle_id_list).then(function(){
         ajx_overlay(false);
     });
 });
@@ -526,9 +624,60 @@ $('#is_sekuen_topik').on('switchChange.bootstrapSwitch', function(event, state) 
     }
 });
 
+$('#sumber_materi').on('ifChecked', function(event){
+    $('#panel_materi').removeClass('d-none');
+    $('#bundle').val(null).trigger('change').trigger('select2:select');
+    $('#bundle').select2('close');
+
+    @if($ujian->sumber_ujian == 'materi')
+    $('#matkul_id').val('{{ $matkul_dipilih }}').trigger('change');
+    // $('#topik_id').val(null).trigger('change').trigger('select2:select');
+    $('#tahun').val("{{ empty($ujian->soal_tahun) ? 'null' : $ujian->soal_tahun }}").trigger('change');
+    @else
+    $('#matkul_id').val('').trigger('change').trigger('select2:select');
+    @endif
+
+    // $('#tahun').val("{{ get_selected_tahun() }}").trigger('change');
+});
+
+$('#sumber_materi').on('ifUnchecked', function(event){
+    $('#panel_materi').addClass('d-none');
+});
+
+$('#sumber_bundle').on('ifChecked', function(event){
+    $('#panel_bundle').removeClass('d-none');
+    $('#matkul_id').select2('close');
+    $('#matkul_id').val("").trigger('change');
+    $('#topik_id').val(null).trigger('change');
+    $('#tahun').val("null").trigger('change');
+
+    @if($ujian->sumber_ujian == 'bundle')
+    init_selected_bundle();
+    @endif
+
+    ajx_overlay(true);
+    init_topik_table_value().then(function(){
+        ajx_overlay(false);
+    });
+});
+
+$('#sumber_bundle').on('ifUnchecked', function(event){
+    $('#panel_bundle').addClass('d-none');
+});
+
 </script>
 <script src="{{ asset('assets/dist/js/app/ujian/edit.js') }}"></script>
 <!-- END PAGE LEVEL JS-->
+@endpush
+
+@push('page_level_css')
+<!-- START PAGE LEVEL JS-->
+<style type="text/css">
+.select2-selection--multiple .select2-search__field{
+  width:100%!important;
+}
+</style>
+<!-- END PAGE LEVEL CSS-->
 @endpush
 
 @section('content')
@@ -554,58 +703,82 @@ $('#is_sekuen_topik').on('switchChange.bootstrapSwitch', function(event, state) 
                     <small class="help-block"></small>
                 </div>
                 <div class="form-group">
-                    <label>Materi Ujian</label>
-                    <select name="matkul_id" id="matkul_id" class="form-control" style="width:100% !important">
-                        <option value="" disabled selected>- Pilih Materi Ujian -</option>
-                        @foreach($matkul as $d)
-                            <option {{ $matkul_dipilih == $d->id_matkul ? 'selected="selected"' : '' }} value="{{ $d->id_matkul }}">{{ $d->nama_matkul }}</option>
-                        @endforeach
-                    </select> <small class="help-block" style="color: #dc3545"><?=form_error('matkul_id')?></small>
+                    <small class="help-block text-danger"><b>***</b> Ujian dari materi / dari bundle soal</small>
+                    <div class="">
+                        <input type="radio" class="icheck" value="materi" name="sumber_ujian" id="sumber_materi" /><label for="sumber_materi" style="margin: 0.6em">Materi</label>
+                        <input type="radio" class="icheck" value="bundle" name="sumber_ujian" id="sumber_bundle" /><label for="sumber_bundle" style="margin: 0.6em">Bundle</label>
+                    </div>
+                    <small class="help-block"></small>
                 </div>
-                <div class="form-group">
-                    <label>Topik</label>
-                    <select name="topik_id" id="topik_id" class="form-control" style="width:100% !important" multiple="multiple">
-                        @foreach($topik as $d)
-                            <option value="{{ $d->id }}">{{ $d->nama_topik }}</option>
-                        @endforeach
-                    </select> <small class="help-block" style="color: #dc3545"><?=form_error('topik_id')?></small>
-                </div>
-                <fieldset class="form-group" style="padding: 10px; border: 1px solid #ccc;">
-                    <legend class="col-form-label col-sm-2" style="border: 1px solid #ccc; background-color: #d4fdff;">Cluster Soal</legend>
+                <div id="panel_materi" class="d-none">
                     <div class="form-group">
-                        <label for="gel" class="control-label">Gel</label>
-                        <select name="gel" id="gel" class="form-control select2"
-                            style="width:100%!important">
-                            <option value="null" {{ empty($ujian->soal_gel) ? 'selected' : '' }}>Semua Gel</option>
-                            @foreach (GEL_AVAIL as $gel)
-                            <option value="{{ $gel }}" {{ $gel == $ujian->soal_gel ? 'selected' : '' }} >GEL-{{ $gel }}</option>    
+                        <label>Materi Ujian</label>
+                        <select name="matkul_id" id="matkul_id" class="form-control" style="width:100% !important">
+                            <option value="" disabled selected>- Pilih Materi Ujian -</option>
+                            @foreach($matkul as $d)
+                                <option value="{{ $d->id_matkul }}">{{ $d->nama_matkul }}</option>
                             @endforeach
-                        </select>
-                        <small class="help-block" style="color: #dc3545"><?=form_error('gel')?></small>
+                        </select> <small class="help-block" style="color: #dc3545"></small>
                     </div>
                     <div class="form-group">
-                        <label for="smt" class="control-label">Smt</label>
-                        <select name="smt" id="smt" class="form-control select2"
-                            style="width:100%!important">
-                            <option value="null" {{ empty($ujian->soal_smt) ? 'selected' : '' }}>Semua Smt</option>
-                            @foreach (SMT_AVAIL as $smt)
-                            <option value="{{ $smt }}" {{ $smt == $ujian->soal_smt ? 'selected' : '' }}>SMT-{{ $smt }}</option>    
+                        <label>Topik</label>
+                        <select name="topik_id" id="topik_id" class="form-control" style="width:100% !important" multiple="multiple">
+                            @foreach($topik as $d)
+                                <option value="{{ $d->id }}">{{ $d->nama_topik }}</option>
                             @endforeach
-                        </select>
-                        <small class="help-block" style="color: #dc3545"><?=form_error('smt')?></small>
+                        </select> <small class="help-block" style="color: #dc3545"></small>
                     </div>
+                    <fieldset class="form-group" style="padding: 10px; border: 1px solid #ccc;">
+                        <legend class="col-form-label col-sm-2" style="border: 1px solid #ccc; background-color: #d4fdff;">Cluster Soal</legend>
+                        <div class="form-group">
+                            <label for="gel" class="control-label">Gel</label>
+                            <select name="gel" id="gel" class="form-control select2"
+                                style="width:100%!important">
+                                <option value="null" {{ empty($ujian->soal_gel) ? 'selected' : '' }}>Semua Gel</option>
+                                @foreach (GEL_AVAIL as $gel)
+                                <option value="{{ $gel }}" {{ $gel == $ujian->soal_gel ? 'selected' : '' }} >GEL-{{ $gel }}</option>    
+                                @endforeach
+                            </select>
+                            <small class="help-block" style="color: #dc3545"></small>
+                        </div>
+                        <div class="form-group">
+                            <label for="smt" class="control-label">Smt</label>
+                            <select name="smt" id="smt" class="form-control select2"
+                                style="width:100%!important">
+                                <option value="null" {{ empty($ujian->soal_smt) ? 'selected' : '' }}>Semua Smt</option>
+                                @foreach (SMT_AVAIL as $smt)
+                                <option value="{{ $smt }}" {{ $smt == $ujian->soal_smt ? 'selected' : '' }}>SMT-{{ $smt }}</option>    
+                                @endforeach
+                            </select>
+                            <small class="help-block" style="color: #dc3545"></small>
+                        </div>
+                        <div class="form-group">
+                            <label for="tahun" class="control-label">Tahun</label>
+                            <select name="tahun" id="tahun" class="form-control select2"
+                                style="width:100%!important">
+                                <option value="null" {{ empty($ujian->soal_tahun) ? 'selected' : '' }}>Semua Tahun</option>
+                                @foreach ($tahun_soal as $tahun)
+                                <option value="{{ $tahun }}" {{ $tahun == $ujian->soal_tahun ? "selected" : "" }}>{{ $tahun }}</option>    
+                                @endforeach
+                            </select>
+                            <small class="help-block" style="color: #dc3545"></small>
+                        </div>
+                    </fieldset>
+                </div>
+
+                <fieldset id="panel_bundle" class="form-group d-none" style="padding: 10px; border: 1px solid #ccc;">
+                    <legend class="col-form-label col-sm-2" style="border: 1px solid #ccc; background-color: #d4ffd7;">Bundle Soal</legend>
                     <div class="form-group">
-                        <label for="tahun" class="control-label">Tahun</label>
-                        <select name="tahun" id="tahun" class="form-control select2"
-                            style="width:100%!important">
-                            <option value="null" {{ empty($ujian->soal_tahun) ? 'selected' : '' }}>Semua Tahun</option>
-                            @foreach ($tahun_soal as $tahun)
-                            <option value="{{ $tahun }}" {{ $tahun == $ujian->soal_tahun ? "selected" : "" }}>{{ $tahun }}</option>    
+                        <select name="bundle[]" id="bundle" class="form-control"
+                            style="width:100%!important" multiple="multiple">
+                            @foreach ($bundle_avail as $bundle)
+                            <option value="{{ $bundle->id }}">{{ $bundle->nama_bundle }}</option>    
                             @endforeach
                         </select>
-                        <small class="help-block" style="color: #dc3545"><?=form_error('tahun')?></small>
+                        <small class="help-block" style="color: #dc3545"></small>
                     </div>
                 </fieldset>
+
                 <div class="form-group">
                     <label for="is_sekuen_topik">Is Sekuen Topik</label> <small class="help-block text-danger"><b>***</b> Mengerjakan soal scr sekuensial (pengerjaan topik bergantian)</small>
                     <div>
@@ -685,7 +858,7 @@ $('#is_sekuen_topik').on('switchChange.bootstrapSwitch', function(event, state) 
                     <small class="help-block"></small>
                 </div>
                 <div class="form-group">
-                    <label for="tgl_selesai">Tanggal Selesai</label>
+                    <label for="tgl_selesai">Tanggal Selesai</label> <small class="help-block text-danger"><b>***</b> Kosongi jika tidak ada batas waktu ujian</small>
                     <input value="{{ $ujian->terlambat }}" id="tgl_selesai" name="tgl_selesai" type="text" class="datetimepicker form-control" placeholder="Tanggal Selesai">
                     <small class="help-block"></small>
                 </div>
@@ -765,12 +938,12 @@ $('#is_sekuen_topik').on('switchChange.bootstrapSwitch', function(event, state) 
                             <option value="{{ $key }}" {{ $kelompok_ujian === $key ? "selected" : "" }} >{{ $key !== 'null' ? $key . ' : ' : ''  }}{{ $val }}</option>    
                             @endforeach
                         </select>
-                        <small class="help-block" style="color: #dc3545"><?=form_error('kelompok_ujian')?></small>
+                        <small class="help-block" style="color: #dc3545"></small>
                     </div>
                     <div class="form-group">
                         <label for="tgl_ujian" class="control-label">Tgl Ujian</label> <small class="help-block text-danger"><b>***</b> Diisi sesuai dengan tgl ujian peserta jika ada</small>
                         <input value="{{ $ujian->mhs_tgl_ujian }}" id="tgl_ujian" name="tgl_ujian" type="text" class="datetimepicker form-control" placeholder="Tanggal Ujian">
-                        <small class="help-block" style="color: #dc3545"><?=form_error('tgl_ujian')?></small>
+                        <small class="help-block" style="color: #dc3545"></small>
                     </div>
                     <div class="form-group">
                         <label for="tahun_mhs" class="control-label">Tahun</label>
@@ -781,7 +954,7 @@ $('#is_sekuen_topik').on('switchChange.bootstrapSwitch', function(event, state) 
                             <option value="{{ $tahun }}" {{ $tahun == $ujian->mhs_tahun ? "selected" : "" }}>{{ $tahun }}</option>    
                             @endforeach
                         </select>
-                        <small class="help-block" style="color: #dc3545"><?=form_error('tahun_mhs')?></small>
+                        <small class="help-block" style="color: #dc3545"></small>
                     </div>
                 </fieldset>
                  <div class="form-group">

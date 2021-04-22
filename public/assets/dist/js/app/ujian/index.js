@@ -60,6 +60,7 @@ function buka(id_widget) {
     // waktu_buka_soal[sid] = waktu_buka_soal[sid] ? waktu_buka_soal[sid] : moment().format("YYYY-MM-DD HH:mm:ss");
     waktu_buka_soal = moment().format("YYYY-MM-DD HH:mm:ss");
     // console.log('buka', waktu_buka_soal);
+    $('#q_n_a').scrollTop(0);
 }
 
 function next() {
@@ -120,6 +121,7 @@ function next() {
     // waktu_buka_soal[sid] = waktu_buka_soal[sid] ? waktu_buka_soal[sid] : moment().format("YYYY-MM-DD HH:mm:ss");
     waktu_buka_soal = moment().format("YYYY-MM-DD HH:mm:ss");
     // console.log('next', waktu_buka_soal);
+    $('#q_n_a').scrollTop(0);
 
 }
 
@@ -181,6 +183,7 @@ function back() {
     // waktu_buka_soal[sid] = waktu_buka_soal[sid] ? waktu_buka_soal[sid] : moment().format("YYYY-MM-DD HH:mm:ss");
     waktu_buka_soal = moment().format("YYYY-MM-DD HH:mm:ss");
     // console.log('buka', waktu_buka_soal);
+    $('#q_n_a').scrollTop(0);
 
 }
 

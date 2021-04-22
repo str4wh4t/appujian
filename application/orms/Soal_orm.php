@@ -24,6 +24,16 @@ class Soal_orm extends Eloquent
         return $this->belongsTo('Orm\Bobot_soal_orm');
     }
 
+    public function bundle_soal()
+    {
+        return $this->hasMany('Orm\Bundle_soal_orm','id_soal');
+    }
+
+    public function bundle()
+    {
+        return $this->belongsToMany('Orm\Bundle_orm','bundle_soal','id_soal','bundle_id');
+    }
+
     // protected static function booted(){
 	// 	static::addGlobalScope(new Tahun);
 	// }

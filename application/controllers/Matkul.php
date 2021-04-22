@@ -11,6 +11,10 @@ use Illuminate\Database\Eloquent\Builder;
 use Orm\Prodi_orm;
 use Orm\Mhs_orm;
 use Orm\Soal_orm;
+use Orm\Topik_orm;
+use Orm\Bundle_orm;
+use Orm\Bundle_soal_orm;
+use Orm\Mujian_orm;
 
 class Matkul extends MY_Controller
 {
@@ -217,12 +221,14 @@ class Matkul extends MY_Controller
 	}
 	
 	protected function _get_peserta_ujian_matkul(){
-		$id = $this->input->post('id', true);
-		$mhs_matkul = [];
+		$sumber_ujian = $this->input->post('sumber_ujian');
+		$id = $this->input->post('id');
+		$bundle_ids = $this->input->post('bundle_ids');
+		$bundle_ids = json_decode($bundle_ids);
+		$mhs = [];
 		$mhs_ujian = [];
-		if($id !== ''){
-			$ujian_id = $this->input->post('ujian_id', true);
-	
+		if(!empty($id) || !empty($bundle_ids)){
+			
 			$filter_data	= $this->input->post('filter');
 			$filter			= [];
 			if (!empty($filter_data)) {
@@ -232,42 +238,74 @@ class Matkul extends MY_Controller
 					}
 				}
 			}
-	
-			$matkul = Matkul_orm::findOrFail($id);
-			// $mhs_matkul = $matkul->mhs;
-	
-			// if(!empty($filter)){ /** TIDAK PERLU DI CEK EMPTY */
-				$mhs_matkul = $matkul->mhs()->where($filter)->get();
-			// }
+			
+			if($sumber_ujian == 'materi'){
+				$matkul = Matkul_orm::findOrFail($id);
+				// $mhs = $matkul->mhs;
+				
+				// if(!empty($filter)){ /** TIDAK PERLU DI CEK EMPTY */
+					$mhs = $matkul->mhs()->where($filter)->get();
+				// }
 
-			$filter_tahun_mhs = isset($filter['tahun']) ? $filter['tahun'] : null ;
-	
-			if(empty($ujian_id)){
-				// $mhs_ujian = [];
-			}else {
-				$filter_tahun_mhs = isset($filter['tahun']) ? $filter['tahun'] : null ;
-				$mhs_ujian = $matkul->mhs_matkul()
-											->whereHas('mhs', function(Builder $query) use ($filter_tahun_mhs) {
-												if(!empty($filter_tahun_mhs))
-													$query->where('tahun', $filter_tahun_mhs);
-											})
-											->whereHas('mhs_ujian', function (Builder $query) use ($ujian_id){
-												$query->where('ujian_id', $ujian_id);
-											})
-											->get();
+			}else if($sumber_ujian == 'bundle'){
+				$bundle_list = Bundle_orm::whereIn('id', $bundle_ids)->get();
+				if($bundle_list->isNotEmpty()){
+					$collection = collect();
+					$topik_check_exist_temp = [];
+					foreach($bundle_list as $bundle){
+						if($bundle->soal->isNotEmpty()){
+							$soal_list = $bundle->soal()->groupBy('topik_id')->get(['topik_id']);
+							foreach($soal_list as $soal){
+								if(!in_array($soal->topik_id, $topik_check_exist_temp)){
+									$collection->push($soal->topik->matkul->mhs()->where($filter)->get());
+									$topik_check_exist_temp[] = $soal->topik->id;
+								}
+							}
+						}
+					}
+					$mhs_temp = [];
+					foreach($collection->all() as $collect){
+						foreach($collect as $mhs_orm){
+							if(!in_array($mhs_orm->id_mahasiswa, $mhs_temp)){
+								$mhs[] = $mhs_orm;
+								$mhs_temp[] = $mhs_orm->id_mahasiswa;
+							}
+						}
+					}
+				}
 			}
+				
+			$filter_tahun_mhs = isset($filter['tahun']) ? $filter['tahun'] : null ;
+				
+			// $ujian_id = $this->input->post('ujian_id');
+			// if(!empty($ujian_id)){
+				// $filter_tahun_mhs = isset($filter['tahun']) ? $filter['tahun'] : null ;
+				// $mhs_ujian = $matkul->mhs_matkul()
+				// 					->whereHas('mhs', function(Builder $query) use ($filter_tahun_mhs) {
+				// 						if(!empty($filter_tahun_mhs))
+				// 						$query->where('tahun', $filter_tahun_mhs);
+				// 					})
+				// 					->whereHas('mhs_ujian', function (Builder $query) use ($ujian_id){
+				// 						$query->where('ujian_id', $ujian_id);
+				// 					})
+				// 					->get();
+			// }else {
+				// $mhs_ujian = [];
+			// }
 		}
-		$this->_json(['mhs_matkul' => $mhs_matkul,'mhs_ujian' => $mhs_ujian]);
+		$this->_json(['mhs' => $mhs,'mhs_ujian' => $mhs_ujian]);
 	}
 	
 	protected function _get_peserta_ujian_matkul_not_ujian(){
-		$id = $this->input->post('id', true);
-		$mhs_matkul = [];
+		$sumber_ujian = $this->input->post('sumber_ujian');
+		$id = $this->input->post('id');
+		$bundle_ids = $this->input->post('bundle_ids');
+		$bundle_ids = json_decode($bundle_ids);
+		$mhs = [];
 		$mhs_ujian = [];
 		
-		if($id !== ''){
-			$ujian_id = $this->input->post('ujian_id', true);
-
+		if(!empty($id) || !empty($bundle_ids)){
+			
 			$filter_data	= $this->input->post('filter');
 			$filter			= [];
 			if (!empty($filter_data)) {
@@ -278,35 +316,86 @@ class Matkul extends MY_Controller
 				}
 			}
 
-			$matkul = Matkul_orm::findOrFail($id);
+			$ujian_id = $this->input->post('ujian_id');
+			$ujian = Mujian_orm::findOrFail($ujian_id);
 
-			$mhs_matkul = $matkul->mhs()
-									->where($filter)
-									->whereDoesntHave('h_ujian', function (Builder $query) use($ujian_id){
-										$query->where('ujian_id', $ujian_id);
-									})
-									->whereDoesntHave('h_ujian_history', function (Builder $query) use($ujian_id){
-										$query->where('ujian_id', $ujian_id);
-									})->get();
+			if($sumber_ujian == 'materi'){
+				$matkul = Matkul_orm::findOrFail($id);
+
+				$mhs = $matkul->mhs()
+							->where($filter)
+							->whereDoesntHave('h_ujian', function (Builder $query) use($ujian_id){
+								$query->where('ujian_id', $ujian_id);
+							})
+							->whereDoesntHave('h_ujian_history', function (Builder $query) use($ujian_id){
+								$query->where('ujian_id', $ujian_id);
+							})->get();
+
+			}else if($sumber_ujian == 'bundle'){
+				
+				$bundle_list = Bundle_orm::whereIn('id', $bundle_ids)->get();
+				if($bundle_list->isNotEmpty()){
+					$collection = collect();
+					$topik_check_exist_temp = [];
+					foreach($bundle_list as $bundle){
+						if($bundle->soal->isNotEmpty()){
+							$soal_list = $bundle->soal()->groupBy('topik_id')->get(['topik_id']);
+							foreach($soal_list as $soal){
+								if(!in_array($soal->topik_id, $topik_check_exist_temp)){
+									$mhs_orm = $soal->topik->matkul->mhs();
+									$mhs_orm = $mhs_orm->where($filter)
+												->whereDoesntHave('h_ujian', function (Builder $query) use($ujian_id){
+													$query->where('ujian_id', $ujian_id);
+												})
+												->whereDoesntHave('h_ujian_history', function (Builder $query) use($ujian_id){
+													$query->where('ujian_id', $ujian_id);
+												})
+												->get();
+									$collection->push($mhs_orm);
+									$topik_check_exist_temp[] = $soal->topik->id;
+								}
+							}
+						}
+					}
+					$mhs_temp = [];
+					foreach($collection->all() as $collect){
+						foreach($collect as $mhs_orm){
+							if(!in_array($mhs_orm->id_mahasiswa, $mhs_temp)){
+								$mhs[] = $mhs_orm;
+								$mhs_temp[] = $mhs_orm->id_mahasiswa;
+							}
+						}
+					}
+				}
+			}
 
 			$filter_tahun_mhs = isset($filter['tahun']) ? $filter['tahun'] : null ;
+			
+			
+			if(!empty($ujian_id)){
+				// $mhs_ujian = $matkul->mhs_matkul()
+				// 					->whereHas('mhs', function(Builder $query) use ($filter_tahun_mhs){
+				// 						if(!empty($filter_tahun_mhs))
+				// 						$query->where('tahun', $filter_tahun_mhs);
+				// 					})
+				// 					->whereHas('mhs_ujian', function (Builder $query) use($ujian_id){
+				// 						$query->where('ujian_id', $ujian_id);
+				// 					})
+				// 					->get();
 
-			if(empty($ujian_id)){
-				// $mhs_ujian = [];
-			}else {
-				$mhs_ujian = $matkul->mhs_matkul()
+				$mhs_ujian = $ujian->mhs_ujian()
 									->whereHas('mhs', function(Builder $query) use ($filter_tahun_mhs){
 										if(!empty($filter_tahun_mhs))
 											$query->where('tahun', $filter_tahun_mhs);
 									})
-									->whereHas('mhs_ujian', function (Builder $query) use($ujian_id){
-										$query->where('ujian_id', $ujian_id);
-									})
 									->get();
+
+			}else {
+				// $mhs_ujian = [];
 			}
 		}
 		
-		$this->_json(['mhs_matkul' => $mhs_matkul, 'mhs_ujian' => $mhs_ujian]);
+		$this->_json(['mhs' => $mhs, 'mhs_ujian' => $mhs_ujian]);
 	}
 	
 	public function peserta($matkul_id)

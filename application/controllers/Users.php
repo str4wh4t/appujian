@@ -111,7 +111,7 @@ class Users extends MY_Controller {
 				$nama = explode(' ', $this->input->post('full_name', true),2);
 				$first_name = $nama[0];
 				$last_name = end($nama);
-				
+			
 				$user->first_name = $first_name ;
 				$user->last_name = $last_name ;
 				$user->full_name = $this->input->post('full_name', true) ;
@@ -120,7 +120,7 @@ class Users extends MY_Controller {
 				
 				$is_mhs = $user->groups()->where('name','mahasiswa')->get();
 				
-				if ($is_mhs->count()) {
+				if ($is_mhs->isNotEmpty()) {
 					// IS MHS
 					$mhs        = Mhs_orm::where('nim', $user->username)
 					                     ->firstOrFail();
@@ -131,7 +131,7 @@ class Users extends MY_Controller {
 				
 				$is_dosen = $user->groups()->where('name','dosen')->get();
 				
-				if ($is_dosen->count()) {
+				if ($is_dosen->isNotEmpty()) {
 					// IS DOSEN
 					$dosen        = Dosen_orm::where('nip', $user->username)
 					                         ->firstOrFail();

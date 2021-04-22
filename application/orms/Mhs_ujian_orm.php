@@ -12,10 +12,10 @@ class Mhs_ujian_orm extends Eloquent
     {
         return $this->belongsTo('Orm\Mujian_orm','ujian_id');
     }
-    
-    public function mhs_matkul()
+
+    public function mhs()
     {
-        return $this->belongsTo('Orm\Mhs_matkul_orm','mahasiswa_matkul_id');
+        return $this->belongsTo('Orm\Mhs_orm', 'mahasiswa_id', 'id_mahasiswa');
     }
     
     public function daftar_hadir()

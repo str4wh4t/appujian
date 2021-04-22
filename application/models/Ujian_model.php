@@ -12,6 +12,7 @@ class Ujian_model extends CI_Model {
     
     public function getDataUjian($id = null, $username = null, $role = null, $status_ujian = 'active')
     {
+
 //        $this->datatables->select('a.id_ujian, a.token, a.nama_ujian, b.nama_matkul, a.jumlah_soal, CONCAT(a.tgl_mulai, " <br/> (", a.waktu, " Menit)") as waktu, a.jenis');
 //        $this->datatables->from('m_ujian a');
 //        $this->datatables->join('matkul b', 'a.matkul_id = b.id_matkul');
@@ -19,7 +20,7 @@ class Ujian_model extends CI_Model {
 //            $this->datatables->where('dosen_id', $id);
 //        }
 //        return $this->datatables->generate();
-	    
+
 	    $config = [
         	'host'     => $this->db->hostname,
             'port'     => $this->db->port,
@@ -30,16 +31,17 @@ class Ujian_model extends CI_Model {
     	
 	    $dt = new Datatables( new MySQL($config) );
 	    
-	    $this->db->select('a.id_ujian, status_ujian, a.token, a.nama_ujian, b.nama_matkul, a.jumlah_soal, a.tgl_mulai, a.terlambat, CONCAT(a.waktu, " Mnt") AS waktu, CONCAT(a.jenis , "/" , a.jenis_jawaban) AS jenis, a.created_by as oleh, a.pakai_token');
+	    $this->db->select('a.id_ujian, status_ujian, a.token, a.nama_ujian, a.jumlah_soal, a.tgl_mulai, a.terlambat, CONCAT(a.waktu, " Mnt") AS waktu, CONCAT(a.jenis , "/" , a.jenis_jawaban) AS jenis, a.created_by as oleh, a.pakai_token');
         $this->db->from('m_ujian a');
-        $this->db->join('matkul b', 'a.matkul_id = b.id_matkul');
         
         if($status_ujian == 'active'){
         	$this->db->where('a.status_ujian', 1);
         	$this->db->where('a.terlambat >', date('Y-m-d H:i:s'));
+            $this->db->or_where('a.terlambat is NULL', NULL, FALSE);
         }
         
         if($status_ujian == 'expired'){
+            $this->db->where('a.terlambat is NOT NULL', NULL, FALSE);
         	$this->db->where('a.terlambat <=', date('Y-m-d H:i:s'));
         }
         
@@ -83,18 +85,23 @@ class Ujian_model extends CI_Model {
         });
         
         $dt->edit('status_ujian', function ($data) {
+
+            $return = $data['status_ujian'] ? "active" : "close" ;
+
             $today = date('Y-m-d H:i:s');
 			$data_start = date('Y-m-d H:i:s', strtotime($data['tgl_mulai']));
-			$date_end = date('Y-m-d H:i:s', strtotime($data['terlambat']));
-			
-			$return = $data['status_ujian'] ? "active" : "close" ;
-			// if (($today >= $data_start) && ($today <= $date_end)) {
-			// JIKA MASIH DALAM RANGE TANGGAL
-	        if ($today < $date_end) {
-				// $return = "expired";
-			}else{
-			    $return = "expired";
-			}
+            if(!empty($data['terlambat'])){
+                $date_end = date('Y-m-d H:i:s', strtotime($data['terlambat']));
+                
+                $return = $data['status_ujian'] ? "active" : "close" ;
+                // if (($today >= $data_start) && ($today <= $date_end)) {
+                // JIKA MASIH DALAM RANGE TANGGAL
+                if ($today < $date_end) {
+                    // $return = "expired";
+                }else{
+                    $return = "expired";
+                }
+            }
 			
 			return $return;
         });
@@ -175,11 +182,9 @@ class Ujian_model extends CI_Model {
 //        $this->db->where_in('a.matkul_id', $avail_matkul_id);
 //        $this->db->group_by('a.id_ujian');
 	    
-	    $this->db->select('a.id_ujian, a.nama_ujian, b.nama_matkul, a.jumlah_soal, a.tgl_mulai, a.terlambat, CONCAT(a.waktu, " Mnt") AS waktu, a.status_ujian, a.tampilkan_hasil, e.id, "UJIAN_SELESAI" AS ujian_selesai');
+	    $this->db->select('a.id_ujian, a.nama_ujian, a.jumlah_soal, a.tgl_mulai, a.terlambat, CONCAT(a.waktu, " Mnt") AS waktu, a.status_ujian, a.tampilkan_hasil, e.id, "UJIAN_SELESAI" AS ujian_selesai');
         $this->db->from('mahasiswa_ujian AS e');
-        $this->db->join('mahasiswa_matkul AS g', 'g.id = e.mahasiswa_matkul_id');
         $this->db->join('m_ujian AS a', 'a.id_ujian = e.ujian_id');
-        $this->db->join('matkul AS b', 'g.matkul_id = b.id_matkul');
         $this->db->where('g.mahasiswa_id', $mhs_orm->id_mahasiswa);
         $this->db->group_by('e.ujian_id');
 

@@ -31,14 +31,16 @@ class Socket
     }
 
     public function notif_ws($send_msg = ''){
-		Client\connect(ws_url())->then(function($conn) use ($send_msg){
-	        $conn->on('message', function($msg) use ($conn) {
-	            // echo "Received: {$msg}\n";
-	            $conn->close();
-	        });
-	        $conn->send($send_msg);
-	    }, function ($e) {
-	        echo "Could not connect: {$e->getMessage()}\n";
-	    });
+		if(SOCKET_ENABLE){
+			Client\connect(ws_url())->then(function($conn) use ($send_msg){
+				$conn->on('message', function($msg) use ($conn) {
+					// echo "Received: {$msg}\n";
+					$conn->close();
+				});
+				$conn->send($send_msg);
+			}, function ($e) {
+				echo "Could not connect: {$e->getMessage()}\n";
+			});
+		}
 	}
 }

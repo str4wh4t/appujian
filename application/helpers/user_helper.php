@@ -8,6 +8,9 @@ use Orm\Membership_orm;
 use Orm\Membership_history_orm;
 use Carbon\Carbon;
 use Orm\Paket_orm;
+use Orm\Bundle_orm;
+use Orm\Soal_orm;
+use Illuminate\Database\Eloquent\Builder;
 
 function get_nama_lengkap_user($user = null){
 	if(null == $user){
@@ -214,4 +217,26 @@ function is_mhs_limit_by_kuota(Mhs_orm $mhs = null): bool{
 	}
 
 	return $is_limit_by_kuota;
+}
+
+function get_matkul_ids_from_bundle_ids($bundle_ids): array{
+	$matkul_ids = [];
+
+	$soal_list = Soal_orm::whereHas('bundle', function (Builder $query) use($bundle_ids){
+		$query->whereIn('bundle.id', $bundle_ids);
+	})
+	->groupBy('topik_id')
+	->get(['topik_id']);
+
+	if($soal_list->isNotEmpty()){
+		foreach($soal_list as $soal){
+			$matkul_ids[] = $soal->topik->matkul_id;
+		}
+		 
+	}
+
+	$matkul_ids = array_unique($matkul_ids);
+
+	return $matkul_ids;
+
 }

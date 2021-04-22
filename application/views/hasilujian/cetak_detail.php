@@ -61,7 +61,9 @@ $pdf->SetFont('helvetica', '', 10);
 $pdf->AddPage();
 
 $mulai = strftime('%A, %d %B %Y', strtotime($ujian->tgl_mulai));
-$selesai = strftime('%A, %d %B %Y', strtotime($ujian->terlambat));
+$selesai = empty($ujian->terlambat) ? '-' : strftime('%A, %d %B %Y', strtotime($ujian->terlambat));
+
+
 
 $t = [];
 foreach($ujian->topik AS $topik){

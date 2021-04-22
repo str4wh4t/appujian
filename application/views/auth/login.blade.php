@@ -19,8 +19,8 @@
     <!-- BEGIN VENDOR CSS-->
     <link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/css/vendors.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/vendors/css/ui/jquery-ui.min.css') }}">
-    <link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/vendors/css/forms/icheck/icheck.css') }}">
-    <link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/vendors/css/forms/icheck/custom.css') }}">
+    {{-- <link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/vendors/css/forms/icheck/icheck.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/vendors/css/forms/icheck/custom.css') }}"> --}}
     <!-- END VENDOR CSS-->
     <!-- BEGIN ROBUST CSS-->
     <link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/css/app.css') }}">
@@ -58,7 +58,7 @@
             <div class="card border-grey border-lighten-3">
                 <div class="card-header border-0 mt-1">
                     <div class="card-title text-center">
-                        <img src="{{ asset('assets/imgs/' . APP_LOGO) }}" alt="logo undip" style="width: 100px">
+                        <img src="{{ asset('assets/imgs/' . APP_LOGO) }}" alt="logo {{ APP_NAME }}" style="width: 100px">
                     </div>
                     <h6 class="card-subtitle text-muted text-center font-small-5 pt-3 font-large-1"><span>{{ APP_NAME }}</span></h6>
                 </div>
@@ -167,7 +167,7 @@
     <script src="{{ asset('assets/template/robust/app-assets/js/core/libraries/jquery_ui/jquery-ui.min.js') }}"></script>
 
     <script src="{{ asset('assets/template/robust/app-assets/vendors/js/forms/validation/jqBootstrapValidation.js') }}"></script>
-    <script src="{{ asset('assets/template/robust/app-assets/vendors/js/forms/icheck/icheck.min.js') }}"></script>
+    {{-- <script src="{{ asset('assets/template/robust/app-assets/vendors/js/forms/icheck/icheck.min.js') }}"></script> --}}
     <!-- END PAGE VENDOR JS-->
     <!-- BEGIN ROBUST JS-->
     <script src="{{ asset('assets/template/robust/app-assets/js/core/app-menu.js') }}"></script>

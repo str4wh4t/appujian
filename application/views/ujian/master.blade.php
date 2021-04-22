@@ -45,7 +45,7 @@
 	});
 
 </script>
-<script src="{{ asset('assets/dist/js/app/ujian/master.js') }}"></script>
+<script src="{{ asset('assets/dist/js/app/ujian/master.js?u=' . mt_rand()) }}"></script>
 <!-- END PAGE LEVEL JS-->
 @endpush
 
@@ -100,7 +100,6 @@
 					<input type="checkbox" class="select_all">
 				</th>
                 <th>Nama Ujian</th>
-                <th>Materi Ujian</th>
                 <th>Status</th>
                 <th>Soal</th>
                 <th>Wkt Mulai</th>
@@ -112,24 +111,7 @@
                 <th class="text-center">Aksi</th>
             </tr>
         </thead>
-{{--        <tfoot>--}}
-{{--            <tr>--}}
-{{--				<th class="text-center">--}}
-{{--					<input type="checkbox" class="select_all">--}}
-{{--				</th>--}}
-{{--                <th>Nama Ujian</th>--}}
-{{--                <th>Materi Ujian</th>--}}
-{{--                <th>Status</th>--}}
-{{--                <th>Soal</th>--}}
-{{--                <th>Wkt Mulai</th>--}}
-{{--                <th>Wkt Selesai</th>--}}
-{{--                <th>Lama Ujian</th>--}}
-{{--                <th>Acak Soal/Jwbn</th>--}}
-{{--                <th>Oleh</th>--}}
-{{--                <th	class="text-center">Token</th>--}}
-{{--                <th class="text-center">Aksi</th>--}}
-{{--            </tr>--}}
-{{--        </tfoot>--}}
+
         </table>
     </div>
 	<?=form_close();?>

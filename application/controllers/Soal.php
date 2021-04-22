@@ -6,6 +6,10 @@ use Orm\Matkul_orm;
 use Orm\Bobot_soal_orm;
 use Orm\Topik_orm;
 use Orm\Users_orm;
+use Orm\Bundle_orm;
+use Orm\Bundle_soal_orm;
+
+use Illuminate\Database\Eloquent\Builder;
 
 use Ozdemir\Datatables\Datatables;
 use Ozdemir\Datatables\DB\MySQL;
@@ -40,16 +44,29 @@ class Soal extends MY_Controller
 
 		if ($this->ion_auth->is_admin() || $this->ion_auth->in_group('penyusun_soal')) {
 			//Jika admin maka tampilkan semua matkul
-			$data['matkul'] = $this->master->getAllMatkul();
+			$data['matkul'] = Matkul_orm::all();
+			$data['topik'] = Topik_orm::all();
 		} else {
 			//Jika bukan maka matkul dipilih otomatis sesuai matkul dosen
-			$data['matkul'] = Orm\Dosen_orm::where('nip', $user->username)->firstOrFail()->matkul;
+			$dosen = Orm\Dosen_orm::where('nip', $user->username)->first();
+			$matkul = [] ;
+			if($dosen->matkul->isNotEmpty()){
+				$matkul = $dosen->matkul;
+			}
+
+			$matkul_ids = $matkul->pluck('id_matkul')->toArray();
+
+			$data['topik'] = Topik_orm::whereIn('matkul_id', $matkul_ids)->get();
+			$data['matkul'] = $matkul;
 		}
 
 		$data['bobot_soal'] = Bobot_soal_orm::All();
 		$data['gel'] = Soal_orm::distinct()->pluck('gel')->toArray();
 		$data['smt'] = Soal_orm::distinct()->pluck('smt')->toArray();
 		$data['tahun'] = Soal_orm::distinct()->pluck('tahun')->toArray();
+
+		$data['bundle_avail'] = Bundle_orm::all();
+		$data['bundle_selected'] = $data['bundle_selected'] ?? [];
 
 		//		$this->load->view('_templates/dashboard/_header.php', $data);
 		//		$this->load->view('soal/data');
@@ -109,14 +126,13 @@ class Soal extends MY_Controller
 		view('soal/detail', $data);
 	}
 
-	public function add()
+	public function add(array $data = [])
 	{
 		$user = $this->ion_auth->user()->row();
-		$data = [
-			'user'      => $user,
-			'judul'	    => 'Soal',
-			'subjudul'  => 'Add Soal'
-		];
+
+		$data['user']      = $user;
+		$data['judul']	    = 'Soal';
+		$data['subjudul']  = 'Add Soal';
 
 		if ($this->ion_auth->in_group('dosen')) {
 			//Jika dosen otomatis sesuai matkul dosen
@@ -135,13 +151,16 @@ class Soal extends MY_Controller
 		$tahun_avail = array_unique($tahun_avail);
 		$data['tahun_avail'] = $tahun_avail;
 
+		$data['bundle_avail'] = Bundle_orm::all();
+		$data['bundle_selected'] = $data['bundle_selected'] ?? [];
+
 		//		$this->load->view('_templates/dashboard/_header.php', $data);
 		//		$this->load->view('soal/add');
 		//		$this->load->view('_templates/dashboard/_footer.php');
 		view('soal/add', $data);
 	}
 
-	public function edit($id)
+	public function edit($id, array $data = [])
 	{
 		//		$user = $this->ion_auth->user()->row();
 		$soal = Soal_orm::findOrFail($id);
@@ -158,11 +177,10 @@ class Soal extends MY_Controller
 				redirect('soal/index', 'refresh');
 			}
 		}
-		$data = [
-			'judul'	    => 'Soal',
-			'subjudul'  => 'Edit Soal',
-			'soal'      => $this->soal->getSoalById($id),
-		];
+
+		$data['judul']	    = 'Soal';
+		$data['subjudul']   = 'Edit Soal';
+		$data['soal']       = $this->soal->getSoalById($id);
 
 		if ($this->ion_auth->in_group('dosen')) {
 			//Jika dosen maka matkul dipilih otomatis sesuai matkul dosen
@@ -183,19 +201,24 @@ class Soal extends MY_Controller
 		$tahun_avail = array_unique($tahun_avail);
 		$data['tahun_avail'] = $tahun_avail;
 
+		$data['bundle_avail'] = Bundle_orm::all();
+		$data['bundle_selected'] = $data['bundle_selected'] ?? $soal->bundle()->pluck('bundle.id')->toArray();
 
 		//		$this->load->view('_templates/dashboard/_header.php', $data);
 		//		$this->load->view('soal/edit');
 		//		$this->load->view('_templates/dashboard/_footer.php');
+
 		view('soal/edit', $data);
 	}
 
 	protected function _data()
 	{
 		$data['matkul_id'] = $this->input->get('matkul_id') == 'null' ? null : $this->input->get('matkul_id');
+		$data['topik_id'] = $this->input->get('topik_id') == 'null' ? null : $this->input->get('topik_id');
 		$data['gel'] = $this->input->get('gel') == 'null' ? null : $this->input->get('gel');
 		$data['smt'] = $this->input->get('smt') == 'null' ? null : $this->input->get('smt');
 		$data['tahun'] = $this->input->get('tahun') == 'null' ? null : $this->input->get('tahun');
+		$data['bundle'] = $this->input->get('bundle') == 'null' ? null : $this->input->get('bundle');
 
 		$username = null;
 		if ($this->ion_auth->in_group('dosen')) {
@@ -208,16 +231,16 @@ class Soal extends MY_Controller
 	{
 		$this->form_validation->set_rules('matkul_id', 'Matkul', 'required');
 		$this->form_validation->set_rules('topik_id', 'Topik', 'required');
-		$this->form_validation->set_rules('soal', 'Soal', 'required');
-		$this->form_validation->set_rules('jawaban_a', 'Jawaban A', 'required');
-		$this->form_validation->set_rules('jawaban_b', 'Jawaban B', 'required');
-		$this->form_validation->set_rules('jawaban_c', 'Jawaban C', 'required');
-		$this->form_validation->set_rules('jawaban_d', 'Jawaban D', 'required');
-		$this->form_validation->set_rules('jawaban_e', 'Jawaban E', 'required');
+		$this->form_validation->set_rules('soal', 'Soal', 'required|trim');
+		$this->form_validation->set_rules('jawaban_a', 'Jawaban A', 'required|trim');
+		$this->form_validation->set_rules('jawaban_b', 'Jawaban B', 'required|trim');
+		$this->form_validation->set_rules('jawaban_c', 'Jawaban C', 'required|trim');
+		$this->form_validation->set_rules('jawaban_d', 'Jawaban D', 'required|trim');
+		$this->form_validation->set_rules('jawaban_e', 'Jawaban E', 'required|trim');
 		$this->form_validation->set_rules('jawaban', 'Kunci Jawaban', 'required');
-		//        $this->form_validation->set_rules('bobot', 'Bobot Soal', 'required|is_natural_no_zero|max_length[2]');
 		$this->form_validation->set_rules('bobot_soal_id', 'Bobot Soal', 'required|is_natural_no_zero');
 		$this->form_validation->set_rules('penjelasan', 'Penjelasan', 'trim');
+		//        $this->form_validation->set_rules('bobot', 'Bobot Soal', 'required|is_natural_no_zero|max_length[2]');
 		$this->form_validation->set_rules(
 			'gel',
 			'Gel',
@@ -272,6 +295,30 @@ class Soal extends MY_Controller
 				'is_valid_tahun' => 'Tahun yg dimasukan salah',
 			]
 		);
+
+		$bundle_avail = Bundle_orm::pluck('id')->toArray();
+		$bundle_list = $this->input->post('bundle[]');
+		
+		$this->form_validation->set_rules(
+			'bundle[]',
+			'Bundle',
+			[
+				[
+					'is_valid_bundle',
+					function () use($bundle_list, $bundle_avail) {
+						if(!empty($bundle_list)){
+							$bundle_valid = array_intersect($bundle_list, $bundle_avail);
+							return count($bundle_list) == count($bundle_valid);
+						}else{
+							return true;
+						}
+					}
+				]
+			],
+			[
+				'is_valid_bundle' => 'Bundle yg dimasukan salah',
+			]
+		);
 	}
 
 	private function _file_config()
@@ -299,14 +346,20 @@ class Soal extends MY_Controller
 
 		//    	vdebug($this->input->post());
 
-		$action = $this->input->post('action', true);
+		$aksi = $this->input->post('aksi', true);
 		$id_soal = $this->input->post('id_soal', true);
 		$this->_validasi();
 		// $this->_file_config();
 
 		if ($this->form_validation->run() === FALSE) {
 			// VALIDASI SALAH
-			$action === 'add' ? $this->add() : $this->edit($id_soal);
+			$bundle_selected = empty($this->input->post('bundle[]')) ? [] : $this->input->post('bundle[]');
+			$stts = 'ko' ;
+			$data = [
+				'bundle_selected' => $bundle_selected,
+				'stts' => $stts,
+			];
+			$aksi === 'add' ? $this->add($data) : $this->edit($id_soal, $data);
 		} else {
 			// VALIDASI BENAR
 			$data = [
@@ -318,6 +371,7 @@ class Soal extends MY_Controller
 				'smt'     => $this->input->post('smt', true),
 				'tahun'     => $this->input->post('tahun', true),
 				'penjelasan'     => $this->input->post('penjelasan'),
+				'bundle'     => $this->input->post('bundle[]'),
 			];
 
 			// vdebug($data['penjelasan']);
@@ -342,7 +396,7 @@ class Soal extends MY_Controller
 			//                            show_error($error, 500, 'File Soal Error');
 			//                            exit();
 			//                        }else{
-			//                            if($action === 'edit'){
+			//                            if($aksi === 'edit'){
 			//                                if(!unlink($img_src.$getsoal->file)){
 			//                                    show_error('Error saat delete gambar <br/>'.var_dump($getsoal), 500, 'Error Edit Gambar');
 			//                                    exit();
@@ -360,7 +414,7 @@ class Soal extends MY_Controller
 			//                            show_error($error, 500, 'File Opsi '.strtoupper($abjad[$i]).' Error');
 			//                            exit();
 			//                        }else{
-			//                            if($action === 'edit'){
+			//                            if($aksi === 'edit'){
 			//                                if(!unlink($img_src.$getsoal->$file_abj)){
 			//                                    show_error('Error saat delete gambar', 500, 'Error Edit Gambar');
 			//                                    exit();
@@ -389,7 +443,7 @@ class Soal extends MY_Controller
 			$ok = true ;
 			$error = null ;
 
-			if ($action === 'add') {
+			if ($aksi === 'add') {
 				//push array
 				// $data['created_at'] = date('Y-m-d H:i:s');
 				// $data['created_by']   = $this->ion_auth->user()->row()->username;
@@ -397,6 +451,20 @@ class Soal extends MY_Controller
 				// $this->master->create('tb_soal', $data);
 				try{
 					begin_db_trx();
+
+					$no_urut = 0 ;
+					$soal_before = Soal_orm::where('topik_id', $data['topik_id'])
+										->orderBy('created_at', 'desc')
+										->first();
+
+					if(empty($soal_before))
+						$no_urut = 1;
+					else{
+						if(empty($soal_before->no_urut))
+							$no_urut = 1;
+						else
+							$no_urut = ($soal_before->no_urut) + 1;
+					}
 
 					$soal = new Soal_orm();
 					// $soal->soal = $data['soal'];
@@ -413,6 +481,7 @@ class Soal extends MY_Controller
 					$soal->topik_id = $data['topik_id'];
 					// $soal->penjelasan = $data['penjelasan'];
 					$soal->created_by = $this->ion_auth->user()->row()->username;
+					$soal->no_urut = $no_urut ;
 					$soal->save();
 
 					$soal_temp = Soal_orm::findOrFail($soal->id_soal);
@@ -491,43 +560,58 @@ class Soal extends MY_Controller
 					/////////////
 
 					$html = $data['penjelasan'];
-					// $doc = new DOMDocument('1.0', 'UTF-8');
-					// $doc->loadHTML($html);
-					$doc = new DOMDocument();
-					$doc->loadHTML(mb_convert_encoding($html, 'HTML-ENTITIES', 'UTF-8'));
-					$i = 0 ;
-					foreach ($doc->getElementsByTagName('img') as $img_node) {
-						$src = $img_node->getAttribute('src') ;
-						if(strpos($src, 'data:image/png;base64,') !== false){
-							$img = str_replace('data:image/png;base64,', '', $src);
-							$img = str_replace(' ', '+', $img);
-							$img_64 = base64_decode($img);
-							$file_name = $soal_temp->id_soal .'_penjelasan_'. mt_rand()  .'.png';
-							$file = UPLOAD_DIR . $file_name;
-							$success = file_put_contents($file, $img_64);
-							if($success){
-								$file_url =  'uploads/img_soal/' . $file_name ;
-								$img_node->setAttribute('src', asset($file_url)) ;
-								$doc->saveHTML($img_node);
+					if(!empty($html)){
+						// $doc = new DOMDocument('1.0', 'UTF-8');
+						// $doc->loadHTML($html);
+						$doc = new DOMDocument();
+						$doc->loadHTML(mb_convert_encoding($html, 'HTML-ENTITIES', 'UTF-8'));
+						$i = 0 ;
+						foreach ($doc->getElementsByTagName('img') as $img_node) {
+							$src = $img_node->getAttribute('src') ;
+							if(strpos($src, 'data:image/png;base64,') !== false){
+								$img = str_replace('data:image/png;base64,', '', $src);
+								$img = str_replace(' ', '+', $img);
+								$img_64 = base64_decode($img);
+								$file_name = $soal_temp->id_soal .'_penjelasan_'. mt_rand()  .'.png';
+								$file = UPLOAD_DIR . $file_name;
+								$success = file_put_contents($file, $img_64);
+								if($success){
+									$file_url =  'uploads/img_soal/' . $file_name ;
+									$img_node->setAttribute('src', asset($file_url)) ;
+									$doc->saveHTML($img_node);
+								}
+								$i++;
 							}
-							$i++;
 						}
-					}
-					
-					$xpath = new DOMXPath($doc);
+						
+						$xpath = new DOMXPath($doc);
 
-					$body = '';
-					foreach ($xpath->evaluate('//body/node()') as $node) {
-						$body .= $doc->saveHtml($node);
-					}
+						$body = '';
+						foreach ($xpath->evaluate('//body/node()') as $node) {
+							$body .= $doc->saveHtml($node);
+						}
 
-					$soal_temp->penjelasan = $body;
+						$soal_temp->penjelasan = $body;
+					}
 
 					/////////////
 					
 					$soal_temp->save();
 
 					$id_soal = $soal->id_soal ;
+
+					//[START] SAVE BUNDLE SOAL
+
+					if(!empty($data['bundle'])){
+						foreach($data['bundle'] as $bundle_id){
+							$bundle = new Bundle_soal_orm();
+							$bundle->id_soal = $id_soal;
+							$bundle->bundle_id = $bundle_id;
+							$bundle->save();
+						}
+					}
+
+					//[STOP] SAVE BUNDLE SOAL
 
 					commit_db_trx();
 
@@ -538,7 +622,7 @@ class Soal extends MY_Controller
 					$ok = false ;
 				}
 
-			} else if ($action === 'edit') {
+			} else if ($aksi === 'edit') {
 				//push array
 				// $data['updated_at'] = date('Y-m-d H:i:s');
 				/// $data['updated_by']   = $this->ion_auth->user()->row()->username;
@@ -647,44 +731,85 @@ class Soal extends MY_Controller
 					/////////
 
 					$html = $data['penjelasan'];
-					// $doc = new DOMDocument('1.0', 'UTF-8');
-					// $doc->loadHTML($html);
-					$doc = new DOMDocument();
-					$doc->loadHTML(mb_convert_encoding($html, 'HTML-ENTITIES', 'UTF-8'));
-					$i = 0 ;
-					foreach ($doc->getElementsByTagName('img') as $img_node) {
-						$src = $img_node->getAttribute('src') ;
-						if(strpos($src, 'data:image/png;base64,') !== false){
-							$img = str_replace('data:image/png;base64,', '', $src);
-							$img = str_replace(' ', '+', $img);
-							$img_64 = base64_decode($img);
-							// $file_name = $soal_temp->id_soal . '_soal.png';
-							$file_name = $id_soal .'_penjelasan_'. mt_rand()  .'.png';
-							$file = UPLOAD_DIR . $file_name;
-							$success = file_put_contents($file, $img_64);
-							if($success){
-								$file_url =  'uploads/img_soal/' . $file_name ;
-								$img_node->setAttribute('src', asset($file_url)) ;
-								$doc->saveHTML($img_node);
+					if(!empty($html)){
+						// $doc = new DOMDocument('1.0', 'UTF-8');
+						// $doc->loadHTML($html);
+						$doc = new DOMDocument();
+						$doc->loadHTML(mb_convert_encoding($html, 'HTML-ENTITIES', 'UTF-8'));
+						$i = 0 ;
+						foreach ($doc->getElementsByTagName('img') as $img_node) {
+							$src = $img_node->getAttribute('src') ;
+							if(strpos($src, 'data:image/png;base64,') !== false){
+								$img = str_replace('data:image/png;base64,', '', $src);
+								$img = str_replace(' ', '+', $img);
+								$img_64 = base64_decode($img);
+								// $file_name = $soal_temp->id_soal . '_soal.png';
+								$file_name = $id_soal .'_penjelasan_'. mt_rand()  .'.png';
+								$file = UPLOAD_DIR . $file_name;
+								$success = file_put_contents($file, $img_64);
+								if($success){
+									$file_url =  'uploads/img_soal/' . $file_name ;
+									$img_node->setAttribute('src', asset($file_url)) ;
+									$doc->saveHTML($img_node);
+								}
+								$i++;
 							}
-							$i++;
 						}
-					}
-					
-					$xpath = new DOMXPath($doc);
+						
+						$xpath = new DOMXPath($doc);
 
-					$body = '';
-					foreach ($xpath->evaluate('//body/node()') as $node) {
-						$body .= $doc->saveHtml($node);
-					}
+						$body = '';
+						foreach ($xpath->evaluate('//body/node()') as $node) {
+							$body .= $doc->saveHtml($node);
+						}
 
-					// $soal_temp->soal = $body;
-					$soal->penjelasan = $body;
+						// $soal_temp->soal = $body;
+						$soal->penjelasan = $body;
+					}
 
 					////////
 
 					// $soal_temp->save();
 					$soal->save();
+
+					//[START] SAVE BUNDLE SOAL
+
+					$bundle_soal_before = $soal->bundle()->pluck('bundle.id')->toArray();
+					
+					if(!empty($data['bundle'])){
+						$bundle_soal_ids_insert = array_diff($data['bundle'], $bundle_soal_before);
+						$bundle_soal_ids_delete = array_diff($bundle_soal_before, $data['bundle']);
+						
+						if(!empty($bundle_soal_ids_insert)){
+							foreach($bundle_soal_ids_insert as $bundle_id){
+								$bundle = new Bundle_soal_orm();
+								$bundle->id_soal = $id_soal;
+								$bundle->bundle_id = $bundle_id;
+								$bundle->save();
+							}
+						}
+						if(!empty($bundle_soal_ids_delete)){
+							// $bundle_soal = Bundle_soal_orm::where([
+							// 	'id_soal' => $id_soal,
+							// 	'bundle_id'    => $bundle_soal_ids_delete
+							// ])->firstOrFail();
+
+							// $bundle_soal->delete();
+
+							Bundle_soal_orm::where('id_soal', $id_soal)
+											->whereIn('bundle_id', $bundle_soal_ids_delete)
+											->delete();
+
+						}
+					}else{
+						if(!empty($bundle_soal_before)){
+							Bundle_soal_orm::where('id_soal', $id_soal)
+											->whereIn('bundle_id', $bundle_soal_before)
+											->delete();
+						}
+					}
+
+					//[STOP] SAVE BUNDLE SOAL
 
 					commit_db_trx();
 
@@ -713,7 +838,10 @@ class Soal extends MY_Controller
 			}
 
 			$this->session->set_flashdata('message_rootpage', $message_rootpage);
-			$action === 'add' ? redirect('soal/detail/' . $id_soal ) : redirect('soal/detail/' . $id_soal);
+			if($ok)
+				$aksi === 'add' ? redirect('soal/detail/' . $id_soal ) : redirect('soal/detail/' . $id_soal);
+			else
+				$aksi === 'add' ? redirect('soal/add' ) : redirect('soal/edit/' . $id_soal);
 		}
 	}
 
@@ -774,14 +902,42 @@ class Soal extends MY_Controller
 	protected function _get_topic_by_matkul()
 	{
 
-		$matkul = Matkul_orm::findOrFail($this->input->get('id'));
 		$result = [];
-		if ($matkul->topik->count() > 0) {
-			foreach ($matkul->topik as $topik) {
-				$result[$topik->id] = $topik->nama_topik;
+		$id = $this->input->get('id');
+		if($id != 'null'){
+			$matkul = Matkul_orm::find($id);
+			if(!empty($matkul)){
+				if ($matkul->topik->isNotEmpty()) {
+						foreach ($matkul->topik as $topik) {
+							// $result[$topik->id] = '<small><b>'. $topik->matkul->nama_matkul . '</b></small><br/><span class="text-danger">' . $topik->nama_topik . '</span>';
+							$result[$topik->id] = $topik->nama_topik ;
+						}
+					
+				}
+			}
+		}else{
+			$topik_list = [];
+			if(in_group(DOSEN_GROUP_ID)){
+				$user = $this->ion_auth->user()->row();
+				$dosen = Orm\Dosen_orm::where('nip', $user->username)->first();
+				$matkul = [] ;
+				if($dosen->matkul->isNotEmpty()){
+					$matkul = $dosen->matkul;
+				}
+
+				$matkul_ids = $matkul->pluck('id_matkul')->toArray();
+
+				$topik_list = Topik_orm::whereIn('matkul_id', $matkul_ids)->get();
+			}else{
+				$topik_list = Topik_orm::all();
+			}
+			if(!empty($topik_list)){
+				foreach ($topik_list as $topik) {
+					// $result[$topik->id] = '<small><b>'. $topik->matkul->nama_matkul . '</b></small><br/><span class="text-danger">' . $topik->nama_topik . '</span>';
+					$result[$topik->id] = $topik->nama_topik ;
+				}
 			}
 		}
-
 		$this->_json($result);
 	}
 
@@ -793,6 +949,16 @@ class Soal extends MY_Controller
 		];
 
 		view('soal/bobot_soal', $data);
+	}
+
+	public function bundle_soal()
+	{
+		$data = [
+			'judul'	    => 'Bundle Soal',
+			'subjudul'  => 'List Bundle Soal'
+		];
+
+		view('soal/bundle_soal', $data);
 	}
 
 	protected function _data_bobot_soal()
@@ -822,11 +988,38 @@ class Soal extends MY_Controller
 		$this->_json($return, false);
 	}
 
+	protected function _data_bundle_soal()
+	{
+
+		$config = [
+			'host'     => $this->db->hostname,
+			'port'     => $this->db->port,
+			'username' => $this->db->username,
+			'password' => $this->db->password,
+			'database' => $this->db->database,
+		];
+
+		$dt = new Datatables(new MySQL($config));
+
+		$this->db->select('a.id, a.nama_bundle, CONCAT(COUNT(b.id_soal), " soal") AS jml_soal');
+		$this->db->from('bundle a');
+		$this->db->join('bundle_soal AS b', 'bundle_id = a.id', 'left');
+		$this->db->group_by('a.id');
+
+		$query = $this->db->get_compiled_select(); // GET QUERY PRODUCED BY ACTIVE RECORD WITHOUT RUNNING I
+
+		$dt->query($query);
+
+		$return = $dt->generate();
+
+		$this->_json($return, false);
+	}
+
 	protected function _save_bobot_soal()
 	{
 		$this->_akses_admin();
 		if ($this->input->post()) {
-			$this->form_validation->set_rules('method', 'Method', 'required');
+			$this->form_validation->set_rules('aksi', 'Aksi', 'required');
 			$this->form_validation->set_rules('bobot', 'Bobot', 'required');
 			$this->form_validation->set_rules('nilai', 'Nilai', 'required|decimal|greater_than[0]');
 			if ($this->form_validation->run() === FALSE) {
@@ -863,6 +1056,43 @@ class Soal extends MY_Controller
 		}
 	}
 
+	protected function _save_bundle_soal()
+	{
+		$this->_akses_admin();
+		if ($this->input->post()) {
+			$this->form_validation->set_rules('aksi', 'Aksi', 'required');
+			$this->form_validation->set_rules('nama_bundle', 'Nama Bundle', 'required');
+			if ($this->form_validation->run() === FALSE) {
+				// VALIDASI SALAH
+				$data = [
+					'status'	=> false,
+					'errors'	=> [
+						'nama_bundle' => form_error('nama_bundle'),
+					]
+				];
+
+				$this->_json($data);
+			} else {
+				$id             = $this->input->post('id');
+				$nama_bundle             = $this->input->post('nama_bundle');
+				$nilai             = $this->input->post('nilai');
+
+				if (null == $id) {
+					$bundle        = new Bundle_orm();
+					$bundle->nama_bundle = $nama_bundle;
+					$action = $bundle->save();
+					$data['status'] = $action;
+				} else {
+					$bundle        = Bundle_orm::findOrFail($id);
+					$bundle->nama_bundle = $nama_bundle;
+					$action = $bundle->save();
+					$data['status'] = $action;
+				}
+				$this->_json($data);
+			}
+		}
+	}
+
 	public function add_bobot_soal()
 	{
 
@@ -890,6 +1120,20 @@ class Soal extends MY_Controller
 		view('soal/edit_bobot_soal', $data);
 	}
 
+	public function edit_bundle_soal($id)
+	{
+		$this->_akses_admin();
+		$bundle = Bundle_orm::findOrFail($id);
+
+		$data = [
+			'judul'	    => 'Bundle Soal',
+			'subjudul'  => 'Edit Bundle Soal',
+			'bundle' => $bundle,
+		];
+
+		view('soal/edit_bundle_soal', $data);
+	}
+
 	public function delete_bobot_soal($id)
 	{
 		$this->_akses_admin();
@@ -913,11 +1157,33 @@ class Soal extends MY_Controller
 		redirect('soal/bobot_soal', 'refresh');
 	}
 
+	protected function _delete_bundle_soal()
+	{
+		$this->_akses_admin();
+
+		$id = $this->input->post('id');
+		$bundle = Bundle_orm::findOrFail($id);
+
+		$stts = null;
+		$msg = null;
+		try{
+			$bundle->delete();
+			$stts = 'ok';
+			
+		}catch(Exception $e){
+			$stts = 'ko';
+			$msg = $e->getMessage();
+		}
+
+		$this->_json(['stts' => $stts, 'msg' => $msg]);
+	}
+
 	protected function _get_jml_soal_per_topik()
 	{
 		if (!$this->ion_auth->is_admin() && !$this->ion_auth->in_group('dosen')) {
 			show_error('Hanya Administrator dan dosen yang diberi hak untuk mengakses halaman ini', 403, 'Akses Terlarang');
 		}
+
 		$topik_ids = $this->input->post('topik_ids');
 		$topik_ids = json_decode($topik_ids);
 
@@ -931,7 +1197,11 @@ class Soal extends MY_Controller
 			}
 		}
 
+		$bundle_ids = $this->input->post('bundle_ids');
+		$bundle_ids = json_decode($bundle_ids);
+
 		$jml_soal = [];
+		
 		if (!empty($topik_ids)) {
 			//            $topik = Topik_orm::whereIn('id',$topik_ids)->get();
 			//            $bobot_soal = Bobot_soal_orm::whereIn('id',$topik_ids)->get();
@@ -939,8 +1209,15 @@ class Soal extends MY_Controller
 			if(!empty($filter)){
 				$soal->where($filter);
 			}
+
+			if(!empty($bundle_ids)){
+				$soal->whereHas('bundle_soal', function (Builder $query) use($bundle_ids) {
+					$query->whereIn('bundle_id', $bundle_ids);
+				});
+			}
+
 			$soal = $soal->get();
-			if (!empty(count($soal))) {
+			if ($soal->isNotEmpty()) {
 				foreach ($soal as $d) {
 					if (!isset($jml_soal[$d->topik_id][$d->bobot_soal_id]))
 						$jml_soal[$d->topik_id][$d->bobot_soal_id] = 0;
@@ -949,6 +1226,63 @@ class Soal extends MY_Controller
 			}
 		}
 		$this->_json($jml_soal);
+	}
+
+	protected function _get_topik_from_selected_bundle(){
+		if (!$this->ion_auth->is_admin() && !$this->ion_auth->in_group('dosen')) {
+			show_error('Hanya Administrator dan dosen yang diberi hak untuk mengakses halaman ini', 403, 'Akses Terlarang');
+		}
+
+		$bundle_ids = $this->input->post('bundle_ids');
+		$bundle_ids = json_decode($bundle_ids);
+
+		$topik_id_list = [];
+		$topik_id_ref_bundle_list = [];
+		$topik_list = [];
+		// $bundle_soal_list = Bundle_soal_orm::whereIn('bundle_id', $bundle_ids)->get();
+		// if($bundle_soal_list->isNotEmpty()){
+		// 	foreach($bundle_soal_list as $bundle_soal){
+		// 		if(!isset($topik_id_ref_bundle_list[$bundle_soal->bundle_id]))
+		// 			$topik_id_ref_bundle_list[$bundle_soal->bundle_id] = [];
+		// 		if(!in_array($bundle_soal->soal->topik_id, $topik_id_ref_bundle_list[$bundle_soal->bundle_id]))
+		// 			$topik_id_ref_bundle_list[$bundle_soal->bundle_id][] = $bundle_soal->soal->topik_id ;
+		// 		if(!in_array($bundle_soal->soal->topik_id, $topik_id_list)){
+		// 			$topik_id_list[] = $bundle_soal->soal->topik_id;
+		// 			$topik_list[$bundle_soal->soal->topik_id] = $bundle_soal->soal->topik->matkul->nama_matkul . ' : ' . $bundle_soal->soal->topik->nama_topik;
+		// 		}
+		// 	}
+		// }
+
+		$bundle_list = Bundle_orm::whereIn('id', $bundle_ids)->get();
+		if($bundle_list->isNotEmpty()){
+			foreach($bundle_list as $bundle){
+				if($bundle->soal->isNotEmpty()){
+					$soal_list = $bundle->soal()->groupBy('topik_id')->get(['topik_id']);
+					foreach($soal_list as $soal){
+						if(!isset($topik_id_ref_bundle_list[$bundle->id]))
+							$topik_id_ref_bundle_list[$bundle->id] = [];
+						if(!in_array($soal->topik_id, $topik_id_ref_bundle_list[$bundle->id]))
+							$topik_id_ref_bundle_list[$bundle->id][] = $soal->topik_id ;
+						if(!in_array($soal->topik_id, $topik_id_list)){
+							$topik_id_list[] = $soal->topik_id;
+							$topik_list[$soal->topik_id] = '<small><b>'. $soal->topik->matkul->nama_matkul . '</b></small><br/><span class="text-danger">' . $soal->topik->nama_topik . '</span>';
+						}
+
+					}
+				}
+			}
+		}
+
+		// if(!empty($topik_id_ref_bundle_list)){
+		// 	foreach($topik_id_ref_bundle_list as $bundle){
+		// 		foreach($bundle as $bundle_id => $topik_id){
+		// 			if(isset($topik_id_ref_bundle_list[]))
+		// 		}
+		// 	}
+		// }
+
+		$this->_json(['ids' => $topik_id_list, 'topik_id_ref_bundle' => $topik_id_ref_bundle_list, 'topik' => $topik_list]);
+
 	}
 
 	public function import($import_data = null)
@@ -1242,5 +1576,90 @@ class Soal extends MY_Controller
 			rollback_db_trx();
 			show_error($e->getMessage(), 500, 'Perhatian');
 		}
+	}
+
+	protected function _save_bundle(){
+		$nama_bundle = $this->input->post('nama_bundle');
+		try{
+			$bundle = new Bundle_orm();
+			$bundle->nama_bundle = $nama_bundle;
+			$bundle->created_by = $this->ion_auth->user()->row()->username;
+			$bundle->save();
+
+			$this->_json(['stts' => 'ok', 'bundle' => ['id' => $bundle->id, 'nama_bundle' => $nama_bundle]]);
+
+		}catch(Exception $e){
+
+			$this->_json(['stts' => 'ko', 'msg' => $e->getMessage()]);
+		}
+
+	}
+
+	protected function _asign_soal_bundle(){
+		$selected_bundle = $this->input->post('selected_bundle');
+		$selected_soal = $this->input->post('selected_soal');
+		$is_ignore_bundle = $this->input->post('is_ignore_bundle') == 'true' ? true : false;
+		try{
+			$selected_bundle = json_decode($selected_bundle);
+			$selected_soal = json_decode($selected_soal);
+			if(!empty($selected_bundle)){
+				if(!$is_ignore_bundle){
+					$bundle_ids_before = Bundle_soal_orm::whereIn('id_soal', $selected_soal)
+											->get(['bundle_id'])
+											->pluck('bundle_id')
+											->toArray();
+					$bundle_ids_delete = array_diff($bundle_ids_before, $selected_bundle);
+					if(!empty($bundle_ids_delete)){
+						Bundle_soal_orm::whereIn('bundle_id', $bundle_ids_delete)->whereIn('id_soal', $selected_soal)->delete();
+					}
+				}
+				// $bundle_ids_delete = array_diff($soal_ids_before, $selected_soal);
+				foreach($selected_bundle as $bundle_id){
+					$soal_ids_before = Bundle_soal_orm::where('bundle_id', $bundle_id)
+											->whereIn('id_soal', $selected_soal)
+											->get(['id_soal'])
+											->pluck('id_soal')
+											->toArray();
+					$soal_ids_insert = array_diff($selected_soal, $soal_ids_before);
+					// $soal_ids_delete = array_diff($soal_ids_before, $selected_soal);
+
+					$insert = [];
+					if(!empty($soal_ids_insert)){
+						foreach($soal_ids_insert as $soal_id){
+							$insert[] = [
+								'bundle_id' => $bundle_id,
+								'id_soal' => $soal_id,
+							];
+						}
+						Bundle_soal_orm::insert($insert);
+					}
+
+					// if(!empty($soal_ids_delete)){
+					// 	foreach($soal_ids_delete as $soal_id){
+					// 		$delete = [
+					// 			'bundle_id' => $bundle_id,
+					// 			'id_soal' => $soal_id,
+					// 		];
+					// 		Bundle_soal_orm::where($delete)->delete();
+					// 	}
+					// 	Bundle_soal_orm::where('bundle_id', $bundle_id)->whereIn('id_soal', $soal_ids_delete)->delete();
+					// }
+
+					
+
+				}
+			}else{
+				if(!$is_ignore_bundle){
+					Bundle_soal_orm::whereIn('id_soal', $selected_soal)->delete();
+				}
+			}
+
+			$this->_json(['stts' => 'ok']);
+
+		}catch(Exception $e){
+
+			$this->_json(['stts' => 'ko', 'msg' => $e->getMessage()]);
+		}
+
 	}
 }

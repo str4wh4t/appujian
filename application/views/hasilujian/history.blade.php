@@ -139,17 +139,13 @@ use Illuminate\Database\Capsule\Manager as DB;
                                     <th>Tgl Awal Ujian</th>
                                     <td>{{ strftime('%A, %d %B %Y', strtotime($m_ujian->tgl_mulai)) }}</td>
                                 </tr>
-                                <tr>
-                                    <th>Tgl Akhir Ujian</th>
-                                    <td>{{ strftime('%A, %d %B %Y', strtotime($m_ujian->terlambat)) }}</td>
-                                </tr>
                             </table>
                         </div>
                         <div class="col-md-6">
                             <table class="table w-100">
                                 <tr>
-                                    <th>Mata Kuliah</th>
-                                    <td>{{ $m_ujian->matkul->nama_matkul }}</td>
+                                    <th>Tgl Akhir Ujian</th>
+                                    <td>{!! empty($ujian->terlambat) ? '&infin;' : strftime('%A, %d %B %Y', strtotime($m_ujian->terlambat)) !!}</td>
                                 </tr>
                                 <tr>
                                     <th>Topik</th>
@@ -162,13 +158,8 @@ use Illuminate\Database\Capsule\Manager as DB;
                                     </td>
                                 </tr>
                                 <tr>
-                                    <th>Jumlah Soal</th>
-                                    <td>{{ $m_ujian->jumlah_soal }}
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <th>Waktu</th>
-                                    <td>{{ $m_ujian->waktu }} Menit
+                                    <th>Jml Soal/Waktu</th>
+                                    <td>{{ $m_ujian->jumlah_soal }}/{{ $m_ujian->waktu }} Menit
                                     </td>
                                 </tr>
                             </table>
@@ -180,7 +171,10 @@ use Illuminate\Database\Capsule\Manager as DB;
                                 $today = date('Y-m-d H:i:s');
                                 //echo $paymentDate; // echos today!
                                 $date_start = date('Y-m-d H:i:s', strtotime($m_ujian->tgl_mulai));
-                                $date_end = date('Y-m-d H:i:s', strtotime($m_ujian->terlambat));
+                                if(!empty($m_ujian->terlambat))
+                                    $date_end = date('Y-m-d H:i:s', strtotime($m_ujian->terlambat));
+                                else 
+                                    $date_end = date('Y-m-d H:i:s', strtotime('+1 days'));
                                 ?>
 
                             @if (($today >= $date_start) && ($today < $date_end)) 

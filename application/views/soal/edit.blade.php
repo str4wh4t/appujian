@@ -113,6 +113,9 @@ function init_page_level(){
     $('.note-btn').attr('title', '').attr('data-original-title', ''); // DISABLED SUMMERNOTE TOOLTIP
 
     $('.select2').select2();
+    $('#bundle').select2({
+        placeholder: "Pilih bundle soal"
+    });
 
     let options = {};
     cascadLoading = new Select2Cascade($('#matkul_id'), $('#topik_id'), '{{ site_url('soal/ajax/get_topic_by_matkul/') }}?id=:parentId:', options);
@@ -163,7 +166,60 @@ function init_page_level(){
 // {{--        $('#bobot').parent('.form-group').addClass('has-error');  --}}
 // {{--    @endif  --}}
 
+    @if(isset($stts))
+        @if($stts == 'ko')
+            Swal.fire({
+                title: "Perhatian",
+                text: "Terjadi kesalahan dalam pengisian",
+                icon: "warning",
+                confirmButtonText: "Ok",
+            });
+        @endif
+     @endif
+
 }
+
+$(document).on('keypress','input[name="nama_bundle"]',function(e){
+    if(e.which == 13) {
+        let nama_bundle = $(this).val();
+        if(nama_bundle.trim() == ''){
+            Swal.fire({
+                title: "Perhatian",
+                text: "Nama bundle tidak boleh kosong",
+                icon: "warning",
+                confirmButtonText: "Ok",
+            });
+        }else{
+            ajx_overlay(true);
+            $.ajax({
+                url: "{{ site_url('soal/ajax/save_bundle') }}",
+                data: { 'nama_bundle' : $(this).val() },
+                type: 'POST',
+                success: function (response) {
+                    if(response.stts == 'ok'){
+                        var newopt = new Option(response.bundle.nama_bundle, response.bundle.id, true, true);
+                        $('#bundle').append(newopt).trigger('change');
+                        $('input[name="nama_bundle"]').val('');
+                    }else{
+                        Swal.fire({
+                            title: "Perhatian",
+                            text: "Kesalahan : " . response.msg,
+                            icon: "warning",
+                            confirmButtonText: "Ok",
+                        });
+                    }
+                },
+                error: function(){
+
+                },
+                complete: function(){
+                    ajx_overlay(false);
+                }
+            });
+        }
+        e.preventDefault();
+    }
+});
 
 </script>
 <!-- END PAGE LEVEL JS-->
@@ -185,15 +241,15 @@ function init_page_level(){
 
 <div class="row">
         <div class="col-lg-12">
-        <?=form_open_multipart('soal/save', array('id'=>'formsoal'), array('method'=>'post', 'action' => 'edit' , 'id_soal'=>$soal->id_soal));?>
+        <?=form_open_multipart('soal/save', array('id'=>'formsoal'), array('method' => 'post', 'aksi' => 'edit' , 'id_soal' => $soal->id_soal));?>
         <fieldset class="form-group" style="padding: 10px; border: 1px solid #ccc;">
-            <legend class="col-form-label col-sm-2" style="border: 1px solid #ccc; background-color: #d4fdff;">Cluster Soal</legend>
+            <legend class="col-form-label col-lg-2 col-sm-12" style="border: 1px solid #ccc; background-color: #d4fdff;">Cluster Soal</legend>
             <div class="form-group">
                 <label for="gel" class="control-label">Gel</label>
                 <select name="gel" id="gel" class="form-control select2"
                     style="width:100%!important">
                     @foreach (GEL_AVAIL as $gel)
-                    <option value="{{ $gel }}" {{ $gel == $soal->gel ? "selected" : "" }}>GEL-{{ $gel }}</option>    
+                    <option value="{{ $gel }}" {{ $gel == (set_value('gel') != null ? set_value('gel') : $soal->gel) ? "selected" : "" }}>GEL-{{ $gel }}</option>    
                     @endforeach
                 </select>
                 <small class="help-block" style="color: #dc3545"><?=form_error('gel')?></small>
@@ -203,7 +259,7 @@ function init_page_level(){
                 <select name="smt" id="smt" class="form-control select2"
                     style="width:100%!important">
                     @foreach (SMT_AVAIL as $smt)
-                    <option value="{{ $smt }}" {{ $smt == $soal->smt ? "selected" : "" }}>SMT-{{ $smt }}</option>    
+                    <option value="{{ $smt }}" {{ $smt == (set_value('smt') != null ? set_value('smt') : $soal->smt) ? "selected" : "" }}>SMT-{{ $smt }}</option>    
                     @endforeach
                 </select>
                 <small class="help-block" style="color: #dc3545"><?=form_error('smt')?></small>
@@ -213,23 +269,28 @@ function init_page_level(){
                 <select name="tahun" id="tahun" class="form-control select2"
                     style="width:100%!important">
                     @foreach ($tahun_avail as $tahun)
-                    <option value="{{ $tahun }}" {{ $tahun == $soal->tahun ? "selected" : "" }}>{{ $tahun }}</option>    
+                    <option value="{{ $tahun }}" {{ $tahun == (set_value('tahun') != null ? set_value('tahun') : $soal->tahun) ? "selected" : "" }}>{{ $tahun }}</option>    
                     @endforeach
                 </select>
                 <small class="help-block" style="color: #dc3545"><?=form_error('tahun')?></small>
             </div>
-            {{-- <div class="form-group">
-                <label for="flag" class="control-label">Flag</label>
-                <select name="flag" id="flag" class="form-control select2"
+        </fieldset>
+        @if(is_admin())
+        <fieldset class="form-group" style="padding: 10px; border: 1px solid #ccc;">
+            <legend class="col-form-label col-lg-2 col-sm-12" style="border: 1px solid #ccc; background-color: #d4ffd7;">Bundle Soal</legend>
+            <div class="form-group">
+                <select name="bundle[]" id="bundle" class="form-control"
                     style="width:100%!important" multiple="multiple">
-                    @foreach ($tahun_avail as $tahun)
-                    <option value="{{ $tahun }}" {{ $tahun == $soal->tahun ? "selected" : "" }}>{{ $tahun }}</option>    
+                    @foreach ($bundle_avail as $bundle)
+                    <option value="{{ $bundle->id }}" {{ in_array($bundle->id, $bundle_selected) ? "selected" : "" }}>{{ $bundle->nama_bundle }}</option>    
                     @endforeach
                 </select>
-                <small class="help-block" style="color: #dc3545"><?=form_error('tahun')?></small>
-                <input placeholder="Tambah flag soal disini" type="text" value="" class="form-control" name="flag">
-            </div> --}}
+                <small class="help-block" style="color: #dc3545"><?=form_error('bundle')?></small>
+                <input placeholder="Tambah bundle soal disini" type="text" value="" class="form-control" name="nama_bundle">
+                <small class="help-block" style="color: #dc3545"><?=form_error('bundle_nama')?></small>
+            </div>
         </fieldset>
+        @endif
             <label>Materi Ujian</label>
             <div class="form-group">
                 <select name="matkul_id" id="matkul_id" class="select2 form-group" style="width:100% !important">
@@ -241,7 +302,7 @@ function init_page_level(){
             </div>
             <label>
                 <span>Topik</span>
-                <small class="help-block text-info"><span class="text-danger"><b>***</b> Sebelum memilh topik, silahkan pilih matkul dahulu</span></small>
+                <small class="help-block text-info"><span class="text-danger"><b>***</b> Sebelum memilih topik, silahkan pilih matkul dahulu</span></small>
             </label>
             <div class="form-group">
                 <select name="topik_id" id="topik_id" class="select2 form-group" style="width:100% !important">
@@ -325,7 +386,7 @@ function init_page_level(){
         </div>
 
         <fieldset class="form-group" style="padding: 10px; border: 1px solid #ccc;">
-            <legend class="col-form-label col-sm-2" style="border: 1px solid #ccc; background-color: #f6ffd4;">Penjelasan</legend>
+            <legend class="col-form-label col-lg-2 col-sm-12" style="border: 1px solid #ccc; background-color: #f6ffd4;">Penjelasan</legend>
             <label for="penjelasan"><small class="help-block text-info"><span class="text-danger"><b>***</b> Penjelasan mengenai jawaban pada soal yang tertera</span></small></label>
             <div class="form-group">
                 <textarea name="penjelasan" id="penjelasan" class="form-control froala-editor t_editor">{!! $soal->penjelasan !!}</textarea>

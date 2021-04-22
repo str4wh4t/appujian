@@ -27,25 +27,48 @@
 <!-- BEGIN PAGE LEVEL JS-->
 <script type="text/javascript">
 
-function init_page_level(){
-    // $('#matkul').select2({placeholder: "Pilih Matkul"});
+$(document).on('submit', '#bundle_soal', function (e) {
+    e.preventDefault();
+    e.stopImmediatePropagation();
+    var btn = $('#submit');
 
-    $(".inp_decimal").inputmask("decimal",{
-        digits: 2,
-        digitsOptional: false,
-        radixPoint: ".",
-        groupSeparator: ",",
-        allowPlus: false,
-        allowMinus: false,
-        rightAlign: false,
-        autoUnmask: true,
-    });
-}
+    btn.attr('disabled', 'disabled').text('Wait...');
+
+    $.ajax({
+        url: $(this).attr('action'),
+        data: $(this).serialize(),
+        type: 'POST',
+        success: function (response) {
+            btn.removeAttr('disabled').text('Update');
+            if (response.status) {
+                Swal.fire('Sukses', 'Data Berhasil diupdate', 'success')
+                    .then((result) => {
+                        if (result.value) {
+                            window.location.href = base_url+'soal/bundle_soal';
+                        }
+                    });
+            } else {
+                $.each(response.errors, function (key, val) {
+                    $('[name="' + key + '"]').closest('.form-group').addClass('has-error');
+                    $('[name="' + key + '"]').nextAll('.help-block').eq(0).text(val);
+                    if (val === '') {
+                        $('[name="' + key + '"]').closest('.form-group').removeClass('has-error').addClass('has-success');
+                        $('[name="' + key + '"]').nextAll('.help-block').eq(0).text('');
+                    }
+                });
+            }
+        }
+    })
+});
+
+$(document).on('change', '#bundle_soal input, #bundle_soal select', function () {
+    $(this).closest('.form-group').removeClass('has-error has-success');
+    $(this).nextAll('.help-block').eq(0).text('');
+});
 
 
 
 </script>
-<script src="{{ asset('assets/dist/js/app/soal/add_bobot_soal.js') }}"></script>
 <!-- END PAGE LEVEL JS-->
 @endpush
 
@@ -63,22 +86,17 @@ function init_page_level(){
 <!---- --->
 <div class="row">
     <div class="col-md-6">
-    <?=form_open('soal/ajax/save_bobot_soal', array('id'=>'bobot_soal'), array('method' => 'post', 'aksi' => 'edit','id' => $bobot_soal->id));?>
+    <?=form_open('soal/ajax/save_bundle_soal', array('id'=>'bundle_soal'), array('method' => 'post', 'aksi' => 'edit', 'id' => $bundle->id));?>
         <div class="form-body">
             <div class="row">
                 <div class="col-md-12">
                     <div class="form-group">
-                        <label for="nip">Bobot</label>
-                        <input autofocus="autofocus" onfocus="this.select()" value="{{ $bobot_soal->bobot }}" type="text" id="bobot" class="form-control" name="bobot" placeholder="Bobot">
-                        <small class="help-block"></small>
-                    </div>
-                    <div class="form-group">
-                        <label for="nama_dosen">Nilai</label>
-                        <input type="text" class="form-control inp_decimal" value="{{ $bobot_soal->nilai }}" name="nilai" placeholder="nilai">
+                        <label for="nama_bundle">Nama Bundle</label>
+                        <input autofocus="autofocus" onfocus="this.select()" value="{{ $bundle->nama_bundle }}" type="text" id="nama_bundle" class="form-control" name="nama_bundle" placeholder="Nama Bundle">
                         <small class="help-block"></small>
                     </div>
                     <div class="form-group pull-right">
-                        <a href="{{ site_url('soal/bobot_soal') }}" class="btn btn-flat btn-warning">
+                        <a href="{{ site_url('soal/bundle_soal') }}" class="btn btn-flat btn-warning">
                             <i class="fa fa-arrow-left"></i> Kembali
                         </a>
                         <button type="submit" id="submit" class="btn btn-flat btn-outline-primary">

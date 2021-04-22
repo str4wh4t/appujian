@@ -12,9 +12,6 @@ class Chat implements MessageComponentInterface {
     public function __construct() {
         // $this->clients = new \SplObjectStorage;
 
-        // $this->data_clients_mhs = ['ujian.undip.ac.id' => [], 'cat.undip.ac.id' => []];
-        // $this->data_clients_mhs_ips = ['ujian.undip.ac.id' => [], 'cat.undip.ac.id' => []];
-
 		$this->clients = [];
 		$this->admins = [];
 		$this->data_clients_mhs = [];
@@ -57,24 +54,6 @@ class Chat implements MessageComponentInterface {
 
 	    if($req->cmd == 'OPEN'){
 		    if($req->as == 'pengawas') {
-	    	    // UNTUK PENGAWAS
-//			    $users_groups    = Users_groups_orm::where([
-//				    'user_id'  => $req->user_id,
-//				    'group_id' => PENGAWAS_GROUP_ID
-//			    ])->firstOrFail();
-//
-//			    $mahasiswa_ujian = Mhs_ujian_orm::where('ujian_id', $req->m_ujian_id)
-//			                                    ->has('daftar_hadir')
-//			                                    ->get();
-//
-//			    if ($mahasiswa_ujian->isNotEmpty()) {
-//				    foreach ($mahasiswa_ujian as $mu) {
-//					    $absensi[] = $mu->mhs_matkul->mhs->nim;
-//					    if ($mu->daftar_hadir->absen_by == $users_groups->id) {
-//						    $absensi_by_self[] = $mu->mhs_matkul->mhs->nim;
-//					    }
-//				    }
-//			    }
 
 				if(!isset($this->admins[$from->resourceId]))
 					$this->admins[] = $from->resourceId;
@@ -97,15 +76,6 @@ class Chat implements MessageComponentInterface {
 				$this->msg_to_admin($msg);
 
 		    }else if($req->as == 'admin') {
-		    	// UNTUK ADMIN
-//		    	$mahasiswa_ujian = Mhs_ujian_orm::where('ujian_id', $req->m_ujian_id)
-//			                                    ->has('daftar_hadir')
-//			                                    ->get();
-//		    	if ($mahasiswa_ujian->isNotEmpty()) {
-//				    foreach ($mahasiswa_ujian as $mu) {
-//					    $absensi[] = $mu->mhs_matkul->mhs->nim;
-//				    }
-//			    }
 
 				if(!isset($this->admins[$from->resourceId]))
 					$this->admins[] = $from->resourceId;
@@ -130,23 +100,7 @@ class Chat implements MessageComponentInterface {
 		    }
 	    }elseif($req->cmd == 'DO_ABSENSI'){
 		    if($req->as == 'pengawas') {
-	    	    // UNTUK PENGAWAS
-//			    $users_groups = Users_groups_orm::where([
-			    ////				    'user_id'  => $req->user_id,
-			    ////				    'group_id' => PENGAWAS_GROUP_ID
-			    ////			    ])->firstOrFail();
-			    ////
-			    ////			    $daftar_hadir = Daftar_hadir_orm::where([
-			    ////				    'mahasiswa_ujian_id' => $req->mahasiswa_ujian_id,
-			    ////			    ])->first();
-//
-//			    $ok = false;
-//			    if (empty($daftar_hadir)) {
-//				    $daftar_hadir                     = new Daftar_hadir_orm();
-//				    $daftar_hadir->mahasiswa_ujian_id = $req->mahasiswa_ujian_id;
-//				    $daftar_hadir->absen_by           = $users_groups->id;
-//				    $ok                               = $daftar_hadir->save();
-//			    }
+
 			    $ok =  true;
 			    $res = [
 				    'cmd'     => $req->cmd,
@@ -166,21 +120,7 @@ class Chat implements MessageComponentInterface {
 		    }
 	    }elseif($req->cmd == 'DO_ABSENSI_BATAL'){
 	    	if($req->as == 'pengawas') {
-//			    // UNTUK PENGAWAS
-//			    $users_groups = Users_groups_orm::where([
-//				    'user_id'  => $req->user_id,
-//				    'group_id' => PENGAWAS_GROUP_ID
-//			    ])->firstOrFail();
-//
-//			    $daftar_hadir = Daftar_hadir_orm::where([
-//				    'mahasiswa_ujian_id' => $req->mahasiswa_ujian_id,
-//				    'absen_by'           => $users_groups->id,
-//			    ])->first();
-//
-//			    $ok           = false;
-//			    if (!empty($daftar_hadir)) {
-//				    $ok = $daftar_hadir->delete();
-//			    }
+				
 			    $ok = true ;
 			    $res = [
 				    'cmd'     => $req->cmd,

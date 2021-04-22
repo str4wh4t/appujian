@@ -119,6 +119,12 @@
 							List Soal
 						</a>
 					</li>
+					<li class="{{ $method === 'bundle_soal' ? "active":"" }}">
+						<a class="menu-item" href="{{ site_url('soal/bundle_soal') }}">
+							<i class="fa {{ $method  === 'bundle_soal' ? "fa-play-circle-o" : "fa-circle-o" }}"></i>
+							Bundle Soal
+						</a>
+					</li>
 				</ul>
 			</li>
 			@endif

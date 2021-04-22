@@ -8,6 +8,7 @@ use Orm\Mhs_matkul_orm;
 use Orm\Hujian_orm;
 use Orm\Mujian_orm;
 use Orm\Topik_orm;
+use Orm\Matkul_orm;
 use Orm\Soal_orm;
 use Orm\Jawaban_ujian_orm;
 use Orm\Trx_payment_orm;
@@ -239,6 +240,9 @@ class Pub extends MY_Controller {
 					break;
 				}
 				
+				if(empty($m_ujian->terlambat)){
+					continue;
+				}
 				
 				$date_end = date('Y-m-d H:i:s', strtotime($m_ujian->terlambat));
 				if ($today < $date_end){
@@ -761,9 +765,9 @@ class Pub extends MY_Controller {
 
 								if($matkul->m_ujian->isNotEmpty()){
 									foreach($matkul->m_ujian as $m_ujian){
-										if(empty($mhs_matkul_orm->mhs_ujian()->where('ujian_id', $m_ujian->id_ujian)->first())){
+										if(empty($mhs->mhs_ujian()->where('ujian_id', $m_ujian->id_ujian)->first())){
 											$mhs_ujian = new Mhs_ujian_orm();
-											$mhs_ujian->mahasiswa_matkul_id = $mhs_matkul_orm->id;
+											$mhs_ujian->mahasiswa_id = $mhs->id_mahasiswa;
 											$mhs_ujian->ujian_id = $m_ujian->id_ujian;
 											$mhs_ujian->save();
 										}
@@ -832,9 +836,9 @@ class Pub extends MY_Controller {
 						
 						if($matkul->m_ujian->isNotEmpty()){
 							foreach($matkul->m_ujian as $m_ujian){
-								if(empty($mhs_matkul_orm->mhs_ujian()->where('ujian_id', $m_ujian->id_ujian)->first())){
+								if(empty($mhs->mhs_ujian()->where('ujian_id', $m_ujian->id_ujian)->first())){
 									$mhs_ujian = new Mhs_ujian_orm();
-									$mhs_ujian->mahasiswa_matkul_id = $mhs_matkul_orm->id;
+									$mhs_ujian->mahasiswa_id = $mhs->id_mahasiswa;
 									$mhs_ujian->ujian_id = $m_ujian->id_ujian;
 									$mhs_ujian->save();
 								}
@@ -1351,5 +1355,22 @@ class Pub extends MY_Controller {
 	// 	}
 
 	// }
+
+	public function gen_no_urut_soal(){
+		$matkul_list = Matkul_orm::all();
+
+		foreach($matkul_list as $matkul){
+			foreach($matkul->topik as $topik){
+				$soal_list = Soal_orm::where('topik_id', $topik->id)->orderBy('created_at', 'asc')->get();
+				$i = 1 ;
+				foreach($soal_list as $soal){
+					$soal->no_urut = $i ;
+					$soal->save();
+					echo $i . ' ===> DONE ' . "\n" ;
+					$i++ ;
+				}
+			}
+		}
+	}
 	
 }

@@ -123,7 +123,7 @@
                     <tr>
                         <td bgcolor="#ffffff" align="center" valign="top" style="padding: 40px 20px 20px 20px; border-radius: 4px 4px 0px 0px; color: #111111; font-family: 'Lato', Helvetica, Arial, sans-serif; font-size: 48px; font-weight: 400; letter-spacing: 4px; line-height: 48px;">
                             <h1 style="font-size: 48px; font-weight: 400; margin: 2;">Reset Password</h1>
-                            <img src="<?= asset('assets/imgs/logo_undip_kecil.png') ?>" width="125" height="125" style="display: block; border: 0px;" />
+                            <img src="<?= asset(LOGO_EMAIL_MSG) ?>" width="125" height="125" style="display: block; border: 0px;" />
                         </td>
                     </tr>
                 </table>
@@ -193,7 +193,7 @@
                     <tr>
                         <td bgcolor="#FFECD1" align="center" style="padding: 30px 30px 30px 30px; border-radius: 4px 4px 4px 4px; color: #666666; font-family: 'Lato', Helvetica, Arial, sans-serif; font-size: 18px; font-weight: 400; line-height: 25px;">
                             <h2 style="font-size: 20px; font-weight: 400; color: #666666; margin: 0;">
-                            <?= APP_NAME ?> <?= get_selected_tahun() ?>
+                            <?= strtoupper(APP_NAME) ?>
                             </h2>
                         </td>
                     </tr>

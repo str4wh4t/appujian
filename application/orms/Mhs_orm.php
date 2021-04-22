@@ -35,6 +35,11 @@ class Mhs_orm extends Eloquent
         return $this->hasMany('Orm\Mhs_matkul_orm','mahasiswa_id');
     }
 
+    public function mhs_ujian()
+    {
+        return $this->hasMany('Orm\Mhs_ujian_orm','mahasiswa_id');
+    }
+
     public function membership_history()
     {
         return $this->hasMany('Orm\Membership_history_orm', 'mahasiswa_id');

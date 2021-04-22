@@ -86,7 +86,6 @@ $(document).ready(function () {
                 "searchable": false
             },
             { "data": 'nama_ujian' },
-            { "data": 'nama_matkul' },
             { "data": 'status_ujian' },
             { "data": 'jumlah_soal' },
             { "data": 'tgl_mulai' },
@@ -114,7 +113,7 @@ $(document).ready(function () {
                 "data": "nama_ujian",
             },
             {
-                "targets": 3,
+                "targets": 2,
                 "render": function (data, type, row, meta) {
                     if(data == 'active'){
                         return `<span class="badge badge-success">
@@ -134,7 +133,7 @@ $(document).ready(function () {
                 }
             },
             {
-                "targets": 10,
+                "targets": 9,
                 "data": "token",
                 "render": function (data, type, row, meta) {
                     if(row.pakai_token == '0'){
@@ -147,7 +146,7 @@ $(document).ready(function () {
                 }
             },
             {
-                "targets": 11,
+                "targets": 10,
                 "data": "aksi",
             },
         ],

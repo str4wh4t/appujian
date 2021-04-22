@@ -122,8 +122,8 @@ use Illuminate\Database\Eloquent\Builder;
 									<td>{{ $h_ujian->m_ujian->nama_ujian }}</td>
 								</tr>
 								<tr>
-									<th>Jumlah Soal/Waktu</th>
-									<td>{{ $h_ujian->m_ujian->jumlah_soal }} Soal / {{ $h_ujian->m_ujian->waktu }} Menit
+									<th>Jml Soal/Waktu</th>
+									<td>{{ $h_ujian->m_ujian->jumlah_soal }}/{{ $h_ujian->m_ujian->waktu }} Menit
 									</td>
 								</tr>
 								<tr>
@@ -133,16 +133,15 @@ use Illuminate\Database\Eloquent\Builder;
 								<tr>
 									<th>Waktu Ujian</th>
 									<td>{{ strftime('%H:%M:%S', strtotime($h_ujian->tgl_mulai)) }} -
-										{{ strftime('%H:%M:%S', strtotime($h_ujian->tgl_selesai)) }}
-										({{ $waktu_mengerjakan }})</td>
+										{{ strftime('%H:%M:%S', strtotime($h_ujian->tgl_selesai)) }}</td>
 								</tr>
 							</table>
 						</div>
 						<div class="col-md-6">
 							<table class="table w-100">
 								<tr>
-									<th>Mata Kuliah</th>
-									<td>{{ $h_ujian->m_ujian->matkul->nama_matkul }}</td>
+									<th>Lama Pengerjaan</th>
+									<td>{{ $waktu_mengerjakan }}</td>
 								</tr>
 								<tr>
 									<th>Topik</th>

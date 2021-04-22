@@ -18,8 +18,6 @@
 	<link href="{{ asset('assets/yarn/node_modules/typeface-open-sans/index.css') }}" rel="stylesheet">    <!-- BEGIN VENDOR CSS-->
     <link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/css/vendors.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/vendors/css/ui/jquery-ui.min.css') }}">
-    <link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/vendors/css/forms/icheck/icheck.css') }}">
-    <link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/vendors/css/forms/icheck/custom.css') }}">
     <!-- END VENDOR CSS-->
     <!-- BEGIN ROBUST CSS-->
     <link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/css/app.css') }}">
@@ -101,7 +99,6 @@
     <script src="{{ asset('assets/template/robust/app-assets/js/core/libraries/jquery_ui/jquery-ui.min.js') }}"></script>
 
     <script src="{{ asset('assets/template/robust/app-assets/vendors/js/forms/validation/jqBootstrapValidation.js') }}"></script>
-    <script src="{{ asset('assets/template/robust/app-assets/vendors/js/forms/icheck/icheck.min.js') }}"></script>
     <!-- END PAGE VENDOR JS-->
     <!-- BEGIN ROBUST JS-->
     <script src="{{ asset('assets/template/robust/app-assets/js/core/app-menu.js') }}"></script>

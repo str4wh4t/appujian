@@ -115,12 +115,8 @@ $(document).on('click','.btn_reset_hasil',function(){
                 <td><?=$ujian->nama_ujian?></td>
             </tr>
             <tr>
-                <th>Jumlah Soal</th>
-                <td><?=$ujian->jumlah_soal?></td>
-            </tr>
-            <tr>
-                <th>Waktu</th>
-                <td><?=$ujian->waktu?> Menit</td>
+                <th>Jml Soal/Waktu</th>
+                <td><?=$ujian->jumlah_soal?>/<?=$ujian->waktu?> Menit</td>
             </tr>
             <tr>
                 <th>Jadwal Mulai Ujian</th>
@@ -128,16 +124,12 @@ $(document).on('click','.btn_reset_hasil',function(){
             </tr>
             <tr>
                 <th>Jadwal Selesai Ujian</th>
-                <td><?=strftime('%A, %d %B %Y', strtotime($ujian->terlambat))?></td>
+                <td>{!! empty($ujian->terlambat) ? '&infin;' : strftime('%A, %d %B %Y', strtotime($ujian->terlambat)) !!}</td>
             </tr>
         </table>
     </div>
     <div class="col-md-6">
         <table class="table w-100">
-            <tr>
-                <th>Mata Kuliah</th>
-                <td><?=$ujian->matkul->nama_matkul?></td>
-            </tr>
             <tr>
                 <th>Topik</th>
                 <td>@php($t = [])

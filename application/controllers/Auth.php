@@ -392,6 +392,7 @@ class Auth extends CI_Controller
 					$mhs->tmp_lahir = $users_temp->tmp_lahir;
 					$mhs->tgl_lahir = $users_temp->tgl_lahir;
 					$mhs->email = $email;
+					$mhs->no_billkey = $additional_data['no_billkey'];
 					$mhs->jenis_kelamin = $users_temp->jenis_kelamin;
 					$mhs->kota_asal = $users_temp->kota_asal;
 					$mhs->save();
@@ -431,7 +432,7 @@ class Auth extends CI_Controller
 								if($matkul->m_ujian->isNotEmpty()){
 									foreach($matkul->m_ujian as $m_ujian){
 										$mhs_ujian = new Mhs_ujian_orm();
-										$mhs_ujian->mahasiswa_matkul_id = $mhs_matkul_orm->id;
+										$mhs_ujian->mahasiswa_id = $id_mahasiswa;
 										$mhs_ujian->ujian_id = $m_ujian->id_ujian;
 										$mhs_ujian->save();
 									}

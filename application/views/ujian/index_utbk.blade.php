@@ -175,6 +175,16 @@ legend{
     text-transform: uppercase;
 }
 
+#q_n_a{
+    max-height: 700px;
+    overflow-y: scroll;
+}
+
+#panel_user{
+    max-height: 750px;
+    overflow-y: scroll;
+}
+
 </style>
 @endpush
 
@@ -409,27 +419,27 @@ const setting_up_view = () => {
                 buka(1);
             }
 
-            $('#div_topik_ujian').html('');
-            if(is_sekuen_topik){
-                $.each(urutan_topik, function(i, v){
-                    if(v){
-                        let sub_el_1 = $('<dt class="col-md-8"></dt>').text((i+1) + '. ' + topik_nama[v]);
-                        let sub_el_2 = $('<dd class="col-md-4"></dd>').text(topik[v] + ' menit');
-                        let el = $('<dl class="row"></dl>').html(sub_el_1.prop('outerHTML') + sub_el_2.prop('outerHTML'));   
-                        $('#div_topik_ujian').append(el);
-                    }
-                });
-            }else{
-                $('.legend_topik').each(function(i,v){
-                    let id = $(this).data('id');
-                    if(v){
-                        let sub_el_1 = $('<dt class="col-md-12"></dt>').text((i+1) + '. ' + topik_nama[id]);
-                        let el = $('<dl class="row"></dl>').html(sub_el_1.prop('outerHTML'));   
-                        $('#div_topik_ujian').append(el);
+            // $('#div_topik_ujian').html('');
+            // if(is_sekuen_topik){
+            //     $.each(urutan_topik, function(i, v){
+            //         if(v){
+            //             let sub_el_1 = $('<dt class="col-md-8"></dt>').text((i+1) + '. ' + topik_nama[v]);
+            //             let sub_el_2 = $('<dd class="col-md-4"></dd>').text(topik[v] + ' menit');
+            //             let el = $('<dl class="row"></dl>').html(sub_el_1.prop('outerHTML') + sub_el_2.prop('outerHTML'));   
+            //             $('#div_topik_ujian').append(el);
+            //         }
+            //     });
+            // }else{
+            //     $('.legend_topik').each(function(i,v){
+            //         let id = $(this).data('id');
+            //         if(v){
+            //             let sub_el_1 = $('<dt class="col-md-12"></dt>').text((i+1) + '. ' + topik_nama[id]);
+            //             let el = $('<dl class="row"></dl>').html(sub_el_1.prop('outerHTML'));   
+            //             $('#div_topik_ujian').append(el);
 
-                    }
-                });
-            }
+            //         }
+            //     });
+            // }
 
             ajx_overlay(false); 
         });
@@ -445,8 +455,13 @@ function init_page_level(){
     //   e.preventDefault();
     // });
     document.addEventListener('contextmenu', event => event.preventDefault());
-    
 
+    let width = $(window).width();
+
+    let height = $(window).height();
+    
+    $('#q_n_a').css('max-height', (height - (87.85 + 54.5)));
+    $('#panel_user').css('max-height', (height - (87.85)));
 
 }
 
@@ -486,21 +501,6 @@ function wrap_navigasi(){
 //         $('#q_n_a').css('left',"");
 //     }
 // });
-
-let nav_is_open = false ;
-
-$(document).on('click','#nav_opener',function() {
-    nav_is_open = nav_is_open ? false : true ;
-    if(nav_is_open) {
-        $('#nav_content').slideDown()
-        $(this).text('TUTUP');
-    }
-    else {
-        $('#nav_content').slideUp()
-        $(this).text('BUKA');
-    }
-    return false;
-});
 
 // window.onblur = function () {
     
@@ -616,7 +616,7 @@ function selesai(ended_by = '') {
             <div class="card-header" style="padding: 1rem">
 {{--                <h4 class="card-title" style="width: 300px; float: left"><?=$subjudul?></h4>--}}
                 <h4 class="card-title" style="width: 500px; margin: 0 auto;text-align: center;">
-                    <span>Sisa Waktu </span><hr>
+                    {{-- <span>Sisa Waktu </span><hr> --}}
                     <span id="sisa_waktu" style="font-size: 2rem">0:0:0</span>
                 </h4>
 {{--                <a class="heading-elements-toggle"><i class="fa fa-ellipsis-v font-medium-3"></i></a>--}}
@@ -632,27 +632,10 @@ function selesai(ended_by = '') {
         </div>
     </div>
 </div>
-
-<div class="row">
-    <div class="col-md-12">
-        <div class="card">
-            <div class="card-content">
-                <div class="card-header" style="width: 500px; margin: 0 auto;text-align: center;">
-                    <h4 class="card-title" id="navigas_ujian">NAVIGASI [ <a href="#" id="nav_opener">BUKA</a> ]</h4>
-				</div>
-				<div class="card-content collapse show" id="nav_content" style="display: none">
-                    <div class="card-body" style="padding-top: 0px">
-                        <div id="tampil_jawaban"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
 <!---- --->
 {!! form_open('', array('id'=>'ujian'), ['id'=> $id_tes, 'key' => $one_time_token]) !!}
 <div class="row">
-    <div class="col-md-4">
+    <div class="col-md-3" id="panel_user">
         <div class="row">
             <div class="col-md-12">
                 <div class="card">
@@ -668,18 +651,7 @@ function selesai(ended_by = '') {
                                 <tr>
                                     <th colspan="2" style="text-align: center"><img src="{{ APP_TYPE == 'tryout' ? asset('assets/imgs/no_profile_120_150.jpg') : $h_ujian->mhs->foto }}" style="height: 150px; width: 120px;" /></th>
                                 </tr>
-                                <tr>
-                                    <th>Ujian</th>
-                                    <td>{{ $h_ujian->m_ujian->nama_ujian }}</td>
-                                </tr>
-                                <tr>
-                                    <th>Jumlah Soal</th>
-                                    <td>{{ $h_ujian->m_ujian->jumlah_soal }} soal</td>
-                                </tr>
-{{--                                <tr>--}}
-{{--                                    <th>Waktu</th>--}}
-{{--                                    <td>{{ strftime('%T', strtotime($h_ujian->tgl_mulai)) }} - {{ strftime('%T', strtotime($h_ujian->tgl_selesai)) }}</td>--}}
-{{--                                </tr>--}}
+                                {{--
                                 <tr>
                                     <th>Waktu</th>
                                     <td>{{ $h_ujian->m_ujian->waktu }} menit</td>
@@ -687,17 +659,33 @@ function selesai(ended_by = '') {
                                 <tr>
                                     <th colspan="2" class="text-center bg-light">Topik Ujian</th>
                                 </tr>
+                                
                                 <tr>
                                     <td colspan="2">
                                         <div id="div_topik_ujian"></div>
                                     </td>
-                                </tr>
+                                </tr> --}}
                             </table>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="card">
+                                        <div class="card-content">
+                                            <div class="card-content collapse show" id="nav_content" style="">
+                                                <div class="card-body" style="padding: 0px">
+                                                    <div id="tampil_jawaban"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+
+        
 
         <div class="row">
             <div class="col-md-12">
@@ -710,33 +698,43 @@ function selesai(ended_by = '') {
                 </div>
             </div>
         </div>
+        
     </div>
-    <div class="col-md-8" id="q_n_a">
+    <div class="col-md-9">
         <div class="row">
-            <div class="col-md-12">
-                <div class="card">
-                    <div class="card-content">
-                        <div class="card-body" id="isi_pertanyaan">
-                            <span style="font-size: 20px" class="">Soal #<span id="soalke"></span></span>
-                            <span class="float-right text-danger" id="text_info_topik" style="font-size: 15px; font-weight: bold; padding-top: 5px; text-transform: uppercase">KEMAMPUAN VERBAL</span>
-                            <hr>
-                            {!! $html_pertanyaan !!}
+            <div class="col-md-12" id="q_n_a" style="">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="card">
+                            <div class="card-content">
+                                <div class="card-body" id="isi_pertanyaan">
+                                    <span style="font-size: 20px" class="">Soal #<span id="soalke"></span></span>
+                                    <span class="float-right text-danger" id="text_info_topik" style="font-size: 15px; font-weight: bold; padding-top: 5px; text-transform: uppercase">KEMAMPUAN VERBAL</span>
+                                    <hr>
+                                    {!! $html_pertanyaan !!}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="card">
+                            <div class="card-content">
+                                <div class="card-body" id="pil_jawaban">
+                                    {!! $html !!}
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-        <div class="row">
             <div class="col-md-12">
-                <div class="card">
+                <div class="card mb-0" style="background-color: rgb(255, 254, 212)">
                     <div class="card-content">
-                        <div class="card-body" id="pil_jawaban">
-                            {!! $html !!}
-                        </div>
-                        <hr>
-                        <div class="card-body text-center">
+                        <div class="card-body text-center" style="padding: 0.5rem">
                             <div class="btn-group" role="group" aria-label="" id="next_prev_pertanyaan">
-                                <button type="button" class="action back btn btn-info" rel="0" onclick="return back();"><i class="fa fa-chevron-left"></i> Back</button>
+                                <button type="button" class="action back btn btn-info rounded-0" rel="0" onclick="return back();"><i class="fa fa-chevron-left"></i> Back</button>
                                 <button type="button" class="ragu_ragu btn btn-warning" rel="1" onclick="return tidak_jawab();" style="display: none"><i class="fa fa-pause"></i> <span class="span_ragu">Ragu-Ragu</span></button>
                                 <button type="button" class="action next btn btn-info" rel="2" onclick="return next();">Next <i class="fa fa-chevron-right"></i></button>
                                 <button type="button" class="selesai action submit btn btn-danger" onclick="return simpan_akhir();"><i class="fa fa-stop"></i> Selesai</button>

@@ -7,10 +7,11 @@
     <meta name="description" content="Terjadi kesalahan">
     <meta name="keywords" content="">
     <meta name="author" content="UNDIP">
-    <title>ERROR :: UJIAN ONLINE UNDIP</title>
+    <title>ERROR :: <?= APP_NAME ?></title>
     <link rel="apple-touch-icon" href="<?= base_url('assets/icon/apple-touch-icon.png') ?>">
-	<link rel="shortcut icon" type="image/x-icon" href="<?= base_url('assets/icon/favicon.ico') ?>">
-    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i%7CMuli:300,400,500,700" rel="stylesheet">
+	  <link rel="shortcut icon" type="image/x-icon" href="<?= base_url('assets/icon/favicon.ico') ?>">
+    <link href="<?= base_url('assets/yarn/node_modules/typeface-muli/index.css') ?>" rel="stylesheet">
+  	<link href="<?= base_url('assets/yarn/node_modules/typeface-open-sans/index.css') ?>" rel="stylesheet">
     <!-- BEGIN VENDOR CSS-->
     <link rel="stylesheet" type="text/css" href="<?= base_url('assets/template/robust/') ?>app-assets/css/vendors.css">
     <!-- END VENDOR CSS-->
@@ -45,7 +46,7 @@
             <div class="card border-grey border-lighten-3 px-1 py-1 box-shadow-3 m-0">
                 <div class="card-body">
                     <span class="card-title text-center">
-            			<img src="<?= base_url('assets/imgs/logo_undip.png') ?>" class="img-fluid mx-auto d-block pt-2" width="200" alt="logo">
+            			<img src="<?= asset(LOGO_EMAIL_MSG) ?>" class="img-fluid mx-auto d-block pt-2" width="120" alt="logo">
             		</span>
                 </div>
                 <div class="card-body text-center">

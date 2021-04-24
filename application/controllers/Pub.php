@@ -19,7 +19,11 @@ use Orm\Paket_orm;
 use Orm\Paket_history_orm;
 use Orm\Trx_midtrans_orm;
 use Orm\Data_daerah_orm;
+use Orm\Bundle_orm;
+use Orm\Bundle_soal_orm;
 use GuzzleHttp\Client;
+use Illuminate\Database\Eloquent\Builder;
+use Carbon\Carbon;
 
 class Pub extends MY_Controller {
 
@@ -601,6 +605,8 @@ class Pub extends MY_Controller {
 			$username = $info[0] ; // 
 			$mhs = Mhs_orm::where('nim', $username)->firstOrFail();
 
+			$now = Carbon::now('utc')->toDateTimeString();
+
 			if($notif->transaction_status == 'pending'){
 
 				// JIKA TERJADI PEMESANAN
@@ -763,16 +769,44 @@ class Pub extends MY_Controller {
 								$mhs_matkul_orm->sisa_kuota_latihan_soal = $sisa_kuota_latihan_soal ;
 								$mhs_matkul_orm->save();
 
+								// [START] JIKA UJIAN SOURCE DARI MATERI
 								if($matkul->m_ujian->isNotEmpty()){
-									foreach($matkul->m_ujian as $m_ujian){
-										if(empty($mhs->mhs_ujian()->where('ujian_id', $m_ujian->id_ujian)->first())){
-											$mhs_ujian = new Mhs_ujian_orm();
-											$mhs_ujian->mahasiswa_id = $mhs->id_mahasiswa;
-											$mhs_ujian->ujian_id = $m_ujian->id_ujian;
-											$mhs_ujian->save();
+									$ujian_existing_ids = $mhs->mhs_ujian()->pluck('ujian_id')->toArray();
+									$ujian_ids = $matkul->m_ujian()->pluck('id_ujian')->toArray();
+									$ujian_ids_insert = array_diff($ujian_ids, $ujian_existing_ids);
+									if(!empty($ujian_ids_insert)){
+										$insert = [];
+										foreach($ujian_ids_insert as $ujian_id){
+											$insert[] = [
+												'mahasiswa_id' => $mhs->id_mahasiswa,
+												'ujian_id' => $ujian_id,
+												'created_at' => $now,
+											];
 										}
+										Mhs_ujian_orm::insert($insert);
 									}
 								}
+								// [END] JIKA UJIAN SOURCE DARI MATERI
+
+								// [START] JIKA UJIAN SOURCE DARI BUNDLE
+								$existing_mhs_ujian = $mhs->mhs_ujian()->pluck('ujian_id')->toArray();
+
+								if($matkul->m_ujian_enable->isNotEmpty()){
+									$mhs_ujian_ids = $matkul->m_ujian_enable()->pluck('ujian_id')->toArray();
+									$mhs_ujian_ids_insert = array_diff($mhs_ujian_ids, $existing_mhs_ujian);
+									if(!empty($mhs_ujian_ids_insert)){
+										$insert = [];
+										foreach($mhs_ujian_ids_insert as $m_ujian_id){
+											$insert[] = [
+												'mahasiswa_id' => $mhs->id_mahasiswa,
+												'ujian_id'	=> $m_ujian_id,
+												'created_at' => $now,
+											];
+										}
+										Mhs_ujian_orm::insert($insert);
+									}
+								}
+								// [END] JIKA UJIAN SOURCE DARI BUNDLE
 							}
 						}
 					}
@@ -834,16 +868,78 @@ class Pub extends MY_Controller {
 						$mhs_matkul_orm->sisa_kuota_latihan_soal = $sisa_kuota_latihan_soal ;
 						$mhs_matkul_orm->save();
 						
+						// [START] JIKA UJIAN SOURCE DARI MATERI
 						if($matkul->m_ujian->isNotEmpty()){
-							foreach($matkul->m_ujian as $m_ujian){
-								if(empty($mhs->mhs_ujian()->where('ujian_id', $m_ujian->id_ujian)->first())){
-									$mhs_ujian = new Mhs_ujian_orm();
-									$mhs_ujian->mahasiswa_id = $mhs->id_mahasiswa;
-									$mhs_ujian->ujian_id = $m_ujian->id_ujian;
-									$mhs_ujian->save();
+							$ujian_existing_ids = $mhs->mhs_ujian()->pluck('ujian_id')->toArray();
+							$ujian_ids = $matkul->m_ujian()->pluck('id_ujian')->toArray();
+							$ujian_ids_insert = array_diff($ujian_ids, $ujian_existing_ids);
+							if(!empty($ujian_ids_insert)){
+								$insert = [];
+								foreach($ujian_ids_insert as $ujian_id){
+									$insert[] = [
+										'mahasiswa_id' => $mhs->id_mahasiswa,
+										'ujian_id' => $ujian_id,
+										'created_at' => $now,
+									];
 								}
+								Mhs_ujian_orm::insert($insert);
 							}
 						}
+						// [END] JIKA UJIAN SOURCE DARI MATERI
+
+						// [START] JIKA UJIAN SOURCE DARI BUNDLE
+						// $topik_ids = $matkul->topik->pluck('id')->toArray();
+						// $bundle_ids = Bundle_soal_orm::whereHas('soal', function(Builder $query) use($topik_ids){
+						// 							$query->whereIn('topik_id', $topik_ids);
+						// 						})
+						// 						->groupBy('bundle_id')
+						// 						->get(['bundle_id'])
+						// 						->pluck('bundle_id')
+						// 						->toArray();
+												
+						// $bundle_list = Bundle_orm::whereIn('id', $bundle_ids)->get();
+				
+						// $m_ujian_ids = [];
+						// if(!empty($bundle_list)){
+						// 	foreach($bundle_list as $bundle){
+						// 		if($bundle->m_ujian->isNotEmpty()){
+						// 			foreach($bundle->m_ujian as $m_ujian){
+						// 				$m_ujian_ids[] = $m_ujian->id_ujian;
+						// 			}
+						// 		}
+						// 	}
+						// }
+						// $m_ujian_ids = array_unique($m_ujian_ids);
+						// if(!empty($m_ujian_ids)){
+						// 	foreach($m_ujian_ids as $m_ujian_id){
+						// 		if(empty($mhs->mhs_ujian()->where('ujian_id', $m_ujian_id)->first())){
+						// 			$mhs_ujian = new Mhs_ujian_orm();
+						// 			$mhs_ujian->mahasiswa_id = $mhs->id_mahasiswa;
+						// 			$mhs_ujian->ujian_id = $m_ujian_id;
+						// 			$mhs_ujian->save();
+						// 		}
+						// 	}
+						// }
+
+						$existing_mhs_ujian = $mhs->mhs_ujian()->pluck('ujian_id')->toArray();
+
+						if($matkul->m_ujian_enable->isNotEmpty()){
+							$mhs_ujian_ids = $matkul->m_ujian_enable()->pluck('ujian_id')->toArray();
+							$mhs_ujian_ids_insert = array_diff($mhs_ujian_ids, $existing_mhs_ujian);
+							if(!empty($mhs_ujian_ids_insert)){
+								$insert = [];
+								foreach($mhs_ujian_ids_insert as $m_ujian_id){
+									$insert[] = [
+										'mahasiswa_id' => $mhs->id_mahasiswa,
+										'ujian_id'	=> $m_ujian_id,
+										'created_at' => $now,
+									];
+								}
+								Mhs_ujian_orm::insert($insert);
+							}
+						}
+
+						// [END] JIKA UJIAN SOURCE DARI BUNDLE
 					}
 		
 				}
@@ -1355,6 +1451,33 @@ class Pub extends MY_Controller {
 	// 	}
 
 	// }
+
+	public function cek(){
+
+		$matkul = Matkul_orm::findOrFail(20);
+		$mhs = Mhs_orm::findOrFail(1000009917);
+		$existing_mhs_ujian = $mhs->mhs_ujian()->pluck('ujian_id')->toArray();
+
+		echo 'nama : ' . $mhs->nama . "\n";
+
+		if($matkul->m_ujian_enable->isNotEmpty()){
+			$mhs_ujian_ids = $matkul->m_ujian_enable()->pluck('ujian_id')->toArray();
+			print_r($mhs_ujian_ids); die;
+			$mhs_ujian_ids_insert = array_diff($mhs_ujian_ids, $existing_mhs_ujian);
+			if(!empty($mhs_ujian_ids_insert)){
+				$insert = [];
+				foreach($mhs_ujian_ids_insert as $m_ujian_id){
+					$insert[] = [
+						'mahasiswa_id' => $mhs->id_mahasiswa,
+						'ujian_id'	=> $m_ujian_id,
+						'created_at' => '-',
+					];
+				}
+				// print_r($insert);die;
+			}
+		}
+
+	}
 
 	public function gen_no_urut_soal(){
 		$matkul_list = Matkul_orm::all();

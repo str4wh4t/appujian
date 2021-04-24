@@ -208,9 +208,9 @@ use Illuminate\Database\Eloquent\Builder;
 						<div class="card border-top-danger box-shadow-0 border-bottom-danger">
 							{{-- <div class="card-header">
 										</div> --}}
-							<div class="card-content collapse show">
+							<div class="card-content">
 								<div class="card-body">
-									<h4 class="card-title">Pertanyaan : {{ $i }} <span class="float-right">( Poin
+									<h4 class="card-title">Pertanyaan : <div class="badge badge-danger round">{{ $i }}</div> <span class="float-right">( Poin
 											Soal : {{ $jawaban_ujian->soal->bobot_soal->nilai }} )</span></h4>
 									<div class="">{!! $jawaban_ujian->soal->soal !!}</div>
 									<div
@@ -256,7 +256,7 @@ use Illuminate\Database\Eloquent\Builder;
 						<div class="card box-shadow-0 border-blue bg-transparent">
 							{{-- <div class="card-header">
 											</div> --}}
-							<div class="card-content collapse show">
+							<div class="card-content">
 								<div class="card-body">
 									<?php 
 													$badge_benar = '<div class="badge badge-success round"><i class="fa fa-check font-medium-2"></i><span> Benar</span></div>';    
@@ -283,15 +283,6 @@ use Illuminate\Database\Eloquent\Builder;
 										Waktu Menjawab : {{ $waktu_menjawab }}
 									</h4>
 									@endif
-									<h4 class="card-title">Penjelasan :</h4>
-									<div class="">
-										@if (empty($jawaban_ujian->soal->penjelasan))
-										<p>Maaf, belum ada penjelasan mengenai soal ini, anda dapat meminta
-											penjelasan dengan klik tombol minta penjelasan dibawah.</p>
-										@else
-										{!! $jawaban_ujian->soal->penjelasan !!}
-										@endif
-									</div>
 								</div>
 							</div>
 							<div class="card-footer border-top-blue-grey border-top-lighten-5 text-muted">
@@ -299,11 +290,30 @@ use Illuminate\Database\Eloquent\Builder;
 									Jawaban : {{ $jawaban_ujian->soal->jawaban }} <span class="float-right">( Poin :
 										{!! ($jawaban_ujian->jawaban == $jawaban_ujian->soal->jawaban) ? '<div
 											class="badge badge-success round">'.
-											$jawaban_ujian->soal->bobot_soal->nilai * $topik->poin_topik .'</div>' :
+											number_format($jawaban_ujian->soal->bobot_soal->nilai * $topik->poin_topik,2,'.', '') .'</div>' :
 										'<div class="badge badge-danger round">'. 0 .'</div>' !!} )</span>
 								</h4>
-								<button class="btn btn-info btn-block btn_penjelasan"
-									data-id="{{ $jawaban_ujian->soal->id_soal }}">Minta Penjelasan</button>
+								{{-- <button class="btn btn-info btn-block btn_penjelasan"
+									data-id="{{ $jawaban_ujian->soal->id_soal }}">Minta Penjelasan
+								</button> --}}
+							</div>
+						</div>
+					</div>
+					<div class="col-md-12 col-sm-12">
+						<div class="card box-shadow-0 border-success bg-transparent">
+							{{-- <div class="card-header">
+										</div> --}}
+							<div class="card-content">
+								<div class="card-body">
+									<h4 class="card-title">Penjelasan :</h4>
+									<div class="">
+										@if (empty($jawaban_ujian->soal->penjelasan))
+										<p>Maaf, belum ada penjelasan mengenai soal ini.</p>
+										@else
+										{!! $jawaban_ujian->soal->penjelasan !!}
+										@endif
+									</div>
+								</div>
 							</div>
 						</div>
 					</div>

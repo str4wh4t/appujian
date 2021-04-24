@@ -12,6 +12,7 @@ use Orm\Mhs_matkul_orm;
 use Orm\Paket_orm;
 use Orm\Mhs_ujian_orm;
 use Orm\Users_temp_orm;
+use Carbon\Carbon;
 
 class Auth extends CI_Controller
 {
@@ -392,6 +393,8 @@ class Auth extends CI_Controller
 					$mhs->tmp_lahir = $users_temp->tmp_lahir;
 					$mhs->tgl_lahir = $users_temp->tgl_lahir;
 					$mhs->email = $email;
+					$mhs->prodi = PRODI_TXT_DEFAULT;
+					$mhs->kodeps = PRODI_KODE_DEFAULT;
 					$mhs->no_billkey = $additional_data['no_billkey'];
 					$mhs->jenis_kelamin = $users_temp->jenis_kelamin;
 					$mhs->kota_asal = $users_temp->kota_asal;
@@ -411,6 +414,8 @@ class Auth extends CI_Controller
 					$membership_history->save();
 
 					$paket_bonus_membership = get_paket_bonus_membership($membership);
+
+					$now = Carbon::now('utc')->toDateTimeString();
 		
 					if (!empty($paket_bonus_membership)) {
 						foreach ($paket_bonus_membership as $paket) {
@@ -429,14 +434,37 @@ class Auth extends CI_Controller
 								$mhs_matkul_orm->sisa_kuota_latihan_soal = $paket->kuota_latihan_soal ;
 								$mhs_matkul_orm->save();
 		
+								// [START] JIKA UJIAN SOURCE DARI MATERI
 								if($matkul->m_ujian->isNotEmpty()){
-									foreach($matkul->m_ujian as $m_ujian){
-										$mhs_ujian = new Mhs_ujian_orm();
-										$mhs_ujian->mahasiswa_id = $id_mahasiswa;
-										$mhs_ujian->ujian_id = $m_ujian->id_ujian;
-										$mhs_ujian->save();
+									$ujian_ids = $matkul->m_ujian()->pluck('id_ujian')->toArray();
+									$insert = [];
+									foreach($ujian_ids as $ujian_id){
+										$insert[] = [
+											'mahasiswa_id' => $id_mahasiswa,
+											'ujian_id' => $ujian_id,
+											'created_at' => $now,
+										];
+									}
+									Mhs_ujian_orm::insert($insert);
+								}
+								// [END] JIKA UJIAN SOURCE DARI MATERI
+
+								// [START] JIKA UJIAN SOURCE DARI BUNDLE
+								if($matkul->m_ujian_enable->isNotEmpty()){
+									$mhs_ujian_ids = $matkul->m_ujian_enable()->pluck('ujian_id')->toArray();
+									if(!empty($mhs_ujian_ids)){
+										$insert = [];
+										foreach($mhs_ujian_ids as $m_ujian_id){
+											$insert[] = [
+												'mahasiswa_id' => $id_mahasiswa,
+												'ujian_id'	=> $m_ujian_id,
+												'created_at' => $now,
+											];
+										}
+										Mhs_ujian_orm::insert($insert);
 									}
 								}
+								// [END] JIKA UJIAN SOURCE DARI BUNDLE
 							}
 						}
 					}

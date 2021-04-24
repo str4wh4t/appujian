@@ -83,6 +83,9 @@ function init_page_level(){
                 <td>Topik</td><td>{{ $soal_orm->topik->nama_topik }}</td>
             </tr>
             <tr>
+                <td>No Urut</td><td>{{ $soal_orm->no_urut }}</td>
+            </tr>
+            <tr>
                 <td>Bobot</td><td>{{ $soal_orm->bobot_soal->bobot }}</td>
             </tr>
             <tr>

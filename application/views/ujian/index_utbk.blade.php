@@ -614,20 +614,9 @@ function selesai(ended_by = '') {
     <div class="col-12">
         <div class="card">
             <div class="card-header" style="padding: 1rem">
-{{--                <h4 class="card-title" style="width: 300px; float: left"><?=$subjudul?></h4>--}}
                 <h4 class="card-title" style="width: 500px; margin: 0 auto;text-align: center;">
-                    {{-- <span>Sisa Waktu </span><hr> --}}
                     <span id="sisa_waktu" style="font-size: 2rem">0:0:0</span>
                 </h4>
-{{--                <a class="heading-elements-toggle"><i class="fa fa-ellipsis-v font-medium-3"></i></a>--}}
-{{--					<div class="heading-elements">--}}
-{{--						<ul class="list-inline mb-0">--}}
-{{--							<li><a data-action="expand"><i class="ft-maximize"></i></a></li>--}}
-{{--							<li><a data-action="reload"><i class="ft-rotate-cw"></i></a></li>--}}
-{{--							<li><a data-action="close"><i class="ft-x"></i></a></li>--}}
-{{--							<li><a data-action="collapse"><i class="ft-minus"></i></a></li>--}}
-{{--						</ul>--}}
-{{--					</div>--}}
             </div>
         </div>
     </div>
@@ -651,20 +640,6 @@ function selesai(ended_by = '') {
                                 <tr>
                                     <th colspan="2" style="text-align: center"><img src="{{ APP_TYPE == 'tryout' ? asset('assets/imgs/no_profile_120_150.jpg') : $h_ujian->mhs->foto }}" style="height: 150px; width: 120px;" /></th>
                                 </tr>
-                                {{--
-                                <tr>
-                                    <th>Waktu</th>
-                                    <td>{{ $h_ujian->m_ujian->waktu }} menit</td>
-                                </tr>
-                                <tr>
-                                    <th colspan="2" class="text-center bg-light">Topik Ujian</th>
-                                </tr>
-                                
-                                <tr>
-                                    <td colspan="2">
-                                        <div id="div_topik_ujian"></div>
-                                    </td>
-                                </tr> --}}
                             </table>
                             <div class="row">
                                 <div class="col-md-12">
@@ -684,9 +659,6 @@ function selesai(ended_by = '') {
                 </div>
             </div>
         </div>
-
-        
-
         <div class="row">
             <div class="col-md-12">
                 <div class="card">
@@ -698,7 +670,6 @@ function selesai(ended_by = '') {
                 </div>
             </div>
         </div>
-        
     </div>
     <div class="col-md-9">
         <div class="row">
@@ -709,7 +680,7 @@ function selesai(ended_by = '') {
                             <div class="card-content">
                                 <div class="card-body" id="isi_pertanyaan">
                                     <span style="font-size: 20px" class="">Soal #<span id="soalke"></span></span>
-                                    <span class="float-right text-danger" id="text_info_topik" style="font-size: 15px; font-weight: bold; padding-top: 5px; text-transform: uppercase">KEMAMPUAN VERBAL</span>
+                                    <span class="float-right text-danger" id="text_info_topik" style="font-size: 15px; font-weight: bold; padding-top: 5px; text-transform: uppercase">&nbsp;</span>
                                     <hr>
                                     {!! $html_pertanyaan !!}
                                 </div>
@@ -748,20 +719,6 @@ function selesai(ended_by = '') {
     </div>
 </div>
 
-{{--    <div class="col-md-9">--}}
-{{--        --}}
-{{--        <div class="box box-primary">--}}
-{{--            <div class="box-header with-border">--}}
-{{--                <h3 class="box-title"><span class="badge bg-blue">Soal #<span id="soalke"></span> </span></h3>--}}
-{{--                <div class="box-tools pull-right">--}}
-{{--                    <span class="badge bg-red">Sisa Waktu <span class="sisawaktu" data-time="<?=$soal->tgl_selesai?>"></span></span>--}}
-{{--                    <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>--}}
-{{--                    </button>--}}
-{{--                </div>--}}
-{{--            </div>--}}
-{{--        </div>--}}
-{{--        --}}
-{{--    </div>--}}
 
 {!! form_close() !!}
 <!---- --->

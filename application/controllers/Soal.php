@@ -8,11 +8,10 @@ use Orm\Topik_orm;
 use Orm\Users_orm;
 use Orm\Bundle_orm;
 use Orm\Bundle_soal_orm;
-
 use Illuminate\Database\Eloquent\Builder;
-
 use Ozdemir\Datatables\Datatables;
 use Ozdemir\Datatables\DB\MySQL;
+use Carbon\Carbon;
 
 class Soal extends MY_Controller
 {
@@ -97,16 +96,26 @@ class Soal extends MY_Controller
 
 		$maker = Users_orm::where('username', $soal_orm->created_by)->firstOrFail();
 
-		$prev = Soal_orm::where('id_soal', '<', $soal_orm->id_soal)
+		// $prev = Soal_orm::where('id_soal', '<', $soal_orm->id_soal)
+		// 						->where('topik_id', $soal_orm->topik_id)
+		// 						->where($where_add)
+		// 						->max('id_soal');
+
+		$prev = Soal_orm::where('no_urut', '<', $soal_orm->no_urut)
 								->where('topik_id', $soal_orm->topik_id)
 								->where($where_add)
 								->max('id_soal');
 
 		// get next user id
-		$next = Soal_orm::where('id_soal', '>', $soal_orm->id_soal)
-							->where('topik_id', $soal_orm->topik_id)
-							->where($where_add)
-							->min('id_soal');
+		// $next = Soal_orm::where('id_soal', '>', $soal_orm->id_soal)
+		// 					->where('topik_id', $soal_orm->topik_id)
+		// 					->where($where_add)
+		// 					->min('id_soal');
+
+		$next = Soal_orm::where('no_urut', '>' , $soal_orm->no_urut)
+								->where('topik_id', $soal_orm->topik_id)
+								->where($where_add)
+								->max('id_soal');
 
 		$data = [
 			//			'user'      => $user,
@@ -140,7 +149,7 @@ class Soal extends MY_Controller
 		} else {
 			//Jika admin / penyusun_soal maka tampilkan semua matkul
 			$data['matkul'] = $this->master->getAllMatkul();
-			$data['topik'] = $this->master->getAllTopik();
+			// $data['topik'] = $this->master->getAllTopik();
 		}
 
 		$data['bobot_soal'] = Bobot_soal_orm::All();
@@ -184,12 +193,12 @@ class Soal extends MY_Controller
 
 		if ($this->ion_auth->in_group('dosen')) {
 			//Jika dosen maka matkul dipilih otomatis sesuai matkul dosen
-			$data['soal'] = $soal;
 			$data['matkul'] =  Orm\Dosen_orm::where('nip', $user->username)->firstOrFail()->matkul;
+			$data['soal'] = $soal;
 		} else {
 			//Jika admin / penyusun_soal maka tampilkan semua matkul
 			$data['matkul'] = $this->master->getAllMatkul();
-			$data['topik'] = $this->master->getAllTopik();
+			// $data['topik'] = $this->master->getAllTopik();
 			$data['soal'] = $soal;
 		}
 
@@ -904,6 +913,7 @@ class Soal extends MY_Controller
 
 		$result = [];
 		$id = $this->input->get('id');
+		$empty = $this->input->get('empty');
 		if($id != 'null'){
 			$matkul = Matkul_orm::find($id);
 			if(!empty($matkul)){
@@ -929,7 +939,8 @@ class Soal extends MY_Controller
 
 				$topik_list = Topik_orm::whereIn('matkul_id', $matkul_ids)->get();
 			}else{
-				$topik_list = Topik_orm::all();
+				if(!$empty)
+					$topik_list = Topik_orm::all();
 			}
 			if(!empty($topik_list)){
 				foreach ($topik_list as $topik) {
@@ -1228,6 +1239,47 @@ class Soal extends MY_Controller
 		$this->_json($jml_soal);
 	}
 
+	protected function _get_matkul_from_selected_bundle(){
+		if (!$this->ion_auth->is_admin() && !$this->ion_auth->in_group('dosen')) {
+			show_error('Hanya Administrator dan dosen yang diberi hak untuk mengakses halaman ini', 403, 'Akses Terlarang');
+		}
+
+		$bundle_ids = $this->input->post('bundle_ids');
+		$bundle_ids = json_decode($bundle_ids);
+
+		$topik_id_list = [];
+		$topik_id_ref_bundle_list = [];
+
+		$bundle_list = Bundle_orm::whereIn('id', $bundle_ids)->get();
+		if($bundle_list->isNotEmpty()){
+			foreach($bundle_list as $bundle){
+				if($bundle->soal->isNotEmpty()){
+					$soal_list = $bundle->soal()->groupBy('topik_id')->get(['topik_id']);
+					foreach($soal_list as $soal){
+						if(!isset($topik_id_ref_bundle_list[$bundle->id]))
+							$topik_id_ref_bundle_list[$bundle->id] = [];
+						if(!in_array($soal->topik_id, $topik_id_ref_bundle_list[$bundle->id]))
+							$topik_id_ref_bundle_list[$bundle->id][] = $soal->topik_id ;
+						if(!in_array($soal->topik_id, $topik_id_list)){
+							$topik_id_list[] = $soal->topik_id;
+						}
+
+					}
+				}
+			}
+		}
+
+		$matkul_ids = Topik_orm::whereIn('id',$topik_id_list)
+									// ->get(['matkul_id'])
+									->pluck('matkul_id')
+									->toArray();
+		$matkul_ids = array_unique($matkul_ids);
+		$matkul_list = Matkul_orm::whereIn('id_matkul', $matkul_ids)->get();
+
+		$this->_json(['matkul_list' => $matkul_list]);
+
+	}
+
 	protected function _get_topik_from_selected_bundle(){
 		if (!$this->ion_auth->is_admin() && !$this->ion_auth->in_group('dosen')) {
 			show_error('Hanya Administrator dan dosen yang diberi hak untuk mengakses halaman ini', 403, 'Akses Terlarang');
@@ -1239,19 +1291,6 @@ class Soal extends MY_Controller
 		$topik_id_list = [];
 		$topik_id_ref_bundle_list = [];
 		$topik_list = [];
-		// $bundle_soal_list = Bundle_soal_orm::whereIn('bundle_id', $bundle_ids)->get();
-		// if($bundle_soal_list->isNotEmpty()){
-		// 	foreach($bundle_soal_list as $bundle_soal){
-		// 		if(!isset($topik_id_ref_bundle_list[$bundle_soal->bundle_id]))
-		// 			$topik_id_ref_bundle_list[$bundle_soal->bundle_id] = [];
-		// 		if(!in_array($bundle_soal->soal->topik_id, $topik_id_ref_bundle_list[$bundle_soal->bundle_id]))
-		// 			$topik_id_ref_bundle_list[$bundle_soal->bundle_id][] = $bundle_soal->soal->topik_id ;
-		// 		if(!in_array($bundle_soal->soal->topik_id, $topik_id_list)){
-		// 			$topik_id_list[] = $bundle_soal->soal->topik_id;
-		// 			$topik_list[$bundle_soal->soal->topik_id] = $bundle_soal->soal->topik->matkul->nama_matkul . ' : ' . $bundle_soal->soal->topik->nama_topik;
-		// 		}
-		// 	}
-		// }
 
 		$bundle_list = Bundle_orm::whereIn('id', $bundle_ids)->get();
 		if($bundle_list->isNotEmpty()){
@@ -1272,14 +1311,6 @@ class Soal extends MY_Controller
 				}
 			}
 		}
-
-		// if(!empty($topik_id_ref_bundle_list)){
-		// 	foreach($topik_id_ref_bundle_list as $bundle){
-		// 		foreach($bundle as $bundle_id => $topik_id){
-		// 			if(isset($topik_id_ref_bundle_list[]))
-		// 		}
-		// 	}
-		// }
 
 		$this->_json(['ids' => $topik_id_list, 'topik_id_ref_bundle' => $topik_id_ref_bundle_list, 'topik' => $topik_list]);
 
@@ -1602,10 +1633,11 @@ class Soal extends MY_Controller
 		try{
 			$selected_bundle = json_decode($selected_bundle);
 			$selected_soal = json_decode($selected_soal);
+			$now = Carbon::now('utc')->toDateTimeString();
 			if(!empty($selected_bundle)){
 				if(!$is_ignore_bundle){
 					$bundle_ids_before = Bundle_soal_orm::whereIn('id_soal', $selected_soal)
-											->get(['bundle_id'])
+											// ->get(['bundle_id'])
 											->pluck('bundle_id')
 											->toArray();
 					$bundle_ids_delete = array_diff($bundle_ids_before, $selected_bundle);
@@ -1617,7 +1649,7 @@ class Soal extends MY_Controller
 				foreach($selected_bundle as $bundle_id){
 					$soal_ids_before = Bundle_soal_orm::where('bundle_id', $bundle_id)
 											->whereIn('id_soal', $selected_soal)
-											->get(['id_soal'])
+											// ->get(['id_soal'])
 											->pluck('id_soal')
 											->toArray();
 					$soal_ids_insert = array_diff($selected_soal, $soal_ids_before);
@@ -1629,6 +1661,7 @@ class Soal extends MY_Controller
 							$insert[] = [
 								'bundle_id' => $bundle_id,
 								'id_soal' => $soal_id,
+								'created_at' => $now,
 							];
 						}
 						Bundle_soal_orm::insert($insert);
@@ -1644,9 +1677,6 @@ class Soal extends MY_Controller
 					// 	}
 					// 	Bundle_soal_orm::where('bundle_id', $bundle_id)->whereIn('id_soal', $soal_ids_delete)->delete();
 					// }
-
-					
-
 				}
 			}else{
 				if(!$is_ignore_bundle){

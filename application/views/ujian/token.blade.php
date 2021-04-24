@@ -36,160 +36,185 @@
 @endpush
 
 @push('page_level_js')
-    <!-- BEGIN PAGE LEVEL JS-->
-    <script type="text/javascript">
-        let datetime_el = $("#time_now");
-        let curr_date;
+<!-- BEGIN PAGE LEVEL JS-->
+<script type="text/javascript">
+let datetime_el = $("#time_now");
+let curr_date;
+let token_ujian = null ;
 
-        @if(@$h_ujian)
-        let close_ujian = () => {
-            $.ajax({
-                type: "POST",
-                url: "{{ site_url('ujian/ajax/close_ujian') }}",
-                data: {
-                    'id': '{{  uuid_create_from_integer($h_ujian->id) }}',
-                    'key': '{{ $one_time_token }}',
-                    'ended_by': 'cron',
-                },
-                success: function (r) {
-                    if (r.status) {
-                        window.location.href = '{{ site_url('ujian/list') }}';
-                    }
-                }
-            });
-        };
-        @endif
-
-        let update_time = () => {
-            moment.locale('id');
-            /**
-             * date from server
-             */
-            $.ajaxSetup({
-                url: '<?= site_url('get_server_time') ?>',
-                global: false,
-                type: "GET"
-            });
-            $.ajax({
-                success: function (date_ajax) {
-                    moment.locale('id');
-                    curr_date = moment(date_ajax, "YYYY-MM-DD HH:mm:ss");
-
-                    let interval = 1000;
-
-                    @if(!@$h_ujian)
-                        @php($terlambat = empty($ujian->terlambat) ? date('Y-m-d H:i:s', strtotime('+1 days')) : $ujian->terlambat)
-                        let jadwal_mulai = moment('{{ date('Y-m-d H:i:s', strtotime($ujian->tgl_mulai)) }}', "YYYY-MM-DD HH:mm:ss");
-                        let jadwal_selesai = moment('{{ date('Y-m-d H:i:s', strtotime($terlambat)) }}', "YYYY-MM-DD HH:mm:ss");
-                        let diffTime = jadwal_selesai.unix() - curr_date.unix();
-                    @else
-                        let ujian_selesai = moment('{{ date('Y-m-d H:i:s', strtotime($h_ujian->tgl_selesai)) }}', "YYYY-MM-DD HH:mm:ss");
-                        let diffTime = ujian_selesai.unix() - curr_date.unix();
-
-                    @endif
-
-                    let duration = moment.duration(diffTime*1000, 'milliseconds');
-                    let duration_text = '';
-
-                    setInterval(function(){
-
-                        curr_date.add(1, 'second');
-                        datetime_el.html(curr_date.format('dddd, Do MMMM YYYY, HH:mm:ss'));
-
-                        @if(!@$h_ujian)
-                            duration = moment.duration(duration - interval, 'milliseconds');
-                            if(curr_date.isBetween(jadwal_mulai, jadwal_selesai, undefined, '[)')){
-                                if(duration.as('milliseconds') > 0){
-                                    duration_text = Math.floor(duration.as('hours')) + ":" + duration.minutes() + ":" + duration.seconds() ;
-                                    $('#btncek').removeClass('btn-danger').addClass('btn-success');
-                                }else{
-                                   duration_text = "0:0:0";
-                                   $('#btncek').removeClass('btn-success').addClass('btn-danger');
-                                }
-                            }else{
-                                duration_text = "0:0:0";
-                                $('#btncek').removeClass('btn-success').addClass('btn-danger');
-                                if(curr_date.isSameOrAfter(jadwal_selesai)){
-                                    $('#pesan_ujian_expired').show();
-                                }
-                            }
-                        @else
-                            duration = moment.duration(duration - interval, 'milliseconds');
-                            if(duration.as('milliseconds') > 0){
-                                duration_text = Math.floor(duration.as('hours')) + ":" + duration.minutes() + ":" + duration.seconds() ;
-                                $('#btn_lanjut_ujian').removeClass('btn-danger').addClass('btn-success');
-                            }else{
-                               duration_text = "0:0:0";
-                               $('#btn_lanjut_ujian').removeClass('btn-success').addClass('btn-danger');
-                               close_ujian();
-
-                            }
-                        @endif
-                        $('#sisa_waktu').text(duration_text);
-
-                    },interval);
-                }
-            });
-
-            /**
-             * date from local computer
-             */
-            // date = moment(new Date());
-            // datetime_el.html(date.format('dddd, MMMM Do YYYY, h:mm:ss a'));
-
-        };
-        // setInterval(update_time, 1000); // PER SECOND
-
-        $(document).on('click','#btn_lanjut_ujian',function(){
-            if($(this).hasClass('btn-danger')){
-                Swal.fire('Perhatian', 'Anda berada diluar jadwal ujian', 'error');
-                return false;
-            }else{
-                location.href = '{!! site_url('ujian/?key='. $one_time_token .'&id='. $encrypted_id .'&token='. $token ) !!}';
+@if(@$h_ujian)
+let close_ujian = () => {
+    $.ajax({
+        type: "POST",
+        url: "{{ site_url('ujian/ajax/close_ujian') }}",
+        data: {
+            'id': '{{  uuid_create_from_integer($h_ujian->id) }}',
+            'key': '{{ $one_time_token }}',
+            'ended_by': 'cron',
+        },
+        success: function (r) {
+            if (r.status) {
+                window.location.href = '{{ site_url('ujian/list') }}';
             }
-        });
-
-        $(document).on('click','#btn_lanjut_modal_tata_tertib',function(){
-            let setuju = $('#chk_setuju_tata_tertib').is(":checked");
-            if(setuju){
-                 Swal.fire({
-                    title: "Mulai Ujian",
-                    text: "Ujian yang sudah dimulai tidak dapat dibatalkan.",
-                    icon: "warning",
-                    showCancelButton: true,
-                    confirmButtonColor: "#37bc9b",
-                    cancelButtonColor: "#f6bb42",
-                    confirmButtonText: "Mulai"
-                }).then(result => {
-                        if (result.value) {
-                            let idUjian = $('#btncek').data('id');
-                            let key = $('#id_ujian').data('key');
-                            let token = $('#modal_tata_tertib').data('id');
-                            location.href = '{{ url('ujian') }}?key=' + key + '&id=' + idUjian + '&token=' + token;
-                        }
-                    });
-            }else{
-                Swal.fire({
-                    title: "Perhatian",
-                    text: "Anda belum menyetujui tata tertib ujian.",
-                    icon: "warning"
-                }).then(result => {
-                    if (result.value) {
-                        $('#div_setuju_tata_tertib').addClass('blink');
-                        setTimeout(function(){ $('#div_setuju_tata_tertib').removeClass('blink'); }, 500);
-                    }
-                });
-            }
-        });
-
-        function init_page_level(){
-            update_time();
-            // $.LoadingOverlay("show");
         }
+    });
+};
+@endif
 
-    </script>
-    <script src="{{ asset('assets/dist/js/app/ujian/token.js') }}"></script>
-    <!-- END PAGE LEVEL JS-->
+let update_time = () => {
+    moment.locale('id');
+    /**
+     * date from server
+     */
+    $.ajaxSetup({
+        url: '<?= site_url('get_server_time') ?>',
+        global: false,
+        type: "GET"
+    });
+    $.ajax({
+        success: function (date_ajax) {
+            moment.locale('id');
+            curr_date = moment(date_ajax, "YYYY-MM-DD HH:mm:ss");
+
+            let interval = 1000;
+
+            @if(!@$h_ujian)
+                @php($terlambat = empty($ujian->terlambat) ? date('Y-m-d H:i:s', strtotime('+1 days')) : $ujian->terlambat)
+                let jadwal_mulai = moment('{{ date('Y-m-d H:i:s', strtotime($ujian->tgl_mulai)) }}', "YYYY-MM-DD HH:mm:ss");
+                let jadwal_selesai = moment('{{ date('Y-m-d H:i:s', strtotime($terlambat)) }}', "YYYY-MM-DD HH:mm:ss");
+                let diffTime = jadwal_selesai.unix() - curr_date.unix();
+            @else
+                let ujian_selesai = moment('{{ date('Y-m-d H:i:s', strtotime($h_ujian->tgl_selesai)) }}', "YYYY-MM-DD HH:mm:ss");
+                let diffTime = ujian_selesai.unix() - curr_date.unix();
+
+            @endif
+
+            let duration = moment.duration(diffTime*1000, 'milliseconds');
+            let duration_text = '';
+
+            setInterval(function(){
+
+                curr_date.add(1, 'second');
+                datetime_el.html(curr_date.format('dddd, Do MMMM YYYY, HH:mm:ss'));
+
+                @if(!@$h_ujian)
+                    duration = moment.duration(duration - interval, 'milliseconds');
+                    if(curr_date.isBetween(jadwal_mulai, jadwal_selesai, undefined, '[)')){
+                        if(duration.as('milliseconds') > 0){
+                            duration_text = Math.floor(duration.as('hours')) + ":" + duration.minutes() + ":" + duration.seconds() ;
+                            $('#btncek').removeClass('btn-danger').addClass('btn-success');
+                        }else{
+                            duration_text = "0:0:0";
+                            $('#btncek').removeClass('btn-success').addClass('btn-danger');
+                        }
+                    }else{
+                        duration_text = "0:0:0";
+                        $('#btncek').removeClass('btn-success').addClass('btn-danger');
+                        if(curr_date.isSameOrAfter(jadwal_selesai)){
+                            $('#pesan_ujian_expired').show();
+                        }
+                    }
+                @else
+                    duration = moment.duration(duration - interval, 'milliseconds');
+                    if(duration.as('milliseconds') > 0){
+                        duration_text = Math.floor(duration.as('hours')) + ":" + duration.minutes() + ":" + duration.seconds() ;
+                        $('#btn_lanjut_ujian').removeClass('btn-danger').addClass('btn-success');
+                    }else{
+                        duration_text = "0:0:0";
+                        $('#btn_lanjut_ujian').removeClass('btn-success').addClass('btn-danger');
+                        close_ujian();
+
+                    }
+                @endif
+                $('#sisa_waktu').text(duration_text);
+
+            },interval);
+        }
+    });
+
+    /**
+     * date from local computer
+     */
+    // date = moment(new Date());
+    // datetime_el.html(date.format('dddd, MMMM Do YYYY, h:mm:ss a'));
+
+};
+// setInterval(update_time, 1000); // PER SECOND
+
+$(document).on('click','#btn_lanjut_ujian',function(){
+    if($(this).hasClass('btn-danger')){
+        Swal.fire('Perhatian', 'Anda berada diluar jadwal ujian', 'error');
+        return false;
+    }else{
+        location.href = '{!! site_url('ujian/?key='. $one_time_token .'&id='. $encrypted_id .'&token='. $token ) !!}';
+    }
+});
+
+$(document).on('click','#btn_lanjut_modal_tata_tertib',function(){
+    let setuju = $('#chk_setuju_tata_tertib').is(":checked");
+    if(setuju){
+            Swal.fire({
+            title: "Mulai Ujian",
+            text: "Ujian yang sudah dimulai tidak dapat dibatalkan.",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#37bc9b",
+            cancelButtonColor: "#f6bb42",
+            confirmButtonText: "Mulai"
+        }).then(result => {
+                if (result.value) {
+                    let idUjian = $('#btncek').data('id');
+                    let key = $('#id_ujian').data('key');
+                    let token = $('#modal_tata_tertib').data('id');
+                    location.href = '{{ url('ujian') }}?key=' + key + '&id=' + idUjian + '&token=' + token;
+                }
+            });
+    }else{
+        Swal.fire({
+            title: "Perhatian",
+            text: "Anda belum menyetujui tata tertib ujian.",
+            icon: "warning"
+        }).then(result => {
+            if (result.value) {
+                $('#div_setuju_tata_tertib').addClass('blink');
+                setTimeout(function(){ $('#div_setuju_tata_tertib').removeClass('blink'); }, 500);
+            }
+        });
+    }
+});
+
+function init_page_level(){
+    update_time();
+    // $.LoadingOverlay("show");
+}
+
+function go_ujian(token){
+    @if(SHOW_TATA_TERTIB)
+    $('#modal_tata_tertib').data('id',token);
+    $('#modal_tata_tertib').modal('show');
+    @else
+    Swal.fire({
+        title: "Mulai Ujian",
+        text: "Ujian yang sudah dimulai tidak dapat dibatalkan.",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#37bc9b",
+        cancelButtonColor: "#f6bb42",
+        confirmButtonText: "Mulai"
+    }).then(result => {
+        if (result.value) {
+            let idUjian = $('#btncek').data('id');
+            let key = $('#id_ujian').data('key');
+            location.href = '{{ url('ujian') }}?key=' + key + '&id=' + idUjian + '&token=' + token;
+        }
+    });
+    @endif
+}
+    
+
+</script>
+<script src="{{ asset('assets/dist/js/app/ujian/token.js') }}"></script>
+<!-- END PAGE LEVEL JS-->
 @endpush
 
 @section('content')
@@ -220,7 +245,6 @@
                             <li>Peserta yang sudah menyelesaikan seluruh soal ujian sebelum waktu ujian habis boleh menekan tombol selesai jika memang akan mengakhiri sebelum waktunya habis.</li>
                             <li>Peserta tidak boleh melakukan menggandakan atau menyadur dengan mengambil gambar menggunakan kamera maupun meng copy paste soal.</li>
                             <li>Peserta dilarang membuka halaman/aplikasi lain diluar aplikasi CAT.</li>
-                            <li>Peserta tetap akan menjaga nama baik Universitas Diponegoro dan aplikasi CAT dari tindak kejahatan lainnya.</li>
                         </ol>
                     </p>
                 </div>
@@ -276,10 +300,9 @@
                         <td><?=$matkul->nama_matkul?></td>
                     </tr>
                     <tr>
-                        <th>&nbsp;</th>
-                        <td>
+                        <th colspan="2">
                             <dl class="row">
-                            <dt class="col-sm-12">Topik Ujian :</dt>
+                            <dt class="col-sm-12 text-danger">Topik Ujian :</dt>
                             </dl>
                             <hr/>
                             @php( $i = 1)
@@ -287,9 +310,10 @@
                             @php($topik = $topik_orm->findOrFail($topik_id))
                             @if($matkul->id_matkul == $topik->matkul_id)
                             <dl class="row">
-                                <dt class="col-sm-8">{{ $i }}. {{ $topik->nama_topik }}</dt>
+                                <dt class="col-sm-6">{{ $i }}. {{ $topik->nama_topik }}</dt>
                                 @if ($ujian->is_sekuen_topik)
-                                <dd class="col-sm-4">{{ $val['waktu'] }} Menit</dd>
+                                <dd class="col-sm-3 text-success">{{ $topik_ujian_jml_soal[$topik->id] }} Soal</dd>
+                                <dd class="col-sm-3">{{ $val['waktu'] }} Menit</dd>
                                 @endif
                             </dl>
                             @php( $i++)
@@ -391,6 +415,7 @@
     </div>
 </div>
 
+@if(SHOW_TATA_TERTIB)
 <!-- Modal -->
 <div class="modal text-left"
      id="modal_tata_tertib"
@@ -404,7 +429,7 @@
         <div class="modal-content">
             <div class="modal-header bg-success white">
                 <h4 class="modal-title white"
-                    id="myModalLabel9">Tata Tertib Ujian CAT UNDIP</h4>
+                    id="myModalLabel9">Tata Tertib Ujian CAT</h4>
 {{--                <button type="button"--}}
 {{--                        class="close"--}}
 {{--                        data-dismiss="modal"--}}
@@ -424,12 +449,12 @@
                             <li>Peserta yang sudah menyelesaikan seluruh soal ujian sebelum waktu ujian habis boleh menekan tombol selesai jika memang akan mengakhiri sebelum waktunya habis.</li>
                             <li>Peserta tidak boleh melakukan menggandakan atau menyadur dengan mengambil gambar menggunakan kamera maupun meng copy paste soal.</li>
                             <li>Peserta dilarang membuka halaman/aplikasi lain diluar aplikasi CAT.</li>
-                            <li>Peserta tetap akan menjaga nama baik Universitas Diponegoro dan aplikasi CAT dari tindak kejahatan lainnya.</li>
+                            <li>Peserta tetap akan menjaga nama baik {{ strtoupper(APP_AUTHOR) }} dan aplikasi CAT dari tindak kejahatan lainnya.</li>
                         </ol>
                 </p>
                 <div class="alert" id="div_setuju_tata_tertib" style="border: 1px solid #f00;background-color: #ffff9a;">
                     <fieldset>
-                    <input type="checkbox" class="inp" value="setuju" id="chk_setuju_tata_tertib"> <label for="chk_setuju_tata_tertib" style="display: inline">Saya menyetujui untuk mengikuti seleksi ujian menggunakan CAT ini sesuai ketentuan yang berlaku di Universitas Diponegoro</label>
+                    <input type="checkbox" class="inp" value="setuju" id="chk_setuju_tata_tertib"> <label for="chk_setuju_tata_tertib" style="display: inline">Saya menyetujui untuk mengikuti seleksi ujian menggunakan CAT ini sesuai ketentuan yang berlaku di {{ strtoupper(APP_AUTHOR) }}</label>
                     </fieldset>
                 </div>
             </div>
@@ -445,6 +470,7 @@
         </div>
     </div>
 </div>
+@endif
 <!---- --->
 
                     </div>

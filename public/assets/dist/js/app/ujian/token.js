@@ -43,8 +43,7 @@ $(document).ready(function () {
                         //         location.href = base_url + 'ujian/?key=' + key + '&id=' + idUjian;
                         //     }
                         //     });
-                        $('#modal_tata_tertib').data('id',result.token);
-                        $('#modal_tata_tertib').modal('show');
+                        go_ujian(result.token);
                     }
 
                 },

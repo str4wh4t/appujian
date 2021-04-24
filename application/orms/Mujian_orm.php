@@ -11,7 +11,7 @@ class Mujian_orm extends Eloquent
     
     public function matkul()
     {
-        return $this->belongsTo('Orm\Matkul_orm','matkul_id');
+        return $this->belongsTo('Orm\Matkul_orm', 'matkul_id');
     }
     
     public function topik_ujian()
@@ -47,6 +47,16 @@ class Mujian_orm extends Eloquent
     public function bundle()
     {
         return $this->belongsToMany('Orm\Bundle_orm','ujian_bundle','ujian_id','bundle_id');
+    }
+
+    public function ujian_matkul_enable()
+    {
+        return $this->hasMany('Orm\Ujian_matkul_enable_orm','ujian_id');
+    }
+
+    public function matkul_enable()
+    {
+        return $this->belongsToMany('Orm\Matkul_orm','ujian_matkul_enable','ujian_id','matkul_id');
     }
     
 }

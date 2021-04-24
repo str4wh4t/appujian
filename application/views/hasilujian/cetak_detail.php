@@ -22,7 +22,7 @@ $pdf = new MYPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8',
 
 // set document information
 $pdf->SetCreator(PDF_CREATOR);
-$pdf->SetAuthor('UNDIP');
+$pdf->SetAuthor(APP_NAME);
 $pdf->SetTitle('Hasil Ujian');
 
 // set default header data

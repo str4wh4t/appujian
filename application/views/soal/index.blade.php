@@ -55,7 +55,7 @@ function init_page_level(){
     });
 
 	let options = {};
-	cascadLoading = new Select2Cascade($('#matkul_filter'), $('#topik_filter'), '{{ site_url('soal/ajax/get_topic_by_matkul/') }}?id=:parentId:', options);
+	cascadLoading = new Select2Cascade($('#matkul_filter'), $('#topik_filter'), '{{ site_url('soal/ajax/get_topic_by_matkul/') }}?id=:parentId:&empty=0', options);
     cascadLoading.then( function(parent, child, items) {
         // Open the child listbox immediately
         // child.select2('open');
@@ -143,6 +143,7 @@ $(document).on('click', '#btn_create_bundle', function(){
 	} else {
 		$('#bundle').val(bundle_dipilih).trigger('change');
 		$('#is_ignore_bundle').iCheck("check");
+		$('input[name="nama_bundle"]').val('');
 		$('#modal_bundle').modal('show');
 		// $("#bulk").attr("action", base_url + "soal/ajax/delete");
 		// 	Swal.fire({

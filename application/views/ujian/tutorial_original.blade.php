@@ -282,7 +282,7 @@ let enjoyhint_instance = null;
 
 let enjoyhint_script_steps = [
     {
-        'next #tb_identitas_peserta': 'Selamat datang di ujian CAT UNDIP. <br>Sebelum memulai ujian pastikan identitas anda benar',
+        'next #tb_identitas_peserta': 'Selamat datang di ujian CAT<br>Sebelum memulai ujian pastikan identitas anda benar',
         "nextButton" : {className: "black border-amber btn-amber", text: "Lanjut"},
         'showSkip': false,
     },

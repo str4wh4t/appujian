@@ -55,6 +55,7 @@ let filter_mhs = {
     kelompok_ujian: null,
     tgl_ujian: null,
     tahun: null,
+    mhs_matkul: null,
 };
 
 function init_page_level(){
@@ -63,6 +64,7 @@ function init_page_level(){
     $('#matkul_id').select2();
     $('#topik_id').select2({placeholder : '- Pilih topik -'});
     $('#bundle').select2({placeholder : '- Pilih bundle soal -'});
+    $('#mhs_matkul').select2({placeholder : '- Pilih matkul terkait mhs -'});
 
     $('.icheck').iCheck({
         checkboxClass: 'icheckbox_square-red',
@@ -76,9 +78,10 @@ function init_page_level(){
     filter_mhs.kelompok_ujian    = $('#kelompok_ujian').val();
     filter_mhs.tgl_ujian    = $('#tgl_ujian').val() == '' ? 'null' : $('#tgl_ujian').val();
     filter_mhs.tahun    = $('#tahun_mhs').val();
+    filter_mhs.mhs_matkul    = 'null';
 
     let options = {};
-    cascadLoading = new Select2Cascade($('#matkul_id'), $('#topik_id'), '{{ site_url('soal/ajax/get_topic_by_matkul/') }}?id=:parentId:', options);
+    cascadLoading = new Select2Cascade($('#matkul_id'), $('#topik_id'), '{{ site_url('soal/ajax/get_topic_by_matkul/') }}?id=:parentId:&empty=1', options);
     cascadLoading.then( function(parent, child, items) {
         topik_id_dipilih = [];
         topik_jumlah_soal = [];
@@ -86,12 +89,14 @@ function init_page_level(){
         topik_jumlah_waktu = [];
         topik_urutan = [];
 
-        topik_avail = items;
         child.select2({placeholder : '- Pilih topik -'});
-        child.prepend('<option value="ALL">Semua Topik</option>');
-        // child.val('ALL');
-        // child.trigger('change');
-        // ajx_overlay(true);
+        if(!$.isEmptyObject(items)){
+            topik_avail = items;
+            child.prepend('<option value="ALL">Semua Topik</option>');
+            // child.val('ALL');
+            // child.trigger('change');
+            // ajx_overlay(true);
+        }
         init_topik_table_value().then(
             function(){
                 init_peserta_table_value(bundle_id_list).then(function(){
@@ -175,8 +180,10 @@ $('#bundle').on('select2:select', function (e) {
     bundle_id_list = bundle_ids;
     ajx_overlay(true);
     init_topik_table_value(bundle_ids).then(function(){
-        init_peserta_table_value(bundle_ids).then(function(){
-            ajx_overlay(false);
+        get_matkul_from_selected_bundle(bundle_ids).then(function(){
+            // init_peserta_table_value(bundle_ids).then(function(){
+                ajx_overlay(false);
+            // });
         });
     });
 });
@@ -201,11 +208,32 @@ $('#bundle').on('select2:unselect', function (e) {
 
     ajx_overlay(true);
     init_topik_table_value(bundle_ids).then(function(){
-        init_peserta_table_value(bundle_ids).then(function(){
-            ajx_overlay(false);
+        get_matkul_from_selected_bundle(bundle_ids).then(function(){
+            init_peserta_table_value(bundle_id_list).then(function(){
+                ajx_overlay(false);
+            });
         });
     });
 });
+
+const get_matkul_from_selected_bundle = (bundle_ids) => {
+    return $.ajax({
+        url: "{{ site_url('soal/ajax/get_matkul_from_selected_bundle') }}",
+        data: { 'bundle_ids' : JSON.stringify(bundle_ids) },
+        type: 'POST',
+        success: function (response) {
+            // console.log(response.matkul_list);
+            $('#mhs_matkul').empty();
+            if(!$.isEmptyObject(response.matkul_list)){
+                $.each(response.matkul_list, function(i, matkul){
+                    var newOption = new Option(matkul.nama_matkul, matkul.id_matkul, true, true);
+                    $('#mhs_matkul').append(newOption);
+                })
+                $('#mhs_matkul').trigger('change');
+            }
+        }
+    });
+};
 
 const get_jml_soal_per_topik = (selected_ids, bundle_ids) => {
     if(bundle_ids === undefined){
@@ -537,6 +565,15 @@ $(document).on('change','#tahun_mhs', function(){
     });
 });
 
+$(document).on('change','#mhs_matkul', function(){
+    let mhs_matkul = $(this).val();
+    filter_mhs.mhs_matkul = mhs_matkul;
+    ajx_overlay(true);
+    init_peserta_table_value(bundle_id_list).then(function(){
+        ajx_overlay(false);
+    });
+});
+
 $('#tampilkan_hasil').on('switchChange.bootstrapSwitch', function(event, state) {
     if(!event.target.checked){ // DETEKSI JIKA FALSE MAKA JUGA MENON-AKTIFKAN TAMPILKAN JAWABAN
         $('#tampilkan_jawaban').bootstrapSwitch('state', false, false);
@@ -563,17 +600,17 @@ $('#is_sekuen_topik').on('switchChange.bootstrapSwitch', function(event, state) 
 
 $('#sumber_materi').on('ifChecked', function(event){
     $('#panel_materi').removeClass('d-none');
+    $('#panel_bundle').addClass('d-none');
+    $('#form_group_mhs_matkul').addClass('d-none');
     $('#bundle').val(null).trigger('change');
     $('#bundle').select2('close');
     $('#tahun').val("{{ get_selected_tahun() }}").trigger('change');
 });
 
-$('#sumber_materi').on('ifUnchecked', function(event){
-    $('#panel_materi').addClass('d-none');
-});
-
 $('#sumber_bundle').on('ifChecked', function(event){
+    $('#panel_materi').addClass('d-none');
     $('#panel_bundle').removeClass('d-none');
+    $('#form_group_mhs_matkul').removeClass('d-none');
     $('#matkul_id').select2('close');
     $('#matkul_id').val("").trigger('change');
     $('#topik_id').val(null).trigger('change');
@@ -582,10 +619,6 @@ $('#sumber_bundle').on('ifChecked', function(event){
     init_topik_table_value().then(function(){
         ajx_overlay(false);
     });
-});
-
-$('#sumber_bundle').on('ifUnchecked', function(event){
-    $('#panel_bundle').addClass('d-none');
 });
 
 </script>
@@ -651,7 +684,7 @@ $('#sumber_bundle').on('ifUnchecked', function(event){
                         <select name="matkul_id" id="matkul_id" class="form-control" style="width:100% !important">
                             <option value="" disabled selected>- Pilih materi ujian -</option>
                             @foreach($matkul as $d)
-                                <option {{ $matkul_dipilih == $d->id_matkul ? 'selected="selected"' : '' }} value="{{ $d->id_matkul }}">{{ $d->nama_matkul }}</option>
+                                <option value="{{ $d->id_matkul }}">{{ $d->nama_matkul }}</option>
                             @endforeach
                         </select> <small class="help-block" style="color: #dc3545"></small>
                     </div>
@@ -879,6 +912,13 @@ $('#sumber_bundle').on('ifUnchecked', function(event){
                             @foreach ($tahun_mhs as $tahun)
                             <option value="{{ $tahun }}" {{ $tahun == get_selected_tahun() ? "selected" : "" }}>{{ $tahun }}</option>    
                             @endforeach
+                        </select>
+                        <small class="help-block" style="color: #dc3545"></small>
+                    </div>
+                    <div class="form-group d-none" id="form_group_mhs_matkul" >
+                        <label for="mhs_matkul" class="control-label">Matkul Terkait</label> <small class="help-block text-danger"><b>***</b> Filter mhs yg akan diasign dalam ujian, jika ujian berdasarkan bundle soal</small>
+                        <select name="mhs_matkul[]" id="mhs_matkul" class="form-control select2"
+                            style="width:100%!important" multiple="multiple">
                         </select>
                         <small class="help-block" style="color: #dc3545"></small>
                     </div>

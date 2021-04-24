@@ -158,7 +158,7 @@
             </div>
             <div class="col-12">
                 <div class="row">
-                    <div class="col-lg-6">
+                    {{-- <div class="col-lg-6">
                         <div class="card border-info bg-transparent">
                             <div class="card-header" style="background-color: #2a4659">
                                 <h4 class="card-title text-white">Event Menarik</h4>
@@ -193,14 +193,14 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="col-lg-6">
+                    </div> --}}
+                    <div class="col-lg-12">
                         <div class="card" style="">
                             <div class="card-header">
                                 <h4 class="card-title">
                                     <div class="badge border-danger danger round badge-border mr-1">
                                         <i class="fa fa-bar-chart"></i> 
-                                    </div> Leaderboard
+                                    </div> Leaderboard Hasil Ujian Tryout UM
                                 </h4>
                                 <hr>
                             </div>

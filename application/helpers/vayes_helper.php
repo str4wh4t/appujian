@@ -97,7 +97,7 @@ if (! function_exists('vdebug')) {
                 $output .= '</code>';
             }
         }
-        $output .= '</div><p class="debugfooter">Vayes Debug Helper © UNDIP </p></div></div>';
+        $output .= '</div><p class="debugfooter">Vayes Debug Helper</p></div></div>';
         $output .= '<div style="clear:both;"></div>';
         if (PHP_SAPI == 'cli') {
             echo $varname . ' = ' . PHP_EOL . $output . PHP_EOL . PHP_EOL;

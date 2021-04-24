@@ -149,13 +149,13 @@ const init_peserta_table_value = () => {
             if(!$.isEmptyObject(response.mhs_matkul)) {
                 $.each(response.mhs_matkul, function (i, item) {
                     // mhs_matkul_existing.push(item.id_mahasiswa);
-                    mhs_matkul_existing.push(item.mahasiswa_id);
+                    mhs_matkul_existing.push(item.id_mahasiswa);
                 });
             }
             if(!$.isEmptyObject(response.mhs_matkul_has_ujian)) {
                 $.each(response.mhs_matkul_has_ujian, function (i, item) {
                     // mhs_matkul_existing.push(item.id_mahasiswa);
-                    mhs_matkul_has_ujian_existing.push(item.mahasiswa_id);
+                    mhs_matkul_has_ujian_existing.push(item.id_mahasiswa);
                 });
             }
             if(!$.isEmptyObject(response.mhs)) {

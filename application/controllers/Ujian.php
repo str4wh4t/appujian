@@ -24,6 +24,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Capsule\Manager as DB;
 use Orm\Bundle_orm;
 use Orm\Ujian_bundle_orm;
+use Orm\Ujian_matkul_enable_orm;
 use Carbon\Carbon;
 
 class Ujian extends MY_Controller
@@ -241,6 +242,8 @@ class Ujian extends MY_Controller
 
 		$data['bundle_avail'] = Bundle_orm::all();
 		$data['bundle_selected'] = $bundle_selected;
+
+		$data['ujian_matkul_enable_ids'] = Ujian_matkul_enable_orm::where('ujian_id', $ujian->id_ujian)->pluck('matkul_id')->toArray();
 
 		view('ujian/edit', $data);
 	}
@@ -625,6 +628,7 @@ class Ujian extends MY_Controller
 				'tgl_ujian' 	=> form_error('tgl_ujian'),
 				'tahun_mhs' 	=> form_error('tahun_mhs'),
 				'bundle[]' 	=> form_error('bundle[]'),
+				'mhs_matkul[]' 	=> form_error('mhs_matkul[]'),
 			];
 
 			$jumlah_soal_list = $this->input->post('jumlah_soal', true);
@@ -659,6 +663,7 @@ class Ujian extends MY_Controller
 			$method 		= $this->input->post('method', true);
 			$matkul_id 		= $this->input->post('matkul_id', true);
 			$bundle 		= $this->input->post('bundle[]');
+			$mhs_matkul 		= $this->input->post('mhs_matkul[]');
 			$sumber_ujian 		= $this->input->post('sumber_ujian');
 			$nama_ujian 	= $this->input->post('nama_ujian', true);
 			$jumlah_soal_list = $this->input->post('jumlah_soal', true);
@@ -729,6 +734,7 @@ class Ujian extends MY_Controller
 				'nama_ujian' 				=> $nama_ujian,
 				'sumber_ujian'				=> $sumber_ujian,
 				'bundle'					=> $bundle,
+				'mhs_matkul'					=> $mhs_matkul,
 				'matkul_id' 				=> empty($matkul_id) ? null : $matkul_id,
 				'jumlah_soal' 				=> $jumlah_soal,
 				// 'jumlah_soal_detail' => $jumlah_soal_detail,
@@ -787,32 +793,52 @@ class Ujian extends MY_Controller
 					$m_ujian_orm->created_by = $user->username;
 					$m_ujian_orm->save();
 
+					$now = Carbon::now('utc')->toDateTimeString();
+					$insert = [] ;
 					foreach ($jumlah_soal_list as $topik_id => $topik_id_list) {
 						foreach ($topik_id_list as $bobot_soal_id => $jml_soal) {
-							$topik_ujian_orm = new Topik_ujian_orm();
-							$topik_ujian_orm->ujian_id = $m_ujian_orm->id_ujian;
-							$topik_ujian_orm->topik_id = $topik_id;
-							$topik_ujian_orm->bobot_soal_id = $bobot_soal_id;
-							$topik_ujian_orm->jumlah_soal = $jml_soal;
-							$topik_ujian_orm->save();
+							$insert[] = [
+								'ujian_id' => $m_ujian_orm->id_ujian,
+								'topik_id' => $topik_id,
+								'bobot_soal_id' => $bobot_soal_id,
+								'jumlah_soal' => $jml_soal,
+								'created_at' => $now,
+							];
 						}
 					}
+					Topik_ujian_orm::insert($insert);
 
+					$insert = [] ;
 					foreach ($peserta as $mhs_id) {
-						$mhs_ujian_orm = new Mhs_ujian_orm();
-						$mhs_ujian_orm->mahasiswa_id = $mhs_id;
-						$mhs_ujian_orm->ujian_id = $m_ujian_orm->id_ujian;
-						$mhs_ujian_orm->save();
+						$insert[] = [
+							'mahasiswa_id' => $mhs_id,
+							'ujian_id' => $m_ujian_orm->id_ujian,
+							'created_at' => $now,
+						];
 					}
-
+					Mhs_ujian_orm::insert($insert);
 
 					if($input['sumber_ujian'] == 'bundle'){
+						$insert = [] ;
 						foreach($input['bundle'] as $bundle_id){
-							$ujian_bundle = new Ujian_bundle_orm();
-							$ujian_bundle->ujian_id = $m_ujian_orm->id_ujian;
-							$ujian_bundle->bundle_id = $bundle_id;
-							$ujian_bundle->save();
+							$insert[] = [
+								'ujian_id' => $m_ujian_orm->id_ujian,
+								'bundle_id' => $bundle_id,
+								'created_at' => $now,
+							];
 						}
+						Ujian_bundle_orm::insert($insert);
+
+						$insert = [] ;
+						foreach($input['mhs_matkul'] as $matkul_id){
+							$insert[] = [
+								'ujian_id' => $m_ujian_orm->id_ujian,
+								'matkul_id' => $matkul_id,
+								'created_at' => $now,
+							];
+						}
+						Ujian_matkul_enable_orm::insert($insert);
+
 					}
 
 					commit_db_trx();
@@ -865,17 +891,22 @@ class Ujian extends MY_Controller
 					$m_ujian_orm->updated_by = $user->username;
 					$m_ujian_orm->save();
 
+					$now = Carbon::now('utc')->toDateTimeString();
+
 					Topik_ujian_orm::where('ujian_id', $id_ujian)->delete(); // LOGIKA NYA DI DELETE DULU BARU DI INSERT
+					$insert = [] ;
 					foreach ($jumlah_soal_list as $topik_id => $topik_id_list) {
 						foreach ($topik_id_list as $bobot_soal_id => $jml_soal) {
-							$topik_ujian_orm              = new Topik_ujian_orm();
-							$topik_ujian_orm->ujian_id    = $m_ujian_orm->id_ujian;
-							$topik_ujian_orm->topik_id    = $topik_id;
-							$topik_ujian_orm->bobot_soal_id = $bobot_soal_id;
-							$topik_ujian_orm->jumlah_soal = $jml_soal;
-							$topik_ujian_orm->save();
+							$insert[] = [
+								'ujian_id' => $m_ujian_orm->id_ujian,
+								'topik_id' => $topik_id,
+								'bobot_soal_id' => $bobot_soal_id,
+								'jumlah_soal' => $jml_soal,
+								'created_at' => $now,
+							];
 						}
 					}
+					Topik_ujian_orm::insert($insert);
 
 					$mhs_ujian = Mhs_ujian_orm::where(['ujian_id' => $m_ujian_orm->id_ujian])
 						->whereDoesntHave('h_ujian')
@@ -903,12 +934,15 @@ class Ujian extends MY_Controller
 					}
 
 					if (!empty($mhs_ids_insert)) {
+						$insert = [];
 						foreach ($mhs_ids_insert as $mhs_id) {
-							$mhs_ujian_orm            	 = new Mhs_ujian_orm();
-							$mhs_ujian_orm->mahasiswa_id = $mhs_id;
-							$mhs_ujian_orm->ujian_id     = $m_ujian_orm->id_ujian;
-							$mhs_ujian_orm->save();
+							$insert[] = [
+								'mahasiswa_id' => $mhs_id,
+								'ujian_id'     => $m_ujian_orm->id_ujian,
+								'created_at' => $now,
+							];
 						}
+						Mhs_ujian_orm::insert($insert);
 					}
 
 					$h_ujian_list = Hujian_orm::where('ujian_id', $m_ujian_orm->id_ujian)->get();
@@ -939,17 +973,21 @@ class Ujian extends MY_Controller
 					// if($matkul_sumber_ujian_before == 'bundle'){
 						if($input['sumber_ujian'] == 'bundle'){
 
+							// [START] LOGIC ujian_bundle
 							$ujian_bundle_before = $m_ujian_orm->ujian_bundle()->pluck('bundle_id')->toArray();
 							$ujian_bundle_ids_insert = array_diff($input['bundle'], $ujian_bundle_before);
 							$ujian_bundle_ids_delete = array_diff($ujian_bundle_before, $input['bundle']);
 							
 							if(!empty($ujian_bundle_ids_insert)){
+								$insert = [];
 								foreach($ujian_bundle_ids_insert as $bundle_id){
-									$ujian_bundle = new Ujian_bundle_orm();
-									$ujian_bundle->ujian_id = $id_ujian;
-									$ujian_bundle->bundle_id = $bundle_id;
-									$ujian_bundle->save();
+									$insert[] = [
+										'ujian_id' => $id_ujian,
+										'bundle_id' => $bundle_id,
+										'created_at' => $now,
+									];
 								}
+								Ujian_bundle_orm::insert($insert);
 							}
 
 							if(!empty($ujian_bundle_ids_delete)){
@@ -957,8 +995,35 @@ class Ujian extends MY_Controller
 												->whereIn('bundle_id', $ujian_bundle_ids_delete)
 												->delete();
 							}
+							// [STOP] LOGIC ujian_bundle
+
+							// [START] LOGIC ujian_matkul_enable
+							$ujian_matkul_enable_before = $m_ujian_orm->ujian_matkul_enable()->pluck('matkul_id')->toArray();
+							$ujian_matkul_enable_ids_insert = array_diff($input['mhs_matkul'], $ujian_matkul_enable_before);
+							$ujian_matkul_enable_ids_delete = array_diff($ujian_matkul_enable_before, $input['mhs_matkul']);
+
+							if(!empty($ujian_matkul_enable_ids_insert)){
+								$insert = [];
+								foreach($ujian_matkul_enable_ids_insert as $matkul_id){
+									$insert[] = [
+										'ujian_id' => $id_ujian,
+										'matkul_id' => $matkul_id,
+										'created_at' => $now,
+									];
+								}
+								Ujian_matkul_enable_orm::insert($insert);
+							}
+
+							if(!empty($ujian_matkul_enable_ids_delete)){
+								Ujian_matkul_enable_orm::where('ujian_id', $id_ujian)
+												->whereIn('matkul_id', $ujian_matkul_enable_ids_delete)
+												->delete();
+							}
+							// [STOP] LOGIC ujian_matkul_enable
+
+
 						}else{
-							// JIKA SEKARANG PILIH SUMBER UJIAN MATERI MAKA UJIAN BUNDLE SEBELUMNYA AKAN DI HAPUS
+							// JIKA SEKARANG PILIH SUMBER UJIAN DARI MATERI MAKA UJIAN BUNDLE SEBELUMNYA AKAN DI HAPUS
 							Ujian_bundle_orm::where('ujian_id', $id_ujian)->delete();
 						}
 					// }
@@ -1229,6 +1294,9 @@ class Ujian extends MY_Controller
 		
 		$m_ujian = Mujian_orm::findOrFail($id);
 
+		// CEK MHS MEMANG DI ASIGN DI UJIAN INI
+		$m_ujian->mhs_ujian()->where('mahasiswa_id', $mhs_orm->id_mahasiswa)->firstOrFail();
+
 		$matkul_bundle_ids_list = [];
 
 		if(APP_TYPE == 'tryout'){
@@ -1282,7 +1350,11 @@ class Ujian extends MY_Controller
 							}
 						}
 					}else if($m_ujian->sumber_ujian == 'bundle'){
-						$bundle_ids = $m_ujian->bundle()->groupBy('bundle.id')->get(['bundle.id'])->pluck('id')->toArray();
+						$bundle_ids = $m_ujian->bundle()
+												->groupBy('bundle.id')
+												// ->get(['bundle.id'])
+												->pluck('bundle.id')
+												->toArray();
 						$matkul_ids = get_matkul_ids_from_bundle_ids($bundle_ids);
 
 						if(!empty($matkul_ids)){
@@ -1352,7 +1424,6 @@ class Ujian extends MY_Controller
 
 		$mhs = $this->ujian->getIdMahasiswa($user->username);
 
-		
 		$data = [
 			'user' 		=> $user,
 			'judul'		=> 'Ujian',
@@ -1389,10 +1460,14 @@ class Ujian extends MY_Controller
 			return $a['urutan'] <=> $b['urutan'];
 		});
 
-		$topik_orm = new Topik_orm();
-
+		
 		$data['urutan_topik'] = $urutan_topik;
+
+		$topik_orm = new Topik_orm();
 		$data['topik_orm'] = $topik_orm;
+
+		$topik_ujian_jml_soal = $m_ujian->topik_ujian()->groupBy('topik_id')->pluck('jumlah_soal', 'topik_id')->toArray();
+		$data['topik_ujian_jml_soal'] = $topik_ujian_jml_soal;
 
 		$matkul_bundle_list = [];
 		foreach($urutan_topik as $topik_id => $val){
@@ -1500,7 +1575,11 @@ class Ujian extends MY_Controller
 							$mhs_matkul->save();
 
 						}else if($ujian->sumber_ujian == 'bundle'){
-							$bundle_ids = $ujian->bundle()->groupBy('bundle.id')->get(['bundle.id'])->pluck('id')->toArray();
+							$bundle_ids = $ujian->bundle()
+												->groupBy('bundle.id')
+												// ->get(['bundle.id'])
+												->pluck('bundle.id')
+												->toArray();
 							$matkul_ids = get_matkul_ids_from_bundle_ids($bundle_ids);
 	
 							if(!empty($matkul_ids)){
@@ -1550,6 +1629,15 @@ class Ujian extends MY_Controller
 				$jumlah_soal_diset = $topik_ujian->jumlah_soal;
 				$soal_avail = Soal_orm::where('topik_id', $topik_ujian->topik_id)
 										->where('bobot_soal_id', $topik_ujian->bobot_soal_id);
+
+				if($ujian->sumber_ujian == 'bundle'){
+					$bundle_ids = $ujian->bundle()->pluck('bundle.id')->toArray();
+					$soal_avail = $soal_avail->whereHas(
+						'bundle_soal', function(Builder $query) use($bundle_ids){
+							$query->whereIn('bundle_id', $bundle_ids);
+						}
+					);
+				}
 
 				$filter_data = [
 					'gel' 		=> $ujian->soal_gel,
@@ -1811,7 +1899,7 @@ class Ujian extends MY_Controller
 		//		$this->load->view('ujian/sheet');
 		//		$this->load->view('_templates/topnav/_footer.php');
 
-		view('ujian/index_utbk', $data);
+		view('ujian/index_' . TEMPLATE_LEMBAR_UJIAN, $data);
 	}
 
 	//	public function index_()
@@ -2543,7 +2631,11 @@ class Ujian extends MY_Controller
 						}
 					}
 				}else if($h_ujian->m_ujian->sumber_ujian == 'bundle'){
-					$bundle_ids = $h_ujian->m_ujian->bundle()->groupBy('bundle.id')->get(['bundle.id'])->pluck('id')->toArray();
+					$bundle_ids = $h_ujian->m_ujian->bundle()
+													->groupBy('bundle.id')
+													// ->get(['bundle.id'])
+													->pluck('bundle.id')
+													->toArray();
 					$matkul_ids = get_matkul_ids_from_bundle_ids($bundle_ids);
 
 					if(!empty($matkul_ids)){
@@ -2675,7 +2767,7 @@ class Ujian extends MY_Controller
 		$user = $this->ion_auth->user()->row();
 		$data['user'] = $user;
 
-		view('ujian/tutorial', $data);
+		view('ujian/tutorial_' . TEMPLATE_LEMBAR_UJIAN, $data);
 	}
 
 	protected function _get_urutan_topik(){

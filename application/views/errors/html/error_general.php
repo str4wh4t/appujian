@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui">
     <meta name="description" content="Terjadi kesalahan">
     <meta name="keywords" content="">
-    <meta name="author" content="UNDIP">
+    <meta name="author" content="<?= APP_NAME ?>">
     <title>ERROR :: <?= APP_NAME ?></title>
     <link rel="apple-touch-icon" href="<?= base_url('assets/icon/apple-touch-icon.png') ?>">
 	  <link rel="shortcut icon" type="image/x-icon" href="<?= base_url('assets/icon/favicon.ico') ?>">

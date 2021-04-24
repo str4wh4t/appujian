@@ -139,7 +139,7 @@ $(document).on("click", ".btn_delete", function() {
           }else{
             Swal.fire({
                 title: "Perhatian",
-                text: "Terjadi kesalahan : " + r.msg,
+                text: "Terdapat data yang masih terkait",
                 icon: "warning"
             });
           }

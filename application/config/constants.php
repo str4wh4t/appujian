@@ -93,6 +93,7 @@ defined('DOSEN_GROUP_ID')      OR define('DOSEN_GROUP_ID', 2);
 defined('MHS_GROUP_ID')      OR define('MHS_GROUP_ID', 3);
 defined('PENGAWAS_GROUP_ID')      OR define('PENGAWAS_GROUP_ID', 4);
 defined('PENYUSUN_SOAL_GROUP_ID')      OR define('PENYUSUN_SOAL_GROUP_ID', 5);
+defined('TEMPLATE_LEMBAR_UJIAN')      OR define('TEMPLATE_LEMBAR_UJIAN', 'utbk');
 
 defined('MHS_ID_LENGTH')      OR define('MHS_ID_LENGTH', 12);
 defined('NIK_LENGTH')      OR define('NIK_LENGTH', 16);

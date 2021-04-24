@@ -5,7 +5,7 @@
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui">
 	<meta name="keywords" content="ujian online, online exam, latihan soal ujian">
-	<meta name="author" content="UNDIP">
+	<meta name="author" content="{{ APP_NAME }}">
 	
 	<meta name="{{ csrf_name() }}" content="{{ csrf_token() }}">
 	

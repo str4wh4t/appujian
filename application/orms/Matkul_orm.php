@@ -33,5 +33,10 @@ class Matkul_orm extends Eloquent
     {
         return $this->hasMany('Orm\Mujian_orm','matkul_id');
     }
+
+    public function m_ujian_enable()
+    {
+        return $this->belongsToMany('Orm\Mujian_orm','ujian_matkul_enable','matkul_id','ujian_id');
+    }
     
 }

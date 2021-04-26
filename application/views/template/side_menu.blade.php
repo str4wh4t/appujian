@@ -193,16 +193,29 @@
 				<span data-i18n="nav.category.ui">SETTING</span>
 				<i class="ft-more-horizontal ft-minus" data-toggle="tooltip" data-placement="right" data-original-title="ADMINISTRATOR"></i>
           	</li> --}}
+
+			@if( APP_TYPE == 'tryout' )
+			  <li class="{{ $page === 'payment' ? "active" : "" }} nav-item">
+				  <a href="{{ site_url('payment') }}">
+					  <i class="fa fa-shopping-bag"></i><span class="menu-title" data-i18n="nav.dash.main">Payment</span>
+				  </a>
+				  <ul class="menu-content">
+					  <li class="{{ $method  === 'order_list' ? "active":"" }}">
+						  <a class="menu-item" href="{{ site_url('payment/order_list') }}">
+							  <i class="fa {{ $method  === 'order_list' ? "fa-play-circle-o" : "fa-circle-o" }}"></i>
+							  Order List
+						  </a>
+					  </li>
+				  </ul>
+			  </li>
+			@endif
+
 			<li class="{{ $page === 'users' ? "active" : "" }} nav-item">
 				<a href="{{ site_url('users') }}">
 					<i class="fa fa-users"></i><span class="menu-title" data-i18n="nav.dash.main">User Manaj.</span>
 				</a>
 			</li>
-{{--			<li class="{{ $page === 'settings' ? "active" : "" }} nav-item">--}}
-{{--				<a href="{{ site_url('settings') }}">--}}
-{{--					<i class="fa fa-cog"></i><span class="menu-title" data-i18n="nav.dash.main">Setting</span>--}}
-{{--				</a>--}}
-{{--			</li>--}}
+
 			@endif
 
 			@if( in_group('dosen') || in_group('mahasiswa') || in_group('penyusun_soal') )

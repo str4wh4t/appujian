@@ -3,8 +3,8 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
 use Orm\Users_orm;
 use Orm\Membership_orm;
-use Orm\Membership_history_orm;
-use Orm\Mhs_orm;
+use Ozdemir\Datatables\Datatables;
+use Ozdemir\Datatables\DB\MySQL;
 use Orm\Trx_payment_orm;
 use Orm\Paket_orm;
 use Illuminate\Database\Capsule\Manager as DB;
@@ -207,6 +207,7 @@ class Payment extends MY_Controller
         $order_number_pattern = $user_beli->username . '-' . $info . '-' . date('ymd') ;
 
         $trx_payment_existing_count = Trx_payment_orm::where(DB::raw('substr(order_number, 1, 22)'), '=', $order_number_pattern)->get()->count();
+
         
         $order_number = $order_number_pattern . '-' . ($trx_payment_existing_count++);
 
@@ -323,8 +324,78 @@ class Payment extends MY_Controller
         $data['status'] = strtoupper($notif->transaction_status);
         $data['payment_type'] = strtoupper($notif->payment_type);
         $data['order_id'] = $notif->order_id;
+        $data['transaction_time'] = $notif->transaction_time;
 
         $this->_json($data);
+    }
+
+    public function order_list(){
+        $this->_akses_admin();
+
+        view('payment/order_list');
+        
+    }
+
+    protected function _do_exec_payment(){
+        
+        $order_number = $this->input->post('id');
+        $payment = Trx_payment_orm::where('order_number', $order_number)->firstOrFail();
+        if(!$payment->stts){
+
+            $this->load->model('payment_model');
+
+            $order_number = $payment->order_number;
+            $client = new Client();
+            
+            $res = $client->request('GET', MIDTRANS_API_URL . $order_number . '/status', [
+                'auth' => [MIDTRANS_SERVER_KEY, '']
+            ]);
+
+            $notif = $res->getBody()->getContents();
+            $notif = json_decode($notif);
+
+            $log_status = $this->payment_model->exec_payment($notif, 'admin');
+
+            $this->_json(['log_status' => $log_status]);
+        }
+    }
+
+    protected function _data_order_list(){
+        $config = [
+			'host'     => $this->db->hostname,
+			'port'     => $this->db->port,
+			'username' => $this->db->username,
+			'password' => $this->db->password,
+			'database' => $this->db->database,
+		];
+
+		$this->db->select('a.order_number, a.keterangan, a.tgl_order, a.tgl_bayar, a.jml_bayar, a.stts, "AKSI" AS aksi');
+		$this->db->from('trx_payment AS a');
+
+        $dt = new Datatables(new MySQL($config));
+
+		$query = $this->db->get_compiled_select(); 
+
+        $dt->query($query);
+
+        $dt->edit('stts', function ($data) {
+            $info = null ;
+            if($data['stts'] == PAYMENT_ORDER_TELAH_DIPROSES)
+                $info = '<span class="text-success"><b>Sudah Dibayar</b></span>' ;
+            elseif($data['stts'] == PAYMENT_ORDER_BELUM_DIPROSES)
+                $info = '<span class="text-danger"><b>Belum Dibayar</b></span>' ;
+            elseif($data['stts'] == PAYMENT_ORDER_EXPIRED)
+                $info = '<span class="text-warning"><b>Expired</b></span>' ;
+
+            return $info;
+        });
+
+        $dt->edit('aksi', function ($data) {
+			return '<button class="btn btn-outline-warning btn-sm bayar" data-stts="'. $data['stts'] .'" data-id="'. $data['order_number'] .'"><i class="fa fa-eye"></i> Cek</button>';
+		});
+
+        $this->_json($dt->generate(), false);
+
     }
 
 }

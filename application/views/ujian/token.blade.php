@@ -383,11 +383,7 @@ function go_ujian(token){
                         </tr>
                         <tr>
                             <th>Sisa Waktu</th>
-                            @if(!empty($ujian->terlambat))
                             <td id="sisa_waktu">0:0:0</td>
-                            @else
-                            <td >-</td>
-                            @endif
                         </tr>
                     @endif
                 </table>

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "9d3b7ee60883af121a5d5ccc56d2b431",
+    "content-hash": "3ce058044e50d9630f121ee70dd601f2",
     "packages": [
         {
             "name": "brick/math",
@@ -941,16 +941,16 @@
         },
         {
             "name": "lulco/phoenix",
-            "version": "1.6.0",
+            "version": "1.7.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/lulco/phoenix.git",
-                "reference": "3118619af8e80af2612163e90c332e5975adf488"
+                "reference": "85a2c1e01d211232d1bc15a9324960e7287e3f50"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/lulco/phoenix/zipball/3118619af8e80af2612163e90c332e5975adf488",
-                "reference": "3118619af8e80af2612163e90c332e5975adf488",
+                "url": "https://api.github.com/repos/lulco/phoenix/zipball/85a2c1e01d211232d1bc15a9324960e7287e3f50",
+                "reference": "85a2c1e01d211232d1bc15a9324960e7287e3f50",
                 "shasum": ""
             },
             "require": {
@@ -1001,9 +1001,9 @@
             ],
             "support": {
                 "issues": "https://github.com/lulco/phoenix/issues",
-                "source": "https://github.com/lulco/phoenix/tree/1.6.0"
+                "source": "https://github.com/lulco/phoenix/tree/1.7.0"
             },
-            "time": "2021-04-03T21:21:18+00:00"
+            "time": "2021-04-14T10:04:53+00:00"
         },
         {
             "name": "midtrans/midtrans-php",

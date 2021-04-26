@@ -34,6 +34,7 @@ $(document).on('click', '.bayar', function(){
                 $('#th_va_number').text(res.va_number);
                 $('#th_status').text(res.status);
                 $('#modal_info').modal('show');
+                $('#th_transaction_time').text(res.transaction_time);
             }
         },
         error: function () {
@@ -106,18 +107,16 @@ function init_page_level(){
                         <td>{{ !empty($item->tgl_bayar) ? date('M d, Y', strtotime($item->tgl_bayar)) : '' }}</td>
                         <td>{{ number_format($item->jml_bayar, 0, ",", ".") }}</td>
                         <td>
-                            @if ($item->stts)
+                            @if ($item->stts == PAYMENT_ORDER_TELAH_DIPROSES)
                                 <span class="text-success"><b>Sudah Dibayar</b></span>
-                            @else
+                            @elseif ($item->stts == PAYMENT_ORDER_BELUM_DIPROSES)
                                 <span class="text-danger"><b>Belum Dibayar</b></span>
+                            @elseif ($item->stts == PAYMENT_ORDER_EXPIRED)
+                                <span class="text-warning"><b>Expired</b></span>
                             @endif
                         </td>
                         <td>
-                            @if ($item->stts)
-                                <button class="btn btn-success btn-sm bayar" data-id="{{ $item->order_number }}"> Bayar</button>
-                            @else
-                                <button class="btn btn-danger btn-sm bayar" data-id="{{ $item->order_number }}"> Bayar</button>
-                            @endif
+                            <button class="btn btn-danger btn-sm bayar" data-id="{{ $item->order_number }}"> Bayar</button>
                         </td>
                     </tr>
                     @empty
@@ -175,6 +174,10 @@ function init_page_level(){
                         <tr>
                             <th>Status</th>
                             <th id="th_status" class="text-danger"></th>
+                        </tr>
+                        <tr>
+                            <th>Trx Time</th>
+                            <th id="th_transaction_time" class="text-danger"></th>
                         </tr>
                     </thead>
                 </table>

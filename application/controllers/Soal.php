@@ -115,7 +115,7 @@ class Soal extends MY_Controller
 		$next = Soal_orm::where('no_urut', '>' , $soal_orm->no_urut)
 								->where('topik_id', $soal_orm->topik_id)
 								->where($where_add)
-								->max('id_soal');
+								->min('id_soal');
 
 		$data = [
 			//			'user'      => $user,

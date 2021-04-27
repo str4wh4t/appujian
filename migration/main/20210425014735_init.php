@@ -40,7 +40,7 @@ class Init extends AbstractMigration
 
         $this->table('daftar_hadir', 'id')
             ->setCharset('utf8mb4')
-            ->setCollation('utf8mb4_0900_ai_ci')
+            ->setCollation('utf8mb4_general_ci')
             ->addColumn('id', 'integer', ['autoincrement' => true,'signed' => false])
             ->addColumn('mahasiswa_ujian_id', 'integer',['signed' => false])
             ->addColumn('absen_by', 'integer', ['signed' => false,'comment' => 'pengawas_id dari users_groups'])
@@ -286,7 +286,7 @@ class Init extends AbstractMigration
 
         $this->table('login_log', 'id')
             ->setCharset('utf8mb4')
-            ->setCollation('utf8mb4_0900_ai_ci')
+            ->setCollation('utf8mb4_general_ci')
             ->addColumn('id', 'integer', ['signed' => false,'autoincrement' => true])
             ->addColumn('users_id', 'integer')
             ->addColumn('status_login', 'tinyinteger', ['comment' => '1 : online , 0 : offline'])
@@ -302,7 +302,7 @@ class Init extends AbstractMigration
             ->addColumn('matkul_id', 'integer', ['null' => true])
             ->addColumn('nama_ujian', 'string', ['length' => 200])
             ->addColumn('jumlah_soal', 'integer')
-            ->addColumn('jumlah_soal_detail', 'longtext', ['null' => true, 'charset' => 'utf8mb4', 'collation' => 'utf8mb4_0900_ai_ci'])
+            ->addColumn('jumlah_soal_detail', 'longtext', ['null' => true, 'charset' => 'utf8mb4', 'collation' => 'utf8mb4_general_ci'])
             ->addColumn('waktu', 'integer')
             ->addColumn('jenis', 'enum', ['length' => 0, 'decimals' => 0, 'values' => ['acak', 'urut']])
             ->addColumn('jenis_jawaban', 'enum', ['length' => 0, 'decimals' => 0, 'values' => ['acak', 'urut']])
@@ -378,7 +378,7 @@ class Init extends AbstractMigration
 
         $this->table('mahasiswa_ujian', 'id')
             ->setCharset('utf8mb4')
-            ->setCollation('utf8mb4_0900_ai_ci')
+            ->setCollation('utf8mb4_general_ci')
             ->addColumn('id', 'integer', ['signed' => false,'autoincrement' => true])
             ->addColumn('mahasiswa_matkul_id', 'integer', ['signed' => false,'null' => true])
             ->addColumn('mahasiswa_id', 'integer',['signed' => false])
@@ -400,7 +400,7 @@ class Init extends AbstractMigration
 
         $this->table('membership', 'id')
             ->setCharset('utf8mb4')
-            ->setCollation('utf8mb4_0900_ai_ci')
+            ->setCollation('utf8mb4_general_ci')
             ->addColumn('id', 'integer')
             ->addColumn('name', 'string', ['length' => 50])
             ->addColumn('urut', 'tinyinteger', ['default' => 0])
@@ -433,7 +433,7 @@ class Init extends AbstractMigration
 
         $this->table('paket', 'id')
             ->setCharset('utf8mb4')
-            ->setCollation('utf8mb4_0900_ai_ci')
+            ->setCollation('utf8mb4_general_ci')
             ->addColumn('id', 'integer')
             ->addColumn('name', 'string', ['length' => 50])
             ->addColumn('urut', 'tinyinteger', ['default' => 0])
@@ -478,7 +478,7 @@ class Init extends AbstractMigration
 
         $this->table('setting', 'id')
             ->setCharset('utf8mb4')
-            ->setCollation('utf8mb4_0900_ai_ci')
+            ->setCollation('utf8mb4_general_ci')
             ->addColumn('id', 'integer', ['autoincrement' => true])
             ->addColumn('variabel', 'string')
             ->addColumn('nilai', 'string')
@@ -489,7 +489,7 @@ class Init extends AbstractMigration
 
         $this->table('tb_soal', 'id_soal')
             ->setCharset('utf8mb4')
-            ->setCollation('utf8mb4_0900_ai_ci')
+            ->setCollation('utf8mb4_general_ci')
             ->addColumn('id_soal', 'integer', ['autoincrement' => true])
             ->addColumn('dosen_id', 'integer', ['null' => true])
             ->addColumn('matkul_id', 'integer', ['null' => true])
@@ -669,7 +669,7 @@ class Init extends AbstractMigration
 
         $this->table('users_temp', 'id')
             ->setCharset('utf8mb4')
-            ->setCollation('utf8mb4_0900_ai_ci')
+            ->setCollation('utf8mb4_general_ci')
             ->addColumn('id', 'integer', ['signed' => false,'autoincrement' => true])
             ->addColumn('full_name', 'string', ['null' => true, 'length' => 250, 'charset' => 'utf8', 'collation' => 'utf8_general_ci'])
             ->addColumn('nik', 'string', ['length' => 16, 'charset' => 'utf8', 'collation' => 'utf8_general_ci'])

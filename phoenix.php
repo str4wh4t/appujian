@@ -62,11 +62,11 @@ return [
         ],
         'APP4' => [
             'adapter' => 'mysql',
-            'host' => '89.163.220.95',
+            'host' => 'global-db',
             'port' => 3306, // optional
-            'username' => 'root',
-            'password' => 'root',
-            'db_name' => 'ujianundip',
+            'username' => 'tryout.exampel.id-GYZQS5',
+            'password' => 'kl912AoYXVtT',
+            'db_name' => 'tryout_exampel_id',
             'charset' => 'utf8mb4',
         ]
     ],

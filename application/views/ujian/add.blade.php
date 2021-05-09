@@ -923,7 +923,7 @@ $('#sumber_bundle').on('ifChecked', function(event){
                     </div>
                     <div class="form-group d-none" id="form_group_mhs_matkul" >
                         <label for="mhs_matkul" class="control-label">Matkul Terkait</label> <small class="help-block text-danger"><b>***</b> Filter mhs yg akan diasign dalam ujian, jika ujian berdasarkan bundle soal</small>
-                        <select name="mhs_matkul[]" id="mhs_matkul" class="form-control select2"
+                        <select name="mhs_matkul[]" id="mhs_matkul" class="form-control"
                             style="width:100%!important" multiple="multiple">
                         </select>
                         <small class="help-block" style="color: #dc3545"></small>

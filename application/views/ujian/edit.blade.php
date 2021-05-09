@@ -66,6 +66,7 @@ function init_page_level(){
     $('#matkul_id').select2();
     $('#topik_id').select2({placeholder : '- Pilih topik -'});
     $('#bundle').select2({placeholder : '- Pilih bundle soal -'});
+    $('#mhs_matkul').select2({placeholder : '- Pilih matkul terkait mhs -'});
 
 
     $('.icheck').iCheck({
@@ -251,6 +252,7 @@ $('#bundle').on('select2:select', function (e) {
 });
 
 $('#bundle').on('select2:unselect', function (e) {
+    console.log('select2:unselect');
     let data = e.params.data;
 
     delete topik_ids_from_selected_bundle_key[data.id] ;
@@ -288,11 +290,15 @@ const get_matkul_from_selected_bundle = (bundle_ids) => {
             $('#mhs_matkul').empty();
             if(!$.isEmptyObject(response.matkul_list)){
                 $.each(response.matkul_list, function(i, matkul){
+                    @if($ujian->sumber_ujian == 'bundle')
                     if($.inArray(matkul.id_matkul, ujian_matkul_enable_ids) != -1) {
                         var newOption = new Option(matkul.nama_matkul, matkul.id_matkul, true, true);
                     }else{
                         var newOption = new Option(matkul.nama_matkul, matkul.id_matkul, false, false); 
                     }
+                    @else
+                        var newOption = new Option(matkul.nama_matkul, matkul.id_matkul, true, true);
+                    @endif
                     $('#mhs_matkul').append(newOption);
                 })
                 $('#mhs_matkul').trigger('change');
@@ -699,13 +705,14 @@ $('#sumber_bundle').on('ifChecked', function(event){
     $('#tahun').val("null").trigger('change');
 
     @if($ujian->sumber_ujian == 'bundle')
-    init_selected_bundle();
+        init_selected_bundle();
+    @else
+        ajx_overlay(true);
+        init_topik_table_value().then(function(){
+            ajx_overlay(false);
+        });
     @endif
 
-    ajx_overlay(true);
-    init_topik_table_value().then(function(){
-        ajx_overlay(false);
-    });
 });
 
 </script>
@@ -1001,7 +1008,7 @@ $('#sumber_bundle').on('ifChecked', function(event){
                     </div>
                     <div class="form-group d-none" id="form_group_mhs_matkul" >
                         <label for="mhs_matkul" class="control-label">Matkul Terkait</label> <small class="help-block text-danger"><b>***</b> Filter mhs yg akan diasign dalam ujian, jika ujian berdasarkan bundle soal</small>
-                        <select name="mhs_matkul[]" id="mhs_matkul" class="form-control select2"
+                        <select name="mhs_matkul[]" id="mhs_matkul" class="form-control"
                             style="width:100%!important" multiple="multiple">
                         </select>
                         <small class="help-block" style="color: #dc3545"></small>

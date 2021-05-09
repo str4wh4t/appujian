@@ -80,33 +80,9 @@ function init_page_level(){
     filter_mhs.tahun    = $('#tahun_mhs').val();
     filter_mhs.mhs_matkul    = 'null';
 
-    let options = {};
-    cascadLoading = new Select2Cascade($('#matkul_id'), $('#topik_id'), '{{ site_url('soal/ajax/get_topic_by_matkul/') }}?id=:parentId:&empty=1', options);
-    cascadLoading.then( function(parent, child, items) {
-        topik_id_dipilih = [];
-        topik_jumlah_soal = [];
-        topik_jumlah_soal_asli = [];
-        topik_jumlah_waktu = [];
-        topik_urutan = [];
-
-        child.select2({placeholder : '- Pilih topik -'});
-        if(!$.isEmptyObject(items)){
-            topik_avail = items;
-            child.prepend('<option value="ALL">Semua Topik</option>');
-            // child.val('ALL');
-            // child.trigger('change');
-            // ajx_overlay(true);
-        }
-        init_topik_table_value().then(
-            function(){
-                init_peserta_table_value(bundle_id_list).then(function(){
-                    ajx_overlay(false);
-                });
-            }
-        ); // TO RESET ALL DATA TABLE JML SOAL
-    });
-
     $('#matkul_id').val("").trigger('change');
+
+    $('#sumber_materi').iCheck('check');
 
     $(".switchBootstrap").bootstrapSwitch();
 
@@ -145,6 +121,34 @@ function init_page_level(){
     });
 
 }
+
+const init_cascade_select2 = () => {
+    let options = {};
+    let cascadLoading = new Select2Cascade($('#matkul_id'), $('#topik_id'), '{{ site_url('soal/ajax/get_topic_by_matkul/') }}?id=:parentId:&empty=1', options);
+    cascadLoading.then( function(parent, child, items) {
+        topik_id_dipilih = [];
+        topik_jumlah_soal = [];
+        topik_jumlah_soal_asli = [];
+        topik_jumlah_waktu = [];
+        topik_urutan = [];
+
+        child.select2({placeholder : '- Pilih topik -'});
+        if(!$.isEmptyObject(items)){
+            topik_avail = items;
+            child.prepend('<option value="ALL">Semua Topik</option>');
+            // child.val('ALL');
+            // child.trigger('change');
+            // ajx_overlay(true);
+        }
+        init_topik_table_value().then(
+            function(){
+                init_peserta_table_value(bundle_id_list).then(function(){
+                    ajx_overlay(false);
+                });
+            }
+        ); // TO RESET ALL DATA TABLE JML SOAL
+    });
+};
 
 $('#matkul_id').on('select2:select', function (e) {
     // init_topik_table_value();
@@ -605,6 +609,7 @@ $('#sumber_materi').on('ifChecked', function(event){
     $('#bundle').val(null).trigger('change');
     $('#bundle').select2('close');
     $('#tahun').val("{{ get_selected_tahun() }}").trigger('change');
+    init_cascade_select2();
 });
 
 $('#sumber_bundle').on('ifChecked', function(event){
@@ -673,7 +678,7 @@ $('#sumber_bundle').on('ifChecked', function(event){
                 <div class="form-group">
                     <small class="help-block text-danger"><b>***</b> Ujian dari materi / dari bundle soal</small>
                     <div class="">
-                        <input type="radio" class="icheck" value="materi" name="sumber_ujian" id="sumber_materi" checked="checked" /><label for="sumber_materi" style="margin: 0.6em">Materi</label>
+                        <input type="radio" class="icheck" value="materi" name="sumber_ujian" id="sumber_materi" /><label for="sumber_materi" style="margin: 0.6em">Materi</label>
                         <input type="radio" class="icheck" value="bundle" name="sumber_ujian" id="sumber_bundle" /><label for="sumber_bundle" style="margin: 0.6em">Bundle</label>
                     </div>
                     <small class="help-block"></small>

@@ -362,6 +362,9 @@
 
             $('.datetimepicker').datetimepicker({
                 format: 'YYYY-MM-DD',
+                maxDate: moment().subtract(15, 'years'),
+                // defaultDate: moment().subtract(16, 'years'),
+                useCurrent: false,
                 // Your Icons
                 // as Bootstrap 4 is not using Glyphicons anymore
                 icons: {
@@ -375,6 +378,8 @@
                     clear: 'fa fa-trash',
                     close: 'fa fa-times'
                 }
+            }).on("dp.show", function (e) {
+                $(this).data("DateTimePicker").defaultDate(moment().subtract(16, 'years'));
             });
         });
 

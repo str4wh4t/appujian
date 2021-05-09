@@ -45,6 +45,7 @@ let topik_ids_from_selected_bundle  = [];
 let topik_ids_from_selected_bundle_key  = [];
 let bundle_id_list = [];
 let ujian_matkul_enable_ids = [];
+let sumber_ujian = null ;
 
 let filter = {
 		gel: null,
@@ -81,45 +82,6 @@ function init_page_level(){
     filter_mhs.tahun    = $('#tahun_mhs').val();
     filter_mhs.mhs_matkul    = 'null';
 
-    let options = {};
-    // ajx_overlay(true);
-    cascadLoading = new Select2Cascade($('#matkul_id'), $('#topik_id'), '{{ site_url('soal/ajax/get_topic_by_matkul/') }}?id=:parentId:&empty=1', options);
-    cascadLoading.then( function(parent, child, items) {
-        topik_id_dipilih = [];
-
-        @foreach($topik as $topik_id => $t)
-        topik_id_dipilih.push('{{ $topik_id }}');
-        @endforeach
-
-        child.select2({placeholder : 'Pilih Topik'});
-        if(!$.isEmptyObject(items)){
-            topik_avail = items;
-            child.prepend('<option value="ALL">Semua Topik</option>');
-            // child.val('ALL');
-            // child.trigger('change');
-            let topik_id_dipilih_baru = [];
-            $.each(items,function(i,v){
-                if($.inArray(i, topik_id_dipilih) !== -1){
-                    topik_id_dipilih_baru.push(i);
-                }
-            });
-            child.val(topik_id_dipilih_baru);
-            child.trigger('change');
-        }
-        // child.trigger('select2:select');
-        // init_topik_table_value();
-        // init_peserta_table_value();
-        
-        init_topik_table_value().then(
-            function(){
-                init_peserta_table_value(bundle_id_list).then(function(){
-                    ajx_overlay(false);
-                });
-            }
-        ); // TO RESET ALL DATA TABLE JML SOAL
-
-    });
-
     topik_jumlah_soal = [];
     topik_jumlah_soal_asli = [];
     topik_jumlah_waktu = [];
@@ -144,13 +106,13 @@ function init_page_level(){
 
     @if($ujian->sumber_ujian == 'materi')
     // $('#matkul_id').val('{{ $matkul_dipilih }}').trigger('change');
+    $('#sumber_materi').iCheck('check');
     @endif
 
     @if($ujian->sumber_ujian == 'bundle')
     // init_selected_bundle();
+    $('#sumber_bundle').iCheck('check');
     @endif
-
-    {!! $ujian->sumber_ujian == 'materi' ? "$('#sumber_materi').iCheck('check');" : "$('#sumber_bundle').iCheck('check');" !!} 
 
     $(".switchBootstrap").bootstrapSwitch();
 
@@ -192,6 +154,42 @@ function init_page_level(){
     // $('#is_sekuen_topik').bootstrapSwitch('toggleState');
     @endif
 }
+
+const init_cascade_select2 = () => {
+    let options = {};
+    // ajx_overlay(true);
+    let cascadLoading = new Select2Cascade($('#matkul_id'), $('#topik_id'), '{{ site_url('soal/ajax/get_topic_by_matkul/') }}?id=:parentId:&empty=1', options);
+    cascadLoading.then( function(parent, child, items) {
+        topik_id_dipilih = [];
+
+        @foreach($topik as $topik_id => $t)
+        topik_id_dipilih.push('{{ $topik_id }}');
+        @endforeach
+
+        child.select2({placeholder : 'Pilih Topik'});
+        if(!$.isEmptyObject(items)){
+            topik_avail = items;
+            child.prepend('<option value="ALL">Semua Topik</option>');
+            let topik_id_dipilih_baru = [];
+            $.each(items,function(i,v){
+                if($.inArray(i, topik_id_dipilih) !== -1){
+                    topik_id_dipilih_baru.push(i);
+                }
+            });
+            child.val(topik_id_dipilih_baru);
+            child.trigger('change');
+        }
+
+        init_topik_table_value().then(
+            function(){
+                init_peserta_table_value(bundle_id_list).then(function(){
+                    ajx_overlay(false);
+                });
+            }
+        ); // TO RESET ALL DATA TABLE JML SOAL
+
+    });
+};
 
 const init_selected_bundle = () => {
     let bundle_ids = [];
@@ -677,11 +675,12 @@ $('#sumber_materi').on('ifChecked', function(event){
     $('#form_group_mhs_matkul').addClass('d-none');
     $('#bundle').val(null).trigger('change').trigger('select2:select');
     $('#bundle').select2('close');
+    $('#tahun').val("{{ empty($ujian->soal_tahun) ? 'null' : $ujian->soal_tahun }}").trigger('change');
+
+    init_cascade_select2();
 
     @if($ujian->sumber_ujian == 'materi')
     $('#matkul_id').val('{{ $matkul_dipilih }}').trigger('change');
-    // $('#topik_id').val(null).trigger('change').trigger('select2:select');
-    $('#tahun').val("{{ empty($ujian->soal_tahun) ? 'null' : $ujian->soal_tahun }}").trigger('change');
     @else
     $('#matkul_id').val('').trigger('change').trigger('select2:select');
     @endif

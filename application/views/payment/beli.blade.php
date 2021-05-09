@@ -151,16 +151,16 @@ $(document).on('click', '#btn_checkout', function(){
                             {!! $item->description !!}
                             @if (substr($info, 0, 1) == 'P')
                                 <hr>
-                                <h6 class="text-danger"><b>Materi Include :</b></h6>
-                                <ol>
-                                    @foreach ($item->paket_matkul as $paket_matkul)
-                                    <li>{{ $paket_matkul->matkul->nama_matkul }}</li>
+                                <h6 class="text-danger"><b>Include :</b></h6>
+                                <ol class="ol-include-paket">
+                                    @foreach ($item->m_ujian as $m_ujian)
+                                    <li>{{ $m_ujian->nama_ujian }}</li>
                                     @endforeach
                                 </ol>
 
                             @endif
                         </td>
-                        <td>{!! substr($info, 0, 1) == 'M' ? $item->durasi . ' Bulan' : $item->kuota_latihan_soal . 'x / Materi' . ' atau <b class="text-danger">UNLIMITED</b> jika membership '  !!}</td>
+                        <td>{!! substr($info, 0, 1) == 'M' ? $item->durasi . ' Bulan' : $item->kuota_latihan_soal . 'x' . ' atau <b class="text-danger">UNLIMITED</b> jika membership '  !!}</td>
                         <td>{{ number_format($item->price, 0, ",", ".") }}</td>
                     </tr>
                 </tbody>

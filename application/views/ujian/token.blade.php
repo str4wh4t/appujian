@@ -274,18 +274,18 @@ function go_ujian(token){
                         <td><?=$ujian->matkul->nama_matkul?></td>
                     </tr>
                     <tr>
-                        <th>&nbsp;</th>
-                        <td>
+                        <th colspan="2">
                             <dl class="row">
-                            <dt class="col-sm-12">Topik Ujian :</dt>
+                            <dt class="col-sm-12 text-danger">Topik Ujian :</dt>
                             </dl>
-                            <hr/>
                             @php( $i = 1)
                             @foreach($urutan_topik as $topik_id => $val)
+                            @php($topik = $topik_orm->findOrFail($topik_id))
                             <dl class="row">
-                                <dt class="col-sm-8">{{ $i }}. {{ $topik_orm->findOrFail($topik_id)->nama_topik }}</dt>
+                                <dt class="col-sm-6">{{ $i }}. {{ $topik->nama_topik }}</dt>
                                 @if ($ujian->is_sekuen_topik)
-                                <dd class="col-sm-4">{{ $val['waktu'] }} Menit</dd>
+                                <dd class="col-sm-3 text-success">{{ $topik_ujian_jml_soal[$topik->id] }} Soal</dd>
+                                <dd class="col-sm-3">{{ $val['waktu'] }} Menit</dd>
                                 @endif
                             </dl>
                             @php( $i++)
@@ -304,7 +304,6 @@ function go_ujian(token){
                             <dl class="row">
                             <dt class="col-sm-12 text-danger">Topik Ujian :</dt>
                             </dl>
-                            <hr/>
                             @php( $i = 1)
                             @foreach($urutan_topik as $topik_id => $val)
                             @php($topik = $topik_orm->findOrFail($topik_id))

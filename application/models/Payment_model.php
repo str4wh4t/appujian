@@ -179,6 +179,12 @@ class Payment_model extends CI_Model {
                         // ASIGN MEMBERSHIP KE PAKET BONUS NYA 
                         $paket_bonus_membership  = get_paket_bonus_membership($membership) ;
                         if(!empty($paket_bonus_membership)){
+                            $matkul_ids_exist = Mhs_matkul_orm::where([
+                                                                    'mahasiswa_id' => $mhs->id_mahasiswa
+                                                                ])->pluck('matkul_id')->toArray();
+						    $ujian_ids_exist = Mhs_ujian_orm::where([
+                                                                    'mahasiswa_id' => $mhs->id_mahasiswa
+                                                                ])->pluck('ujian_id')->toArray();
                             foreach($paket_bonus_membership as $paket){
     
                                 $where = [
@@ -208,58 +214,118 @@ class Payment_model extends CI_Model {
                                 $paket_history->stts =  PAKET_STTS_AKTIF ;
                                 $paket_history->save();
     
-                                foreach($paket->matkul as $matkul){
-                                    $sisa_kuota_latihan_soal = $paket->kuota_latihan_soal ;
-                                    if(empty($mhs->mhs_matkul()->where('matkul_id', $matkul->id_matkul)->first())){ 
-                                        // CHEK MHS SUDAH DIASIGN MATKUL APA BELUM, BISA JADI KEMUNGKINAN MATKUL TSB DI PILIH DI PAKET YG LAIN
-                                        $mhs_matkul_orm = new Mhs_matkul_orm();
-                                    }else{
-                                        $mhs_matkul_orm = $mhs->mhs_matkul()->where('matkul_id', $matkul->id_matkul)->first();
-                                        $sisa_kuota_latihan_soal = $sisa_kuota_latihan_soal + $mhs_matkul_orm->sisa_kuota_latihan_soal ;
-                                    }
-                                    $mhs_matkul_orm->mahasiswa_id = $mhs->id_mahasiswa;
-                                    $mhs_matkul_orm->matkul_id = $matkul->id_matkul;
-                                    $mhs_matkul_orm->sisa_kuota_latihan_soal = $sisa_kuota_latihan_soal ;
-                                    $mhs_matkul_orm->save();
+                                // foreach($paket->matkul as $matkul){
+                                //     $sisa_kuota_latihan_soal = $paket->kuota_latihan_soal ;
+                                //     if(empty($mhs->mhs_matkul()->where('matkul_id', $matkul->id_matkul)->first())){ 
+                                //         // CHEK MHS SUDAH DIASIGN MATKUL APA BELUM, BISA JADI KEMUNGKINAN MATKUL TSB DI PILIH DI PAKET YG LAIN
+                                //         $mhs_matkul_orm = new Mhs_matkul_orm();
+                                //     }else{
+                                //         $mhs_matkul_orm = $mhs->mhs_matkul()->where('matkul_id', $matkul->id_matkul)->first();
+                                //         $sisa_kuota_latihan_soal = $sisa_kuota_latihan_soal + $mhs_matkul_orm->sisa_kuota_latihan_soal ;
+                                //     }
+                                //     $mhs_matkul_orm->mahasiswa_id = $mhs->id_mahasiswa;
+                                //     $mhs_matkul_orm->matkul_id = $matkul->id_matkul;
+                                //     $mhs_matkul_orm->sisa_kuota_latihan_soal = $sisa_kuota_latihan_soal ;
+                                //     $mhs_matkul_orm->save();
     
-                                    // [START] JIKA UJIAN SOURCE DARI MATERI
-                                    if($matkul->m_ujian->isNotEmpty()){
-                                        $ujian_existing_ids = $mhs->mhs_ujian()->pluck('ujian_id')->toArray();
-                                        $ujian_ids = $matkul->m_ujian()->pluck('id_ujian')->toArray();
-                                        $ujian_ids_insert = array_diff($ujian_ids, $ujian_existing_ids);
-                                        if(!empty($ujian_ids_insert)){
-                                            $insert = [];
-                                            foreach($ujian_ids_insert as $ujian_id){
-                                                $insert[] = [
-                                                    'mahasiswa_id' => $mhs->id_mahasiswa,
-                                                    'ujian_id' => $ujian_id,
-                                                    'created_at' => $now,
-                                                ];
-                                            }
-                                            Mhs_ujian_orm::insert($insert);
+                                //     // [START] JIKA UJIAN SOURCE DARI MATERI
+                                //     if($matkul->m_ujian->isNotEmpty()){
+                                //         $ujian_existing_ids = $mhs->mhs_ujian()->pluck('ujian_id')->toArray();
+                                //         $ujian_ids = $matkul->m_ujian()->pluck('id_ujian')->toArray();
+                                //         $ujian_ids_insert = array_diff($ujian_ids, $ujian_existing_ids);
+                                //         if(!empty($ujian_ids_insert)){
+                                //             $insert = [];
+                                //             foreach($ujian_ids_insert as $ujian_id){
+                                //                 $insert[] = [
+                                //                     'mahasiswa_id' => $mhs->id_mahasiswa,
+                                //                     'ujian_id' => $ujian_id,
+                                //                     'created_at' => $now,
+                                //                 ];
+                                //             }
+                                //             Mhs_ujian_orm::insert($insert);
+                                //         }
+                                //     }
+                                //     // [END] JIKA UJIAN SOURCE DARI MATERI
+    
+                                //     // [START] JIKA UJIAN SOURCE DARI BUNDLE
+                                //     $existing_mhs_ujian = $mhs->mhs_ujian()->pluck('ujian_id')->toArray();
+    
+                                //     if($matkul->m_ujian_enable->isNotEmpty()){
+                                //         $mhs_ujian_ids = $matkul->m_ujian_enable()->pluck('ujian_id')->toArray();
+                                //         $mhs_ujian_ids_insert = array_diff($mhs_ujian_ids, $existing_mhs_ujian);
+                                //         if(!empty($mhs_ujian_ids_insert)){
+                                //             $insert = [];
+                                //             foreach($mhs_ujian_ids_insert as $m_ujian_id){
+                                //                 $insert[] = [
+                                //                     'mahasiswa_id' => $mhs->id_mahasiswa,
+                                //                     'ujian_id'	=> $m_ujian_id,
+                                //                     'created_at' => $now,
+                                //                 ];
+                                //             }
+                                //             Mhs_ujian_orm::insert($insert);
+                                //         }
+                                //     }
+                                //     // [END] JIKA UJIAN SOURCE DARI BUNDLE
+                                // }
+
+                                if($paket->m_ujian->isNotEmpty()){
+                                    $ujian_ids = $paket->m_ujian()->pluck('id_ujian')->toArray();
+                                    $insert = [];
+                                    foreach($ujian_ids as $ujian_id){
+                                        if(!in_array($ujian_id, $ujian_ids_exist)){
+                                            $ujian_ids_exist[] = $ujian_id;
+                                            $insert[] = [
+                                                'mahasiswa_id' => $mhs->id_mahasiswa,
+                                                'ujian_id' => $ujian_id,
+                                                'sisa_kuota_latihan_soal' => $paket->kuota_latihan_soal,
+                                                'created_at' => $now,
+                                            ];
+                                        }else{
+                                            // JIKA SUDAH ADA MAKA SISA KUOTA LATIHAN SOAL DITAMBAHKAN
+                                            $mhs_ujian_exist = Mhs_ujian_orm::where([
+                                                'mahasiswa_id' => $mhs->id_mahasiswa,
+                                                'ujian_id' => $ujian_id,
+                                            ])->first();
+                                            $kuota_latihan_soal_exist = $mhs_ujian_exist->sisa_kuota_latihan_soal;
+                                            $mhs_ujian_exist->sisa_kuota_latihan_soal = $kuota_latihan_soal_exist + $paket->kuota_latihan_soal;
+                                            $mhs_ujian_exist->save();
                                         }
                                     }
-                                    // [END] JIKA UJIAN SOURCE DARI MATERI
-    
-                                    // [START] JIKA UJIAN SOURCE DARI BUNDLE
-                                    $existing_mhs_ujian = $mhs->mhs_ujian()->pluck('ujian_id')->toArray();
-    
-                                    if($matkul->m_ujian_enable->isNotEmpty()){
-                                        $mhs_ujian_ids = $matkul->m_ujian_enable()->pluck('ujian_id')->toArray();
-                                        $mhs_ujian_ids_insert = array_diff($mhs_ujian_ids, $existing_mhs_ujian);
-                                        if(!empty($mhs_ujian_ids_insert)){
-                                            $insert = [];
-                                            foreach($mhs_ujian_ids_insert as $m_ujian_id){
-                                                $insert[] = [
-                                                    'mahasiswa_id' => $mhs->id_mahasiswa,
-                                                    'ujian_id'	=> $m_ujian_id,
-                                                    'created_at' => $now,
-                                                ];
+                                    if(!empty($insert))
+                                        Mhs_ujian_orm::insert($insert);
+                                    
+                                    foreach($paket->m_ujian as $m_ujian){
+                                        if(!empty($m_ujian->matkul)){
+                                            // [START] JIKA UJIAN SOURCE DARI MATERI
+                                            if(!in_array($m_ujian->matkul->id_matkul, $matkul_ids_exist)){
+                                                $matkul_ids_exist[] = $m_ujian->matkul->id_matkul;
+                                                $mhs_matkul_orm = new Mhs_matkul_orm();
+                                                $mhs_matkul_orm->mahasiswa_id = $mhs->id_mahasiswa;
+                                                $mhs_matkul_orm->matkul_id = $m_ujian->matkul->id_matkul;
+                                                $mhs_matkul_orm->sisa_kuota_latihan_soal = 0 ;
+                                                $mhs_matkul_orm->save();
                                             }
-                                            Mhs_ujian_orm::insert($insert);
+                                            // [END] JIKA UJIAN SOURCE DARI MATERI
+                                        }
+                                        if($m_ujian->matkul_enable->isNotEmpty()){
+                                            // [START] JIKA UJIAN SOURCE DARI BUNDLE
+                                            $insert = [];
+                                            foreach($m_ujian->matkul_enable as $matkul){
+                                                if(!in_array($matkul->id_matkul, $matkul_ids_exist)){
+                                                    $matkul_ids_exist[] = $matkul->id_matkul;
+                                                    $insert[] = [
+                                                        'mahasiswa_id' => $mhs->id_mahasiswa,
+                                                        'matkul_id' => $matkul->id_matkul,
+                                                        'sisa_kuota_latihan_soal' => 0,
+                                                        'created_at' => $now,
+                                                    ];
+                                                }
+                                            }
+                                            if(!empty($insert))
+                                                Mhs_matkul_orm::insert($insert);
+                                            // [END] JIKA UJIAN SOURCE DARI BUNDLE
                                         }
                                     }
-                                    // [END] JIKA UJIAN SOURCE DARI BUNDLE
                                 }
                             }
                         }
@@ -300,63 +366,128 @@ class Payment_model extends CI_Model {
                         $paket_history->save();
             
                         $paket_history_id = $paket_history->id;
+
+                        $matkul_ids_exist = Mhs_matkul_orm::where([
+                                                                'mahasiswa_id' => $mhs->id_mahasiswa
+                                                            ])->pluck('matkul_id')->toArray();
+                        $ujian_ids_exist = Mhs_ujian_orm::where([
+                                                                'mahasiswa_id' => $mhs->id_mahasiswa
+                                                            ])->pluck('ujian_id')->toArray();
     
-                        // ASSIGN USER TO MHS_MATKUL BERDASARKAN PAKET DIBELI
-                        foreach($paket->matkul as $matkul){
-                            $sisa_kuota_latihan_soal = $paket->kuota_latihan_soal ;
-                            if(empty($mhs->mhs_matkul()->where('matkul_id', $matkul->id_matkul)->first())){ 
-                                // CHEK MHS SUDAH DIASIGN MATKUL APA BELUM, BISA JADI KEMUNGKINAN MATKUL TSB DI PILIH DI PAKET YG LAIN
-                                $mhs_matkul_orm = new Mhs_matkul_orm();
-                            }else{
-                                $mhs_matkul_orm = $mhs->mhs_matkul()->where('matkul_id', $matkul->id_matkul)->first();
-                                $sisa_kuota_latihan_soal = $sisa_kuota_latihan_soal + $mhs_matkul_orm->sisa_kuota_latihan_soal ;
-                            }
+                        // // ASSIGN USER TO MHS_MATKUL BERDASARKAN PAKET DIBELI
+                        // foreach($paket->matkul as $matkul){
+                        //     $sisa_kuota_latihan_soal = $paket->kuota_latihan_soal ;
+                        //     if(empty($mhs->mhs_matkul()->where('matkul_id', $matkul->id_matkul)->first())){ 
+                        //         // CHEK MHS SUDAH DIASIGN MATKUL APA BELUM, BISA JADI KEMUNGKINAN MATKUL TSB DI PILIH DI PAKET YG LAIN
+                        //         $mhs_matkul_orm = new Mhs_matkul_orm();
+                        //     }else{
+                        //         $mhs_matkul_orm = $mhs->mhs_matkul()->where('matkul_id', $matkul->id_matkul)->first();
+                        //         $sisa_kuota_latihan_soal = $sisa_kuota_latihan_soal + $mhs_matkul_orm->sisa_kuota_latihan_soal ;
+                        //     }
                             
-                            $mhs_matkul_orm->mahasiswa_id = $mhs->id_mahasiswa;
-                            $mhs_matkul_orm->matkul_id = $matkul->id_matkul;
-                            $mhs_matkul_orm->sisa_kuota_latihan_soal = $sisa_kuota_latihan_soal ;
-                            $mhs_matkul_orm->save();
+                        //     $mhs_matkul_orm->mahasiswa_id = $mhs->id_mahasiswa;
+                        //     $mhs_matkul_orm->matkul_id = $matkul->id_matkul;
+                        //     $mhs_matkul_orm->sisa_kuota_latihan_soal = $sisa_kuota_latihan_soal ;
+                        //     $mhs_matkul_orm->save();
                             
-                            // [START] JIKA UJIAN SOURCE DARI MATERI
-                            if($matkul->m_ujian->isNotEmpty()){
-                                $ujian_existing_ids = $mhs->mhs_ujian()->pluck('ujian_id')->toArray();
-                                $ujian_ids = $matkul->m_ujian()->pluck('id_ujian')->toArray();
-                                $ujian_ids_insert = array_diff($ujian_ids, $ujian_existing_ids);
-                                if(!empty($ujian_ids_insert)){
-                                    $insert = [];
-                                    foreach($ujian_ids_insert as $ujian_id){
-                                        $insert[] = [
-                                            'mahasiswa_id' => $mhs->id_mahasiswa,
-                                            'ujian_id' => $ujian_id,
-                                            'created_at' => $now,
-                                        ];
-                                    }
-                                    Mhs_ujian_orm::insert($insert);
+                        //     // [START] JIKA UJIAN SOURCE DARI MATERI
+                        //     if($matkul->m_ujian->isNotEmpty()){
+                        //         $ujian_existing_ids = $mhs->mhs_ujian()->pluck('ujian_id')->toArray();
+                        //         $ujian_ids = $matkul->m_ujian()->pluck('id_ujian')->toArray();
+                        //         $ujian_ids_insert = array_diff($ujian_ids, $ujian_existing_ids);
+                        //         if(!empty($ujian_ids_insert)){
+                        //             $insert = [];
+                        //             foreach($ujian_ids_insert as $ujian_id){
+                        //                 $insert[] = [
+                        //                     'mahasiswa_id' => $mhs->id_mahasiswa,
+                        //                     'ujian_id' => $ujian_id,
+                        //                     'created_at' => $now,
+                        //                 ];
+                        //             }
+                        //             Mhs_ujian_orm::insert($insert);
+                        //         }
+                        //     }
+                        //     // [END] JIKA UJIAN SOURCE DARI MATERI
+    
+                        //     // [START] JIKA UJIAN SOURCE DARI BUNDLE
+                        //     $existing_mhs_ujian = $mhs->mhs_ujian()->pluck('ujian_id')->toArray();
+    
+                        //     if($matkul->m_ujian_enable->isNotEmpty()){
+                        //         $mhs_ujian_ids = $matkul->m_ujian_enable()->pluck('ujian_id')->toArray();
+                        //         $mhs_ujian_ids_insert = array_diff($mhs_ujian_ids, $existing_mhs_ujian);
+                        //         if(!empty($mhs_ujian_ids_insert)){
+                        //             $insert = [];
+                        //             foreach($mhs_ujian_ids_insert as $m_ujian_id){
+                        //                 $insert[] = [
+                        //                     'mahasiswa_id' => $mhs->id_mahasiswa,
+                        //                     'ujian_id'	=> $m_ujian_id,
+                        //                     'created_at' => $now,
+                        //                 ];
+                        //             }
+                        //             Mhs_ujian_orm::insert($insert);
+                        //         }
+                        //     }
+                        //     // [END] JIKA UJIAN SOURCE DARI BUNDLE
+                        // }
+
+                        if($paket->m_ujian->isNotEmpty()){
+                            $ujian_ids = $paket->m_ujian()->pluck('id_ujian')->toArray();
+                            $insert = [];
+                            foreach($ujian_ids as $ujian_id){
+                                if(!in_array($ujian_id, $ujian_ids_exist)){
+                                    $ujian_ids_exist[] = $ujian_id;
+                                    $insert[] = [
+                                        'mahasiswa_id' => $mhs->id_mahasiswa,
+                                        'ujian_id' => $ujian_id,
+                                        'sisa_kuota_latihan_soal' => $paket->kuota_latihan_soal,
+                                        'created_at' => $now,
+                                    ];
+                                }else{
+                                    // JIKA SUDAH ADA MAKA SISA KUOTA LATIHAN SOAL DITAMBAHKAN
+                                    $mhs_ujian_exist = Mhs_ujian_orm::where([
+                                        'mahasiswa_id' => $mhs->id_mahasiswa,
+                                        'ujian_id' => $ujian_id,
+                                    ])->first();
+                                    $kuota_latihan_soal_exist = $mhs_ujian_exist->sisa_kuota_latihan_soal;
+                                    $mhs_ujian_exist->sisa_kuota_latihan_soal = $kuota_latihan_soal_exist + $paket->kuota_latihan_soal;
+                                    $mhs_ujian_exist->save();
                                 }
                             }
-                            // [END] JIKA UJIAN SOURCE DARI MATERI
-    
-                            // [START] JIKA UJIAN SOURCE DARI BUNDLE
-    
-                            $existing_mhs_ujian = $mhs->mhs_ujian()->pluck('ujian_id')->toArray();
-    
-                            if($matkul->m_ujian_enable->isNotEmpty()){
-                                $mhs_ujian_ids = $matkul->m_ujian_enable()->pluck('ujian_id')->toArray();
-                                $mhs_ujian_ids_insert = array_diff($mhs_ujian_ids, $existing_mhs_ujian);
-                                if(!empty($mhs_ujian_ids_insert)){
-                                    $insert = [];
-                                    foreach($mhs_ujian_ids_insert as $m_ujian_id){
-                                        $insert[] = [
-                                            'mahasiswa_id' => $mhs->id_mahasiswa,
-                                            'ujian_id'	=> $m_ujian_id,
-                                            'created_at' => $now,
-                                        ];
+                            if(!empty($insert))
+                                Mhs_ujian_orm::insert($insert);
+                            
+                            foreach($paket->m_ujian as $m_ujian){
+                                if(!empty($m_ujian->matkul)){
+                                    // [START] JIKA UJIAN SOURCE DARI MATERI
+                                    if(!in_array($m_ujian->matkul->id_matkul, $matkul_ids_exist)){
+                                        $matkul_ids_exist[] = $m_ujian->matkul->id_matkul;
+                                        $mhs_matkul_orm = new Mhs_matkul_orm();
+                                        $mhs_matkul_orm->mahasiswa_id = $mhs->id_mahasiswa;
+                                        $mhs_matkul_orm->matkul_id = $m_ujian->matkul->id_matkul;
+                                        $mhs_matkul_orm->sisa_kuota_latihan_soal = 0 ;
+                                        $mhs_matkul_orm->save();
                                     }
-                                    Mhs_ujian_orm::insert($insert);
+                                    // [END] JIKA UJIAN SOURCE DARI MATERI
+                                }
+                                if($m_ujian->matkul_enable->isNotEmpty()){
+                                    // [START] JIKA UJIAN SOURCE DARI BUNDLE
+                                    $insert = [];
+                                    foreach($m_ujian->matkul_enable as $matkul){
+                                        if(!in_array($matkul->id_matkul, $matkul_ids_exist)){
+                                            $matkul_ids_exist[] = $matkul->id_matkul;
+                                            $insert[] = [
+                                                'mahasiswa_id' => $mhs->id_mahasiswa,
+                                                'matkul_id' => $matkul->id_matkul,
+                                                'sisa_kuota_latihan_soal' => 0,
+                                                'created_at' => $now,
+                                            ];
+                                        }
+                                    }
+                                    if(!empty($insert))
+                                        Mhs_matkul_orm::insert($insert);
+                                    // [END] JIKA UJIAN SOURCE DARI BUNDLE
                                 }
                             }
-    
-                            // [END] JIKA UJIAN SOURCE DARI BUNDLE
                         }
             
                     }

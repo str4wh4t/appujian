@@ -94,7 +94,7 @@ function init_page_level(){
                 <a class="nav-link active" id="active-tab1" data-toggle="tab" href="#active1" aria-controls="active1" aria-expanded="true">Paket</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" id="link-tab1" data-toggle="tab" href="#link1" aria-controls="link1" aria-expanded="false">Materi</a>
+                <a class="nav-link" id="link-tab1" data-toggle="tab" href="#link1" aria-controls="link1" aria-expanded="false">Ujian</a>
             </li>
         </ul>
         <div class="tab-content px-1 pt-1">
@@ -116,13 +116,6 @@ function init_page_level(){
                                 <td>{{ strtoupper($item->paket->name) }}</td>
                                 <td>
                                     {!! $item->paket->description !!}
-                                    <hr>
-                                    <h6 class="text-danger"><b>Materi Include :</b></h6>
-                                    <ol>
-                                        @foreach ($item->paket->paket_matkul as $paket_matkul)
-                                        <li>{{ $paket_matkul->matkul->nama_matkul }}</li>
-                                        @endforeach
-                                    </ol>
                                 </td>
                                 <td>{{ $item->paket->kuota_latihan_soal . 'x' }}</td>
                                 <td>{{ $item->created_at }}</td>
@@ -145,19 +138,19 @@ function init_page_level(){
                 </div>
             </div>
             <div class="tab-pane" id="link1" role="tabpanel" aria-labelledby="link-tab1" aria-expanded="false">
-                <div class="alert bg-info text-center">Materi ujian yang anda miliki</div>
+                <div class="alert bg-info text-center">Ujian yang anda miliki</div>
                 <div class="table-responsive col-sm-12">
                     <table class="table table-striped" id="tb_history_2">
                         <thead>
                             <tr>
-                                <th>Materi Ujian</th>
+                                <th>Nama Ujian</th>
                                 <th>Kuota Latihan Soal</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @forelse ($mhs_matkul_list as $item)
+                            @forelse ($mhs_ujian_list as $item)
                             <tr>
-                                <td>{{ strtoupper($item->matkul->nama_matkul) }}</td>
+                                <td>{{ strtoupper($item->m_ujian->nama_ujian) }}</td>
                                 <td>{!! is_mhs_limit_by_kuota() ? $item->sisa_kuota_latihan_soal . 'x'  : '&infin;' !!}</td>
                             </tr>
                             @empty

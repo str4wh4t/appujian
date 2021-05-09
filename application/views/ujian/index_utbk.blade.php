@@ -518,12 +518,13 @@ $(window).focus(function() {
         'app_id': '{{ APP_ID }}',
     }));
 }).blur(function() {
-    /** SEMENTARA DIMATIKAN **/
-    // Swal.fire({
-    //     title: "Perhatian",
-    //     text: "Anda diperingatkan tidak boleh membuka halaman lain, semua aktifitas anda direkam oleh sistem untuk penilaian",
-    //     icon: "warning"
-    // });
+    @if(SHOW_WARNING_SAAT_UJIAN)
+    Swal.fire({
+        title: "Perhatian",
+        text: "Anda diperingatkan tidak boleh membuka halaman lain, semua aktifitas anda direkam oleh sistem untuk penilaian",
+        icon: "warning"
+    });
+    @endif
     sendmsg(JSON.stringify({
         'nim':'{{ get_logged_user()->username }}',
         'as':'{{ get_selected_role()->name }}',

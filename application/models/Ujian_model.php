@@ -10,7 +10,7 @@ use Orm\Hujian_orm;
 
 class Ujian_model extends CI_Model {
     
-    public function getDataUjian($id = null, $username = null, $role = null, $status_ujian = 'active')
+    public function getDataUjian($id = null, $username = null, $role = null, $status_ujian = 'active', $paket_id = null)
     {
 
 //        $this->datatables->select('a.id_ujian, a.token, a.nama_ujian, b.nama_matkul, a.jumlah_soal, CONCAT(a.tgl_mulai, " <br/> (", a.waktu, " Menit)") as waktu, a.jenis');
@@ -31,7 +31,7 @@ class Ujian_model extends CI_Model {
     	
 	    $dt = new Datatables( new MySQL($config) );
 	    
-	    $this->db->select('a.id_ujian, status_ujian, a.token, a.nama_ujian, a.jumlah_soal, a.tgl_mulai, a.terlambat, CONCAT(a.waktu, " Mnt") AS waktu, CONCAT(a.jenis , "/" , a.jenis_jawaban) AS jenis, a.created_by as oleh, a.pakai_token');
+	    $this->db->select('a.id_ujian, status_ujian, a.token, a.nama_ujian, a.jumlah_soal, a.tgl_mulai, a.terlambat, CONCAT(a.waktu, " Mnt") AS waktu, CONCAT(a.jenis , "/" , a.jenis_jawaban) AS jenis, GROUP_CONCAT(c.name SEPARATOR "---") as paket, GROUP_CONCAT(CONCAT("[", c.id, "]")) as paket_ids, a.created_by as oleh, a.pakai_token');
         $this->db->from('m_ujian a');
         
         if($status_ujian == 'active'){
@@ -68,7 +68,13 @@ class Ujian_model extends CI_Model {
 //        	 $this->db->where('a.created_by', $username);
         }
         
+        $this->db->join('paket_ujian b', 'b.ujian_id = a.id_ujian', 'left');
+        $this->db->join('paket c', 'c.id = b.paket_id', 'left');
         $this->db->group_by('a.id_ujian');
+
+        if(!empty($paket_id)){
+            $this->db->having('paket_ids LIKE', '%[' . $paket_id . ']%');
+        }
 
 	    $query = $this->db->get_compiled_select() ; // GET QUERY PRODUCED BY ACTIVE RECORD WITHOUT RUNNING I
 

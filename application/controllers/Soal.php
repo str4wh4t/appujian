@@ -1014,7 +1014,7 @@ class Soal extends MY_Controller
 
 		$this->db->select('a.id, a.nama_bundle, CONCAT(COUNT(b.id_soal), " soal") AS jml_soal');
 		$this->db->from('bundle a');
-		$this->db->join('bundle_soal AS b', 'bundle_id = a.id', 'left');
+		$this->db->join('bundle_soal AS b', 'b.bundle_id = a.id', 'left');
 		$this->db->group_by('a.id');
 
 		$query = $this->db->get_compiled_select(); // GET QUERY PRODUCED BY ACTIVE RECORD WITHOUT RUNNING I
@@ -1072,6 +1072,7 @@ class Soal extends MY_Controller
 		$this->_akses_admin();
 		if ($this->input->post()) {
 			$this->form_validation->set_rules('aksi', 'Aksi', 'required');
+			$this->form_validation->set_rules('id', 'ID', 'required');
 			$this->form_validation->set_rules('nama_bundle', 'Nama Bundle', 'required');
 			if ($this->form_validation->run() === FALSE) {
 				// VALIDASI SALAH
@@ -1086,19 +1087,24 @@ class Soal extends MY_Controller
 			} else {
 				$id             = $this->input->post('id');
 				$nama_bundle             = $this->input->post('nama_bundle');
-				$nilai             = $this->input->post('nilai');
 
-				if (null == $id) {
-					$bundle        = new Bundle_orm();
-					$bundle->nama_bundle = $nama_bundle;
-					$action = $bundle->save();
-					$data['status'] = $action;
-				} else {
-					$bundle        = Bundle_orm::findOrFail($id);
-					$bundle->nama_bundle = $nama_bundle;
-					$action = $bundle->save();
-					$data['status'] = $action;
-				}
+				// if (null == $id) {
+					// $bundle        = new Bundle_orm();
+					// $bundle->nama_bundle = $nama_bundle;
+					// $action = $bundle->save();
+					// $data['status'] = $action;
+				// } else {
+				// 	$bundle        = Bundle_orm::findOrFail($id);
+				// 	$bundle->nama_bundle = $nama_bundle;
+				// 	$action = $bundle->save();
+				// 	$data['status'] = $action;
+				// }
+
+				$bundle        = Bundle_orm::findOrFail($id);
+				$bundle->nama_bundle = $nama_bundle;
+				$action = $bundle->save();
+				$data['status'] = $action;
+
 				$this->_json($data);
 			}
 		}
@@ -1609,7 +1615,8 @@ class Soal extends MY_Controller
 		}
 	}
 
-	protected function _save_bundle(){
+	protected function _save_bundle(){ // SAVE NEW BUNDLE FROM LIST SOAL INTERFACE
+		$this->_akses_admin();
 		$nama_bundle = $this->input->post('nama_bundle');
 		try{
 			$bundle = new Bundle_orm();

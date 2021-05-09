@@ -17,7 +17,8 @@ use Orm\Soal_orm;
 use Orm\Topik_ujian_orm;
 use Orm\Bobot_soal_orm;
 use Orm\Mhs_ujian_orm;
-use Orm\Mhs_matkul_orm;
+use Orm\Paket_orm;
+use Orm\Paket_ujian_orm;
 use Orm\Users_groups_orm;
 use Orm\Daftar_hadir_orm;
 use Illuminate\Database\Eloquent\Builder;
@@ -70,8 +71,9 @@ class Ujian extends MY_Controller
 		}
 
 		$status_ujian = empty($this->input->post('status_ujian')) ? 'active' : $this->input->post('status_ujian');
+		$paket_id = $this->input->get('paket') == 'null' ? null : $this->input->get('paket');
 
-		$this->_json($this->ujian->getDataUjian($id, $username, get_selected_role(), $status_ujian), false);
+		$this->_json($this->ujian->getDataUjian($id, $username, get_selected_role(), $status_ujian, $paket_id), false);
 	}
 
 	public function master()
@@ -96,6 +98,10 @@ class Ujian extends MY_Controller
 		//		$this->load->view('_templates/dashboard/_header.php', $data);
 		//		$this->load->view('ujian/data');
 		//		$this->load->view('_templates/dashboard/_footer.php');
+
+		$data['paket_avail'] = Paket_orm::all();
+		$data['paket_selected'] = $data['paket_selected'] ?? [];
+		
 		view('ujian/master', $data);
 	}
 
@@ -1295,7 +1301,7 @@ class Ujian extends MY_Controller
 		$m_ujian = Mujian_orm::findOrFail($id);
 
 		// CEK MHS MEMANG DI ASIGN DI UJIAN INI
-		$m_ujian->mhs_ujian()->where('mahasiswa_id', $mhs_orm->id_mahasiswa)->firstOrFail();
+		$mhs_ujian = $m_ujian->mhs_ujian()->where('mahasiswa_id', $mhs_orm->id_mahasiswa)->firstOrFail();
 
 		$matkul_bundle_ids_list = [];
 
@@ -1336,57 +1342,60 @@ class Ujian extends MY_Controller
 
 				if(is_mhs_limit_by_kuota()){
 
-					if($m_ujian->sumber_ujian == 'materi'){
-						$mhs_matkul = $mhs_orm->mhs_matkul()->where('matkul_id', $m_ujian->matkul_id)->first();
-						if(!empty($mhs_matkul)){
-							if($mhs_matkul->sisa_kuota_latihan_soal <= 0){
-								$message_rootpage = [
-									'header' => 'Perhatian',
-									'content' => 'Membership anda sudah expired / kuota latihan sudah habis',
-									'type' => 'error'
-								];
-								$this->session->set_flashdata('message_rootpage', $message_rootpage);
-								redirect('ujian/latihan_soal');
-							}
-						}
-					}else if($m_ujian->sumber_ujian == 'bundle'){
-						$bundle_ids = $m_ujian->bundle()
-												->groupBy('bundle.id')
-												// ->get(['bundle.id'])
-												->pluck('bundle.id')
-												->toArray();
-						$matkul_ids = get_matkul_ids_from_bundle_ids($bundle_ids);
+					// if($m_ujian->sumber_ujian == 'materi'){
+					// 	$mhs_matkul = $mhs_orm->mhs_matkul()->where('matkul_id', $m_ujian->matkul_id)->first();
+					// 	if(!empty($mhs_matkul)){
+					// 		if($mhs_matkul->sisa_kuota_latihan_soal <= 0){
+					// 			$message_rootpage = [
+					// 				'header' => 'Perhatian',
+					// 				'content' => 'Membership anda sudah expired / kuota latihan sudah habis',
+					// 				'type' => 'error'
+					// 			];
+					// 			$this->session->set_flashdata('message_rootpage', $message_rootpage);
+					// 			redirect('ujian/latihan_soal');
+					// 		}
+					// 	}
+					// }else if($m_ujian->sumber_ujian == 'bundle'){
+					// 	$bundle_ids = $m_ujian->bundle()
+					// 							->groupBy('bundle.id')
+					// 							// ->get(['bundle.id'])
+					// 							->pluck('bundle.id')
+					// 							->toArray();
+					// 	$matkul_ids = get_matkul_ids_from_bundle_ids($bundle_ids);
 
-						if(!empty($matkul_ids)){
-							$allow = false ;
-							foreach($matkul_ids as $matkul_id){
-								$mhs_matkul = $mhs_orm->mhs_matkul()->where('matkul_id', $matkul_id)->first();
-								if(!empty($mhs_matkul)){
-									if($mhs_matkul->sisa_kuota_latihan_soal > 0){
-											$allow = true ;
-											break;
-									}
-								}
-							}
-							if(!$allow){
-								$message_rootpage = [
-									'header' => 'Perhatian',
-									'content' => 'Membership anda sudah expired / kuota latihan sudah habis',
-									'type' => 'error'
-								];
-								$this->session->set_flashdata('message_rootpage', $message_rootpage);
-								redirect('ujian/latihan_soal');
-							}	
+					// 	if(!empty($matkul_ids)){
+					// 		$allow = false ;
+					// 		foreach($matkul_ids as $matkul_id){
+					// 			$mhs_matkul = $mhs_orm->mhs_matkul()->where('matkul_id', $matkul_id)->first();
+					// 			if(!empty($mhs_matkul)){
+					// 				if($mhs_matkul->sisa_kuota_latihan_soal > 0){
+					// 						$allow = true ;
+					// 						break;
+					// 				}
+					// 			}
+					// 		}
+					// 		if(!$allow){
+					// 			$message_rootpage = [
+					// 				'header' => 'Perhatian',
+					// 				'content' => 'Membership anda sudah expired / kuota latihan sudah habis',
+					// 				'type' => 'error'
+					// 			];
+					// 			$this->session->set_flashdata('message_rootpage', $message_rootpage);
+					// 			redirect('ujian/latihan_soal');
+					// 		}	
+					// 	}else{
+					// 		show_404();
+					// 	}
+					// }
 
-							// vdebug($matkul_ids);
-
-							// $matkul_bundle_ids_list = Matkul_orm::whereIn('id_matkul', $matkul_ids)->get();
-
-							// $matkul_bundle_ids_list = $matkul_ids;
-
-						}else{
-							show_404();
-						}
+					if(empty($mhs_ujian->sisa_kuota_latihan_soal)){
+						$message_rootpage = [
+							'header' => 'Perhatian',
+							'content' => 'Membership anda sudah expired / kuota latihan sudah habis',
+							'type' => 'error'
+						];
+						$this->session->set_flashdata('message_rootpage', $message_rootpage);
+						redirect('ujian/latihan_soal');
 					}
 				}
 			}else{
@@ -1569,35 +1578,40 @@ class Ujian extends MY_Controller
 
 					if(is_mhs_limit_by_kuota()){
 
-						if($ujian->sumber_ujian == 'materi'){
-							$mhs_matkul = $mhs->mhs_matkul()->where('matkul_id', $ujian->matkul_id)->first();
-							$mhs_matkul->sisa_kuota_latihan_soal = ($mhs_matkul->sisa_kuota_latihan_soal - 1);
-							$mhs_matkul->save();
+						// if($ujian->sumber_ujian == 'materi'){
+						// 	$mhs_matkul = $mhs->mhs_matkul()->where('matkul_id', $ujian->matkul_id)->first();
+						// 	$mhs_matkul->sisa_kuota_latihan_soal = ($mhs_matkul->sisa_kuota_latihan_soal - 1);
+						// 	$mhs_matkul->save();
 
-						}else if($ujian->sumber_ujian == 'bundle'){
-							$bundle_ids = $ujian->bundle()
-												->groupBy('bundle.id')
-												// ->get(['bundle.id'])
-												->pluck('bundle.id')
-												->toArray();
-							$matkul_ids = get_matkul_ids_from_bundle_ids($bundle_ids);
+						// }else if($ujian->sumber_ujian == 'bundle'){
+						// 	$bundle_ids = $ujian->bundle()
+						// 						->groupBy('bundle.id')
+						// 						// ->get(['bundle.id'])
+						// 						->pluck('bundle.id')
+						// 						->toArray();
+						// 	$matkul_ids = get_matkul_ids_from_bundle_ids($bundle_ids);
 	
-							if(!empty($matkul_ids)){
-								foreach($matkul_ids as $matkul_id){
-									$mhs_matkul = $mhs->mhs_matkul()->where('matkul_id', $matkul_id)->first();
-									if(!empty($mhs_matkul)){
-										if($mhs_matkul->sisa_kuota_latihan_soal > 0){
-											$mhs_matkul = $mhs->mhs_matkul()->where('matkul_id', $matkul_id)->first();
-											$mhs_matkul->sisa_kuota_latihan_soal = ($mhs_matkul->sisa_kuota_latihan_soal - 1);
-											$mhs_matkul->save();
-											break;
-										}
-									}
-								}	
-							}else{
-								show_404();
-							}
-						}
+						// 	if(!empty($matkul_ids)){
+						// 		foreach($matkul_ids as $matkul_id){
+						// 			$mhs_matkul = $mhs->mhs_matkul()->where('matkul_id', $matkul_id)->first();
+						// 			if(!empty($mhs_matkul)){
+						// 				if($mhs_matkul->sisa_kuota_latihan_soal > 0){
+						// 					$mhs_matkul = $mhs->mhs_matkul()->where('matkul_id', $matkul_id)->first();
+						// 					$mhs_matkul->sisa_kuota_latihan_soal = ($mhs_matkul->sisa_kuota_latihan_soal - 1);
+						// 					$mhs_matkul->save();
+						// 					break;
+						// 				}
+						// 			}
+						// 		}	
+						// 	}else{
+						// 		show_404();
+						// 	}
+						// }
+
+						$mhs_ujian = Mhs_ujian_orm::where(['mahasiswa_id' => $mhs->id_mahasiswa, 'ujian_id' => $ujian->id_ujian])->firstOrFail();
+						$mhs_ujian->sisa_kuota_latihan_soal = ($mhs_ujian->sisa_kuota_latihan_soal - 1);
+						$mhs_ujian->save();
+
 					}
 
 				}
@@ -2622,50 +2636,48 @@ class Ujian extends MY_Controller
 			// }
 
 			if(is_mhs_limit_by_kuota()){
-				if($h_ujian->m_ujian->sumber_ujian == 'materi'){
-					$mhs_matkul = $mhs->mhs_matkul()->where('matkul_id', $h_ujian->m_ujian->matkul_id)->first();
-					if(!empty($mhs_matkul)){
-						if($mhs_matkul->sisa_kuota_latihan_soal <= 0){
-							$this->_json(['status' => 'ko', 'msg' => 'Membership anda sudah expired / kuota latihan sudah habis']);
-							return ;
-						}
-					}
-				}else if($h_ujian->m_ujian->sumber_ujian == 'bundle'){
-					$bundle_ids = $h_ujian->m_ujian->bundle()
-													->groupBy('bundle.id')
-													// ->get(['bundle.id'])
-													->pluck('bundle.id')
-													->toArray();
-					$matkul_ids = get_matkul_ids_from_bundle_ids($bundle_ids);
 
-					if(!empty($matkul_ids)){
-						$allow = false ;
-						foreach($matkul_ids as $matkul_id){
-							$mhs_matkul = $mhs->mhs_matkul()->where('matkul_id', $matkul_id)->first();
-							if(!empty($mhs_matkul)){
-								if($mhs_matkul->sisa_kuota_latihan_soal > 0){
-										$allow = true ;
-										break;
-								}
-							}
-						}
-						if(!$allow){
-							$this->_json(['status' => 'ko', 'msg' => 'Membership anda sudah expired / kuota latihan sudah habis']);
-								return ;
-						}	
+				// if($h_ujian->m_ujian->sumber_ujian == 'materi'){
+				// 	$mhs_matkul = $mhs->mhs_matkul()->where('matkul_id', $h_ujian->m_ujian->matkul_id)->first();
+				// 	if(!empty($mhs_matkul)){
+				// 		if($mhs_matkul->sisa_kuota_latihan_soal <= 0){
+				// 			$this->_json(['status' => 'ko', 'msg' => 'Membership anda sudah expired / kuota latihan sudah habis']);
+				// 			return ;
+				// 		}
+				// 	}
+				// }else if($h_ujian->m_ujian->sumber_ujian == 'bundle'){
+				// 	$bundle_ids = $h_ujian->m_ujian->bundle()
+				// 									->groupBy('bundle.id')
+				// 									->pluck('bundle.id')
+				// 									->toArray();
+				// 	$matkul_ids = get_matkul_ids_from_bundle_ids($bundle_ids);
 
-						// vdebug($matkul_ids);
+				// 	if(!empty($matkul_ids)){
+				// 		$allow = false ;
+				// 		foreach($matkul_ids as $matkul_id){
+				// 			$mhs_matkul = $mhs->mhs_matkul()->where('matkul_id', $matkul_id)->first();
+				// 			if(!empty($mhs_matkul)){
+				// 				if($mhs_matkul->sisa_kuota_latihan_soal > 0){
+				// 						$allow = true ;
+				// 						break;
+				// 				}
+				// 			}
+				// 		}
+				// 		if(!$allow){
+				// 			$this->_json(['status' => 'ko', 'msg' => 'Membership anda sudah expired / kuota latihan sudah habis']);
+				// 				return ;
+				// 		}
+				// 	}else{
+				// 		show_404();
+				// 	}
+				// }
 
-						// $matkul_bundle_ids_list = Matkul_orm::whereIn('id_matkul', $matkul_ids)->get();
-
-						// $matkul_bundle_ids_list = $matkul_ids;
-
-					}else{
-						show_404();
-					}
+				$mhs_ujian = Mhs_ujian_orm::where(['mahasiswa_id' => $mhs->id_mahasiswa, 'ujian_id' => $h_ujian->m_ujian->id_ujian])->firstOrFail();
+				if($mhs_ujian->sisa_kuota_latihan_soal <= 0){
+					$this->_json(['status' => 'ko', 'msg' => 'Membership anda sudah expired / kuota latihan sudah habis']);
+					return ;
 				}
 			}
-
 		}
 
 		$today = date('Y-m-d H:i:s');
@@ -2806,6 +2818,59 @@ class Ujian extends MY_Controller
 
 		$this->_json($result);
 		
+	}
+
+	protected function _asign_ujian_paket(){
+		$selected_paket = $this->input->post('selected_paket');
+		$selected_ujian = $this->input->post('selected_ujian');
+		$is_ignore_paket = $this->input->post('is_ignore_paket') == 'true' ? true : false;
+		try{
+			$selected_paket = json_decode($selected_paket);
+			$selected_ujian = json_decode($selected_ujian);
+			$now = Carbon::now('utc')->toDateTimeString();
+			if(!empty($selected_paket)){
+				if(!$is_ignore_paket){
+					$paket_ids_before = Paket_ujian_orm::whereIn('ujian_id', $selected_ujian)
+											->pluck('paket_id')
+											->toArray();
+					$paket_ids_delete = array_diff($paket_ids_before, $selected_paket);
+					if(!empty($paket_ids_delete)){
+						Paket_ujian_orm::whereIn('paket_id', $paket_ids_delete)->whereIn('ujian_id', $selected_ujian)->delete();
+					}
+				}
+				// $bundle_ids_delete = array_diff($soal_ids_before, $selected_soal);
+				foreach($selected_paket as $paket_id){
+					$ujian_ids_before = Paket_ujian_orm::where('paket_id', $paket_id)
+											->whereIn('ujian_id', $selected_ujian)
+											->pluck('ujian_id')
+											->toArray();
+					$ujian_ids_insert = array_diff($selected_ujian, $ujian_ids_before);
+					// $soal_ids_delete = array_diff($soal_ids_before, $selected_soal);
+
+					$insert = [];
+					if(!empty($ujian_ids_insert)){
+						foreach($ujian_ids_insert as $ujian_id){
+							$insert[] = [
+								'paket_id' => $paket_id,
+								'ujian_id' => $ujian_id,
+								'created_at' => $now,
+							];
+						}
+						Paket_ujian_orm::insert($insert);
+					}
+				}
+			}else{
+				if(!$is_ignore_paket){
+					Paket_ujian_orm::whereIn('ujian_id', $selected_ujian)->delete();
+				}
+			}
+
+			$this->_json(['stts' => 'ok']);
+
+		}catch(Exception $e){
+
+			$this->_json(['stts' => 'ko', 'msg' => $e->getMessage()]);
+		}
 	}
 
 	//	function c(){

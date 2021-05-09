@@ -55,7 +55,7 @@ function init_page_level(){
     });
 
 	let options = {};
-	cascadLoading = new Select2Cascade($('#matkul_filter'), $('#topik_filter'), '{{ site_url('soal/ajax/get_topic_by_matkul/') }}?id=:parentId:&empty=0', options);
+	cascadLoading = new Select2Cascade($('#matkul_filter'), $('#topik_filter'), '{{ url('soal/ajax/get_topic_by_matkul/') }}?id=:parentId:&empty=0', options);
     cascadLoading.then( function(parent, child, items) {
         // Open the child listbox immediately
         // child.select2('open');
@@ -87,7 +87,7 @@ function init_page_level(){
 $(document).on('change','#matkul_filter', function(){
 	let matkul_id = $(this).val();
 	filter.matkul_id = matkul_id;
-	// let src = '{{ site_url('soal/ajax/data') }}';
+	// let src = '{{ url('soal/ajax/data') }}';
 	
 	// let url ;
 	// if(id_matkul !== 'all'){
@@ -127,7 +127,7 @@ $(document).on('change','#tahun_filter', function(){
 });
 
 function filter_soal(){
-	let src = '{{ site_url('soal/ajax/data') }}';
+	let src = '{{ url('soal/ajax/data') }}';
 	let url = src + '?matkul_id=' + filter.matkul_id + '&topik_id=' + filter.topik_id + '&gel=' + filter.gel + '&smt=' + filter.smt + '&tahun=' + filter.tahun  + '&bundle=' + filter.bundle ;
 	table.ajax.url(url);
 	reload_ajax();
@@ -175,7 +175,7 @@ $(document).on('keypress','input[name="nama_bundle"]',function(e){
         }else{
             ajx_overlay(true);
             $.ajax({
-                url: "{{ site_url('soal/ajax/save_bundle') }}",
+                url: "{{ url('soal/ajax/save_bundle') }}",
                 data: { 'nama_bundle' : $(this).val() },
                 type: 'POST',
                 success: function (response) {
@@ -241,7 +241,7 @@ $(document).on('click', '#submit_bundle', function(){
 const proses_soal_bundle = (selected_bundle, selected_soal, is_ignore_bundle) => {
 	ajx_overlay(true);
 	return $.ajax({
-			url: "{{ site_url('soal/ajax/asign_soal_bundle') }}",
+			url: "{{ url('soal/ajax/asign_soal_bundle') }}",
 			data: { 'selected_bundle' : JSON.stringify(selected_bundle), 'selected_soal' : JSON.stringify(selected_soal), 'is_ignore_bundle' : is_ignore_bundle },
 			type: 'POST',
 			success: function (response) {
@@ -275,7 +275,7 @@ const proses_soal_bundle = (selected_bundle, selected_soal, is_ignore_bundle) =>
 $(document).on('click', '#btn_close_alert_bundle', function(){
 
 	bundle_dipilih = [];
-	filter.bundle = bundle_dipilih;
+	filter.bundle = null;
 	filter_soal();
 
 });
@@ -312,8 +312,8 @@ $(document).on('click', '#btn_close_alert_bundle', function(){
 	<div class="col-lg-12 pb-1">
 		<div class="row pb-1">
         	<div class="col-lg-8 col-sm-12">
-				<a href="{{ site_url('soal/add') }}" class="btn btn-success btn-flat btn-sm"><i class="fa fa-plus"></i> Buat Soal</a>
-				<a href="{{ site_url('soal/import') }}" class="btn btn-sm btn-flat btn-success"><i class="fa fa-upload"></i> Import</a>
+				<a href="{{ url('soal/add') }}" class="btn btn-success btn-flat btn-sm"><i class="fa fa-plus"></i> Buat Soal</a>
+				<a href="{{ url('soal/import') }}" class="btn btn-sm btn-flat btn-success"><i class="fa fa-upload"></i> Import</a>
 				@if(is_admin())
 				<button class="btn btn-sm btn-flat btn-success" id="btn_create_bundle"><i class="ft-link"></i> Jadikan Bundle</button>
 				@endif

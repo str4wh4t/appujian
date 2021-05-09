@@ -24,9 +24,19 @@ class Paket_orm extends Eloquent
         return $this->hasMany('Orm\Paket_matkul_orm', 'paket_id');
     }
 
+    public function paket_ujian()
+    {
+        return $this->hasMany('Orm\Paket_ujian_orm', 'paket_id');
+    }
+
     public function matkul()
     {
         return $this->belongsToMany('Orm\Matkul_orm','paket_matkul', 'paket_id', 'matkul_id');
+    }
+
+    public function m_ujian()
+    {
+        return $this->belongsToMany('Orm\Mujian_orm','paket_ujian', 'paket_id', 'ujian_id');
     }
     
 }

@@ -83,4 +83,9 @@
         margin-top: -12.5px;
     }
 
+    ol.ol-include-paket {
+        font-size:small; 
+        padding-left:2.5em;
+    }
+
 </style>

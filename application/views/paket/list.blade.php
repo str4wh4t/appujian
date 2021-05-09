@@ -97,14 +97,9 @@ $(document).on('click', '.btn_sudah_beli', function(){
                     </button>
                 @endif --}}
                 <hr>
+                
                 {!! $paket->description !!}
-                <hr>
-                <h6 class="text-danger"><b>Materi Include :</b></h6>
-                <ol>
-                    @foreach ($paket->paket_matkul as $paket_matkul)
-                    <li>{{ $paket_matkul->matkul->nama_matkul }}</li>
-                    @endforeach
-                </ol>
+                
             </div>
         </div>
     </div>

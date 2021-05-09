@@ -192,8 +192,8 @@ function is_mhs_membership_expired(Mhs_orm $mhs = null): bool{
 }
 
 function get_paket_bonus_membership(Membership_orm $membership){
-	$membership_id = PAKET_MATERI_MEMBERSHIP[$membership->id] ?? [] ;
-	return Paket_orm::whereIn('id', $membership_id)->get();
+	$paket_ids = PAKET_MATERI_MEMBERSHIP[$membership->id] ?? [] ;
+	return Paket_orm::whereIn('id', $paket_ids)->get();
 }
 
 function is_mhs_limit_by_kuota(Mhs_orm $mhs = null): bool{

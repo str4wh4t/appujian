@@ -267,7 +267,7 @@ const get_topik_from_selected_bundle = (bundle_ids) => {
 };
 
 async function init_topik_table_value(bundle_ids){
-    let selected_ids ;
+    let selected_ids = [] ;
     if(bundle_ids === undefined){
         selected_ids = $('#topik_id').val();
         if($.inArray('ALL', selected_ids) !== -1){

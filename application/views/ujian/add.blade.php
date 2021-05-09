@@ -281,7 +281,8 @@ async function init_topik_table_value(bundle_ids){
         selected_ids = topik_ids_from_selected_bundle ;
     }
     data_jml_soal = [];
-    await get_jml_soal_per_topik(selected_ids, bundle_ids);
+    if(selected_ids.length)
+        await get_jml_soal_per_topik(selected_ids, bundle_ids);
     $('.tr-cloned-topik').remove();
     $('#jumlah_soal_total').text('0');
     $('input[name="jumlah_soal_total"]').val('0');

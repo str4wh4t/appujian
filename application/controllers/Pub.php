@@ -541,9 +541,12 @@ class Pub extends MY_Controller {
 
 	public function notify_midtrans(){
 
+		if(!$this->input->post())
+			show_404();
+
 		$this->load->model('payment_model');
 
-		\Midtrans\Config::$isProduction = false;
+		\Midtrans\Config::$isProduction = MIDTRANS_IS_PRODUCTION;
 		\Midtrans\Config::$serverKey = MIDTRANS_SERVER_KEY;
 		$notif = new \Midtrans\Notification();
 		

@@ -26,20 +26,20 @@ return [
         // ],
         'APP1' => [ // untuk ujian.undip.ac.id
             'adapter' => 'mysql',
-            'host' => 'localhost',
+            'host' => '10.37.19.27',
             'port' => 3306, // optional
-            'username' => 'root',
-            'password' => 'root',
-            'db_name' => 'ujianundip',
+            'username' => 'idris',
+            'password' => 'q1w2e3r4',
+            'db_name' => 'ujian',
             'charset' => 'utf8mb4',
         ],
         'APP2' => [ // untuk catkerjasama.undip.ac.id
             'adapter' => 'mysql',
-            'host' => 'localhost',
+            'host' => '10.37.19.27',
             'port' => 3306, // optional
-            'username' => 'root',
-            'password' => 'root',
-            'db_name' => 'ujianundip',
+            'username' => 'idris',
+            'password' => 'q1w2e3r4',
+            'db_name' => 'oltest',
             'charset' => 'utf8mb4',
         ],
         'APP3' => [

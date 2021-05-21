@@ -1491,7 +1491,9 @@ class Mahasiswa extends MY_Controller
 					$mhs->tmp_lahir = $mhs_source->tmp_lahir;
 					$mhs->tgl_lahir = $mhs_source->tgl_lahir;
 					$mhs->email = $mhs_source->email;
-					$mhs->foto = $mhs_source->foto;
+					// https://pendaftaran.undip.ac.id/assets/berkas_nfs/fotoprofile/fotoprofile-1.jpg
+					$foto_path = str_replace("https://pendaftaran.undip.ac.id/assets/berkas_nfs/fotoprofile", asset('foto'), $mhs_source->foto);
+					$mhs->foto = $foto_path;
 					$mhs->jenis_kelamin = $mhs_source->jenis_kelamin;
 					$mhs->no_billkey = $mhs_source->no_billkey;
 					$mhs->kodeps = $mhs_source->kodeps;

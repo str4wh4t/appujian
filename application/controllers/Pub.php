@@ -984,5 +984,148 @@ class Pub extends MY_Controller {
 			}
 		}
 	}
+
+	public function fix_foto_path(){
+		$mhs_list = Mhs_orm::all();
+		foreach ($mhs_list as $mhs) {
+			$str_to_replace = "https://pendaftaran.undip.ac.id/assets/berkas_nfs/fotoprofile" ;
+			if(strpos($mhs->foto, $str_to_replace) !== false){
+				// $path = 'https://pendaftaran.undip.ac.id/assets/berkas_nfs/fotoprofile/fotoprofile-1.jpg';
+				$path = $mhs->foto;
+				$foto_path = str_replace($str_to_replace, asset('foto'), $path);
+				$mhs->foto = $foto_path;
+				$ret = $mhs->save();
+				echo $ret ? "SUCCESS" : "FAIL" ; echo "\n" ;
+				die;
+			} else{
+				// echo "Word Not Found!";
+			}
+		}
+
+	}
+
+	public function fix_img_in_soal(){
+		$soal_list = Soal_orm::all();
+		foreach($soal_list as $soal){
+			$html = $soal->soal;
+			$doc = new DOMDocument();
+			$doc->loadHTML(mb_convert_encoding($html, 'HTML-ENTITIES', 'UTF-8'));
+			$i = 0 ;
+			foreach ($doc->getElementsByTagName('img') as $img_node) {
+				$src = $img_node->getAttribute('src') ;
+				if(strpos($src, 'data:image/png;base64,') !== false){
+					$img = str_replace('data:image/png;base64,', '', $src);
+					$img = str_replace(' ', '+', $img);
+					$img_64 = base64_decode($img);
+					// $file_name = $soal_temp->id_soal . '_soal.png';
+					$file_name = $soal->id_soal .'_soal_'. mt_rand()  .'.png';
+					$file = UPLOAD_DIR . $file_name;
+					$success = file_put_contents($file, $img_64);
+					if($success){
+						$file_url =  'uploads/img_soal/' . $file_name ;
+						$img_node->setAttribute('src', asset($file_url)) ;
+						$doc->saveHTML($img_node);
+					}
+					$i++;
+				}
+			}
+			
+			$xpath = new DOMXPath($doc);
+
+			$body = '';
+			foreach ($xpath->evaluate('//body/node()') as $node) {
+				$body .= $doc->saveHtml($node);
+			}
+
+			// $soal_temp->soal = $body;
+			$soal->soal = $body;
+
+			foreach (OPSI_SOAL as $abj) {
+				$opsi = 'opsi_' . $abj ;
+				// $html = $soal_temp->$opsi;
+				// $html = $this->input->post('jawaban_' . $abj);
+				$html = $soal->$opsi;
+				// $doc = new DOMDocument('1.0', 'UTF-8');
+				// $doc->loadHTML($html);
+				$doc = new DOMDocument();
+				$doc->loadHTML(mb_convert_encoding($html, 'HTML-ENTITIES', 'UTF-8'));
+				$i = 0 ;
+				foreach ($doc->getElementsByTagName('img') as $img_node) {
+					$src = $img_node->getAttribute('src') ;
+					if(strpos($src, 'data:image/png;base64,') !== false){
+						$img = str_replace('data:image/png;base64,', '', $src);
+						$img = str_replace(' ', '+', $img);
+						$img_64 = base64_decode($img);
+						// $file_name = $soal_temp->id_soal . '_jawaban_'. $opsi .'.png';
+						$file_name = $soal->id_soal .'_jawaban_'. $opsi .'_'. mt_rand()  .'.png';
+						$file = UPLOAD_DIR . $file_name;
+						$success = file_put_contents($file, $img_64);
+						if($success){
+							$file_url =  'uploads/img_soal/' . $file_name ;
+							$img_node->setAttribute('src', asset($file_url)) ;
+							$doc->saveHTML($img_node);
+						}
+						$i++;
+					}
+				}
+				
+				$xpath = new DOMXPath($doc);
+
+				$body = '';
+				foreach ($xpath->evaluate('//body/node()') as $node) {
+					$body .= $doc->saveHtml($node);
+				}
+
+				// $soal_temp->$opsi = $body;
+				$soal->$opsi = $body;
+
+			}
+
+			/////////
+
+			$html = $soal->penjelasan;
+			if(!empty($html)){
+				// $doc = new DOMDocument('1.0', 'UTF-8');
+				// $doc->loadHTML($html);
+				$doc = new DOMDocument();
+				$doc->loadHTML(mb_convert_encoding($html, 'HTML-ENTITIES', 'UTF-8'));
+				$i = 0 ;
+				foreach ($doc->getElementsByTagName('img') as $img_node) {
+					$src = $img_node->getAttribute('src') ;
+					if(strpos($src, 'data:image/png;base64,') !== false){
+						$img = str_replace('data:image/png;base64,', '', $src);
+						$img = str_replace(' ', '+', $img);
+						$img_64 = base64_decode($img);
+						// $file_name = $soal_temp->id_soal . '_soal.png';
+						$file_name = $soal->id_soal .'_penjelasan_'. mt_rand()  .'.png';
+						$file = UPLOAD_DIR . $file_name;
+						$success = file_put_contents($file, $img_64);
+						if($success){
+							$file_url =  'uploads/img_soal/' . $file_name ;
+							$img_node->setAttribute('src', asset($file_url)) ;
+							$doc->saveHTML($img_node);
+						}
+						$i++;
+					}
+				}
+				
+				$xpath = new DOMXPath($doc);
+
+				$body = '';
+				foreach ($xpath->evaluate('//body/node()') as $node) {
+					$body .= $doc->saveHtml($node);
+				}
+
+				// $soal_temp->soal = $body;
+				$soal->penjelasan = $body;
+			}
+
+			////////
+
+			// $soal_temp->save();
+			$soal->save();
+			sleep(1);
+		}
+	}
 	
 }

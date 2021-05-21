@@ -995,7 +995,7 @@ class Pub extends MY_Controller {
 				$foto_path = str_replace($str_to_replace, asset('foto'), $path);
 				$mhs->foto = $foto_path;
 				$ret = $mhs->save();
-				echo $ret ? "SUCCESS" : "FAIL" ; echo "\n" ;
+				echo $mhs->id_mahasiswa . ' ====> ' ; echo $ret ? "SUCCESS" : "FAIL" ; echo "\n" ;
 			} else{
 				// echo "Word Not Found!";
 			}
@@ -1123,7 +1123,7 @@ class Pub extends MY_Controller {
 
 			// $soal_temp->save();
 			$ret = $soal->save();
-			echo $ret ? "SUCCESS" : "FAIL" ; echo "\n" ;
+			echo $soal->id_soal . ' ====> ' ; echo $ret ? "SUCCESS" : "FAIL" ; echo "\n" ;
 			sleep(1);
 		}
 	}

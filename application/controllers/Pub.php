@@ -996,7 +996,6 @@ class Pub extends MY_Controller {
 				$mhs->foto = $foto_path;
 				$ret = $mhs->save();
 				echo $ret ? "SUCCESS" : "FAIL" ; echo "\n" ;
-				die;
 			} else{
 				// echo "Word Not Found!";
 			}
@@ -1123,7 +1122,8 @@ class Pub extends MY_Controller {
 			////////
 
 			// $soal_temp->save();
-			$soal->save();
+			$ret = $soal->save();
+			echo $ret ? "SUCCESS" : "FAIL" ; echo "\n" ;
 			sleep(1);
 		}
 	}

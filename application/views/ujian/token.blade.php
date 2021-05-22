@@ -283,8 +283,8 @@ function go_ujian(token){
                             @php($topik = $topik_orm->findOrFail($topik_id))
                             <dl class="row">
                                 <dt class="col-sm-6">{{ $i }}. {{ $topik->nama_topik }}</dt>
-                                @if ($ujian->is_sekuen_topik)
                                 <dd class="col-sm-3 text-success">{{ $topik_ujian_jml_soal[$topik->id] }} Soal</dd>
+                                @if ($ujian->is_sekuen_topik)
                                 <dd class="col-sm-3">{{ $val['waktu'] }} Menit</dd>
                                 @endif
                             </dl>

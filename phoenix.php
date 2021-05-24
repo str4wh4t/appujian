@@ -68,6 +68,15 @@ return [
             'password' => 'kl912AoYXVtT',
             'db_name' => 'tryout_exampel_id',
             'charset' => 'utf8mb4',
+        ],
+        'APP5' => [
+            'adapter' => 'mysql',
+            'host' => 'global-db',
+            'port' => 3306, // optional
+            'username' => 'www.ujianmu.com-ASN1tj',
+            'password' => 'deoJ82iCXiAU',
+            'db_name' => 'www_ujianmu_com',
+            'charset' => 'utf8mb4',
         ]
     ],
     'default_environment' => 'local',

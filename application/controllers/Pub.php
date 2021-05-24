@@ -305,7 +305,8 @@ class Pub extends MY_Controller {
 				    //     $h_ujian_orm->setConnection('cat');
 				  
 					$h_ujian_orm->ujian_id = $m_ujian->id_ujian;
-					$h_ujian_orm->mahasiswa_id = $mu->mhs_matkul->mahasiswa_id;
+					// $h_ujian_orm->mahasiswa_id = $mu->mhs_matkul->mahasiswa_id;
+					$h_ujian_orm->mahasiswa_id = $mu->mahasiswa_id;
 					$h_ujian_orm->mahasiswa_ujian_id = $mu->id;
 					$h_ujian_orm->jml_soal = $m_ujian->jumlah_soal;
 					$h_ujian_orm->jml_benar = 0;

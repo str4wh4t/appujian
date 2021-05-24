@@ -99,13 +99,13 @@
                                     </div>
                                     <span class="help-block"></span>
                                 </fieldset>
-                                <fieldset class="form-group position-relative has-icon-left">
+                                {{-- <fieldset class="form-group position-relative has-icon-left">
                                     <input type="text" name="nik" value="{{ set_value('nik') }}" id="nik" placeholder="NIK" autofocus="autofocus" class="form-control" autocomplete="off">
                                     <div class="form-control-position" style="line-height: 2.8rem;">
                                         <i class="ft-chevron-right"></i>
                                     </div>
                                     <span class="help-block"></span>
-                                </fieldset>
+                                </fieldset> --}}
                                 <fieldset class="form-group position-relative has-icon-left">
                                     <input type="text" name="email" value="{{ set_value('email') }}" id="email" placeholder="Email" autofocus="autofocus" class="form-control" autocomplete="off">
                                     <div class="form-control-position" style="line-height: 2.8rem;">
@@ -120,9 +120,9 @@
                                     </div>
                                     <span class="help-block"></span>
                                 </fieldset>
-                                <fieldset class="form-group position-relative has-icon-left">
+                                {{-- <option value="" {{ empty(set_value('jenis_kelamin')) ? 'selected' : '' }} hidden>Jenis kelamin</option> --}}
+                                {{-- <fieldset class="form-group position-relative has-icon-left">
                                     <select name="jenis_kelamin" id="jenis_kelamin" class="form-control select2 only_input_select2single">
-                                        {{-- <option value="" {{ empty(set_value('jenis_kelamin')) ? 'selected' : '' }} hidden>Jenis kelamin</option> --}}
                                         <option value="" {{ empty(set_value('jenis_kelamin')) ? 'selected' : '' }} disabled>Jenis kelamin</option>
                                         <option value="L" {{ set_value('jenis_kelamin') == 'L' ? 'selected' : '' }}>Laki-laki</option>
                                         <option value="P" {{ set_value('jenis_kelamin') == 'P' ? 'selected' : '' }}>Perempuan</option>
@@ -131,6 +131,13 @@
                                         <i class="ft-chevron-right"></i>
                                     </div>
                                     <span class="help-block error_select2"></span>
+                                </fieldset> --}}
+                                <fieldset class="form-group position-relative has-icon-left">
+                                    <input type="text" name="tgl_lahir" value="{{ set_value('tgl_lahir') }}" id="tgl_lahir" placeholder="Tgl lahir" class="datetimepicker form-control">
+                                    <div class="form-control-position" style="line-height: 2.8rem;">
+                                        <i class="ft-chevron-right"></i>
+                                    </div>
+                                    <span class="help-block"></span>
                                 </fieldset>
                             </div>
                             <div class="col-md-6 col-sm-12">
@@ -157,13 +164,6 @@
                                         <i class="ft-chevron-right"></i>
                                     </div>
                                     <span class="help-block error_select2"></span>
-                                </fieldset>
-                                <fieldset class="form-group position-relative has-icon-left">
-                                    <input type="text" name="tgl_lahir" value="{{ set_value('tgl_lahir') }}" id="tgl_lahir" placeholder="Tgl lahir" class="datetimepicker form-control">
-                                    <div class="form-control-position" style="line-height: 2.8rem;">
-                                        <i class="ft-chevron-right"></i>
-                                    </div>
-                                    <span class="help-block"></span>
                                 </fieldset>
                                 <fieldset class="form-group position-relative has-icon-left">
                                     <input type="password" name="password" value="" id="password" placeholder="Password" autofocus="autofocus" class="form-control" autocomplete="off">
@@ -253,10 +253,10 @@
             ignore: [],
             rules: {
                 'full_name': {required: true},
-                'nik': {required: true, minlength: {{ NIK_LENGTH }}, maxlength: {{ NIK_LENGTH }}, digits: true},
+                // 'nik': {required: true, minlength: {{ NIK_LENGTH }}, maxlength: {{ NIK_LENGTH }}, digits: true},
                 'email': {required: true, valid_email: true},
                 'telp': {required: true, digits: true, minlength: 10, valid_no_telp: true},
-                'jenis_kelamin': {required: true},
+                // 'jenis_kelamin': {required: true},
                 'kota_asal': {required: true},
                 'tmp_lahir': {required: true},
                 'tgl_lahir': {required: true, valid_date: true},

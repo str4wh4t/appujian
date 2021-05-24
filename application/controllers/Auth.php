@@ -247,10 +247,10 @@ class Auth extends CI_Controller
 			if ($resp->isSuccess()) {
 				// Verified!
 				$this->form_validation->set_rules('full_name', 'Email', 'required|trim|min_length[3]|max_length[250]');
-				$this->form_validation->set_rules('nik', 'Nik', 'exact_length[' . NIK_LENGTH . ']|is_unique[mahasiswa.nik]');
+				// $this->form_validation->set_rules('nik', 'Nik', 'exact_length[' . NIK_LENGTH . ']|is_unique[mahasiswa.nik]');
 				$this->form_validation->set_rules('email', 'Email', 'required|trim|max_length[250]|valid_email|is_unique[users.email]');
 				$this->form_validation->set_rules('telp', 'Telp', 'required|max_length[20]');
-				$this->form_validation->set_rules('jenis_kelamin', 'Jenis Kelamin', 'required|in_list[L,P]');
+				// $this->form_validation->set_rules('jenis_kelamin', 'Jenis Kelamin', 'required|in_list[L,P]');
 				$this->form_validation->set_rules('kota_asal', 'Kota Asal', 'required|trim|min_length[3]|max_length[250]');
 				$this->form_validation->set_rules('tmp_lahir', 'Tmp Lahir', 'required|trim|min_length[3]|max_length[250]');
 				$this->form_validation->set_rules(
@@ -292,10 +292,10 @@ class Auth extends CI_Controller
 
 						$users_temp = new Users_temp_orm();
 						$users_temp->full_name = $this->input->post('full_name');
-						$users_temp->nik = $this->input->post('nik');
+						// $users_temp->nik = $this->input->post('nik');
 						$users_temp->email = $this->input->post('email');
 						$users_temp->phone = $this->input->post('telp');
-						$users_temp->jenis_kelamin = $this->input->post('jenis_kelamin');
+						// $users_temp->jenis_kelamin = $this->input->post('jenis_kelamin');
 						$users_temp->kota_asal = $this->input->post('kota_asal');
 						$users_temp->tmp_lahir = $this->input->post('tmp_lahir');
 						$users_temp->tgl_lahir = $this->input->post('tgl_lahir');
@@ -389,14 +389,14 @@ class Auth extends CI_Controller
 					$mhs->id_mahasiswa = $id_mahasiswa;
 					$mhs->nim = $username;
 					$mhs->nama = $users_temp->full_name;
-					$mhs->nik = $users_temp->nik;
+					// $mhs->nik = $users_temp->nik;
 					$mhs->tmp_lahir = $users_temp->tmp_lahir;
 					$mhs->tgl_lahir = $users_temp->tgl_lahir;
 					$mhs->email = $email;
 					$mhs->prodi = PRODI_TXT_DEFAULT;
 					$mhs->kodeps = PRODI_KODE_DEFAULT;
 					$mhs->no_billkey = $additional_data['no_billkey'];
-					$mhs->jenis_kelamin = $users_temp->jenis_kelamin;
+					// $mhs->jenis_kelamin = $users_temp->jenis_kelamin;
 					$mhs->kota_asal = $users_temp->kota_asal;
 					$mhs->save();
 		

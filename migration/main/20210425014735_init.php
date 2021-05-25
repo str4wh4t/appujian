@@ -762,6 +762,31 @@ class Init extends AbstractMigration
             ],
         ]);
 
+        $this->insert('membership', [
+            [
+                'id' => '0',
+                'name' => 'default',
+                'urut' => '0',
+                'price' => '0',
+                'description' => 'untuk user mode ujian',
+                'show' => '0',
+                'text_color' => 'primary',
+                'durasi' => '0',
+                'created_at' => '2021-02-22 01:34:40',
+            ],
+            [
+                'id' => '1',
+                'name' => 'gratis',
+                'urut' => '1',
+                'price' => '0',
+                'description' => 'untuk user gratis',
+                'show' => '1',
+                'text_color' => 'info',
+                'durasi' => '0',
+                'created_at' => '2021-02-22 01:34:40',
+            ],
+        ]);
+
         $this->table('bundle_soal')
             ->addForeignKey('id_soal', 'tb_soal', 'id_soal', 'cascade', 'no action')
             ->addForeignKey('bundle_id', 'bundle', 'id', 'restrict', 'no action')

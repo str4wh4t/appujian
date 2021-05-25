@@ -213,9 +213,9 @@
                                         <div class="media-body">
                                             <h5 class="list-group-item-heading">Kristopher Candy <span class="font-medium-4 float-right">1,0215</span></h5>
                                             <p class="list-group-item-text mb-0">
-                                                <span class="badge badge-{{ get_membership_color(3) }}">
-                                                    {!! get_membership_star(3, 'small') !!}
-                                                    <b style="text-transform: capitalize">{{ get_membership_text(3) }}</b>
+                                                <span class="badge badge-{{ get_membership_color(1) }}">
+                                                    {!! get_membership_star(1, 'small') !!}
+                                                    <b style="text-transform: capitalize">{{ get_membership_text(1) }}</b>
                                                 </span>
                                             </p>
                                         </div>

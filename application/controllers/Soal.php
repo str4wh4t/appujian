@@ -508,11 +508,10 @@ class Soal extends MY_Controller
 							$img = str_replace(' ', '+', $img);
 							$img_64 = base64_decode($img);
 							$file_name = $soal_temp->id_soal .'_soal_'. mt_rand()  .'.png';
-							$file = UPLOAD_DIR . $file_name;
+							$file = UPLOAD_DIR . 'img_soal/' . $file_name;
 							$success = file_put_contents($file, $img_64);
 							if($success){
-								$file_url =  'uploads/img_soal/' . $file_name ;
-								$img_node->setAttribute('src', asset($file_url)) ;
+								$img_node->setAttribute('src', asset('uploads/img_soal/' . $file_name)) ;
 								$doc->saveHTML($img_node);
 							}
 							$i++;
@@ -544,11 +543,10 @@ class Soal extends MY_Controller
 								$img = str_replace(' ', '+', $img);
 								$img_64 = base64_decode($img);
 								$file_name = $soal_temp->id_soal .'_jawaban_'. $opsi .'_'. mt_rand()  .'.png';
-								$file = UPLOAD_DIR . $file_name;
+								$file = UPLOAD_DIR . 'img_soal/' . $file_name;
 								$success = file_put_contents($file, $img_64);
 								if($success){
-									$file_url =  'uploads/img_soal/' . $file_name ;
-									$img_node->setAttribute('src', asset($file_url)) ;
+									$img_node->setAttribute('src', asset('uploads/img_soal/' . $file_name)) ;
 									$doc->saveHTML($img_node);
 								}
 								$i++;
@@ -582,11 +580,10 @@ class Soal extends MY_Controller
 								$img = str_replace(' ', '+', $img);
 								$img_64 = base64_decode($img);
 								$file_name = $soal_temp->id_soal .'_penjelasan_'. mt_rand()  .'.png';
-								$file = UPLOAD_DIR . $file_name;
+								$file = UPLOAD_DIR . 'img_soal/' . $file_name;
 								$success = file_put_contents($file, $img_64);
 								if($success){
-									$file_url =  'uploads/img_soal/' . $file_name ;
-									$img_node->setAttribute('src', asset($file_url)) ;
+									$img_node->setAttribute('src', asset('uploads/img_soal/' . $file_name)) ;
 									$doc->saveHTML($img_node);
 								}
 								$i++;
@@ -676,11 +673,10 @@ class Soal extends MY_Controller
 							$img_64 = base64_decode($img);
 							// $file_name = $soal_temp->id_soal . '_soal.png';
 							$file_name = $id_soal .'_soal_'. mt_rand()  .'.png';
-							$file = UPLOAD_DIR . $file_name;
+							$file = UPLOAD_DIR . 'img_soal/' . $file_name;
 							$success = file_put_contents($file, $img_64);
 							if($success){
-								$file_url =  'uploads/img_soal/' . $file_name ;
-								$img_node->setAttribute('src', asset($file_url)) ;
+								$img_node->setAttribute('src', asset('uploads/img_soal/' . $file_name)) ;
 								$doc->saveHTML($img_node);
 							}
 							$i++;
@@ -714,11 +710,10 @@ class Soal extends MY_Controller
 								$img_64 = base64_decode($img);
 								// $file_name = $soal_temp->id_soal . '_jawaban_'. $opsi .'.png';
 								$file_name = $id_soal .'_jawaban_'. $opsi .'_'. mt_rand()  .'.png';
-								$file = UPLOAD_DIR . $file_name;
+								$file = UPLOAD_DIR . 'img_soal/' . $file_name;
 								$success = file_put_contents($file, $img_64);
 								if($success){
-									$file_url =  'uploads/img_soal/' . $file_name ;
-									$img_node->setAttribute('src', asset($file_url)) ;
+									$img_node->setAttribute('src', asset('uploads/img_soal/' . $file_name)) ;
 									$doc->saveHTML($img_node);
 								}
 								$i++;
@@ -754,11 +749,10 @@ class Soal extends MY_Controller
 								$img_64 = base64_decode($img);
 								// $file_name = $soal_temp->id_soal . '_soal.png';
 								$file_name = $id_soal .'_penjelasan_'. mt_rand()  .'.png';
-								$file = UPLOAD_DIR . $file_name;
+								$file = UPLOAD_DIR . 'img_soal/' . $file_name;
 								$success = file_put_contents($file, $img_64);
 								if($success){
-									$file_url =  'uploads/img_soal/' . $file_name ;
-									$img_node->setAttribute('src', asset($file_url)) ;
+									$img_node->setAttribute('src', asset('uploads/img_soal/' . $file_name)) ;
 									$doc->saveHTML($img_node);
 								}
 								$i++;
@@ -1340,7 +1334,7 @@ class Soal extends MY_Controller
 
 	public function preview()
 	{
-		$config['upload_path']		= './uploads/import/';
+		$config['upload_path']		= UPLOAD_DIR .'import/';
 		$config['allowed_types']	= 'xls|xlsx|csv';
 		$config['max_size']			= 5120;
 		$config['encrypt_name']		= true;

@@ -476,7 +476,7 @@ class Mahasiswa extends MY_Controller
 
 	public function preview()
 	{
-		$config['upload_path']		= './uploads/import/';
+		$config['upload_path']		= UPLOAD_DIR .'import/';
 		$config['allowed_types']	= 'xls|xlsx|csv';
 		$config['max_size']			= 5120;
 		$config['encrypt_name']		= true;

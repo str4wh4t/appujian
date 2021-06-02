@@ -225,10 +225,9 @@ class Pub extends MY_Controller {
 					die('Waktu cron habis');
 				}
 
-				echo 'ID : Mujian : ' . $mu->ujian_id . "\n";
-
+				
 				$m_ujian = $m_ujian_orm->where(['id_ujian' => $mu->ujian_id, 'status_ujian' => 1])->first();
-
+				
 				if(empty($m_ujian)){
 					echo 'break, status not active';
 					break;
@@ -243,8 +242,10 @@ class Pub extends MY_Controller {
 					continue;
 				}
 				
-				echo 'today : ' . $today . "\n";
-				echo 'date_end : ' . $date_end . "\n";
+				// echo 'ID : Mujian : ' . $mu->ujian_id . "\n";
+				// echo 'today : ' . $today . "\n";
+				// echo 'date_end : ' . $date_end . "\n";
+
 				try {
 					$soal 		= [];
 					$soal_topik = [];

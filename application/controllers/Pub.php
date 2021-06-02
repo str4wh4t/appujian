@@ -320,6 +320,10 @@ class Pub extends MY_Controller {
 					$h_ujian_orm->tgl_selesai = $m_ujian->terlambat;
 					$h_ujian_orm->ujian_selesai = 'N';
 					$h_ujian_orm->save();
+
+					echo 'MHS ID : ' . $mu->mahasiswa_id . " ==> STARTED " . "\n";
+					// echo 'today : ' . $today . "\n";
+					// echo 'date_end : ' . $date_end . "\n";
 	
 					foreach($soal as $topik_id => $t){
 						foreach($t as $bobot_soal_id => $d) {

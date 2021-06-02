@@ -8,8 +8,10 @@
     <meta name="keywords" content="">
     <meta name="author" content="<?= APP_NAME ?>">
     <title>ERROR :: <?= APP_NAME ?></title>
-    <link rel="apple-touch-icon" href="<?= base_url('assets/icon/apple-touch-icon.png') ?>">
-	  <link rel="shortcut icon" type="image/x-icon" href="<?= base_url('assets/icon/favicon.ico') ?>">
+
+    <link rel="apple-touch-icon" href="<?= asset('assets/icon/'. APP_FAVICON_APPLE) ?>">
+	  <link rel="shortcut icon" type="image/x-icon" href="<?= asset('assets/icon/'. APP_FAVICON) ?>">
+
     <link href="<?= base_url('assets/yarn/node_modules/typeface-muli/index.css') ?>" rel="stylesheet">
   	<link href="<?= base_url('assets/yarn/node_modules/typeface-open-sans/index.css') ?>" rel="stylesheet">
     <!-- BEGIN VENDOR CSS-->
@@ -46,7 +48,7 @@
             <div class="card border-grey border-lighten-3 px-1 py-1 box-shadow-3 m-0">
                 <div class="card-body">
                     <span class="card-title text-center">
-            			<img src="<?= asset(LOGO_EMAIL_MSG) ?>" class="img-fluid mx-auto d-block pt-2" width="120" alt="logo">
+            			<img src="<?= asset('uploads/img_app/' . APP_LOGO) ?>" class="img-fluid mx-auto d-block pt-2" width="120" alt="logo">
             		</span>
                 </div>
                 <div class="card-body text-center">

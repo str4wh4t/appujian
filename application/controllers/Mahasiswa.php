@@ -129,10 +129,10 @@ class Mahasiswa extends MY_Controller
 															// $year  = (int)substr($tgl_lahir, 0, 4);
 
 															// if (checkdate($month, $day, $year)) {
-															// 	return TRUE;
+															// 	return true;
 															// } else {
 															// 	$this->form_validation->set_message('check_valid_date', 'Kolom tanggal salah');
-															// 	return FALSE;
+															// 	return false;
 															// }
 
 															$d = DateTime::createFromFormat('Y-m-d', $tgl_lahir);
@@ -154,14 +154,14 @@ class Mahasiswa extends MY_Controller
 				$size = @getimagesize($foto);
 				if ($size) {
 					if (strtolower(substr($size['mime'], 0, 5)) == 'image') {
-						return TRUE;
+						return true;
 					} else {
 						$this->form_validation->set_message('check_valid_img_url', 'Tipe file foto tidak valid');
-						return FALSE;
+						return false;
 					}
 				} else {
 					$this->form_validation->set_message('check_valid_img_url', 'URL Foto tidak valid');
-					return FALSE;
+					return false;
 				}
 			}
 		}]]);
@@ -179,7 +179,7 @@ class Mahasiswa extends MY_Controller
 		$method = $this->input->post('method', true);
 		$this->_validasi_mahasiswa($method);
 
-		if ($this->form_validation->run() == FALSE) {
+		if ($this->form_validation->run() == false) {
 			$data = [
 				'status'	=> false,
 				'errors'	=> [
@@ -386,27 +386,27 @@ class Mahasiswa extends MY_Controller
 			//			if($allow) {
 			//				if ($this->master->delete('mahasiswa', $chk, 'id_mahasiswa')) {
 			//					$this->_json([
-			//						'status' => TRUE,
+			//						'status' => true,
 			//						'total'  => count($chk)
 			//					]);
 			//				}
 			//			}
 
 			try {
-				DB::beginTransaction();
+				begin_db_trx();
 				foreach ($chk as $c) {
 					$mhs = Mhs_orm::findOrFail($c);
 					Users_orm::where('username', $mhs->nim)->delete();
 					$mhs->delete();
 				}
-				DB::commit();
+				commit_db_trx();
 				$this->_json([
-					'status' => TRUE,
+					'status' => true,
 					'total'  => count($chk)
 				]);
 			} catch (Exception $e) {
-				DB::rollBack();
-				show_error('Terjadi masalah', 500, 'Perhatian');
+				rollback_db_trx();
+				show_error('Terjadi masalah : '. $e->getMessage(), 500, 'Perhatian');
 			}
 		}
 	}

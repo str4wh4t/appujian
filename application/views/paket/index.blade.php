@@ -46,19 +46,19 @@ function init_page_level(){
     buttons: [
       {
         extend: "copy",
-        exportOptions: { columns: [0, 1, 2, 3, 4] }
+        exportOptions: { columns: [0, 1, 2, 3, 4, 5] }
       },
       {
         extend: "print",
-        exportOptions: { columns: [0, 1, 2, 3, 4] }
+        exportOptions: { columns: [0, 1, 2, 3, 4, 5] }
       },
       {
         extend: "excel",
-        exportOptions: { columns: [0, 1, 2, 3, 4] }
+        exportOptions: { columns: [0, 1, 2, 3, 4, 5] }
       },
       {
         extend: "pdf",
-        exportOptions: { columns: [0, 1, 2, 3, 4] }
+        exportOptions: { columns: [0, 1, 2, 3, 4, 5] }
       }
     ],
     oLanguage: {
@@ -76,6 +76,7 @@ function init_page_level(){
       { data: "kuota_latihan_soal" },
       { data: "is_show" },
       { data: "jml_ujian" },
+      { data: "jml_taker" },
       {
         data: "id",
         orderable: false,
@@ -91,7 +92,21 @@ function init_page_level(){
         }
       },
       {
+        targets: 4,
+        data: "jml_ujian",
+        render: function(data, type, row, meta) {
+          return data + " ujian";
+        }
+      },
+      {
         targets: 5,
+        data: "jml_taker",
+        render: function(data, type, row, meta) {
+          return data + " mhs";
+        }
+      },
+      {
+        targets: 6,
         data: "id",
         render: function(data, type, row, meta) {
           return `<div class="btn-group">
@@ -208,6 +223,7 @@ $(document).on("click", ".btn_edit", function() {
             <th>Kuota</th>
             <th>Stts</th>
 						<th>Jml Ujian</th>
+            <th>Jml Taker</th>
 						<th>
 							Aksi
 						</th>

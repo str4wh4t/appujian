@@ -28,7 +28,7 @@ $(document).ready(function() {
     buttons: [
       {
         extend: "copy",
-        exportOptions: { columns: [0, 1, 2, 3, 4], format: {
+        exportOptions: { columns: [0, 1, 2, 3], format: {
               body: function ( data, columnIdx, rowIdx ) {
                 if(rowIdx == 0)
                   return (columnIdx + 1);
@@ -39,7 +39,7 @@ $(document).ready(function() {
       },
       {
         extend: "print",
-        exportOptions: { columns: [0, 1, 2, 3, 4], format: {
+        exportOptions: { columns: [0, 1, 2, 3], format: {
               body: function ( data, columnIdx, rowIdx ) {
                 if(rowIdx == 0)
                   return (columnIdx + 1);
@@ -50,7 +50,7 @@ $(document).ready(function() {
       },
       {
         extend: "excel",
-        exportOptions: { columns: [0, 1, 2, 3, 4], format: {
+        exportOptions: { columns: [0, 1, 2, 3], format: {
               body: function ( data, columnIdx, rowIdx ) {
                 if(rowIdx == 0)
                   return (columnIdx + 1);
@@ -61,7 +61,7 @@ $(document).ready(function() {
       },
       {
         extend: "pdf",
-        exportOptions: { columns: [0, 1, 2, 3, 4], format: {
+        exportOptions: { columns: [0, 1, 2, 3], format: {
               body: function ( data, columnIdx, rowIdx ) {
                 if(rowIdx == 0)
                   return (columnIdx + 1);
@@ -92,35 +92,32 @@ $(document).ready(function() {
       { data: "nim" },
       { data: "nama" },
       // { data: "email" },
-      { data: "nama_matkul" },
+      // { data: "nama_matkul" },
       { data: "prodi" },
       // { data: "nama_kelas" },
       // { data: "nama_jurusan" }
     ],
     columnDefs: [
+      // {
+      //   searchable: false,
+      //   orderable: false,
+      //   targets: 3,
+      //   data: "nama_matkul",
+      //   render: function(data, type, row, meta) {
+      //     let str_return = '';
+      //     if(data != null) {
+      //       let data_array = data.split('---');
+      //       data_array.forEach(function (item, index) {
+      //         str_return += '<span class="badge bg-info">' + item + '</span> ';
+      //       });
+      //     }
+      //     return str_return;
+      //   }
+      // },
       {
         searchable: false,
         orderable: false,
-        targets: 3,
-        data: "nama_matkul",
-        render: function(data, type, row, meta) {
-          let str_return = '';
-          if(data != null) {
-            let data_array = data.split('---');
-            data_array.forEach(function (item, index) {
-              str_return += '<span class="badge bg-info">' + item + '</span> ';
-            });
-          }
-          return str_return;
-          // return `<div class="text-center">
-			// 						<input name="checked[]" class="check" value="${data}" type="checkbox">
-			// 					</div>`;
-        }
-      },
-      {
-        searchable: false,
-        orderable: false,
-        targets: 5,
+        targets: 4,
         data: "ada",
         render: function(data, type, row, meta) {
           let btn;
@@ -131,17 +128,19 @@ $(document).ready(function() {
 								<i class="fa fa-user-plus"></i>
 							</button>`;
           }
-          return `<div class="btn-group btn-group-sm" role="group" aria-label="">
+          return `<div class="text-center">
+                  <div class="btn-group btn-group-sm" role="group" aria-label="">
 									<a class="btn btn-sm btn-warning" href="${base_url}mahasiswa/edit/${row.id_mahasiswa}">
 										<i class="fa fa-pencil"></i>
 									</a>
 									${btn}
-								</div>`;
+								</div>
+                </div>`;
         }
       },
       {
         searchable: false,
-        targets: 6,
+        targets: 5,
         data: "id_mahasiswa",
         render: function(data, type, row, meta) {
           return `<div class="text-center">
@@ -150,7 +149,7 @@ $(document).ready(function() {
         }
       }
     ],
-    order: [[3, "asc"],[5, "asc"],[1, "asc"]],
+    order: [[4, "asc"],[1, "asc"]],
     rowId: function(a) {
       return a;
     },

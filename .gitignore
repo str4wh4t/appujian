@@ -11,6 +11,8 @@ composer.phar
 /public/sessions
 /public/uploads/img_soal/*
 !/public/uploads/img_soal/index.html
+/public/uploads/img_app/*
+!/public/uploads/img_app/index.html
 /public/assets/template/*
 !/public/assets/template/index.html
 /public/assets/yarn/*

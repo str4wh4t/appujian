@@ -335,7 +335,7 @@ class HasilUjian extends MY_Controller {
 			$jawaban_ujian_urut = collect();
 			$tes = [];
 			foreach($topik_ujian_list as $topik_ujian){
-				foreach($h_ujian->jawaban_ujian as $jawaban_ujian){
+				foreach($h_ujian->jawaban_ujian->sortBy('id') as $jawaban_ujian){
 					if($topik_ujian->id == $jawaban_ujian->soal->topik_id){
 						$jawaban_ujian_urut->add($jawaban_ujian);
 						$tes[] = $jawaban_ujian->id;

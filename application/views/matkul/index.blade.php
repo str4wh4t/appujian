@@ -67,8 +67,8 @@
 					</th>
 					<th>No.</th>
 					<th>Materi Ujian</th>
-					<th>Jml Peserta</th>
-					<th>Aksi</th>
+					{{-- <th>Jml Peserta</th>
+					<th>Aksi</th> --}}
 				</tr>
 			</thead>
 		</table>

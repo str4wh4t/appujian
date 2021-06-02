@@ -55,9 +55,16 @@ let filter = {
 
 let filter_mhs = {
     kelompok_ujian: null,
-    tgl_ujian: null,
+    // tgl_ujian: null,
     tahun: null,
-    mhs_matkul: null,
+    // mhs_matkul: null,
+};
+
+let filter_table = {
+    prodi: [],
+    jalur: [],
+    gel: [],
+    smt: [],
 };
 
 function init_page_level(){
@@ -66,8 +73,12 @@ function init_page_level(){
     $('#matkul_id').select2();
     $('#topik_id').select2({placeholder : '- Pilih topik -'});
     $('#bundle').select2({placeholder : '- Pilih bundle soal -'});
-    $('#mhs_matkul').select2({placeholder : '- Pilih matkul terkait mhs -'});
+    // $('#mhs_matkul').select2({placeholder : '- Pilih matkul terkait mhs -'});
 
+    $('#prodi').select2({placeholder : '- Pilih prodi -'});
+    $('#jalur').select2({placeholder : '- Pilih jalur -'});
+    $('#gel_mhs').select2({placeholder : '- Pilih gelombang -'});
+    $('#smt_mhs').select2({placeholder : '- Pilih semester -'});
 
     $('.icheck').iCheck({
         checkboxClass: 'icheckbox_square-red',
@@ -79,9 +90,14 @@ function init_page_level(){
     filter.tahun    = $('#tahun').val();
 
     filter_mhs.kelompok_ujian    = $('#kelompok_ujian').val();
-    filter_mhs.tgl_ujian    = $('#tgl_ujian').val() == '' ? 'null' : $('#tgl_ujian').val();
+    // filter_mhs.tgl_ujian    = $('#tgl_ujian').val() == '' ? 'null' : $('#tgl_ujian').val();
     filter_mhs.tahun    = $('#tahun_mhs').val();
-    filter_mhs.mhs_matkul    = 'null';
+    // filter_mhs.mhs_matkul    = 'null';
+
+    filter_table.prodi    = $('#prodi').val();
+    filter_table.jalur   = $('#jalur').val();
+    filter_table.gel    = $('#gel_mhs').val();
+    filter_table.smt    = $('#smt_mhs').val();
 
     topik_jumlah_soal = [];
     topik_jumlah_soal_asli = [];
@@ -154,6 +170,8 @@ function init_page_level(){
     @if($ujian->is_sekuen_topik)
     // $('#is_sekuen_topik').bootstrapSwitch('toggleState');
     @endif
+
+    $('#btn_refine_peserta').trigger('click');
 }
 
 const init_cascade_select2 = () => {
@@ -181,13 +199,11 @@ const init_cascade_select2 = () => {
             child.trigger('change');
         }
 
-        init_topik_table_value().then(
-            function(){
-                init_peserta_table_value(bundle_id_list).then(function(){
+        init_topik_table_value().then(function(){
+                // init_peserta_table_value(bundle_id_list).then(function(){
                     ajx_overlay(false);
-                });
-            }
-        ); // TO RESET ALL DATA TABLE JML SOAL
+                // });
+            }); // TO RESET ALL DATA TABLE JML SOAL
 
     });
 };
@@ -200,11 +216,14 @@ const init_selected_bundle = () => {
             @endforeach
         @endif
 
+        {{-- 
+        // UJIAN MATKUL sudah tidak dipakai 31/MEI/2021
         @if(!empty($ujian_matkul_enable_ids))
             @foreach($ujian_matkul_enable_ids as $matkul_id)
                 ujian_matkul_enable_ids.push({{ $matkul_id }});
             @endforeach
         @endif
+        --}}
 
     $('#bundle').val(bundle_ids).trigger('change').trigger('select2:select'); // ==> IDK WHY SHOULD TRIGGER TWICE
 };
@@ -243,11 +262,11 @@ $('#bundle').on('select2:select', function (e) {
     bundle_id_list = bundle_ids;
     ajx_overlay(true);
     init_topik_table_value(bundle_ids).then(function(){
-        get_matkul_from_selected_bundle(bundle_ids).then(function(){
+        // get_matkul_from_selected_bundle(bundle_ids).then(function(){
             // init_peserta_table_value(bundle_ids).then(function(){
                 ajx_overlay(false);
             // });
-        });
+        // });
     });
 });
 
@@ -272,11 +291,11 @@ $('#bundle').on('select2:unselect', function (e) {
 
     ajx_overlay(true);
     init_topik_table_value(bundle_ids).then(function(){
-        get_matkul_from_selected_bundle(bundle_ids).then(function(){
-            init_peserta_table_value(bundle_id_list).then(function(){
+        // get_matkul_from_selected_bundle(bundle_ids).then(function(){
+            // init_peserta_table_value(bundle_id_list).then(function(){
                 ajx_overlay(false);
-            });
-        });
+            // });
+        // });
     });
 });
 
@@ -286,7 +305,6 @@ const get_matkul_from_selected_bundle = (bundle_ids) => {
         data: { 'bundle_ids' : JSON.stringify(bundle_ids) },
         type: 'POST',
         success: function (response) {
-            // console.log(response.matkul_list);
             $('#mhs_matkul').empty();
             if(!$.isEmptyObject(response.matkul_list)){
                 $.each(response.matkul_list, function(i, matkul){
@@ -467,47 +485,57 @@ let tgl_mulai = '{{ $ujian->tgl_mulai }}';
 let terlambat = '{{ $ujian->terlambat }}';
 
 const init_peserta_table_value = (bundle_ids) => {
-    let sumber_ujian = $('input[name="sumber_ujian"]:checked').val();
-    let id_matkul = $('#matkul_id').val();
+    // let sumber_ujian = $('input[name="sumber_ujian"]:checked').val();
+    // let id_matkul = $('#matkul_id').val();
+
+    let tgl_ujian = $('#tgl_ujian').val() == '' ? 'null' : $('#tgl_ujian').val();
 
     return $.ajax({
-        url: "{{ site_url('matkul/ajax/get_peserta_ujian_matkul_not_ujian') }}",
-        data: { 'id' : id_matkul, 'bundle_ids' : JSON.stringify(bundle_ids), 'sumber_ujian' : sumber_ujian,  'ujian_id': '{{ $ujian->id_ujian }}', 'filter' : filter_mhs },
+        // url: "{{ site_url('matkul/ajax/get_peserta_ujian_matkul_not_ujian') }}",
+        // data: { 'id' : id_matkul, 'bundle_ids' : JSON.stringify(bundle_ids), 'sumber_ujian' : sumber_ujian,  'ujian_id': '{{ $ujian->id_ujian }}', 'filter' : filter_mhs },
+        url: "{{ site_url('ujian/ajax/get_peserta_ujian') }}",
+        data: { 'filter' : filter_mhs, 'filter_table' : filter_table, 'tgl_ujian' : tgl_ujian, 'id' : {{ $ujian->id_ujian }} },
         type: 'POST',
         success: function (response) {
-            $('#tbody_tb_peserta').html('');
-            let mhs_ujian_existing = [];
-            if(!$.isEmptyObject(response.mhs_ujian)) {
-                $.each(response.mhs_ujian, function (i, item) {
-                    mhs_ujian_existing.push(item.mahasiswa_id);
-                });
-            }
-            if(!$.isEmptyObject(response.mhs)) {
-                $.each(response.mhs, function (i, item) {
-                    let chkbox = $('<input>').attr('class', 'chkbox_pilih_peserta').attr('type', 'checkbox').attr('name', 'peserta[]').attr('value', item.id_mahasiswa);
-                    if(mhs_ujian_existing.includes(item.id_mahasiswa))
-                        chkbox.prop('checked', true);
-                    $('<tr>').append(
-                        $('<td>').css('text-align', 'center').append(chkbox),
-                        $('<td>').text(item.nama),
-                        $('<td>').text(item.nim),
-                        $('<td>').text(item.prodi),
-                        $('<td>').text(item.jalur),
-                        $('<td>').text(item.gel),
-                        $('<td>').text(item.smt),
-                        $('<td>').text(item.tahun),
-                    ).appendTo('#tbody_tb_peserta');
-                });
-            }else{
-                $('<tr>').append(
-                        $('<td>').text('Tidak ada peserta tersedia').attr('colspan', '8').css('text-align', 'center')
-                    ).appendTo('#tbody_tb_peserta');
-            }
-            $('#peserta_hidden').val(JSON.stringify(mhs_ujian_existing));
-            $('#chkbox_pilih_semua_peserta').prop('checked', false);
-            $('.search_pes').val('');
+            init_peserta_table(response.mhs, response.mhs_ujian);
         }
     });
+};
+
+const init_peserta_table = (response_mhs, response_mhs_ujian) => {
+    $('#tbody_tb_peserta').html('');
+    let mhs_ujian_existing = [];
+    if(!$.isEmptyObject(response_mhs_ujian)) {
+        $.each(response_mhs_ujian, function (i, item) {
+            // mhs_ujian_existing.push(item.mahasiswa_id);
+            mhs_ujian_existing.push(item);
+        });
+    }
+    if(!$.isEmptyObject(response_mhs)) {
+        $.each(response_mhs, function (i, item) {
+            let chkbox = $('<input>').attr('class', 'chkbox_pilih_peserta').attr('type', 'checkbox').attr('name', 'peserta[]').attr('value', item.id_mahasiswa);
+            if(mhs_ujian_existing.includes(item.id_mahasiswa))
+                chkbox.prop('checked', true);
+            $('<tr>').append(
+                $('<td>').css('text-align', 'center').append(chkbox),
+                $('<td>').text(item.nama),
+                $('<td>').text(item.nim),
+                $('<td>').text(item.prodi),
+                $('<td>').text(item.jalur),
+                $('<td>').text(item.gel),
+                $('<td>').text(item.smt),
+                $('<td>').text(item.tahun),
+            ).appendTo('#tbody_tb_peserta');
+        });
+    }else{
+        $('<tr>').append(
+                $('<td>').text('Tidak ada peserta tersedia').attr('colspan', '8').css('text-align', 'center')
+            ).appendTo('#tbody_tb_peserta');
+    }
+    $('#peserta_hidden').val(JSON.stringify(mhs_ujian_existing));
+    $('#chkbox_pilih_semua_peserta').prop('checked', false);
+    $('.search_pes').val('');
+    $('#span_total_peserta').text(mhs_ujian_existing.length);
 };
 
 $(document).on('change','#chkbox_pilih_semua_peserta',function () {
@@ -517,6 +545,7 @@ $(document).on('change','#chkbox_pilih_semua_peserta',function () {
         $('.chkbox_pilih_peserta:visible').prop('checked', false)
     }
     $('.chkbox_pilih_peserta:visible').trigger('change');
+    $('#span_total_peserta').text($('.chkbox_pilih_peserta:checked').length);
 });
 
 $(document).on('change','.chkbox_pilih_peserta',function () {
@@ -528,6 +557,7 @@ $(document).on('change','.chkbox_pilih_peserta',function () {
     values = values.length ? JSON.stringify(values) : '';
     $('#peserta_hidden').val(values);
     $('#peserta_hidden').nextAll('.help-block').eq(0).text('');
+    $('#span_total_peserta').text($('.chkbox_pilih_peserta:checked').length);
 });
 
 
@@ -619,38 +649,53 @@ $(document).on('change','#tahun', function(){
 $(document).on('change','#kelompok_ujian', function(){
     let kelompok_ujian = $(this).val();
     filter_mhs.kelompok_ujian = kelompok_ujian;
-    ajx_overlay(true);
-    init_peserta_table_value(bundle_id_list).then(function(){
-        ajx_overlay(false);
-    });
+    init_peserta_table(null, null);
 });
 
 $(document).on('dp.hide','#tgl_ujian', function(){
     let tgl_ujian = $(this).val() == '' ? 'null' : $(this).val();
     filter_mhs.tgl_ujian = tgl_ujian;
-    ajx_overlay(true);
-    init_peserta_table_value(bundle_id_list).then(function(){
-        ajx_overlay(false);
-    });
+    init_peserta_table(null, null);
 });
 
 $(document).on('change','#tahun_mhs', function(){
     let tahun = $(this).val();
     filter_mhs.tahun = tahun;
-    ajx_overlay(true);
-    init_peserta_table_value(bundle_id_list).then(function(){
-        ajx_overlay(false);
-    });
+    init_peserta_table(null, null);
 });
 
-$(document).on('change','#mhs_matkul', function(){
-    let mhs_matkul = $(this).val();
-    filter_mhs.mhs_matkul = mhs_matkul;
-    ajx_overlay(true);
-    init_peserta_table_value(bundle_id_list).then(function(){
-        ajx_overlay(false);
-    });
+$(document).on('change','#prodi', function(){
+    let prodi = $(this).val();
+    filter_table.prodi = prodi;
+    init_peserta_table(null, null);
 });
+
+$(document).on('change','#jalur', function(){
+    let jalur = $(this).val();
+    filter_table.jalur = jalur;
+    init_peserta_table(null, null);
+});
+
+$(document).on('change','#gel_mhs', function(){
+    let gel = $(this).val();
+    filter_table.gel = gel;
+    init_peserta_table(null, null);
+});
+
+$(document).on('change','#smt_mhs', function(){
+    let smt = $(this).val();
+    filter_table.smt = smt;
+    init_peserta_table(null, null);
+});
+
+// $(document).on('change','#mhs_matkul', function(){
+//     let mhs_matkul = $(this).val();
+//     filter_mhs.mhs_matkul = mhs_matkul;
+//     ajx_overlay(true);
+//     init_peserta_table_value(bundle_id_list).then(function(){
+//         ajx_overlay(false);
+//     });
+// });
 
 $('#tampilkan_hasil').on('switchChange.bootstrapSwitch', function(event, state) {
     if(!event.target.checked){ // DETEKSI JIKA FALSE MAKA JUGA MENON-AKTIFKAN TAMPILKAN JAWABAN
@@ -713,6 +758,13 @@ $('#sumber_bundle').on('ifChecked', function(event){
         });
     @endif
 
+});
+
+$(document).on('click','#btn_refine_peserta', function(){
+    ajx_overlay(true);
+    init_peserta_table_value(bundle_id_list).then(function(){
+        ajx_overlay(false);
+    });
 });
 
 </script>
@@ -996,6 +1048,50 @@ $('#sumber_bundle').on('ifChecked', function(event){
                         <small class="help-block" style="color: #dc3545"></small>
                     </div>
                     <div class="form-group">
+                        <label for="prodi" class="control-label">Prodi</label>
+                        <select name="prodi[]" id="prodi" class="form-control select2"
+                            style="width:100%!important" multiple="multiple">
+                            {{-- <option value="null">Semua Prodi</option> --}}
+                            @foreach ($prodi_list as $prodi)
+                            <option value="{{ $prodi }}" {{ in_array($prodi, $filter_mhs->prodi) ? "selected" : ""   }}>{{ $prodi }}</option>    
+                            @endforeach
+                        </select>
+                        <small class="help-block" style="color: #dc3545"></small>
+                    </div>
+                    <div class="form-group">
+                        <label for="jalur" class="control-label">Jalur</label>
+                        <select name="jalur[]" id="jalur" class="form-control select2"
+                            style="width:100%!important" multiple="multiple">
+                            {{-- <option value="null">Semua Jalur</option> --}}
+                            @foreach ($jalur_list as $jalur)
+                            <option value="{{ $jalur }}" {{ in_array($jalur, $filter_mhs->jalur) ? "selected" : ""   }}>{{ $jalur }}</option>    
+                            @endforeach
+                        </select>
+                        <small class="help-block" style="color: #dc3545"></small>
+                    </div>
+                    <div class="form-group">
+                        <label for="gel_mhs" class="control-label">Gelombang</label>
+                        <select name="gel_mhs[]" id="gel_mhs" class="form-control select2"
+                            style="width:100%!important" multiple="multiple">
+                            {{-- <option value="null">Semua Gel</option> --}}
+                            @foreach ($gel_list as $gel)
+                            <option value="{{ $gel }}" {{ in_array($gel, $filter_mhs->gel_mhs) ? "selected" : ""   }}>{{ $gel }}</option>    
+                            @endforeach
+                        </select>
+                        <small class="help-block" style="color: #dc3545"></small>
+                    </div>
+                    <div class="form-group">
+                        <label for="smt_mhs" class="control-label">Semester</label>
+                        <select name="smt_mhs[]" id="smt_mhs" class="form-control select2"
+                            style="width:100%!important" multiple="multiple">
+                            {{-- <option value="null">Semua Smt</option> --}}
+                            @foreach ($smt_list as $smt)
+                            <option value="{{ $smt }}" {{ in_array($smt, $filter_mhs->smt_mhs) ? "selected" : ""   }}>{{ $smt }}</option>    
+                            @endforeach
+                        </select>
+                        <small class="help-block" style="color: #dc3545"></small>
+                    </div>
+                    <div class="form-group">
                         <label for="tahun_mhs" class="control-label">Tahun</label>
                         <select name="tahun_mhs" id="tahun_mhs" class="form-control select2"
                             style="width:100%!important">
@@ -1006,12 +1102,16 @@ $('#sumber_bundle').on('ifChecked', function(event){
                         </select>
                         <small class="help-block" style="color: #dc3545"></small>
                     </div>
-                    <div class="form-group d-none" id="form_group_mhs_matkul" >
+                    {{-- <div class="form-group d-none" id="form_group_mhs_matkul" >
                         <label for="mhs_matkul" class="control-label">Matkul Terkait</label> <small class="help-block text-danger"><b>***</b> Filter mhs yg akan diasign dalam ujian, jika ujian berdasarkan bundle soal</small>
                         <select name="mhs_matkul[]" id="mhs_matkul" class="form-control"
                             style="width:100%!important" multiple="multiple">
                         </select>
                         <small class="help-block" style="color: #dc3545"></small>
+                    </div> --}}
+                    <br />
+                    <div class="form-group text-center">
+                        <button type="button" id="btn_refine_peserta" class="btn btn-outline-info"><i class="icon-info"></i> Refine Peserta</button>
                     </div>
                 </fieldset>
                  <div class="form-group">
@@ -1070,8 +1170,9 @@ $('#sumber_bundle').on('ifChecked', function(event){
                      </table>
                      </div>
                      <small class="help-block"></small>
+                     <div class="alert border-danger text-center text-danger"><i class="icon-info"></i> Total peserta dipilih : <b><span id="span_total_peserta">0</span></b></div>
                 </div>
-                <div class="form-group pull-right">
+                <div class="form-group text-center">
                     <a href="{{ site_url('ujian/master') }}" class="btn btn-flat btn-warning">
                         <i class="fa fa-arrow-left"></i> Kembali
                     </a>

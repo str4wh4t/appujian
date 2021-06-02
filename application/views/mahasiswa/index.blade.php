@@ -168,10 +168,10 @@ $(document).on('change','#tahun_filter', function(){
                     <th>No Peserta</th>
                     <th>Nama</th>
     {{--                        <th>Email</th>--}}
-                    <th>Materi Ujian</th>
+                    {{-- <th>Materi Ujian</th> --}}
     {{--                        <th>Kelas</th>--}}
                     <th>Prodi</th>
-                    <th>Aksi</th>
+                    <th class="text-center">Aksi</th>
                     <th class="text-center">
                         <input class="select_all" type="checkbox">
                     </th>

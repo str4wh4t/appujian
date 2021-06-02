@@ -11,8 +11,8 @@
     <meta name="{{ csrf_name() }}" content="{{ csrf_token() }}">
 
     <title>{{ APP_NAME }}</title>
-    <link rel="apple-touch-icon" href="{{ asset('assets/icon/'. APP_FAVICON_APPLE .'.png') }}">
-	<link rel="shortcut icon" type="image/x-icon" href="{{ asset('assets/icon/'. APP_FAVICON .'.ico') }}">
+    <link rel="apple-touch-icon" href="{{ asset('assets/icon/'. APP_FAVICON_APPLE) }}">
+	<link rel="shortcut icon" type="image/x-icon" href="{{ asset('assets/icon/'. APP_FAVICON) }}">
     {{-- <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i%7CMuli:300,400,500,700" rel="stylesheet"> --}}
     <link href="{{ asset('assets/yarn/node_modules/typeface-muli/index.css') }}" rel="stylesheet">
 	<link href="{{ asset('assets/yarn/node_modules/typeface-open-sans/index.css') }}" rel="stylesheet">    <!-- BEGIN VENDOR CSS-->
@@ -33,7 +33,7 @@
 
     <style type="text/css">
         html body.bg-full-screen-image {
-            background: url({{ asset('assets/imgs/'. APP_BG_LOGIN .'.jpg') }}) no-repeat center center fixed;
+            background: url({{ asset('uploads/img_app/'. APP_BG_LOGIN) }}) no-repeat center center fixed;
             webkit-background-size: cover; /** */
             background-size: cover;
             /** **/

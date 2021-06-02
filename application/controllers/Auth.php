@@ -10,6 +10,7 @@ use Orm\Membership_history_orm;
 use Orm\Paket_history_orm;
 use Orm\Mhs_matkul_orm;
 use Orm\Paket_orm;
+use Orm\Tahun;
 use Orm\Mhs_ujian_orm;
 use Orm\Users_temp_orm;
 use Carbon\Carbon;
@@ -398,6 +399,7 @@ class Auth extends CI_Controller
 					$mhs->no_billkey = $additional_data['no_billkey'];
 					// $mhs->jenis_kelamin = $users_temp->jenis_kelamin;
 					$mhs->kota_asal = $users_temp->kota_asal;
+					$mhs->tahun = Tahun::get_tahun_aktif();
 					$mhs->save();
 		
 					$membership = Membership_orm::findOrFail(MEMBERSHIP_ID_DEFAULT);

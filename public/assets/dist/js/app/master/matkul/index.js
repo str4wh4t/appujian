@@ -24,47 +24,59 @@ $(document).ready(function() {
     buttons: [
       {
         extend: "copy",
-        exportOptions: { columns: [0,1], format: {
+        exportOptions: { 
+          columns: [0, 1, 2], 
+          format: {
               body: function ( data, columnIdx, rowIdx ) {
                 if(rowIdx == 0)
                   return (columnIdx + 1);
                 else
                   return data;
               }
-          } }
+          } 
+        }
       },
       {
         extend: "print",
-        exportOptions: { columns: [0,1], format: {
+        exportOptions: { 
+          columns: [0, 1, 2], 
+          format: {
               body: function ( data, columnIdx, rowIdx ) {
                 if(rowIdx == 0)
                   return (columnIdx + 1);
                 else
                   return data;
               }
-          } }
+          } 
+        }
       },
       {
         extend: "excel",
-        exportOptions: { columns: [0,1], format: {
+        exportOptions: { 
+          columns: [0, 1, 2], 
+          format: {
               body: function ( data, columnIdx, rowIdx ) {
                 if(rowIdx == 0)
                   return (columnIdx + 1);
                 else
                   return data;
               }
-          } }
+          } 
+        }
       },
       {
         extend: "pdf",
-        exportOptions: { columns: [0,1], format: {
+        exportOptions: { 
+          columns: [0, 1, 2], 
+          format: {
               body: function ( data, columnIdx, rowIdx ) {
                 if(rowIdx == 0)
                   return (columnIdx + 1);
                 else
                   return data;
               }
-          } }
+          } 
+        }
       }
     ],
     oLanguage: {
@@ -89,11 +101,11 @@ $(document).ready(function() {
         searchable: false,
       },
       { data: "nama_matkul" },
-      {
-        data: "jml_peserta",
-        orderable: false,
-        searchable: false,
-      }
+      // {
+      //   data: "jml_peserta",
+      //   orderable: false,
+      //   searchable: false,
+      // }
     ],
     columnDefs: [
       {
@@ -110,14 +122,14 @@ $(document).ready(function() {
         searchable: false,
         targets: 1,
       },
-      {
-        searchable: false,
-        targets: 4,
-        data: "id_matkul",
-        render: function(data, type, row, meta) {
-          return `<a class="btn btn-sm btn-info" href="${base_url}matkul/peserta/${data}">Peserta</a>`;
-        }
-      }
+      // {
+      //   searchable: false,
+      //   targets: 4,
+      //   data: "id_matkul",
+      //   render: function(data, type, row, meta) {
+      //     return `<a class="btn btn-sm btn-info" href="${base_url}matkul/peserta/${data}">Peserta</a>`;
+      //   }
+      // }
     ],
     order: [[2, "asc"]],
     rowId: function(a) {

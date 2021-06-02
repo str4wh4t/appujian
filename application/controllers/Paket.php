@@ -95,9 +95,15 @@ class Paket extends MY_Controller
 
 		$dt = new Datatables(new MySQL($config));
 
-		$this->db->select('a.id, a.name, a.urut, a.kuota_latihan_soal, a.is_show, CONCAT(COUNT(b.ujian_id), " ujian") AS jml_ujian');
+		$this->db->select('a.id, a.name, a.urut, a.kuota_latihan_soal, a.is_show, COUNT(b.ujian_id) AS jml_ujian, IFNULL(phx.jml_mhs, 0) AS jml_taker');
 		$this->db->from('paket a');
 		$this->db->join('paket_ujian AS b', 'b.paket_id = a.id', 'left');
+		$this->db->join('(
+			SELECT ph.paket_id, COUNT(ph.mahasiswa_id) AS jml_mhs
+			FROM paket_history ph 
+			WHERE ph.stts = 1
+			GROUP BY ph.paket_id
+		) AS phx', 'phx.paket_id = a.id', 'left');
 		$this->db->group_by('a.id');
 
 		$query = $this->db->get_compiled_select(); // GET QUERY PRODUCED BY ACTIVE RECORD WITHOUT RUNNING I

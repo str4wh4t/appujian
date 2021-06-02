@@ -192,134 +192,147 @@ use Illuminate\Database\Eloquent\Builder;
 				<?php $i = 1; ?>
 
 				@foreach ($topik_ujian_list as $topik)
-				<div class="alert bg-info w-100"><b>Topik : </b> {{ $topik->nama_topik }} ( Poin Topik :
-					{{ $topik->poin_topik }} )</div>
+					<div class="alert bg-info w-100"><b>Topik : </b> {{ $topik->nama_topik }} ( Poin Topik :
+						{{ $topik->poin_topik }} )</div>
 
-				<?php
-							$jawaban_ujian_list = $h_ujian->jawaban_ujian()->whereHas('soal', 
-							function (Builder $query) use($topik) {
-								$query->where('topik_id', $topik->id);
-							})->get();
-							?>
+					<?php
+					$jawaban_ujian_list = $h_ujian->jawaban_ujian()->whereHas('soal', 
+					function (Builder $query) use($topik) {
+						$query->where('topik_id', $topik->id);
+					})
+					->get()
+					->sortBy('id');
+					?>
 
-				@foreach ($jawaban_ujian_list as $jawaban_ujian)
-				<div class="row">
-					<div class="col-md-8 col-sm-12">
-						<div class="card border-top-danger box-shadow-0 border-bottom-danger">
-							{{-- <div class="card-header">
-										</div> --}}
-							<div class="card-content">
-								<div class="card-body">
-									<h4 class="card-title">Pertanyaan : <div class="badge badge-danger round">{{ $i }}</div> <span class="float-right">( Poin
-											Soal : {{ $jawaban_ujian->soal->bobot_soal->nilai }} )</span></h4>
-									<div class="">{!! $jawaban_ujian->soal->soal !!}</div>
-									<div
-										class="alert alert-light border-success {{ ('A' == $jawaban_ujian->jawaban) ? (($jawaban_ujian->jawaban == $jawaban_ujian->soal->jawaban) ? 'bg-success' : 'bg-danger') :  (('A' == $jawaban_ujian->soal->jawaban) ? 'bg-success' : '') }}">
-										<?php $text_color = ('A' == $jawaban_ujian->jawaban) ? 'white' : (('A' == $jawaban_ujian->soal->jawaban) ? 'white' : 'success');  ?>
-										<span style="font-size: 1.5rem"
-											class="float-left mr-1 text-{{ $text_color }}">A. </span>{!!
-										$jawaban_ujian->soal->opsi_a !!}
+					@foreach ($jawaban_ujian_list as $jawaban_ujian)
+						<div class="row">
+							<div class="col-md-8 col-sm-12">
+								<div class="card border-top-danger box-shadow-0 border-bottom-danger">
+									{{-- <div class="card-header">
+												</div> --}}
+									<div class="card-content">
+										<div class="card-body">
+											<h4 class="card-title">Pertanyaan : <div class="badge badge-danger round">{{ $i }}</div> <span class="float-right">( Poin
+													Soal : {{ $jawaban_ujian->soal->bobot_soal->nilai }} )</span></h4>
+											<div class="">
+												@if(!empty($jawaban_ujian->soal->section_id))
+												<div id="preview_section" class="alert text-muted border border-info" style="">
+													{!! $jawaban_ujian->soal->section->konten !!}
+												</div>
+												<br />
+												@endif
+												{!! $jawaban_ujian->soal->soal !!}
+											</div>
+											<div
+												class="alert alert-light border-success {{ ('A' == $jawaban_ujian->jawaban) ? (($jawaban_ujian->jawaban == $jawaban_ujian->soal->jawaban) ? 'bg-success' : 'bg-danger') :  (('A' == $jawaban_ujian->soal->jawaban) ? 'bg-success' : '') }}">
+												<?php $text_color = ('A' == $jawaban_ujian->jawaban) ? 'white' : (('A' == $jawaban_ujian->soal->jawaban) ? 'white' : 'success');  ?>
+												<span style="font-size: 1.5rem"
+													class="float-left mr-1 text-{{ $text_color }}">A. </span>{!!
+												$jawaban_ujian->soal->opsi_a !!}
+											</div>
+											<div
+												class="alert alert-light border-success {{ ('B' == $jawaban_ujian->jawaban) ? (($jawaban_ujian->jawaban == $jawaban_ujian->soal->jawaban) ? 'bg-success' : 'bg-danger') :  (('B' == $jawaban_ujian->soal->jawaban) ? 'bg-success' : '') }}">
+												<?php $text_color = ('B' == $jawaban_ujian->jawaban) ? 'white' : (('B' == $jawaban_ujian->soal->jawaban) ? 'white' : 'success');  ?>
+												<span style="font-size: 1.5rem"
+													class="float-left mr-1 text-{{ $text_color }}">B. </span>{!!
+												$jawaban_ujian->soal->opsi_b !!}
+											</div>
+											<div
+												class="alert alert-light border-success {{ ('C' == $jawaban_ujian->jawaban) ? (($jawaban_ujian->jawaban == $jawaban_ujian->soal->jawaban) ? 'bg-success' : 'bg-danger') :  (('C' == $jawaban_ujian->soal->jawaban) ? 'bg-success' : '') }}">
+												<?php $text_color = ('C' == $jawaban_ujian->jawaban) ? 'white' : (('C' == $jawaban_ujian->soal->jawaban) ? 'white' : 'success');  ?>
+												<span style="font-size: 1.5rem"
+													class="float-left mr-1 text-{{ $text_color }}">C. </span>{!!
+												$jawaban_ujian->soal->opsi_c !!}
+											</div>
+											<div
+												class="alert alert-light border-success {{ ('D' == $jawaban_ujian->jawaban) ? (($jawaban_ujian->jawaban == $jawaban_ujian->soal->jawaban) ? 'bg-success' : 'bg-danger') :  (('D' == $jawaban_ujian->soal->jawaban) ? 'bg-success' : '') }}">
+												<?php $text_color = ('D' == $jawaban_ujian->jawaban) ? 'white' : (('D' == $jawaban_ujian->soal->jawaban) ? 'white' : 'success');  ?>
+												<span style="font-size: 1.5rem"
+													class="float-left mr-1 text-{{ $text_color }}">D. </span>{!!
+												$jawaban_ujian->soal->opsi_d !!}
+											</div>
+											<div
+												class="alert alert-light border-success {{ ('E' == $jawaban_ujian->jawaban) ? (($jawaban_ujian->jawaban == $jawaban_ujian->soal->jawaban) ? 'bg-success' : 'bg-danger') :  (('E' == $jawaban_ujian->soal->jawaban) ? 'bg-success' : '') }}">
+												<?php $text_color = ('E' == $jawaban_ujian->jawaban) ? 'white' : (('E' == $jawaban_ujian->soal->jawaban) ? 'white' : 'success');  ?>
+												<span style="font-size: 1.5rem"
+													class="float-left mr-1 text-{{ $text_color }}">E. </span>{!!
+												$jawaban_ujian->soal->opsi_e !!}
+											</div>
+										</div>
 									</div>
-									<div
-										class="alert alert-light border-success {{ ('B' == $jawaban_ujian->jawaban) ? (($jawaban_ujian->jawaban == $jawaban_ujian->soal->jawaban) ? 'bg-success' : 'bg-danger') :  (('B' == $jawaban_ujian->soal->jawaban) ? 'bg-success' : '') }}">
-										<?php $text_color = ('B' == $jawaban_ujian->jawaban) ? 'white' : (('B' == $jawaban_ujian->soal->jawaban) ? 'white' : 'success');  ?>
-										<span style="font-size: 1.5rem"
-											class="float-left mr-1 text-{{ $text_color }}">B. </span>{!!
-										$jawaban_ujian->soal->opsi_b !!}
+								</div>
+							</div>
+							<div class="col-md-4 col-sm-12">
+								<div class="card box-shadow-0 border-blue bg-transparent">
+									{{-- <div class="card-header">
+													</div> --}}
+									<div class="card-content">
+										<div class="card-body">
+											<?php 
+															$badge_benar = '<div class="badge badge-success round"><i class="fa fa-check font-medium-2"></i><span> Benar</span></div>';    
+															$badge_salah = '<div class="badge badge-danger round"><i class="fa fa-times font-medium-2"></i><span> Salah</span></div>';    
+															$badge_ragu = '<div class="badge badge-warning round"><i class="icon-info font-medium-2"></i><span> Ragu</span></div>';    
+															?>
+											<h4 class="card-title">
+												@if (!empty($jawaban_ujian->jawaban))
+												Anda Menjawab : {{ $jawaban_ujian->jawaban }}
+												@else
+												Anda Tidak Menjawab
+												@endif
+												{!! ($jawaban_ujian->jawaban == $jawaban_ujian->soal->jawaban) ?
+												$badge_benar : $badge_salah !!}
+												{!! ($jawaban_ujian->status_jawaban == 'Y') ?
+													$badge_ragu : '' !!}
+											</h4>
+											@if (!empty($jawaban_ujian->waktu_jawab_soal))
+											<h4 class="card-title">
+												<?php
+												$date1 = new DateTime($jawaban_ujian->waktu_buka_soal);
+												$date2 = new DateTime($jawaban_ujian->waktu_jawab_soal);
+												$interval = $date1->diff($date2);
+
+												$waktu_menjawab = $interval->i . ' mnt ' . $interval->s . ' dtk' ;
+												?>
+												Waktu Menjawab : {{ $waktu_menjawab }}
+											</h4>
+											@endif
+										</div>
 									</div>
-									<div
-										class="alert alert-light border-success {{ ('C' == $jawaban_ujian->jawaban) ? (($jawaban_ujian->jawaban == $jawaban_ujian->soal->jawaban) ? 'bg-success' : 'bg-danger') :  (('C' == $jawaban_ujian->soal->jawaban) ? 'bg-success' : '') }}">
-										<?php $text_color = ('C' == $jawaban_ujian->jawaban) ? 'white' : (('C' == $jawaban_ujian->soal->jawaban) ? 'white' : 'success');  ?>
-										<span style="font-size: 1.5rem"
-											class="float-left mr-1 text-{{ $text_color }}">C. </span>{!!
-										$jawaban_ujian->soal->opsi_c !!}
+									<div class="card-footer border-top-blue-grey border-top-lighten-5 text-muted">
+										<h4 class="card-title">
+											Jawaban : {{ $jawaban_ujian->soal->jawaban }} <span class="float-right">( Poin :
+												{!! ($jawaban_ujian->jawaban == $jawaban_ujian->soal->jawaban) ? '<div
+													class="badge badge-success round">'.
+													number_format($jawaban_ujian->soal->bobot_soal->nilai * $topik->poin_topik,2,'.', '') .'</div>' :
+												'<div class="badge badge-danger round">'. 0 .'</div>' !!} )</span>
+										</h4>
+										{{-- <button class="btn btn-info btn-block btn_penjelasan"
+											data-id="{{ $jawaban_ujian->soal->id_soal }}">Minta Penjelasan
+										</button> --}}
 									</div>
-									<div
-										class="alert alert-light border-success {{ ('D' == $jawaban_ujian->jawaban) ? (($jawaban_ujian->jawaban == $jawaban_ujian->soal->jawaban) ? 'bg-success' : 'bg-danger') :  (('D' == $jawaban_ujian->soal->jawaban) ? 'bg-success' : '') }}">
-										<?php $text_color = ('D' == $jawaban_ujian->jawaban) ? 'white' : (('D' == $jawaban_ujian->soal->jawaban) ? 'white' : 'success');  ?>
-										<span style="font-size: 1.5rem"
-											class="float-left mr-1 text-{{ $text_color }}">D. </span>{!!
-										$jawaban_ujian->soal->opsi_d !!}
-									</div>
-									<div
-										class="alert alert-light border-success {{ ('E' == $jawaban_ujian->jawaban) ? (($jawaban_ujian->jawaban == $jawaban_ujian->soal->jawaban) ? 'bg-success' : 'bg-danger') :  (('E' == $jawaban_ujian->soal->jawaban) ? 'bg-success' : '') }}">
-										<?php $text_color = ('E' == $jawaban_ujian->jawaban) ? 'white' : (('E' == $jawaban_ujian->soal->jawaban) ? 'white' : 'success');  ?>
-										<span style="font-size: 1.5rem"
-											class="float-left mr-1 text-{{ $text_color }}">E. </span>{!!
-										$jawaban_ujian->soal->opsi_e !!}
+								</div>
+							</div>
+							<div class="col-md-12 col-sm-12">
+								<div class="card box-shadow-0 border-success bg-transparent">
+									{{-- <div class="card-header">
+												</div> --}}
+									<div class="card-content">
+										<div class="card-body">
+											<h4 class="card-title">Penjelasan :</h4>
+											<div class="">
+												@if (empty($jawaban_ujian->soal->penjelasan))
+												<p>Maaf, belum ada penjelasan mengenai soal ini.</p>
+												@else
+												{!! $jawaban_ujian->soal->penjelasan !!}
+												@endif
+											</div>
+										</div>
 									</div>
 								</div>
 							</div>
 						</div>
-					</div>
-					<div class="col-md-4 col-sm-12">
-						<div class="card box-shadow-0 border-blue bg-transparent">
-							{{-- <div class="card-header">
-											</div> --}}
-							<div class="card-content">
-								<div class="card-body">
-									<?php 
-													$badge_benar = '<div class="badge badge-success round"><i class="fa fa-check font-medium-2"></i><span> Benar</span></div>';    
-													$badge_salah = '<div class="badge badge-danger round"><i class="fa fa-times font-medium-2"></i><span> Salah</span></div>';    
-													?>
-									<h4 class="card-title">
-										@if (!empty($jawaban_ujian->jawaban))
-										Anda Menjawab : {{ $jawaban_ujian->jawaban }}
-										@else
-										Anda Tidak Menjawab
-										@endif
-										{!! ($jawaban_ujian->jawaban == $jawaban_ujian->soal->jawaban) ?
-										$badge_benar : $badge_salah !!}
-									</h4>
-									@if (!empty($jawaban_ujian->waktu_jawab_soal))
-									<h4 class="card-title">
-										<?php
-										$date1 = new DateTime($jawaban_ujian->waktu_buka_soal);
-										$date2 = new DateTime($jawaban_ujian->waktu_jawab_soal);
-										$interval = $date1->diff($date2);
-
-										$waktu_menjawab = $interval->i . ' mnt ' . $interval->s . ' dtk' ;
-										?>
-										Waktu Menjawab : {{ $waktu_menjawab }}
-									</h4>
-									@endif
-								</div>
-							</div>
-							<div class="card-footer border-top-blue-grey border-top-lighten-5 text-muted">
-								<h4 class="card-title">
-									Jawaban : {{ $jawaban_ujian->soal->jawaban }} <span class="float-right">( Poin :
-										{!! ($jawaban_ujian->jawaban == $jawaban_ujian->soal->jawaban) ? '<div
-											class="badge badge-success round">'.
-											number_format($jawaban_ujian->soal->bobot_soal->nilai * $topik->poin_topik,2,'.', '') .'</div>' :
-										'<div class="badge badge-danger round">'. 0 .'</div>' !!} )</span>
-								</h4>
-								{{-- <button class="btn btn-info btn-block btn_penjelasan"
-									data-id="{{ $jawaban_ujian->soal->id_soal }}">Minta Penjelasan
-								</button> --}}
-							</div>
-						</div>
-					</div>
-					<div class="col-md-12 col-sm-12">
-						<div class="card box-shadow-0 border-success bg-transparent">
-							{{-- <div class="card-header">
-										</div> --}}
-							<div class="card-content">
-								<div class="card-body">
-									<h4 class="card-title">Penjelasan :</h4>
-									<div class="">
-										@if (empty($jawaban_ujian->soal->penjelasan))
-										<p>Maaf, belum ada penjelasan mengenai soal ini.</p>
-										@else
-										{!! $jawaban_ujian->soal->penjelasan !!}
-										@endif
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
-				<?php $i++ ?>
-				@endforeach
+						<?php $i++ ?>
+					@endforeach
 				@endforeach
 				<!---- --->
 			</div>

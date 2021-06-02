@@ -285,8 +285,9 @@ class Ujian_model extends CI_Model {
 
     public function ambilSoal($pc_urut_soal1, $pc_urut_soal_arr)
     {
-        $this->db->select("*, {$pc_urut_soal1} AS jawaban");
-        $this->db->from('tb_soal');
+        $this->db->select("a.*, {$pc_urut_soal1} AS jawaban, b.*");
+        $this->db->from('tb_soal as a');
+        $this->db->join('section as b', 'a.section_id = b.id', 'left');
         $this->db->where('id_soal', $pc_urut_soal_arr);
         return $this->db->get()->row();
     }

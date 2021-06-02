@@ -45,7 +45,7 @@
     <div class="col-md-4">
         <div class="row mb-1 pt-1">
             <div class="col-md-4">
-                <img src="{{ asset('assets/imgs/') . APP_LOGO }}" style="width: 85px" alt="avatar">
+                <img src="{{ asset('uploads/img_app/') . APP_LOGO }}" style="width: 85px" alt="avatar">
             </div>
             <div class="col-md-8">
                 <span style="font-size: 18px;">Computer Assisted Test</span>
@@ -262,7 +262,7 @@
             <div class="card-body">
         <div class="row">
             <div class="col-md-4">
-                        <img src="{{ asset('assets/imgs/') . APP_LOGO }}" style="width: 85px" alt="avatar">
+                        <img src="{{ asset('uploads/img_app/') . APP_LOGO }}" style="width: 85px" alt="avatar">
             </div>
             <div class="col-md-8">
                 <span style="font-size: 18px;">Computer Assisted Test</span>

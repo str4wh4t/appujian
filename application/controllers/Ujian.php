@@ -19,13 +19,14 @@ use Orm\Bobot_soal_orm;
 use Orm\Mhs_ujian_orm;
 use Orm\Paket_orm;
 use Orm\Paket_ujian_orm;
+use Orm\Paket_history_orm;
 use Orm\Users_groups_orm;
 use Orm\Daftar_hadir_orm;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Capsule\Manager as DB;
 use Orm\Bundle_orm;
 use Orm\Ujian_bundle_orm;
-use Orm\Ujian_matkul_enable_orm;
+// use Orm\Ujian_matkul_enable_orm;
 use Carbon\Carbon;
 
 class Ujian extends MY_Controller
@@ -139,7 +140,11 @@ class Ujian extends MY_Controller
 		$data['peserta_avail'] = [];
 
 		$data['tahun_soal'] = Soal_orm::distinct()->pluck('tahun')->toArray();
-		$data['tahun_mhs'] = Mhs_orm::distinct()->pluck('tahun')->filter()->toArray();
+		$data['tahun_mhs'] = Mhs_orm::distinct()->pluck('tahun')->filter()->toArray(); // filter() untuk menghilangkan isian null
+		$data['prodi_list'] = Mhs_orm::distinct()->pluck('prodi')->toArray();
+		$data['jalur_list'] = Mhs_orm::distinct()->pluck('jalur')->filter()->toArray();
+		$data['gel_list'] = Mhs_orm::distinct()->pluck('gel')->filter()->toArray();
+		$data['smt_list'] = Mhs_orm::distinct()->pluck('smt')->filter()->toArray();
 
 		$data['bundle_avail'] = Bundle_orm::all();
 		$data['bundle_selected'] = [];
@@ -245,11 +250,23 @@ class Ujian extends MY_Controller
 
 		$data['tahun_soal'] = Soal_orm::distinct()->pluck('tahun')->toArray();
 		$data['tahun_mhs'] = Mhs_orm::distinct()->pluck('tahun')->filter()->toArray(); // FILTER TO REMOVE NULL
+		$data['prodi_list'] = Mhs_orm::distinct()->pluck('prodi')->toArray();
+		$data['jalur_list'] = Mhs_orm::distinct()->pluck('jalur')->filter()->toArray();
+		$data['gel_list'] = Mhs_orm::distinct()->pluck('gel')->filter()->toArray();
+		$data['smt_list'] = Mhs_orm::distinct()->pluck('smt')->filter()->toArray();
+
+		$filter_mhs = json_decode($ujian->filter_mhs);
+
+		if(empty((array)$filter_mhs))
+			show_error("Perhatian filter mhs tidak boleh kosong");
+
+		$data['filter_mhs'] = $filter_mhs;
 
 		$data['bundle_avail'] = Bundle_orm::all();
 		$data['bundle_selected'] = $bundle_selected;
 
-		$data['ujian_matkul_enable_ids'] = Ujian_matkul_enable_orm::where('ujian_id', $ujian->id_ujian)->pluck('matkul_id')->toArray();
+		// $data['ujian_matkul_enable_ids'] = Ujian_matkul_enable_orm::where('ujian_id', $ujian->id_ujian)->pluck('matkul_id')->toArray();
+		$data['ujian_matkul_enable_ids'] = null;
 
 		view('ujian/edit', $data);
 	}
@@ -576,7 +593,7 @@ class Ujian extends MY_Controller
 			]
 		);
 
-		$tahun_mhs = Mhs_orm::distinct()->pluck('tahun')->toArray();
+		$tahun_mhs = Mhs_orm::distinct()->pluck('tahun')->filter()->toArray();
 
 		$this->form_validation->set_rules(
 			'tahun_mhs',
@@ -598,15 +615,100 @@ class Ujian extends MY_Controller
 				'is_valid_tahun_mhs' => 'Tahun yg dimasukan salah',
 			]
 		);
+
+		$prodi_mhs = Mhs_orm::distinct()->pluck('prodi')->toArray();
+		$this->form_validation->set_rules(
+			'prodi[]',
+			'Prodi',
+			[
+				// 'required',
+				[
+					'is_valid_prodi_mhs',
+					function ($prodi) use ($prodi_mhs) {
+						if (!empty($prodi)) {
+							return in_array($prodi, $prodi_mhs);
+						} else {
+							return true;
+						}
+					}
+				]
+			],
+			[
+				'is_valid_prodi_mhs' => 'Prodi yg dimasukan salah',
+			]
+		);
+
+		$jalur_mhs = Mhs_orm::distinct()->pluck('jalur')->filter()->toArray();
+		$this->form_validation->set_rules(
+			'jalur[]',
+			'Jalur',
+			[
+				// 'required',
+				[
+					'is_valid_jalur_mhs',
+					function ($jalur) use ($jalur_mhs) {
+						if (!empty($jalur)) {
+							return in_array($jalur, $jalur_mhs);
+						} else {
+							return true;
+						}
+					}
+				]
+			],
+			[
+				'is_valid_jalur_mhs' => 'Jalur yg dimasukan salah',
+			]
+		);
+
+		$gel_mhs = Mhs_orm::distinct()->pluck('gel')->filter()->toArray();
+		$this->form_validation->set_rules(
+			'gel_mhs[]',
+			'Gel',
+			[
+				// 'required',
+				[
+					'is_valid_gel_mhs',
+					function ($gel) use ($gel_mhs) {
+						if (!empty($gel)) {
+							return in_array($gel, $gel_mhs);
+						} else {
+							return true;
+						}
+					}
+				]
+			],
+			[
+				'is_valid_gel_mhs' => 'Gel yg dimasukan salah',
+			]
+		);
+
+		$smt_mhs = Mhs_orm::distinct()->pluck('smt')->filter()->toArray();
+		$this->form_validation->set_rules(
+			'smt_mhs[]',
+			'Smt',
+			[
+				// 'required',
+				[
+					'is_valid_smt_mhs',
+					function ($smt) use ($smt_mhs) {
+						if (!empty($smt)) {
+							return in_array($smt, $smt_mhs);
+						} else {
+							return true;
+						}
+					}
+				]
+			],
+			[
+				'is_valid_smt_mhs' => 'Smt yg dimasukan salah',
+			]
+		);
 	}
 
 	public function save()
 	{
 
-		if (!$this->ion_auth->in_group('admin') && !$this->ion_auth->in_group('dosen')) {
-			show_404();
-		}
-		
+		$this->_akses_admin_dan_dosen();
 		
 		$this->_validasi();
 		$this->load->helper('string');
@@ -635,6 +737,10 @@ class Ujian extends MY_Controller
 				'tahun_mhs' 	=> form_error('tahun_mhs'),
 				'bundle[]' 	=> form_error('bundle[]'),
 				'mhs_matkul[]' 	=> form_error('mhs_matkul[]'),
+				'prodi[]' 	=> form_error('prodi[]'),
+				'jalur[]' 	=> form_error('jalur[]'),
+				'gel_mhs[]' 	=> form_error('gel_mhs[]'),
+				'smt_mhs[]' 	=> form_error('smt_mhs[]'),
 			];
 
 			$jumlah_soal_list = $this->input->post('jumlah_soal', true);
@@ -669,7 +775,7 @@ class Ujian extends MY_Controller
 			$method 		= $this->input->post('method', true);
 			$matkul_id 		= $this->input->post('matkul_id', true);
 			$bundle 		= $this->input->post('bundle[]');
-			$mhs_matkul 		= $this->input->post('mhs_matkul[]');
+			// $mhs_matkul 		= $this->input->post('mhs_matkul[]'); // SUDAH TIDAK DIPAKAI , 31/MAY/2021
 			$sumber_ujian 		= $this->input->post('sumber_ujian');
 			$nama_ujian 	= $this->input->post('nama_ujian', true);
 			$jumlah_soal_list = $this->input->post('jumlah_soal', true);
@@ -711,6 +817,18 @@ class Ujian extends MY_Controller
 				$waktu = $jml_waktu_topik;
 			}
 
+			$prodi 		= $this->input->post('prodi[]');
+			$jalur 		= $this->input->post('jalur[]');
+			$gel_mhs 		= $this->input->post('gel_mhs[]');
+			$smt_mhs 		= $this->input->post('smt_mhs[]');
+
+			$filter_mhs_array = [
+				'prodi' => empty($prodi) ? [] : $prodi,
+				'jalur'	=> empty($jalur) ? [] : $jalur,
+				'gel_mhs' => empty($gel_mhs) ? [] : $gel_mhs,
+				'smt_mhs' => empty($smt_mhs) ? [] : $smt_mhs,
+			];
+
 
 			//			$jumlah_soal_detail = json_encode($jumlah_soal_detail);
 			$tgl_mulai 		= $this->input->post('tgl_mulai', true);
@@ -740,7 +858,7 @@ class Ujian extends MY_Controller
 				'nama_ujian' 				=> $nama_ujian,
 				'sumber_ujian'				=> $sumber_ujian,
 				'bundle'					=> $bundle,
-				'mhs_matkul'					=> $mhs_matkul,
+				// 'mhs_matkul'					=> $mhs_matkul,
 				'matkul_id' 				=> empty($matkul_id) ? null : $matkul_id,
 				'jumlah_soal' 				=> $jumlah_soal,
 				// 'jumlah_soal_detail' => $jumlah_soal_detail,
@@ -757,6 +875,7 @@ class Ujian extends MY_Controller
 				'peserta' 					=> $peserta,
 				'is_sekuen_topik'			=> $is_sekuen_topik,
 				'urutan_topik'				=> json_encode($urutan_topik),
+				'filter_mhs'				=> json_encode($filter_mhs_array),
 			];
 
 			if ($method === 'add') {
@@ -795,6 +914,7 @@ class Ujian extends MY_Controller
 
 					$m_ujian_orm->is_sekuen_topik = $input['is_sekuen_topik'];
 					$m_ujian_orm->urutan_topik = $input['urutan_topik'];
+					$m_ujian_orm->filter_mhs = $input['filter_mhs'];
 
 					$m_ujian_orm->created_by = $user->username;
 					$m_ujian_orm->save();
@@ -835,15 +955,15 @@ class Ujian extends MY_Controller
 						}
 						Ujian_bundle_orm::insert($insert);
 
-						$insert = [] ;
-						foreach($input['mhs_matkul'] as $matkul_id){
-							$insert[] = [
-								'ujian_id' => $m_ujian_orm->id_ujian,
-								'matkul_id' => $matkul_id,
-								'created_at' => $now,
-							];
-						}
-						Ujian_matkul_enable_orm::insert($insert);
+						// $insert = [] ;
+						// foreach($input['mhs_matkul'] as $matkul_id){
+						// 	$insert[] = [
+						// 		'ujian_id' => $m_ujian_orm->id_ujian,
+						// 		'matkul_id' => $matkul_id,
+						// 		'created_at' => $now,
+						// 	];
+						// }
+						// Ujian_matkul_enable_orm::insert($insert);
 
 					}
 
@@ -893,6 +1013,7 @@ class Ujian extends MY_Controller
 
 					$m_ujian_orm->is_sekuen_topik = $input['is_sekuen_topik'];
 					$m_ujian_orm->urutan_topik = $input['urutan_topik'];
+					$m_ujian_orm->filter_mhs = $input['filter_mhs'];
 
 					$m_ujian_orm->updated_by = $user->username;
 					$m_ujian_orm->save();
@@ -914,17 +1035,23 @@ class Ujian extends MY_Controller
 					}
 					Topik_ujian_orm::insert($insert);
 
-					$mhs_ujian = Mhs_ujian_orm::where(['ujian_id' => $m_ujian_orm->id_ujian])
-						->whereDoesntHave('h_ujian')
-						->whereDoesntHave('h_ujian_history')
-						->get();
+					// $mhs_ujian = Mhs_ujian_orm::where(['ujian_id' => $m_ujian_orm->id_ujian])
+					// 	->whereDoesntHave('h_ujian')
+					// 	->whereDoesntHave('h_ujian_history')
+					// 	->get();
 
-					$peserta_ujian_before = [];
-					if ($mhs_ujian->isNotEmpty()) {
-						foreach ($mhs_ujian as $mu) {
-							$peserta_ujian_before[] = $mu->mahasiswa_id;
-						}
-					}
+					// $peserta_ujian_before = [];
+					// if ($mhs_ujian->isNotEmpty()) {
+					// 	foreach ($mhs_ujian as $mu) {
+					// 		$peserta_ujian_before[] = $mu->mahasiswa_id;
+					// 	}
+					// }
+
+					$peserta_ujian_before = Mhs_ujian_orm::where(['ujian_id' => $m_ujian_orm->id_ujian])
+															->whereDoesntHave('h_ujian')
+															->whereDoesntHave('h_ujian_history')
+															->pluck('mahasiswa_id')
+															->toArray();
 
 					$mhs_ids_insert = array_diff($peserta, $peserta_ujian_before);
 					$mhs_ids_delete = array_diff($peserta_ujian_before, $peserta);
@@ -951,6 +1078,7 @@ class Ujian extends MY_Controller
 						Mhs_ujian_orm::insert($insert);
 					}
 
+					// [START] EDIT EXISTING H_UJIAN
 					$h_ujian_list = Hujian_orm::where('ujian_id', $m_ujian_orm->id_ujian)->get();
 					if($h_ujian_list->isNotEmpty()){
 						$this->load->library('socket');
@@ -973,8 +1101,8 @@ class Ujian extends MY_Controller
 							}
 							$h_ujian->save();
 						}
-
 					}
+					// [STOP] EDIT EXISTING H_UJIAN
 
 					// if($matkul_sumber_ujian_before == 'bundle'){
 						if($input['sumber_ujian'] == 'bundle'){
@@ -1004,27 +1132,27 @@ class Ujian extends MY_Controller
 							// [STOP] LOGIC ujian_bundle
 
 							// [START] LOGIC ujian_matkul_enable
-							$ujian_matkul_enable_before = $m_ujian_orm->ujian_matkul_enable()->pluck('matkul_id')->toArray();
-							$ujian_matkul_enable_ids_insert = array_diff($input['mhs_matkul'], $ujian_matkul_enable_before);
-							$ujian_matkul_enable_ids_delete = array_diff($ujian_matkul_enable_before, $input['mhs_matkul']);
+							// $ujian_matkul_enable_before = $m_ujian_orm->ujian_matkul_enable()->pluck('matkul_id')->toArray();
+							// $ujian_matkul_enable_ids_insert = array_diff($input['mhs_matkul'], $ujian_matkul_enable_before);
+							// $ujian_matkul_enable_ids_delete = array_diff($ujian_matkul_enable_before, $input['mhs_matkul']);
 
-							if(!empty($ujian_matkul_enable_ids_insert)){
-								$insert = [];
-								foreach($ujian_matkul_enable_ids_insert as $matkul_id){
-									$insert[] = [
-										'ujian_id' => $id_ujian,
-										'matkul_id' => $matkul_id,
-										'created_at' => $now,
-									];
-								}
-								Ujian_matkul_enable_orm::insert($insert);
-							}
+							// if(!empty($ujian_matkul_enable_ids_insert)){
+							// 	$insert = [];
+							// 	foreach($ujian_matkul_enable_ids_insert as $matkul_id){
+							// 		$insert[] = [
+							// 			'ujian_id' => $id_ujian,
+							// 			'matkul_id' => $matkul_id,
+							// 			'created_at' => $now,
+							// 		];
+							// 	}
+							// 	Ujian_matkul_enable_orm::insert($insert);
+							// }
 
-							if(!empty($ujian_matkul_enable_ids_delete)){
-								Ujian_matkul_enable_orm::where('ujian_id', $id_ujian)
-												->whereIn('matkul_id', $ujian_matkul_enable_ids_delete)
-												->delete();
-							}
+							// if(!empty($ujian_matkul_enable_ids_delete)){
+							// 	Ujian_matkul_enable_orm::where('ujian_id', $id_ujian)
+							// 					->whereIn('matkul_id', $ujian_matkul_enable_ids_delete)
+							// 					->delete();
+							// }
 							// [STOP] LOGIC ujian_matkul_enable
 
 
@@ -1695,7 +1823,7 @@ class Ujian extends MY_Controller
 				$i = 0;
 			}
 
-			$waktu_selesai 	= date('Y-m-d H:i:s', strtotime("+{$ujian->waktu} minute"));
+			$waktu_selesai 	= date('Y-m-d H:i:s', strtotime('+'. $ujian->waktu .'minute'));
 
 			if(!empty($ujian->terlambat)){
 				$waktu_selesai 	= $waktu_selesai > $date_end ? $date_end : $waktu_selesai;
@@ -1826,12 +1954,17 @@ class Ujian extends MY_Controller
 
 		$urut_soal 		= explode(",", $list_jawaban);
 		$soal_urut_ok	= [];
+		// vdebug($urut_soal); // contoh ; urut_soal = [[0] => 4583::, [1] => 4578::]
 		for ($i = 0; $i < sizeof($urut_soal); $i++) {
 			$pc_urut_soal	= explode(":", $urut_soal[$i]);
+			// $pc_urut_soal[0] ==> adalah id soal nya
+			// $pc_urut_soal[1] ==> adalah abjad jawaban nya
 			$pc_urut_soal1 	= empty($pc_urut_soal[1]) ? "''" : "'{$pc_urut_soal[1]}'";
 			$ambil_soal 	= $this->ujian->ambilSoal($pc_urut_soal1, $pc_urut_soal[0]);
 			$soal_urut_ok[] = $ambil_soal;
 		}
+
+		// vdebug($soal_urut_ok);
 
 		$pc_list_jawaban = explode(",", $list_jawaban);
 		$arr_jawab = array();
@@ -1856,8 +1989,14 @@ class Ujian extends MY_Controller
 				$html .= '<input type="hidden" name="rg_'. $no .'" id="rg_'. $no .'" value="'. $vrg .'">';
 				$html .= '<input type="hidden" name="topik_id_'. $no .'" id="topik_id_'. $no .'" value="'. $s->topik_id .'">';
 
+				$html_section = '';
+				if(!empty($s->section_id)){
+					$html_section = '<div id="preview_section" class="alert text-muted border border-info" style="">'. $s->konten .'</div><br />';
+				}
+
 				$html_pertanyaan .= '<div class="step step_pertanyaan" id="widget_'. $no .'">
 										<div class="pertanyaan">
+											'. $html_section .'
 											<div class="media-pertanyaan">'. tampil_media($path . $s->file) .'</div>
 											<div>'. $s->soal .'</div>
 										</div>
@@ -2706,6 +2845,8 @@ class Ujian extends MY_Controller
 		}
 		try{
 			begin_db_trx();
+			// vdebug(date('Y-m-d H:i:s', strtotime($h_ujian->tgl_selesai)));
+			// vdebug(date('Y-m-d H:i:s', $h_ujian->tgl_mulai));
 			/** INSERT JAWABAN UJIAN SEBELUMNYA KE HISTORY */
 			$h_ujian_history = new Hujian_history_orm();
 			$h_ujian_history->ujian_id = $h_ujian->ujian_id; 
@@ -2821,22 +2962,45 @@ class Ujian extends MY_Controller
 	}
 
 	protected function _asign_ujian_paket(){
+
+		$this->_akses_admin();
+
 		$selected_paket = $this->input->post('selected_paket');
 		$selected_ujian = $this->input->post('selected_ujian');
 		$is_ignore_paket = $this->input->post('is_ignore_paket') == 'true' ? true : false;
 		try{
+			begin_db_trx();
 			$selected_paket = json_decode($selected_paket);
 			$selected_ujian = json_decode($selected_ujian);
 			$now = Carbon::now('utc')->toDateTimeString();
 			if(!empty($selected_paket)){
+				
 				if(!$is_ignore_paket){
 					$paket_ids_before = Paket_ujian_orm::whereIn('ujian_id', $selected_ujian)
 											->pluck('paket_id')
 											->toArray();
+											
 					$paket_ids_delete = array_diff($paket_ids_before, $selected_paket);
 					if(!empty($paket_ids_delete)){
 						Paket_ujian_orm::whereIn('paket_id', $paket_ids_delete)->whereIn('ujian_id', $selected_ujian)->delete();
 					}
+
+					// [START] LOGIC UN-ASIGN EXISTING MHS YG TELAH PUNYA PAKET DARI UJIAN YG DIHAPUS YG TERKAIT PAKET
+					$mhs_ids_existing_in_paket = Paket_history_orm::whereIn('paket_id', $selected_paket)
+											->where('stts', 1)
+											->pluck('mahasiswa_id')
+											->toArray();
+
+					$mhs_ids_existing_in_ujian = Mhs_ujian_orm::whereIn('ujian_id', $selected_ujian)
+											->pluck('mahasiswa_id')	
+											->toArray();
+
+					$mhs_ids_delete = array_diff($mhs_ids_existing_in_ujian, $mhs_ids_existing_in_paket);
+
+					if(!empty($mhs_ids_delete)){
+						Mhs_ujian_orm::whereIn('mahasiswa_id', $mhs_ids_delete)->delete();
+					}
+					// [STOP] LOGIC UN-ASIGN EXISTING MHS YG TELAH PUNYA PAKET DARI UJIAN YG DIHAPUS YG TERKAIT PAKET
 				}
 				// $bundle_ids_delete = array_diff($soal_ids_before, $selected_soal);
 				foreach($selected_paket as $paket_id){
@@ -2846,6 +3010,10 @@ class Ujian extends MY_Controller
 											->toArray();
 					$ujian_ids_insert = array_diff($selected_ujian, $ujian_ids_before);
 					// $soal_ids_delete = array_diff($soal_ids_before, $selected_soal);
+
+					$mhs_ids_existing_in_paket = Paket_history_orm::where(['paket_id' => $paket_id, 'stts' => 1])
+											->pluck('mahasiswa_id')
+											->toArray();
 
 					$insert = [];
 					if(!empty($ujian_ids_insert)){
@@ -2857,20 +3025,181 @@ class Ujian extends MY_Controller
 							];
 						}
 						Paket_ujian_orm::insert($insert);
+
+						// [START] LOGIC ASIGN EXISTING MHS YG TELAH PUNYA PAKET TO UJIAN BARU YG TERKAIT PAKET
+						foreach($ujian_ids_insert as $ujian_id){
+							$mhs_ids_existing_in_ujian = Mhs_ujian_orm::where('ujian_id', $ujian_id)
+											->pluck('mahasiswa_id')
+											->toArray();
+
+							$mhs_ids_insert = array_diff($mhs_ids_existing_in_paket, $mhs_ids_existing_in_ujian);
+							$insert_mhs = [];
+							if(!empty($mhs_ids_insert)){
+								$paket = Paket_orm::findOrFail($paket_id);
+								foreach($mhs_ids_insert as $mhs_id){
+									$insert_mhs[] = [
+										'mahasiswa_id' => $mhs_id,
+										'ujian_id' => $ujian_id,
+										'sisa_kuota_latihan_soal' => $paket->kuota_latihan_soal,
+										'created_at' => $now,
+									];
+								}
+								Mhs_ujian_orm::insert($insert_mhs);
+							}
+
+						}
+						// [END] LOGIC ASIGN EXISTING MHS YG TELAH PUNYA PAKET TO UJIAN BARU YG TERKAIT PAKET
 					}
 				}
+
+				if(!empty($selected_ujian)){
+					$ujian_list = Mujian_orm::whereIn('id_ujian', $selected_ujian)->get();
+					foreach($ujian_list as $ujian){
+						// REMOVE FILTER PADA UJIAN TERKAIT
+						$ujian->filter_mhs = json_encode(['jalur' => [], 'prodi' => [], 'gel_mhs' => [], 'smt_mhs' => []]);
+						$ujian->mhs_kelompok_ujian = null;
+						$ujian->mhs_tgl_ujian = null;
+						$ujian->mhs_tahun = null;
+						$ujian->save();
+					}
+				}
+
 			}else{
 				if(!$is_ignore_paket){
 					Paket_ujian_orm::whereIn('ujian_id', $selected_ujian)->delete();
+					Mhs_ujian_orm::whereIn('ujian_id', $selected_ujian)->delete();
 				}
 			}
 
+
+			commit_db_trx();
 			$this->_json(['stts' => 'ok']);
 
 		}catch(Exception $e){
-
+			rollback_db_trx();
 			$this->_json(['stts' => 'ko', 'msg' => $e->getMessage()]);
 		}
+	}
+
+	protected function _get_peserta(){
+
+		$this->_akses_selain_mahasiswa();
+
+		$mhs = [];
+		$filter_data	= $this->input->post('filter');
+		$filter_table_data	= $this->input->post('filter_table');
+		$tgl_ujian	= $this->input->post('tgl_ujian');
+		$filter			= [];
+		$filter_table			= [];
+
+		$query = Mhs_orm::query();
+
+		if (!empty($filter_data)) {
+			foreach ($filter_data as $key => $v) {
+				if($v != 'null'){
+					$filter[$key] = $v;
+				}
+			}
+			if(!empty($filter)){
+				$query->where($filter);
+			}
+		}
+
+		if($tgl_ujian != 'null'){
+			$query->where('tgl_ujian', $tgl_ujian);
+		}
+
+		if (!empty($filter_table_data)) {
+			foreach ($filter_table_data as $key => $v) {
+				$val = [];
+				if(!empty($v)){
+					foreach($v as $d){
+						$val[] = $d;
+					}
+					if(!empty($val)){
+						$filter_table[$key] = $val;
+					}
+				}
+			}
+
+			$query = Mhs_orm::query();
+			if(!empty($filter_table)){
+				foreach($filter_table as $key => $v){
+					$query->whereIn($key, $v);
+				}
+			}
+		}
+
+		$mhs = $query->get();
+
+		// $this->_json(['mhs' => $mhs,'mhs_ujian' => $mhs_ujian]);
+		$this->_json(['mhs' => $mhs]);
+	}
+
+	protected function _get_peserta_ujian(){
+
+		$this->_akses_selain_mahasiswa();
+
+		$mhs = [];
+		$ujian_id	= $this->input->post('id');
+		$m_ujian = Mujian_orm::findOrFail($ujian_id);
+		$filter_data	= $this->input->post('filter');
+		$filter_table_data	= $this->input->post('filter_table');
+		$tgl_ujian	= $this->input->post('tgl_ujian');
+		$filter			= [];
+		$filter_table			= [];
+
+		$query = Mhs_orm::query();
+
+		if (!empty($filter_data)) {
+			foreach ($filter_data as $key => $v) {
+				if($v != 'null'){
+					$filter[$key] = $v;
+				}
+			}
+			if(!empty($filter)){
+				$query->where($filter);
+			}
+		}
+
+		if($tgl_ujian != 'null'){
+			$query->where('tgl_ujian', $tgl_ujian);
+		}
+
+		if (!empty($filter_table_data)) {
+			foreach ($filter_table_data as $key => $v) {
+				$val = [];
+				if(!empty($v)){
+					foreach($v as $d){
+						$val[] = $d;
+					}
+					if(!empty($val)){
+						$filter_table[$key] = $val;
+					}
+				}
+			}
+
+			$query = Mhs_orm::query();
+			if(!empty($filter_table)){
+				foreach($filter_table as $key => $v){
+					$query->whereIn($key, $v);
+				}
+			}
+		}
+
+		$mhs = $query->get();
+
+		$mhs_ujian = $m_ujian->mhs_ujian()->pluck('mahasiswa_id')->toArray() ;
+
+		$mhs_ujian_has_hasil = Hujian_orm::where('ujian_id', $ujian_id)->pluck('mahasiswa_id')->toArray() ;
+		$mhs_ujian_has_hasil_history = Hujian_history_orm::where('ujian_id', $ujian_id)->pluck('mahasiswa_id')->toArray() ;
+		
+		$mhs_ujian_has_hasil_valid = array_unique(array_merge($mhs_ujian_has_hasil, $mhs_ujian_has_hasil_history), SORT_REGULAR);
+
+		$mhs_ujian_valid = array_diff($mhs_ujian, $mhs_ujian_has_hasil_valid);
+
+		// $this->_json(['mhs' => $mhs,'mhs_ujian' => $mhs_ujian]);
+		$this->_json(['mhs' => $mhs, 'mhs_ujian' => $mhs_ujian_valid]);
 	}
 
 	//	function c(){

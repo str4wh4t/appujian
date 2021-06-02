@@ -12,8 +12,8 @@
 	<title>@yield('title', APP_NAME)</title>
 	<meta name="description" content="{{ APP_DESC }}">
 
-	<link rel="apple-touch-icon" href="{{ asset('assets/icon/'. APP_FAVICON_APPLE .'.png') }}">
-	<link rel="shortcut icon" type="image/x-icon" href="{{ asset('assets/icon/'. APP_FAVICON .'.ico') }}">
+	<link rel="apple-touch-icon" href="{{ asset('assets/icon/'. APP_FAVICON_APPLE) }}">
+	<link rel="shortcut icon" type="image/x-icon" href="{{ asset('assets/icon/'. APP_FAVICON) }}">
 	<link href="{{ asset('assets/yarn/node_modules/typeface-muli/index.css') }}" rel="stylesheet">
 	<link href="{{ asset('assets/yarn/node_modules/typeface-open-sans/index.css') }}" rel="stylesheet">
 

@@ -248,10 +248,7 @@ class Matkul extends MY_Controller
 			
 			if($sumber_ujian == 'materi'){
 				$matkul = Matkul_orm::findOrFail($id);
-				// $mhs = $matkul->mhs;
-				// if(!empty($filter)){ /** TIDAK PERLU DI CEK EMPTY */
-					$mhs = $matkul->mhs()->where($filter)->get();
-				// }
+				$mhs = $matkul->mhs()->where($filter)->get();
 
 			}else if($sumber_ujian == 'bundle'){
 				$bundle_list = Bundle_orm::whereIn('id', $bundle_ids)->get();
@@ -283,24 +280,7 @@ class Matkul extends MY_Controller
 					}
 				}
 			}
-				
-			// $filter_tahun_mhs = isset($filter['tahun']) ? $filter['tahun'] : null ;
-				
-			// $ujian_id = $this->input->post('ujian_id');
-			// if(!empty($ujian_id)){
-				// $filter_tahun_mhs = isset($filter['tahun']) ? $filter['tahun'] : null ;
-				// $mhs_ujian = $matkul->mhs_matkul()
-				// 					->whereHas('mhs', function(Builder $query) use ($filter_tahun_mhs) {
-				// 						if(!empty($filter_tahun_mhs))
-				// 						$query->where('tahun', $filter_tahun_mhs);
-				// 					})
-				// 					->whereHas('mhs_ujian', function (Builder $query) use ($ujian_id){
-				// 						$query->where('ujian_id', $ujian_id);
-				// 					})
-				// 					->get();
-			// }else {
-				// $mhs_ujian = [];
-			// }
+			
 		}
 		$this->_json(['mhs' => $mhs,'mhs_ujian' => $mhs_ujian]);
 	}

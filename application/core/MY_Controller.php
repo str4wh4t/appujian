@@ -59,5 +59,19 @@ class MY_Controller extends CI_Controller {
 			show_error('Halaman ini khusus untuk pengawas', 403, 'Akses Terlarang');
 		}
     }
+
+	protected function _akses_selain_mahasiswa()
+    {
+        if ( $this->ion_auth->in_group('mahasiswa') ){
+			show_error('Halaman ini khusus untuk selain mahasiswa', 403, 'Akses Terlarang');
+		}
+    }
+
+	protected function _akses_admin_dan_dosen()
+    {
+        if (!$this->ion_auth->in_group('admin') && !$this->ion_auth->in_group('dosen')) {
+			show_error('Halaman ini khusus untuk selain mahasiswa', 403, 'Akses Terlarang');
+		}
+    }
 	
 }

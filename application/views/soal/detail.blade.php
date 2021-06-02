@@ -77,16 +77,16 @@ function init_page_level(){
     <div class="col-sm-12">
         <table class="table table-bordered">
             <tr>
-                <td>Matkul</td><td>{{ $soal_orm->topik->matkul->nama_matkul }}</td>
+                <td>Matkul</td><td>{{ $soal->topik->matkul->nama_matkul }}</td>
             </tr>
             <tr>
-                <td>Topik</td><td>{{ $soal_orm->topik->nama_topik }}</td>
+                <td>Topik</td><td>{{ $soal->topik->nama_topik }}</td>
             </tr>
             <tr>
-                <td>No Urut</td><td>{{ $soal_orm->no_urut }}</td>
+                <td>No Urut</td><td>{{ $soal->no_urut }}</td>
             </tr>
             <tr>
-                <td>Bobot</td><td>{{ $soal_orm->bobot_soal->bobot }}</td>
+                <td>Bobot</td><td>{{ $soal->bobot_soal->bobot }}</td>
             </tr>
             <tr>
                 <td>Dibuat Oleh</td><td>{{ get_nama_lengkap_user($user) }}</td>
@@ -102,11 +102,20 @@ function init_page_level(){
         <div class="alert bg-info mb-2" role="alert">
             <strong>Pertanyaan</strong>
         </div>
-        <?php if(!empty($soal->file)): ?>
-            <div class="w-50">
-                <?= tampil_media('uploads/bank_soal/'.$soal->file); ?>
-            </div>
-        <?php endif; ?>
+
+        @if(!empty($soal->file))
+        <div class="w-50">
+            <?= tampil_media('uploads/bank_soal/'.$soal->file); ?>
+        </div>
+        @endif
+
+        @if(!empty($soal->section_id))
+        <div id="preview_section" class="alert text-muted border border-info" style="">
+            {!! $soal->section->konten !!}
+        </div>
+        <br />
+        @endif
+
         {!! $soal->soal !!}
         <div class="alert bg-danger mb-2 mt-2" role="alert">
             <strong>Jawaban</strong>

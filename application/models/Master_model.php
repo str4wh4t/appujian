@@ -89,10 +89,13 @@ class Master_model extends CI_Model {
         
         $dt = new Datatables( new MySQL($config) );
         
-        $this->db->select('a.id_mahasiswa, a.nama, a.nim, a.email, a.prodi, GROUP_CONCAT(c.nama_matkul SEPARATOR "---") as nama_matkul, (SELECT COUNT(id) FROM users WHERE username = a.nim GROUP BY a.nim) AS ada');
+        // $this->db->select('a.id_mahasiswa, a.nama, a.nim, a.email, a.prodi, GROUP_CONCAT(c.nama_matkul SEPARATOR "---") as nama_matkul, (SELECT COUNT(id) FROM users WHERE username = a.nim GROUP BY a.nim) AS ada');
+        // $this->db->from('mahasiswa a');
+        // $this->db->join('mahasiswa_matkul b', 'b.mahasiswa_id = a.id_mahasiswa', 'left');
+        // $this->db->join('matkul c', 'c.id_matkul = b.matkul_id', 'left');
+
+        $this->db->select('a.id_mahasiswa, a.nama, a.nim, a.email, a.prodi, (SELECT COUNT(id) FROM users WHERE username = a.nim GROUP BY a.nim) AS ada');
         $this->db->from('mahasiswa a');
-        $this->db->join('mahasiswa_matkul b', 'b.mahasiswa_id = a.id_mahasiswa', 'left');
-        $this->db->join('matkul c', 'c.id_matkul = b.matkul_id', 'left');
 
         $this->db->group_by('a.id_mahasiswa');
 

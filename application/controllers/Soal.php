@@ -8,6 +8,7 @@ use Orm\Topik_orm;
 use Orm\Users_orm;
 use Orm\Bundle_orm;
 use Orm\Bundle_soal_orm;
+use Orm\Section_orm;
 use Illuminate\Database\Eloquent\Builder;
 use Ozdemir\Datatables\Datatables;
 use Ozdemir\Datatables\DB\MySQL;
@@ -121,8 +122,7 @@ class Soal extends MY_Controller
 			//			'user'      => $user,
 			'judul'	    => 'Soal',
 			'subjudul'  => 'Detail Soal',
-			'soal'      => $this->soal->getSoalById($id),
-			'soal_orm'      => $soal_orm,
+			'soal'      => $soal_orm,
 			'prev'	=> $prev,
 			'next'	=> $next,
 			'user' => $maker,
@@ -162,6 +162,8 @@ class Soal extends MY_Controller
 
 		$data['bundle_avail'] = Bundle_orm::all();
 		$data['bundle_selected'] = $data['bundle_selected'] ?? [];
+
+		$data['section_avail'] = Section_orm::all();
 
 		//		$this->load->view('_templates/dashboard/_header.php', $data);
 		//		$this->load->view('soal/add');
@@ -212,6 +214,8 @@ class Soal extends MY_Controller
 
 		$data['bundle_avail'] = Bundle_orm::all();
 		$data['bundle_selected'] = $data['bundle_selected'] ?? $soal->bundle()->pluck('bundle.id')->toArray();
+
+		$data['section_avail'] = Section_orm::all();
 
 		//		$this->load->view('_templates/dashboard/_header.php', $data);
 		//		$this->load->view('soal/edit');
@@ -328,6 +332,7 @@ class Soal extends MY_Controller
 				'is_valid_bundle' => 'Bundle yg dimasukan salah',
 			]
 		);
+
 	}
 
 	private function _file_config()
@@ -339,7 +344,7 @@ class Soal extends MY_Controller
 		];
 		$config['upload_path']      = FCPATH . 'uploads/bank_soal/';
 		$config['allowed_types']    = 'jpeg|jpg|png|gif|mpeg|mpg|mpeg3|mp3|wav|wave|mp4';
-		$config['encrypt_name']     = TRUE;
+		$config['encrypt_name']     = true;
 
 		return $this->load->library('upload', $config);
 	}
@@ -360,7 +365,7 @@ class Soal extends MY_Controller
 		$this->_validasi();
 		// $this->_file_config();
 
-		if ($this->form_validation->run() === FALSE) {
+		if ($this->form_validation->run() === false) {
 			// VALIDASI SALAH
 			$bundle_selected = empty($this->input->post('bundle[]')) ? [] : $this->input->post('bundle[]');
 			$stts = 'ko' ;
@@ -381,6 +386,7 @@ class Soal extends MY_Controller
 				'tahun'     => $this->input->post('tahun', true),
 				'penjelasan'     => $this->input->post('penjelasan'),
 				'bundle'     => $this->input->post('bundle[]'),
+				'section_id'     => $this->input->post('section_id', true),
 			];
 
 			// vdebug($data['penjelasan']);
@@ -452,11 +458,12 @@ class Soal extends MY_Controller
 			$ok = true ;
 			$error = null ;
 
+			// vdebug($data);
 			if ($aksi === 'add') {
-				//push array
+				// push array
 				// $data['created_at'] = date('Y-m-d H:i:s');
 				// $data['created_by']   = $this->ion_auth->user()->row()->username;
-				//insert data
+				// insert data
 				// $this->master->create('tb_soal', $data);
 				try{
 					begin_db_trx();
@@ -491,6 +498,7 @@ class Soal extends MY_Controller
 					// $soal->penjelasan = $data['penjelasan'];
 					$soal->created_by = $this->ion_auth->user()->row()->username;
 					$soal->no_urut = $no_urut ;
+					$soal->section_id = empty($data['section_id']) ? null : $data['section_id'];
 					$soal->save();
 
 					$soal_temp = Soal_orm::findOrFail($soal->id_soal);
@@ -654,6 +662,7 @@ class Soal extends MY_Controller
 					$soal->topik_id = $data['topik_id'];
 					// $soal->penjelasan = $data['penjelasan'];
 					$soal->created_by = $this->ion_auth->user()->row()->username;
+					$soal->section_id = empty($data['section_id']) ? null : $data['section_id'];
 					// $soal->save();
 
 					// $soal_temp = Soal_orm::findOrFail($id_soal);
@@ -1027,7 +1036,7 @@ class Soal extends MY_Controller
 			$this->form_validation->set_rules('aksi', 'Aksi', 'required');
 			$this->form_validation->set_rules('bobot', 'Bobot', 'required');
 			$this->form_validation->set_rules('nilai', 'Nilai', 'required|decimal|greater_than[0]');
-			if ($this->form_validation->run() === FALSE) {
+			if ($this->form_validation->run() === false) {
 				// VALIDASI SALAH
 				$data = [
 					'status'	=> false,
@@ -1068,7 +1077,7 @@ class Soal extends MY_Controller
 			$this->form_validation->set_rules('aksi', 'Aksi', 'required');
 			$this->form_validation->set_rules('id', 'ID', 'required');
 			$this->form_validation->set_rules('nama_bundle', 'Nama Bundle', 'required');
-			if ($this->form_validation->run() === FALSE) {
+			if ($this->form_validation->run() === false) {
 				// VALIDASI SALAH
 				$data = [
 					'status'	=> false,
@@ -1471,55 +1480,55 @@ class Soal extends MY_Controller
 		//		$data = [];
 		try {
 			begin_db_trx();
-			$allow = TRUE;
-			$msg   = NULL;
+			$allow = true;
+			$msg   = null;
 			//		vdebug($input);
 			foreach ($input as $d) {
 				$topik_id = $d->topik_id;
-				if (Topik_orm::find($topik_id) == NULL) {
-					$allow = FALSE;
+				if (Topik_orm::find($topik_id) == null) {
+					$allow = false;
 					$msg   = 'Topik ID bermasalah, topik_id : ' . $topik_id;
 					break;
 				}
 
 				$isi_soal = $d->soal;
 				if (empty($isi_soal)) {
-					$allow = FALSE;
+					$allow = false;
 					$msg   = 'Soal salah, soal : ' . $isi_soal;
 					break;
 				}
 
 				$opsi_a = $d->opsi_a;
 				if (empty($opsi_a)) {
-					$allow = FALSE;
+					$allow = false;
 					$msg   = 'Opsi A salah, opsi_a : ' . $opsi_a;
 					break;
 				}
 
 				$opsi_b = $d->opsi_b;
 				if (empty($opsi_b)) {
-					$allow = FALSE;
+					$allow = false;
 					$msg   = 'Opsi B salah, opsi_b : ' . $opsi_b;
 					break;
 				}
 
 				$opsi_c = $d->opsi_c;
 				if (empty($opsi_c)) {
-					$allow = FALSE;
+					$allow = false;
 					$msg   = 'Opsi C salah, opsi_c : ' . $opsi_c;
 					break;
 				}
 
 				$opsi_d = $d->opsi_d;
 				if (empty($opsi_d)) {
-					$allow = FALSE;
+					$allow = false;
 					$msg   = 'Opsi D salah, opsi_d : ' . $opsi_d;
 					break;
 				}
 
 				$opsi_e = $d->opsi_e;
 				if (empty($opsi_e)) {
-					$allow = FALSE;
+					$allow = false;
 					$msg   = 'Opsi E salah, opsi_e : ' . $opsi_e;
 					break;
 				}
@@ -1532,48 +1541,63 @@ class Soal extends MY_Controller
 					'D',
 					'E'
 				])) {
-					$allow = FALSE;
+					$allow = false;
 					$msg   = 'Jawaban bermasalah, jawaban : ' . $jawaban;
 					break;
 				}
 
 				$penjelasan = empty($d->penjelasan) ? null : $d->penjelasan;
 				// if (empty($penjelasan)) {
-				// 	$allow = FALSE;
+				// 	$allow = false;
 				// 	$msg   = 'Penjelasan salah, penjelasan : ' . $penjelasan;
 				// 	break;
 				// }
 
 				$bobot_soal_id = $d->bobot_soal_id;
-				if (Bobot_soal_orm::find($bobot_soal_id) == NULL) {
-					$allow = FALSE;
+				if (Bobot_soal_orm::find($bobot_soal_id) == null) {
+					$allow = false;
 					$msg   = 'Bobot soal ID bermasalah, bobot_soal_id : ' . $bobot_soal_id;
 					break;
 				}
 
 				$gel = strval($d->gel);
 				if (!ctype_digit($gel)) {
-					$allow = FALSE;
+					$allow = false;
 					$msg   = 'Gel salah, gel : ' . $gel;
 					break;
 				}
 
 				$smt = strval($d->smt);
 				if (!ctype_digit($smt)) {
-					$allow = FALSE;
+					$allow = false;
 					$msg   = 'Smt salah, smt : ' . $smt;
 					break;
 				}
 
 				$tahun = $d->tahun;
 				if (strlen($tahun) != 4 || !ctype_digit($tahun)) {
-					$allow = FALSE;
+					$allow = false;
 					$msg   = 'Tahun salah, tahun : ' . $tahun;
 					break;
 				}
 
+				$no_urut = 0 ;
+				$soal_before = Soal_orm::where('topik_id', $topik_id)
+									->orderBy('created_at', 'desc')
+									->first();
+
+				if(empty($soal_before))
+					$no_urut = 1;
+				else{
+					if(empty($soal_before->no_urut))
+						$no_urut = 1;
+					else
+						$no_urut = ($soal_before->no_urut) + 1;
+				}
+
 				$soal                = new Soal_orm();
 				$soal->topik_id      = $topik_id;
+				$soal->no_urut       = $no_urut;
 				$soal->soal          = '<p>' . $isi_soal . '</p>';
 				$soal->opsi_a        = '<p>' . $opsi_a . '</p>';
 				$soal->opsi_b        = '<p>' . $opsi_b . '</p>';
@@ -1632,6 +1656,7 @@ class Soal extends MY_Controller
 		$selected_soal = $this->input->post('selected_soal');
 		$is_ignore_bundle = $this->input->post('is_ignore_bundle') == 'true' ? true : false;
 		try{
+			begin_db_trx();
 			$selected_bundle = json_decode($selected_bundle);
 			$selected_soal = json_decode($selected_soal);
 			$now = Carbon::now('utc')->toDateTimeString();
@@ -1685,7 +1710,82 @@ class Soal extends MY_Controller
 				}
 			}
 
+			commit_db_trx();
 			$this->_json(['stts' => 'ok']);
+
+		}catch(Exception $e){
+			rollback_db_trx();
+			$this->_json(['stts' => 'ko', 'msg' => $e->getMessage()]);
+		}
+
+	}
+
+	protected function _save_section(){
+		$keterangan = $this->input->post('keterangan');
+		$konten = $this->input->post('konten');
+
+		try{
+			begin_db_trx();
+			$section = new Section_orm();
+			$section->keterangan = $keterangan;
+			$section->konten = $konten;
+
+			$section->save();
+
+			$section_temp = Section_orm::findOrFail($section->id);
+			
+			$html = $konten;
+			
+			// $doc = new DOMDocument('1.0', 'UTF-8');
+			// $doc->loadHTML($html);
+			$doc = new DOMDocument();
+			$doc->loadHTML(mb_convert_encoding($html, 'HTML-ENTITIES', 'UTF-8'));
+			$i = 0 ;
+			foreach ($doc->getElementsByTagName('img') as $img_node) {
+				$src = $img_node->getAttribute('src') ;
+				if(strpos($src, 'data:image/png;base64,') !== false){
+					$img = str_replace('data:image/png;base64,', '', $src);
+					$img = str_replace(' ', '+', $img);
+					$img_64 = base64_decode($img);
+					// $file_name = $soal_temp->id_soal . '_soal.png';
+					$file_name = $section_temp->id .'_section_'. mt_rand()  .'.png';
+					$file = UPLOAD_DIR . 'img_soal/' . $file_name;
+					$success = file_put_contents($file, $img_64);
+					if($success){
+						$img_node->setAttribute('src', asset('uploads/img_soal/' . $file_name)) ;
+						$doc->saveHTML($img_node);
+					}
+					$i++;
+				}
+			}
+			
+			$xpath = new DOMXPath($doc);
+
+			$body = '';
+			foreach ($xpath->evaluate('//body/node()') as $node) {
+				$body .= $doc->saveHtml($node);
+			}
+
+			$section_temp->konten = $body;
+
+			$section_temp->save();
+
+			commit_db_trx();
+			$this->_json(['stts' => 'ok', 'section' => ['id' => $section->id, 'keterangan' => $keterangan]]);
+
+		}catch(Exception $e){
+			rollback_db_trx();
+			$this->_json(['stts' => 'ko', 'msg' => $e->getMessage()]);
+		}
+
+	}
+
+	protected function _select_section(){
+		$id = $this->input->post('id');
+		try{
+			$section = Section_orm::findOrFail($id);
+
+			$this->_json(['stts' => 'ok', 'section' => $section]);
 
 		}catch(Exception $e){
 

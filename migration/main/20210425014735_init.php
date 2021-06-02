@@ -691,8 +691,8 @@ class Init extends AbstractMigration
                 'id' => '1',
                 'bobot' => 'Mudah',
                 'nilai' => '1.00',
-                'created_at' => '2020-06-29 22:26:53',
-                'updated_at' => '2020-08-13 09:47:30',
+                'created_at' => date("Y-m-d H:i:s"),
+                'updated_at' => date("Y-m-d H:i:s"),
             ],
         ]);
 
@@ -728,9 +728,9 @@ class Init extends AbstractMigration
             [
                 'id' => '1',
                 'variabel' => 'tahun_aktif',
-                'nilai' => '2021',
+                'nilai' => date("Y"),
                 'flag' => '1',
-                'created_at' => '2021-02-22 01:34:40',
+                'created_at' => date("Y-m-d H:i:s"),
             ],
         ]);
 
@@ -772,7 +772,7 @@ class Init extends AbstractMigration
                 'show' => '0',
                 'text_color' => 'primary',
                 'durasi' => '0',
-                'created_at' => '2021-02-22 01:34:40',
+                'created_at' => date("Y-m-d H:i:s"),
             ],
             [
                 'id' => '1',
@@ -783,7 +783,7 @@ class Init extends AbstractMigration
                 'show' => '1',
                 'text_color' => 'info',
                 'durasi' => '0',
-                'created_at' => '2021-02-22 01:34:40',
+                'created_at' => date("Y-m-d H:i:s"),
             ],
         ]);
 

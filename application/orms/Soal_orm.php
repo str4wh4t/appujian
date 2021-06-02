@@ -24,6 +24,11 @@ class Soal_orm extends Eloquent
         return $this->belongsTo('Orm\Bobot_soal_orm');
     }
 
+    public function section()
+    {
+        return $this->belongsTo('Orm\Section_orm');
+    }
+
     public function bundle_soal()
     {
         return $this->hasMany('Orm\Bundle_soal_orm','id_soal');

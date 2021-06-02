@@ -466,6 +466,7 @@ $(document).on('click', '#btn_close_alert_paket', function(){
                     <span aria-hidden="true">×</span></button>
             </div>
             <div class="modal-body">
+                <div class="alert border-danger"><span><b>Perhatian :</b></span><br><span class="text-danger"><b>***</b> Asign paket akan berpengaruh pada peserta ujian</span></div>
                 <fieldset class="form-group" style="padding: 10px; border: 1px solid #ccc;">
 					<legend class="col-form-label col-sm-12" style="border: 1px solid #ccc; background-color: #d4ffd7;">Paket Ujian</legend>
 					<div class="form-group">

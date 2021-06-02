@@ -1,7 +1,7 @@
 @extends('template.main')
 
 @push('page_level_css')
-<!-- BEGIN PAGE LEVEL JS-->
+<!-- BEGIN PAGE LEVEL CSS-->
 {{--<link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/vendors/css/tables/datatable/datatables.min.css') }}">--}}
 {{--<link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/vendors/css/tables/datatable/dataTables.bootstrap4.min.css') }}">--}}
 {{--<link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/vendors/css/tables/extensions/rowReorder.dataTables.min.css') }}">--}}
@@ -24,7 +24,7 @@
 <link href="{{ asset('assets/yarn/node_modules/summernote/dist/summernote-bs4.min.css') }}" rel="stylesheet">
 <link href="{{ asset('assets/plugins/summernote_plugins/summernote-audio.css') }}" rel="stylesheet">
 
-<!-- END PAGE LEVEL JS-->
+<!-- END PAGE LEVEL CSS-->
 @endpush
 
 @push('page_vendor_level_js')
@@ -61,12 +61,15 @@
 <script src="{{ asset('assets/plugins/summernote_plugins/summernote-cleaner.js') }}"></script>
 <script src="{{ asset('assets/plugins/summernote_plugins/summernote-audio.js') }}"></script>
 {{--<script src="https://rawgit.com/RobinHerbots/Inputmask/5.x/dist/jquery.inputmask.js"></script>--}}
-<!-- END PAGE VENDOR -->
+<script src="{{ asset('assets/yarn/node_modules/jquery-validation/dist/jquery.validate.js') }}"></script>
+<!-- END PAGE VENDOR JS-->
 @endpush
 
 @push('page_level_js')
 <!-- BEGIN PAGE LEVEL JS -->
 <script type="text/javascript">
+
+let validator;
 
 function init_page_level(){
     ajaxcsrf();
@@ -93,7 +96,7 @@ function init_page_level(){
     //     theme: 'snow'
     // });
 
-    $('.t_editor').summernote({
+    $('.summernote_editor').summernote({
         toolbar: [
             // [groupName, [list of button]]
             // ['cleaner',['cleaner']],
@@ -128,8 +131,13 @@ function init_page_level(){
     $('.note-btn').attr('title', '').attr('data-original-title', ''); // DISABLED SUMMERNOTE TOOLTIP
 
     $('.select2').select2();
+
     $('#bundle').select2({
         placeholder: "Pilih bundle soal"
+    });
+
+    $('#section_id').select2({
+        placeholder: "Pilih seksi soal"
     });
 
     let options = {};
@@ -189,6 +197,11 @@ function init_page_level(){
         $('#bobot_soal_id').parent('.form-group').addClass('has-error');
      @endif
 
+     @if(!empty(set_value('section_id')))
+        $('select[name="section_id"]').val("{{ set_value('section_id') }}");
+        $('select[name="section_id"]').trigger('change');
+    @endif
+
 // {{-- @if(!empty(form_error('bobot'))) --}}
 // {{--     $('#bobot').parent('.form-group').addClass('has-error'); --}}
 // {{-- @endif --}}
@@ -203,6 +216,62 @@ function init_page_level(){
             });
         @endif
      @endif
+
+
+    validator = $("#form_section").validate({
+        debug: false,
+        ignore: [],
+        rules: {
+            'keterangan': {required: true},
+            'konten': {required: true},
+        },
+        messages: {
+            'keterangan': {
+                required: "tidak boleh kosong",
+            },
+            'konten': {
+                required: "tidak boleh kosong",
+            },
+        },
+        errorElement: "small",
+        // <p class="badge-default badge-danger block-tag text-right"><small class="block-area white">Helper aligned to right</small></p>
+        errorPlacement: function ( error, element ) {
+            error.addClass("badge-default badge-danger block-tag pl-2");
+            // error.css('display','block');
+            if ( element.prop("type") === "radio" ) {
+                error.appendTo(element.siblings(".error_radio"));
+            } else if ( element.hasClass("only_input_select2multi")) {
+                // error.insertAfter(element.parent().parent().parent().siblings(".error_select2"));
+                error.css('display','block');
+                error.insertAfter(element.siblings(".error_select2"));
+                // error.insertAfter(element);
+            } else if ( element.hasClass("only_input_select2single")) {
+                // error.insertAfter(element.parent().parent().parent().siblings(".error_select2"));
+                error.css('display','block');
+                error.insertAfter(element.siblings(".error_select2"));
+                // error.insertAfter(element);
+            } else if ( element.prop("type") === "checkbox" ) {
+                error.appendTo(element.siblings(".error_checkbox"));
+            } else if ( element.hasClass("summernote_editor")) {
+                // error.insertAfter(element.parent().parent().parent().siblings(".error_select2"));
+                error.css('display','block');
+                error.insertAfter(element.siblings(".error_summernote"));
+                // error.insertAfter(element);
+            }
+            else {
+                error.insertAfter(element);
+                element.addClass('border-danger');
+            }
+        },
+        highlight: function ( element, errorClass, validClass ) {
+            // $(element).parents( ".col-sm-5" ).addClass( "has-error" ).removeClass( "has-success" );
+            $(element).addClass('border-danger');
+        },
+        unhighlight: function (element, errorClass, validClass) {
+            // $(element).parents( ".col-sm-5" ).addClass( "has-success" ).removeClass( "has-error" );
+            $(element).removeClass('border-danger');
+        }
+    });
 
 }
 
@@ -247,6 +316,78 @@ $(document).on('keypress','input[name="nama_bundle"]',function(e){
         e.preventDefault();
     }
 });
+
+$(document).on('click','#btn_tambah_section',function(e){
+    validator.resetForm();
+    $('#modal_section').modal('show');
+});
+
+$(document).on('click','#btn_submit_section',function(e){  
+
+    if ($('#konten').summernote('isEmpty')) {
+        $('#konten').summernote('code', '');
+    }
+
+    let result = validator.form();
+    if(result){
+        ajx_overlay(true);
+        $.ajax({
+            url: "{{ site_url('soal/ajax/save_section') }}",
+            data: { 'keterangan' : $('#keterangan').val(), 'konten' : $('#konten').val() },
+            type: 'POST',
+            success: function (response) {
+                if(response.stts == 'ok'){
+                    var newopt = new Option(response.section.keterangan, response.section.id, true, true);
+                    $('#section_id').append(newopt).trigger('change');
+                    $('#keterangan').val('');
+                    // $('#konten').val('');
+                    $('#konten').summernote('code', '');
+                    $('#modal_section').modal('hide');
+                    Swal.fire({
+                        title: "Perhatian",
+                        text: "Section telah ditambahkan",
+                        icon: "success",
+                        confirmButtonText: "Ok",
+                    });
+                }else{
+                    Swal.fire({
+                        title: "Perhatian",
+                        text: "Kesalahan : " . response.msg,
+                        icon: "warning",
+                        confirmButtonText: "Ok",
+                    });
+                }
+            },
+            error: function(){
+
+            },
+            complete: function(){
+                ajx_overlay(false);
+            }
+        });
+    }
+
+});
+
+$(document).on('change','#section_id',function(e){
+    let section_id = $(this).val();
+    ajx_overlay(true);
+    $.ajax({
+        url: "{{ site_url('soal/ajax/select_section') }}",
+        data: { 'id' : section_id },
+        type: 'POST',
+        success: function (response) {
+            $('#preview_section').html(response.section.konten).show();
+        },
+        error: function(){
+
+        },
+        complete: function(){
+            ajx_overlay(false);
+        }
+    });
+});
+
 </script>
 <!-- END PAGE LEVEL JS -->
 @endpush
@@ -334,7 +475,6 @@ $(document).on('keypress','input[name="nama_bundle"]',function(e){
                             <div class="form-group">
                                 <select name="topik_id" id="topik_id" class="select2 form-group"
                                     style="width:100% !important">
-                                    <option value="" disabled selected>Pilih Topik</option>
                                 </select> <small class="help-block"
                                     style="color: #dc3545"><?=form_error('topik_id')?></small>
                             </div>
@@ -347,10 +487,30 @@ $(document).on('keypress','input[name="nama_bundle"]',function(e){
                             {{--                        <input type="file" name="file_soal" class="form-control">--}}
                             {{--                        <small class="help-block" style="color: #dc3545"><?=form_error('file_soal')?></small>--}}
                             {{--                    </div>--}}
+                            <div class="row">
+                                <div class="col-lg-10">
+                                    <div class="form-group">
+                                        <select name="section_id" id="section_id" class="select2 form-group"
+                                            style="width:100% !important">
+                                            <option></option>
+                                            @foreach ($section_avail as $section)
+                                            <option value="{{ $section->id }}" >{{ $section->keterangan }}</option>    
+                                            @endforeach
+                                        </select> <small class="help-block"
+                                            style="color: #dc3545"><?=form_error('section_id')?></small>
+                                    </div>
+                                </div>
+                                <div class="col-lg-2">
+                                    <button class="btn btn-danger btn-block" type="button" id="btn_tambah_section"><i class="fa fa-plus"></i> Tambah Section</button>
+                                </div>
+                            </div>
+                            
+                            <div id="preview_section" class="alert text-muted border border-info" style="display: none;">
+                            </div>
 
                             <div class="form-group">
                                 <textarea name="soal" id="soal"
-                                    class="form-control froala-editor t_editor">{!! set_value('soal') !!}</textarea>
+                                    class="form-control froala-editor summernote_editor">{!! set_value('soal') !!}</textarea>
                                 <small class="help-block" style="color: #dc3545"><?=form_error('soal')?></small>
                             </div>
 
@@ -370,7 +530,7 @@ $(document).on('keypress','input[name="nama_bundle"]',function(e){
                             {{--                    </div>--}}
                             <div class="form-group">
                                 <textarea name="jawaban_<?= $abj; ?>" id="jawaban_<?= $abj; ?>"
-                                    class="form-control froala-editor t_editor">{!! set_value('jawaban_'.$abj) !!}</textarea>
+                                    class="form-control froala-editor summernote_editor">{!! set_value('jawaban_'.$abj) !!}</textarea>
                                 <small class="help-block"
                                     style="color: #dc3545"><?=form_error('jawaban_'.$abj)?></small>
                             </div>
@@ -418,7 +578,7 @@ $(document).on('keypress','input[name="nama_bundle"]',function(e){
                                 <legend class="col-form-label col-lg-2 col-sm-12" style="border: 1px solid #ccc; background-color: #f6ffd4;">Penjelasan</legend>
                                 <label for="penjelasan"><small class="help-block text-info"><span class="text-danger"><b>***</b> Penjelasan mengenai jawaban pada soal yang tertera</span></small></label>
                                 <div class="form-group">
-                                    <textarea name="penjelasan" id="penjelasan" class="form-control froala-editor t_editor">{!! set_value('penjelasan') !!}</textarea>
+                                    <textarea name="penjelasan" id="penjelasan" class="form-control froala-editor summernote_editor">{!! set_value('penjelasan') !!}</textarea>
                                     <small class="help-block" style="color: #dc3545"><?=form_error('penjelasan')?></small>
                                 </div>
                             </fieldset>
@@ -439,4 +599,33 @@ $(document).on('keypress','input[name="nama_bundle"]',function(e){
         </div>
     </div>
 </section>
+
+<div class="modal" id="modal_section">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Pilihan Section</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span></button>
+            </div>
+            <div class="modal-body">
+                <form id="form_section" method="POST" action="#" >
+                <div class="form-group">
+                    <label for="keterangan">Keterangan</label>
+                    <input type="text" class="form-control" value="" name="keterangan" id="keterangan" placeholder=""/>
+                </div>
+                <div class="form-group">
+                    <label for="konten">Konten</label>
+                    <textarea name="konten" id="konten" class="form-control froala-editor summernote_editor"></textarea>
+                    <span class="error_summernote"></span>
+                </div>
+                <div class="form-group pull-right">
+                    <button type="button" id="btn_submit_section" class="btn btn-flat btn-outline-primary"><i class="fa fa-save"></i> Simpan</button>
+                </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
 @endsection

@@ -10,7 +10,7 @@ class Bundle_orm extends Eloquent
     
     public function bundle_soal()
     {
-        return $this->hasMany('Orm\bundle_soal_orm');
+        return $this->hasMany('Orm\Bundle_soal_orm');
     }
     
     public function soal()

@@ -14,6 +14,7 @@ use Orm\Jawaban_ujian_orm;
 use Orm\Trx_midtrans_orm;
 use Orm\Data_daerah_orm;
 use GuzzleHttp\Client;
+use Carbon\Carbon;
 
 class Pub extends MY_Controller {
 
@@ -363,17 +364,35 @@ class Pub extends MY_Controller {
         // else
 	    //     $h_ujian_list->setConnection('cat');
 
-		$cron_end = date("Y-m-d H:i:s", strtotime("+1 minutes"));
+		// $cron_end = date("Y-m-d H:i:s", strtotime("+1 minutes"));
+
+		$dt_1 = Carbon::now();
+		$cron_end = $dt_1->addMinutes(1);
+
 		$h_ujian_list = $h_ujian_list->where('ujian_selesai', 'N')->get();
 		if($h_ujian_list->isNotEmpty()){
 			foreach($h_ujian_list as $h_ujian){
-				$today = date('Y-m-d H:i:s');
-				if($today > $cron_end){
+
+				// $now = date('Y-m-d H:i:s');
+
+				$now = Carbon::now();
+
+				// if($now > $cron_end){
+				// 	die('Waktu cron habis');
+				// }
+
+				if($now->greaterThan($cron_end)){
 					die('Waktu cron habis');
 				}
+
 				// $date_end = date('Y-m-d H:i:s', strtotime($h_ujian->m_ujian->terlambat));
-				$date_end = date('Y-m-d H:i:s', strtotime($h_ujian->tgl_selesai));
-				if ($today >= $date_end){
+				
+				// $date_end = date('Y-m-d H:i:s', strtotime($h_ujian->tgl_selesai));
+
+				$date_end = Carbon::createFromFormat('Y-m-d H:i:s', $h_ujian->tgl_selesai);
+
+				// if ($now >= $date_end){
+				if ($now->greaterThan($date_end)){
 					echo $h_ujian->id . "\n";
 					echo $h_ujian->mhs->nama . "\n";
 					if($this->submit_ujian($h_ujian)){
@@ -381,11 +400,11 @@ class Pub extends MY_Controller {
 //						$ws->send_msg_stop_ujian($h_ujian->mhs->nim, $app_id . '.undip.ac.id');
 //						$cmd = 'wscat -c '. ws_url() .' -x  {\"cmd\":\"MHS_STOP_UJIAN\",\"nim\":\"'. $h_ujian->mhs->nim .'\",\"app_id\":\"'. $app_id . '.undip.ac.id' .'\"}';
 //						exec($cmd);
-						$cmd = '{"cmd":"MHS_STOP_UJIAN","nim":"'. $h_ujian->mhs->nim .'","app_id":"'. APP_ID . '.undip.ac.id' .'"}';
+						$cmd = '{"cmd":"MHS_STOP_UJIAN","nim":"'. $h_ujian->mhs->nim .'","app_id":"'. APP_ID .'"}';
 						$this->socket->notif_ws($cmd);
 						echo "DONE" ;
 					}else{
-						echo "ERROR" ;
+						echo "SKIP" ;
 					}
 				}
 			}

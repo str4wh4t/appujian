@@ -1,7 +1,10 @@
 var table;
+let id;
 
 $(document).ready(function() {
     ajaxcsrf();
+
+    id = user_id ;
 
     table = $("#users").DataTable({
         initComplete: function() {
@@ -41,7 +44,11 @@ $(document).ready(function() {
         processing: true,
         serverSide: true,
         ajax: {
-            url: base_url + "users/data/" + user_id,
+            url: base_url + "users/ajax/data/",
+            // data: {'id' : id},
+            data: function(d){
+                d.id = id;
+            },
             type: "POST"
         },
         columns: [
@@ -121,11 +128,15 @@ $(document).ready(function() {
     //     .container()
     //     .appendTo("#users_wrapper .col-md-6:eq(0)");
 
-    $("#show_me").on("change", function() {
-        let src = base_url + "users/data";
-        let url = $(this).prop("checked") === true ? src : src + "/" + user_id;
-        table.ajax.url(url).load();
-    });
+    // $("#show_me").on("change", function() {
+    //     // let src = base_url + "users/ajax/data";
+    //     // let url = $(this).prop("checked") === true ? src : src + "/" + user_id;
+    //     // table.ajax.url(url).load();
+    //     // id = $(this).prop("checked") === true ? null : user_id;
+
+    //     id = $(this).iCheck('update')[0].checked === true ? null : user_id;
+    //     table.ajax.reload(null, false);
+    // });
 
 
     $('.datetimepicker').datetimepicker({
@@ -145,6 +156,13 @@ $(document).ready(function() {
         }
     });
     
+});
+
+
+$(document).on("ifChanged", "#show_me", function() {
+
+    id = $(this).iCheck('update')[0].checked ? null : user_id;
+    table.ajax.reload(null, false);
 });
 
 function hapus(id) {

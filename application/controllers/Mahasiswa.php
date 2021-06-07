@@ -148,7 +148,6 @@ class Mahasiswa extends MY_Controller
 										);
 		$this->form_validation->set_rules('kota_asal', 'Kota Asal', 'trim|min_length[3]|max_length[250]');
 		$this->form_validation->set_rules('no_billkey', 'No Billkey', 'trim|max_length[' . NO_BILLKEY_LENGTH . ']');
-		// $this->form_validation->set_rules('foto', 'Foto', ['required', 'trim', ['check_valid_img_url', function ($foto) {
 		$this->form_validation->set_rules('foto', 'Foto', ['trim', ['check_valid_img_url', function ($foto) {
 			if (!empty($foto)) {
 				$size = @getimagesize($foto);
@@ -167,7 +166,8 @@ class Mahasiswa extends MY_Controller
 		}]]);
 
 		$this->form_validation->set_rules('jenis_kelamin', 'Jenis Kelamin', 'required|in_list[L,P]');
-		$this->form_validation->set_rules('matkul[]', 'Mata Kuliah', 'required');
+		//  $this->form_validation->set_rules('matkul[]', 'Mata Kuliah', 'required'); // TIDAK PERLU LAGI, 05/06/2021
+		
 		//		$this->form_validation->set_rules('jurusan', 'Jurusan', 'required');
 		//		$this->form_validation->set_rules('kelas', 'Kelas', 'required');
 
@@ -177,6 +177,7 @@ class Mahasiswa extends MY_Controller
 	protected function _save()
 	{
 		$method = $this->input->post('method', true);
+
 		$this->_validasi_mahasiswa($method);
 
 		if ($this->form_validation->run() == false) {
@@ -234,11 +235,13 @@ class Mahasiswa extends MY_Controller
 					$mhs->no_billkey = $input['no_billkey'];
 					$mhs->save();
 
-					foreach ($input['matkul'] as $matkul_id) {
-						$mhs_matkul = new Mhs_matkul_orm();
-						$mhs_matkul->mahasiswa_id = $mhs->id_mahasiswa;
-						$mhs_matkul->matkul_id = $matkul_id;
-						$mhs_matkul->save();
+					if(!empty($input['matkul'])){
+						foreach ($input['matkul'] as $matkul_id) {
+							$mhs_matkul = new Mhs_matkul_orm();
+							$mhs_matkul->mahasiswa_id = $mhs->id_mahasiswa;
+							$mhs_matkul->matkul_id = $matkul_id;
+							$mhs_matkul->save();
+						}
 					}
 
 					// MENDAFTARKAN SBG USER
@@ -276,8 +279,6 @@ class Mahasiswa extends MY_Controller
 			} else if ($method === 'edit') {
 
 				$id_mahasiswa = $this->input->post('id_mahasiswa', true);
-				$matkul = $this->input->post('matkul[]', true);
-
 				//				$action = $this->master->update('mahasiswa', $input, 'id_mahasiswa', $id_mahasiswa);
 
 				$mhs = Mhs_orm::findOrFail($id_mahasiswa);
@@ -296,40 +297,42 @@ class Mahasiswa extends MY_Controller
 					$mhs->no_billkey = empty($input['no_billkey']) ? null : $input['no_billkey'];
 					$mhs->save();
 
-					$mhs_matkul =  Mhs_matkul_orm::where('mahasiswa_id', $id_mahasiswa)->get();
+					if(!empty($input['matkul'])){
+						$mhs_matkul =  Mhs_matkul_orm::where('mahasiswa_id', $id_mahasiswa)->get();
 
-					$mhs_matkul_ids_before = [];
-					if ($mhs_matkul->isNotEmpty()) {
-						foreach ($mhs_matkul as $mm) {
-							$mhs_matkul_ids_before[] = $mm->matkul_id;
+						$mhs_matkul_ids_before = [];
+						if ($mhs_matkul->isNotEmpty()) {
+							foreach ($mhs_matkul as $mm) {
+								$mhs_matkul_ids_before[] = $mm->matkul_id;
+							}
 						}
-					}
 
-					$matkul_ids = $matkul;
-					foreach ($matkul_ids as $matkul_id) {
-						Matkul_orm::findOrFail($matkul_id);
-					}
-
-					$matkul_ids_insert = array_diff($matkul_ids, $mhs_matkul_ids_before);
-					$matkul_ids_delete = array_diff($mhs_matkul_ids_before, $matkul_ids);
-
-					if (!empty($matkul_ids_delete)) {
-						foreach ($matkul_ids_delete as $matkul_id) {
-							$mhs_matkul = Mhs_matkul_orm::where([
-								'mahasiswa_id' => $mhs->id_mahasiswa,
-								'matkul_id'    => $matkul_id
-							])->firstOrFail();
-
-							$mhs_matkul->delete();
+						$matkul_ids = $input['matkul'];
+						foreach ($matkul_ids as $matkul_id) {
+							Matkul_orm::findOrFail($matkul_id);
 						}
-					}
 
-					if (!empty($matkul_ids_insert)) {
-						foreach ($matkul_ids_insert as $matkul_id) {
-							$mhs_matkul_orm = new Mhs_matkul_orm();
-							$mhs_matkul_orm->mahasiswa_id = $mhs->id_mahasiswa;
-							$mhs_matkul_orm->matkul_id = $matkul_id;
-							$mhs_matkul_orm->save();
+						$matkul_ids_insert = array_diff($matkul_ids, $mhs_matkul_ids_before);
+						$matkul_ids_delete = array_diff($mhs_matkul_ids_before, $matkul_ids);
+
+						if (!empty($matkul_ids_delete)) {
+							foreach ($matkul_ids_delete as $matkul_id) {
+								$mhs_matkul = Mhs_matkul_orm::where([
+									'mahasiswa_id' => $mhs->id_mahasiswa,
+									'matkul_id'    => $matkul_id
+								])->firstOrFail();
+
+								$mhs_matkul->delete();
+							}
+						}
+
+						if (!empty($matkul_ids_insert)) {
+							foreach ($matkul_ids_insert as $matkul_id) {
+								$mhs_matkul_orm = new Mhs_matkul_orm();
+								$mhs_matkul_orm->mahasiswa_id = $mhs->id_mahasiswa;
+								$mhs_matkul_orm->matkul_id = $matkul_id;
+								$mhs_matkul_orm->save();
+							}
 						}
 					}
 
@@ -638,7 +641,7 @@ class Mahasiswa extends MY_Controller
 				if (!empty($sd)) {
 					foreach ($sd as $s) {
 						$m = Matkul_orm::find($s);
-						if ($m == null) {
+						if (empty($m)) {
 							$matkul = [];
 							break;
 						} else {
@@ -845,7 +848,7 @@ class Mahasiswa extends MY_Controller
 				if (!empty($sd)) {
 					foreach ($sd as $s) {
 						$m = Matkul_orm::find($s->id_matkul);
-						if ($m == null) {
+						if (empty($m)) {
 							$allow = false;
 							$msg = 'Materi ujian bermasalah, ID : ' . $s->id_matkul;
 							break;
@@ -856,9 +859,9 @@ class Mahasiswa extends MY_Controller
 						break;
 					}
 				} else {
-					$allow = false;
-					$msg = 'Materi ujian bermasalah, ID : TIDAK BOLEH KOSONG';
-					break;
+					// $allow = false;
+					// $msg = 'Materi ujian bermasalah, ID : TIDAK BOLEH KOSONG';
+					// break;
 				}
 
 				$mhs                = new Mhs_orm();
@@ -879,11 +882,13 @@ class Mahasiswa extends MY_Controller
 				$mhs->tahun         = $tahun;
 				$mhs->save();
 
-				foreach ($matkul_list as $matkul) {
-					$mhs_matkul               = new Mhs_matkul_orm();
-					$mhs_matkul->mahasiswa_id = $mhs->id_mahasiswa;
-					$mhs_matkul->matkul_id    = $matkul->id_matkul;
-					$mhs_matkul->save();
+				if(!empty($matkul_list)){
+					foreach ($matkul_list as $matkul) {
+						$mhs_matkul               = new Mhs_matkul_orm();
+						$mhs_matkul->mahasiswa_id = $mhs->id_mahasiswa;
+						$mhs_matkul->matkul_id    = $matkul->id_matkul;
+						$mhs_matkul->save();
+					}
 				}
 
 				// MENDAFTARKAN SBG USER
@@ -1128,7 +1133,7 @@ class Mahasiswa extends MY_Controller
 				if (!empty($sd)) {
 					foreach ($sd as $s) {
 						$m = Matkul_orm::find($s);
-						if ($m == null) {
+						if (empty($m)) {
 							$allow = false;
 							$msg = 'Row : ' . $i . ', Materi ujian bermasalah, ID : ' . $s;
 							break;
@@ -1139,9 +1144,9 @@ class Mahasiswa extends MY_Controller
 						break;
 					}
 				} else {
-					$allow = false;
-					$msg = 'Row : ' . $i . ', Materi ujian bermasalah, ID : TIDAK BOLEH KOSONG';
-					break;
+					// $allow = false;
+					// $msg = 'Row : ' . $i . ', Materi ujian bermasalah, ID : TIDAK BOLEH KOSONG';
+					// break;
 				}
 
 				$mhs                = new Mhs_orm();
@@ -1162,11 +1167,13 @@ class Mahasiswa extends MY_Controller
 				$mhs->tahun         = $tahun;
 				$mhs->save();
 
-				foreach ($matkul_list as $matkul) {
-					$mhs_matkul               = new Mhs_matkul_orm();
-					$mhs_matkul->mahasiswa_id = $mhs->id_mahasiswa;
-					$mhs_matkul->matkul_id    = $matkul->id_matkul;
-					$mhs_matkul->save();
+				if(!empty($matkul_list)){
+					foreach ($matkul_list as $matkul) {
+						$mhs_matkul               = new Mhs_matkul_orm();
+						$mhs_matkul->mahasiswa_id = $mhs->id_mahasiswa;
+						$mhs_matkul->matkul_id    = $matkul->id_matkul;
+						$mhs_matkul->save();
+					}
 				}
 
 				// MENDAFTARKAN SBG USER
@@ -1262,6 +1269,7 @@ class Mahasiswa extends MY_Controller
 			show_error('Data masih digunakan', 500, 'Perhatian');
 		}
 	}
+
 	/*
 	** FUNGSI INI DIMATIKAN KRN HANYA UNTUK UJI COBA
 	protected function _sync_pendaftaran()

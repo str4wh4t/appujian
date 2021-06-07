@@ -3,6 +3,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
 use Ozdemir\Datatables\Datatables;
 use Ozdemir\Datatables\DB\MySQL;
+use Ozdemir\Datatables\DB\CodeigniterAdapter;
 use Ramsey\Uuid\Uuid;
 use Orm\Mujian_orm;
 use Orm\Hujian_orm;
@@ -53,13 +54,9 @@ class Ujian extends MY_Controller
 
 	protected function _data()
 	{
-		if (
-			!$this->ion_auth->in_group('admin')
-			&& !$this->ion_auth->in_group('dosen')
-			&& !$this->ion_auth->in_group('pengawas')
-		) {
-			show_404();
-		}
+
+		$this->_akses_selain_mahasiswa_dan_penyusun_soal();
+
 		//		if (empty($id)) {
 		//			$dosen = Dosen_orm::where('nip', $this->ion_auth->user()->row()->username)->firstOrFail();
 		//			$id    = $dosen->id_dosen;
@@ -67,7 +64,7 @@ class Ujian extends MY_Controller
 		$id = null;
 		$username = null;
 
-		if ($this->ion_auth->in_group('dosen')) {
+		if (in_group(DOSEN_GROUP_ID)) {
 			$username = $this->ion_auth->user()->row()->username;
 		}
 
@@ -79,13 +76,8 @@ class Ujian extends MY_Controller
 
 	public function master()
 	{
-		if (
-			!$this->ion_auth->in_group('admin') &&
-			!$this->ion_auth->in_group('dosen') &&
-			!$this->ion_auth->in_group('pengawas')
-		) {
-			show_404();
-		}
+		$this->_akses_selain_mahasiswa_dan_penyusun_soal();
+
 		$user = $this->ion_auth->user()->row();
 		$data = [
 			'user' => $user,
@@ -94,8 +86,10 @@ class Ujian extends MY_Controller
 			//'dosen' => $this->ujian->getIdDosen($user->username),
 		];
 
-		if ($this->ion_auth->in_group('dosen')) {
+		if (in_group(DOSEN_GROUP_ID)) {
+
 		}
+
 		//		$this->load->view('_templates/dashboard/_header.php', $data);
 		//		$this->load->view('ujian/data');
 		//		$this->load->view('_templates/dashboard/_footer.php');
@@ -108,9 +102,7 @@ class Ujian extends MY_Controller
 
 	public function add()
 	{
-		if (!$this->ion_auth->in_group('admin') && !$this->ion_auth->in_group('dosen')) {
-			show_404();
-		}
+		$this->_akses_admin_dan_dosen();
 
 		$data = [
 			'judul'		=> 'Ujian',
@@ -118,7 +110,7 @@ class Ujian extends MY_Controller
 			'matkul'	=> Matkul_orm::all(),
 		];
 
-		if ($this->ion_auth->in_group('dosen')) {
+		if (in_group(DOSEN_GROUP_ID)) {
 			$user = $this->ion_auth->user()->row();
 			$data['matkul'] = Dosen_orm::where('nip', $user->username)->firstOrFail()->matkul;
 		}
@@ -154,9 +146,7 @@ class Ujian extends MY_Controller
 
 	public function edit($id = null)
 	{
-		if (!$this->ion_auth->in_group('admin') && !$this->ion_auth->in_group('dosen')) {
-			show_404();
-		}
+		$this->_akses_admin_dan_dosen();
 
 		$ujian = Mujian_orm::findOrFail($id);
 		$user = $this->ion_auth->user()->row();
@@ -168,7 +158,7 @@ class Ujian extends MY_Controller
 			'ujian'		=> $ujian,
 		];
 
-		if ($this->ion_auth->in_group('dosen')) {
+		if (in_group(DOSEN_GROUP_ID)) {
 			$data['matkul'] = Dosen_orm::where('nip', $user->username)->firstOrFail()->matkul;
 		}
 
@@ -302,7 +292,7 @@ class Ujian extends MY_Controller
 
 				$this->form_validation->set_rules('jumlah_soal_total', 'Jumlah Soal Total', "required|is_natural_no_zero|less_than[{$jumlah_soal_total_min}]", ['less_than' => "Soal tidak cukup, matkul tsb hanya memiliki {$jumlah_soal_total} soal"]);
 
-				$jumlah_soal_list = $this->input->post('jumlah_soal', TRUE);
+				$jumlah_soal_list = $this->input->post('jumlah_soal', true);
 
 				$gel			= $this->input->post('gel', true);
 				$smt			= $this->input->post('smt', true);
@@ -360,7 +350,7 @@ class Ujian extends MY_Controller
 
 				$this->form_validation->set_rules('jumlah_soal_total', 'Jumlah Soal Total', "required|is_natural_no_zero|less_than[{$jumlah_soal_total_min}]", ['less_than' => "Soal tidak cukup, matkul tsb hanya memiliki {$jumlah_soal_total} soal"]);
 
-				$jumlah_soal_list = $this->input->post('jumlah_soal', TRUE);
+				$jumlah_soal_list = $this->input->post('jumlah_soal', true);
 
 				if (!empty($jumlah_soal_list)) {
 					foreach ($jumlah_soal_list as $topik_id => $topik_id_list) {
@@ -391,7 +381,7 @@ class Ujian extends MY_Controller
 		}
 
 
-		$urutan_topik_list = $this->input->post('urutan_topik', TRUE);
+		$urutan_topik_list = $this->input->post('urutan_topik', true);
 		if (!empty($urutan_topik_list)) {
 			foreach ($urutan_topik_list as $topik_id => $urutan) {
 				$this->form_validation->set_rules('urutan_topik[' . $topik_id . ']', 'Urutan Topik', "required|is_natural");
@@ -414,7 +404,7 @@ class Ujian extends MY_Controller
 
 		$this->form_validation->set_rules('nama_ujian', 'Nama Ujian', 'required|alpha_numeric_spaces|max_length[50]');
 		// $this->form_validation->set_rules('tgl_selesai', 'Tanggal Mulai', 'required');
-		$tgl_selesai = $this->input->post('tgl_selesai', TRUE);
+		$tgl_selesai = $this->input->post('tgl_selesai', true);
 		$this->form_validation->set_rules(
 			'tgl_mulai',
 			'Tanggal Mulai',
@@ -713,7 +703,7 @@ class Ujian extends MY_Controller
 		$this->_validasi();
 		$this->load->helper('string');
 		
-		if ($this->form_validation->run() === FALSE) {
+		if ($this->form_validation->run() === false) {
 			$data['status'] = false;
 			$data['errors'] = [
 				'nama_ujian' 	=> form_error('nama_ujian'),
@@ -784,7 +774,7 @@ class Ujian extends MY_Controller
 			if (!empty($jumlah_soal_list)) {
 				foreach ($jumlah_soal_list as $bobot_soal_id => $topik_id_list) {
 					foreach ($topik_id_list as $topik_id => $jml_soal) {
-						$jumlah_soal = $jumlah_soal + $this->input->post('jumlah_soal[' . $bobot_soal_id . '][' . $topik_id . ']', TRUE);
+						$jumlah_soal = $jumlah_soal + $this->input->post('jumlah_soal[' . $bobot_soal_id . '][' . $topik_id . ']', true);
 						$jumlah_soal_detail[$bobot_soal_id][$topik_id] = $jml_soal;
 					}
 				}
@@ -919,7 +909,7 @@ class Ujian extends MY_Controller
 					$m_ujian_orm->created_by = $user->username;
 					$m_ujian_orm->save();
 
-					$now = Carbon::now('utc')->toDateTimeString();
+					$now = Carbon::now()->toDateTimeString();
 					$insert = [] ;
 					foreach ($jumlah_soal_list as $topik_id => $topik_id_list) {
 						foreach ($topik_id_list as $bobot_soal_id => $jml_soal) {
@@ -1018,7 +1008,7 @@ class Ujian extends MY_Controller
 					$m_ujian_orm->updated_by = $user->username;
 					$m_ujian_orm->save();
 
-					$now = Carbon::now('utc')->toDateTimeString();
+					$now = Carbon::now()->toDateTimeString();
 
 					Topik_ujian_orm::where('ujian_id', $id_ujian)->delete(); // LOGIKA NYA DI DELETE DULU BARU DI INSERT
 					$insert = [] ;
@@ -1047,35 +1037,36 @@ class Ujian extends MY_Controller
 					// 	}
 					// }
 
-					$peserta_ujian_before = Mhs_ujian_orm::where(['ujian_id' => $m_ujian_orm->id_ujian])
-															->whereDoesntHave('h_ujian')
-															->whereDoesntHave('h_ujian_history')
-															->pluck('mahasiswa_id')
-															->toArray();
+					if(APP_TYPE == 'ujian'){
+						// SETTING PESERTA HANYA BERLAKU JIKA TIPE APLIKASI UJIAN
+						$peserta_ujian_before = Mhs_ujian_orm::where(['ujian_id' => $m_ujian_orm->id_ujian])
+																->whereDoesntHave('h_ujian')
+																->whereDoesntHave('h_ujian_history')
+																->pluck('mahasiswa_id')
+																->toArray();
 
-					$mhs_ids_insert = array_diff($peserta, $peserta_ujian_before);
-					$mhs_ids_delete = array_diff($peserta_ujian_before, $peserta);
+						$mhs_ids_insert = array_diff($peserta, $peserta_ujian_before);
+						$mhs_ids_delete = array_diff($peserta_ujian_before, $peserta);
 
-					// vdebug($mhs_ids_delete);
+						if (!empty($mhs_ids_delete)) {
 
-					if (!empty($mhs_ids_delete)) {
+							Mhs_ujian_orm::where('ujian_id', $m_ujian_orm->id_ujian)
+											->whereIn('mahasiswa_id', $mhs_ids_delete)
+											->delete();
 
-						Mhs_ujian_orm::where('ujian_id', $m_ujian_orm->id_ujian)
-										->whereIn('mahasiswa_id', $mhs_ids_delete)
-										->delete();
-
-					}
-
-					if (!empty($mhs_ids_insert)) {
-						$insert = [];
-						foreach ($mhs_ids_insert as $mhs_id) {
-							$insert[] = [
-								'mahasiswa_id' => $mhs_id,
-								'ujian_id'     => $m_ujian_orm->id_ujian,
-								'created_at' => $now,
-							];
 						}
-						Mhs_ujian_orm::insert($insert);
+
+						if (!empty($mhs_ids_insert)) {
+							$insert = [];
+							foreach ($mhs_ids_insert as $mhs_id) {
+								$insert[] = [
+									'mahasiswa_id' => $mhs_id,
+									'ujian_id'     => $m_ujian_orm->id_ujian,
+									'created_at' => $now,
+								];
+							}
+							Mhs_ujian_orm::insert($insert);
+						}
 					}
 
 					// [START] EDIT EXISTING H_UJIAN
@@ -1177,9 +1168,9 @@ class Ujian extends MY_Controller
 
 	public function delete()
 	{
-		if (!$this->ion_auth->in_group('admin') && !$this->ion_auth->in_group('dosen')) {
-			show_404();
-		}
+
+		$this->_akses_admin_dan_dosen();
+
 		$chk = $this->input->post('checked', true);
 		if (!$chk) {
 			$this->_json(['status' => false]);
@@ -1196,7 +1187,7 @@ class Ujian extends MY_Controller
 					}
 				}
 				if (!$allow) {
-					$data['status'] = FALSE;
+					$data['status'] = false;
 					$this->_json($data);
 					return;
 				}
@@ -1212,10 +1203,7 @@ class Ujian extends MY_Controller
 
 	protected function _refresh_token()
 	{
-		if (!$this->ion_auth->in_group('admin') && !$this->ion_auth->in_group('dosen')) {
-			show_404();
-		}
-
+		$this->_akses_admin_dan_dosen();
 
 		$id = $this->input->post('id');
 		$ujian = Mujian_orm::findOrFail($id);
@@ -1223,7 +1211,7 @@ class Ujian extends MY_Controller
 
 		if (!$this->ion_auth->is_admin()) {
 			if ($ujian->created_by != $user->username) {
-				$data['status'] = FALSE;
+				$data['status'] = false;
 				$this->_json($data);
 				return;
 			}
@@ -1232,7 +1220,7 @@ class Ujian extends MY_Controller
 		$this->load->helper('string');
 		$data['token'] = strtoupper(random_string('alpha', 5));
 		$refresh = $this->master->update('m_ujian', $data, 'id_ujian', $ujian->id_ujian);
-		$data['status'] = $refresh ? TRUE : FALSE;
+		$data['status'] = $refresh ? true : false;
 		$this->_json($data);
 	}
 
@@ -1252,10 +1240,11 @@ class Ujian extends MY_Controller
 
 	public function list()
 	{
+		$this->_akses_mahasiswa();
+
 		if(APP_TYPE == 'tryout')
 			redirect('ujian/latihan_soal');
 
-		$this->_akses_mahasiswa();
 
 		$user = $this->ion_auth->user()->row();
 
@@ -1311,10 +1300,11 @@ class Ujian extends MY_Controller
 
 	public function latihan_soal()
 	{
+		$this->_akses_mahasiswa();
+
 		if(APP_TYPE == 'ujian')
 			redirect('ujian/list');
 
-		$this->_akses_mahasiswa();
 
 		$user = $this->ion_auth->user()->row();
 
@@ -1419,9 +1409,10 @@ class Ujian extends MY_Controller
 
 	public function token($id = null)
 	{
+		$this->_akses_mahasiswa();
+
 		$id = integer_read_from_uuid($id);
 		
-		$this->_akses_mahasiswa();
 		$user = $this->ion_auth->user()->row();
 
 		$mhs_orm = Mhs_orm::where('nim', $user->username)->firstOrFail();
@@ -1635,10 +1626,10 @@ class Ujian extends MY_Controller
 		if ($ujian->pakai_token == 1) {
 			//			$this->session->unset_userdata('status_token');
 			//			$this->session->set_userdata('status_token', $token === $ujian->token);
-			$data['status'] = $token === $ujian->token ? TRUE : FALSE;
+			$data['status'] = $token === $ujian->token ? true : false;
 			$data['token']  = $token === $ujian->token ? $ujian->token : 'XXX';
 		} else {
-			$data['status'] = TRUE;
+			$data['status'] = true;
 			$data['token']  = $ujian->token;
 		}
 		$this->_json($data);
@@ -1654,11 +1645,12 @@ class Ujian extends MY_Controller
 
 	public function index()
 	{
+		$this->_akses_mahasiswa();
+
 		if (!$this->input->get()) {
 			show_404();
 		}
 
-		$this->_akses_mahasiswa();
 		$key = $this->input->get('key', true);
 		$uuid  = $this->input->get('id', true);
 		$token = $this->input->get('token', true);
@@ -2006,7 +1998,7 @@ class Ujian extends MY_Controller
 				$html .= '<div class="funkyradio">';
 
 				$urutan_jawaban = [0, 1, 2, 3, 4];
-				$urutan_jawaban_huruf = ['a', 'b', 'c', 'd', 'e'];
+				$urutan_jawaban_huruf = ['A', 'B', 'C', 'D', 'E'];
 				$ujian->jenis_jawaban == 'acak' ? shuffle($urutan_jawaban) : null;
 
 				// for ($j = 0; $j < $this->config->item('jml_opsi'); $j++) {
@@ -2021,7 +2013,7 @@ class Ujian extends MY_Controller
 					$html .= '<div class="funkyradio-success">
 						<input type="radio" id="opsi_' . strtolower($arr_opsi[$j]) . '_' . $s->id_soal . '" name="opsi_' . $no . '" data-sid="' . $s->id_soal . '" value="' . strtoupper($arr_opsi[$j]) . '" rel="' . $no . '" ' . $checked . '>
 						<label for="opsi_' . strtolower($arr_opsi[$j]) . '_' . $s->id_soal . '" class="label_pilihan">
-							<div class="huruf_opsi">' . $urutan_jawaban_huruf[$i] . '</div> <div>' . $pilihan_opsi . '</div><div class="w-25">' . $tampil_media_opsi . '</div>
+							<div class="huruf_opsi"><b>' . $urutan_jawaban_huruf[$i] . '</b></div> <div>' . $pilihan_opsi . '</div><div class="w-25">' . $tampil_media_opsi . '</div>
 						</label></div>';
 					$i++;
 				}
@@ -2379,7 +2371,7 @@ class Ujian extends MY_Controller
 	//		];
 	//
 	//		$this->master->update('h_ujian', $d_update, 'id', $id_tes);
-	//		$this->_json(['status'=>TRUE, 'data'=>$d_update, 'id'=>$id_tes]);
+	//		$this->_json(['status'=>true, 'data'=>$d_update, 'id'=>$id_tes]);
 	//	}
 
 	protected function _close_ujian()
@@ -2422,12 +2414,8 @@ class Ujian extends MY_Controller
 	protected function _force_close_ujian()
 	{
 		// LOGIC UNTUK KICK PESERTA UJIAN
-		if (
-			!$this->ion_auth->in_group('admin')
-			&& !$this->ion_auth->in_group('pengawas')
-		) {
-			show_404();
-		}
+
+		$this->_akses_selain_mahasiswa_dan_penyusun_soal();
 
 		$mhs_ujian_id = $this->input->post('id', true);
 		$ended_by = $this->input->post('ended_by', true);
@@ -2496,18 +2484,28 @@ class Ujian extends MY_Controller
 		$h_ujian->total_bobot     =  round($total_bobot, 2);
 		$h_ujian->detail_bobot_benar     =  json_encode($topik_ujian_nilai_bobot);
 
-		$stop_ujian = date('Y-m-d H:i:s');
-		$stop_ujian_max = date('Y-m-d H:i:s', strtotime($h_ujian->tgl_mulai . '+' . $h_ujian->m_ujian->waktu . ' minutes')) ;
-		$stop_ujian 	= $stop_ujian > $stop_ujian_max ? $stop_ujian_max : $stop_ujian;
+		// $stop_ujian = date('Y-m-d H:i:s');
+		// $stop_ujian_max = date('Y-m-d H:i:s', strtotime($h_ujian->tgl_mulai . '+' . $h_ujian->m_ujian->waktu . ' minutes')) ;
+		// $stop_ujian 	= $stop_ujian > $stop_ujian_max ? $stop_ujian_max : $stop_ujian;
+
+		$dt_1 = Carbon::now();
+		$dt_2 = Carbon::createFromFormat('Y-m-d H:i:s', $h_ujian->tgl_mulai);
+		$stop_ujian = $dt_1;
+		$stop_ujian_max = $dt_2->addMinutes($h_ujian->m_ujian->waktu);
+		$stop_ujian = $stop_ujian->greaterThan($stop_ujian_max) ? $stop_ujian_max : $stop_ujian ;
 
 		if(!empty($h_ujian->m_ujian->terlambat)){
-			$date_end = date('Y-m-d H:i:s', strtotime($h_ujian->m_ujian->terlambat));
-			$waktu_selesai 	= $stop_ujian > $date_end ? $date_end : $stop_ujian;
+			// $date_end = date('Y-m-d H:i:s', strtotime($h_ujian->m_ujian->terlambat));
+			// $waktu_selesai 	= $stop_ujian > $date_end ? $date_end : $stop_ujian;
+
+			$date_end = Carbon::createFromFormat('Y-m-d H:i:s', $h_ujian->m_ujian->terlambat);
+			$waktu_selesai 	= $stop_ujian->greaterThan($date_end) ? $date_end : $stop_ujian;
+
 		}else{
 			$waktu_selesai 	= $stop_ujian ;
 		}
 
-		$h_ujian->tgl_selesai =  $waktu_selesai;
+		$h_ujian->tgl_selesai =  $waktu_selesai->toDateTimeString();
 		$h_ujian->ujian_selesai    =  'Y';
 		$h_ujian->ended_by =  $ended_by;
 		$action = $h_ujian->save();
@@ -2518,16 +2516,9 @@ class Ujian extends MY_Controller
 	public function monitor($id_ujian)
 	{
 
-		if (!(in_group('admin') || in_group('pengawas'))) show_404();
+		$this->_akses_selain_mahasiswa_dan_penyusun_soal();
 
 		$m_ujian = Mujian_orm::findOrFail($id_ujian);
-		if (
-			!$this->ion_auth->in_group('admin')
-			&& !$this->ion_auth->in_group('dosen')
-			&& !$this->ion_auth->in_group('pengawas')
-		) {
-			show_404();
-		}
 
 		$data = [
 			'judul'		=> 'Ujian',
@@ -2538,7 +2529,7 @@ class Ujian extends MY_Controller
 
 		$jml_daftar_hadir = 0;
 		$jml_daftar_hadir_by_pengawas = 0;
-		if (in_group('pengawas')) {
+		if (in_group(PENGAWAS_GROUP_ID)) {
 			$users_groups = Users_groups_orm::where([
 				'user_id'  => get_logged_user()->id,
 				'group_id' => PENGAWAS_GROUP_ID
@@ -2566,7 +2557,7 @@ class Ujian extends MY_Controller
 	protected function _data_daftar_hadir()
 	{
 
-		if (!(in_group('admin') || in_group('pengawas'))) show_404();
+		$this->_akses_selain_mahasiswa_dan_penyusun_soal();
 
 		$id = $this->input->post('id');
 		$as = $this->input->post('as');
@@ -2587,15 +2578,18 @@ class Ujian extends MY_Controller
 
 
 		$m_ujian = Mujian_orm::findOrFail($id);
-		$config = [
-			'host'     => $this->db->hostname,
-			'port'     => $this->db->port,
-			'username' => $this->db->username,
-			'password' => $this->db->password,
-			'database' => $this->db->database,
-		];
+		
+		// $config = [
+		// 	'host'     => $this->db->hostname,
+		// 	'port'     => $this->db->port,
+		// 	'username' => $this->db->username,
+		// 	'password' => $this->db->password,
+		// 	'database' => $this->db->database,
+		// ];
 
-		$this->db->select('a.id, c.nim, c.nama, c.nik, c.jenis_kelamin, c.tgl_lahir, c.prodi, d.absen_by, "OFFLINE" AS koneksi, "0ms" AS latency, e.ujian_selesai AS status, "AKSI" AS aksi');
+		$dt = new Datatables(new CodeigniterAdapter);
+
+		$this->db->select('a.id, c.nim, c.nama, c.nik, c.jenis_kelamin, c.tgl_lahir, c.prodi, d.absen_by, d.is_terlihat_pada_layar, d.is_perjokian, d.is_sering_buka_page_lain, e.ujian_selesai AS status');
 		$this->db->from('mahasiswa_ujian AS a');
 		$this->db->join('mahasiswa AS c', 'a.mahasiswa_id = c.id_mahasiswa');
 		$this->db->join('daftar_hadir AS d', 'a.id = d.mahasiswa_ujian_id', 'left');
@@ -2605,16 +2599,75 @@ class Ujian extends MY_Controller
 			if ($pengawas_id != 'ALL')
 				$this->db->where('d.absen_by', $pengawas_id);
 			else
-				$this->db->where('d.absen_by IS NOT NULL', NULL, FALSE);
+				$this->db->where('d.absen_by IS NOT NULL', null, false);
 		}
 		$this->db->group_by('a.id');
-		$this->db->order_by('c.nim');
-
-		$dt = new Datatables(new MySQL($config));
+		// $this->db->order_by('c.nim');
 
 		$query = $this->db->get_compiled_select(); // GET QUERY PRODUCED BY ACTIVE RECORD WITHOUT RUNNING I
 
+		// echo $query ; die;
+
 		$dt->query($query);
+
+		$dt->add('bapu_a', function ($data) {
+			return '<div class="text-center"><input '. (in_group(PENGAWAS_GROUP_ID) ? '' : 'disabled="disabled"') .' 
+			'. ($data['is_terlihat_pada_layar'] ? 'checked="checked"' : '') .' 
+			type="checkbox" class="icheck check_bapu" 
+			id="checkbox_is_terlihat_pada_layar_' . $data['nim'] . '" data-id="' . $data['id'] . '" 
+			data-nim="' . $data['nim'] . '"></div>';
+		});
+
+		$dt->add('bapu_b', function ($data) {
+			return '<div class="text-center"><input '. (in_group(PENGAWAS_GROUP_ID) ? '' : 'disabled="disabled"') .' 
+			'. ($data['is_perjokian'] ? 'checked="checked"' : '') .' 
+			type="checkbox" class="icheck check_bapu" 
+			id="checkbox_is_perjokian_' . $data['nim'] . '" data-id="' . $data['id'] . '" 
+			data-nim="' . $data['nim'] . '"></div>';
+		});
+
+		$dt->add('bapu_c', function ($data) {
+			return '<div class="text-center"><input '. (in_group(PENGAWAS_GROUP_ID) ? '' : 'disabled="disabled"') .' 
+			'. ($data['is_sering_buka_page_lain'] ? 'checked="checked"' : '') .' 
+			type="checkbox" class="icheck check_bapu" 
+			id="checkbox_is_sering_buka_page_lain_' . $data['nim'] . '" data-id="' . $data['id'] . '" 
+			data-nim="' . $data['nim'] . '"></div>';
+		});
+
+		$dt->add('koneksi', function ($data) {
+			return '<span class="badge bg-danger" id="badge_koneksi_' . $data['nim'] . '">OFFLINE</span>
+					<span class="badge bg-info" id="badge_ip_' . $data['nim'] . '" style="display: none">-</span>';
+		});
+
+		$dt->add('latency', function ($data) {
+			return '<span class="badge bg-grey" id="badge_latency_' . $data['nim'] . '">0ms</span>';
+		});
+
+		$dt->add('aksi', function ($data) {
+			return '<div class="btn-group">
+						<button type="button" title="hentikan ujian peserta" class="btn btn-sm btn-danger btn_kick" data-id="' . $data['id'] . '" data-nim="' . $data['nim'] . '"><i class="fa fa-user-times"></i></button>
+						<button type="button" title="lihat foto peserta" class="btn btn-sm btn-info btn_foto" data-id="' . $data['id'] . '" data-nim="' . $data['nim'] . '"><i class="fa fa-camera"></i></button>
+						</div>';
+		});
+
+		$dt->add('absensi', function ($data) {
+			if (in_group(PENGAWAS_GROUP_ID)) {
+				return '<div class="text-center">
+							<div class="btn-group">
+							<button type="button" title="isi absen" class="btn btn-sm btn-info btn_absensi" data-id="' . $data['id'] . '" data-nim="' . $data['nim'] . '"><i class="fa fa-check"></i></button>
+							<button type="button" title="batal absen" class="btn btn-sm btn-danger btn_absensi_batal" data-id="' . $data['id'] . '" data-nim="' . $data['nim'] . '"><i class="fa fa-times"></i></button>
+							<button type="button" title="check absen" class="btn btn-sm btn-secondary btn_absensi_check" data-id="' . $data['id'] . '" data-nim="' . $data['nim'] . '"><i class="fa fa-question"></i></button>
+							</div>
+						</div>';
+			} else {
+				// return '<button type="button" class="btn btn-sm btn-success btn_open" data-id="' . $data['id'] . '" data-nim="' . $data['nim'] . '"><i class="fa fa-folder-open"></i> Lihat</button>';
+				return '<div class="text-center">
+							<div class="btn-group">
+							<button type="button" title="check absen" class="btn btn-sm btn-secondary btn_absensi_check" data-id="' . $data['id'] . '" data-nim="' . $data['nim'] . '"><i class="fa fa-question"></i></button>
+							</div>
+						</div>';
+			}
+		});
 
 		$dt->edit('absen_by', function ($data) {
 			//	            return number_format($data['nilai_bobot_benar'] / 3,2,'.', '') ;
@@ -2623,22 +2676,6 @@ class Ujian extends MY_Controller
 				$return = '<span class="badge border-success success round badge-border" id="badge_absensi_' . $data['nim'] . '">SUDAH</span>';
 			}
 			return  $return;
-		});
-
-		$dt->edit('aksi', function ($data) {
-			return '<div class="btn-group">
-						<button type="button" title="hentikan ujian peserta" class="btn btn-sm btn-danger btn_kick" data-id="' . $data['id'] . '" data-nim="' . $data['nim'] . '"><i class="fa fa-user-times"></i></button>
-						<button type="button" title="lihat foto peserta" class="btn btn-sm btn-info btn_foto" data-id="' . $data['id'] . '" data-nim="' . $data['nim'] . '"><i class="fa fa-camera"></i></button>
-						</div>';
-		});
-
-		$dt->edit('koneksi', function ($data) {
-			return '<span class="badge bg-danger" id="badge_koneksi_' . $data['nim'] . '">' . $data['koneksi'] . '</span>
-					<span class="badge bg-info" id="badge_ip_' . $data['nim'] . '" style="display: none">-</span>';
-		});
-
-		$dt->edit('latency', function ($data) {
-			return '<span class="badge bg-grey" id="badge_latency_' . $data['nim'] . '">' . $data['latency'] . '</span>';
 		});
 
 		$dt->edit('status', function ($data) {
@@ -2659,19 +2696,7 @@ class Ujian extends MY_Controller
 					<span class="badge bg-warning" id="badge_focus_' . $data['nim'] . '" style="display: none">BUKA PAGE LAIN</span>';
 		});
 
-		$dt->add('absensi', function ($data) {
-			if (in_group('admin')) {
-				return '<button type="button" class="btn btn-sm btn-success btn_open" data-id="' . $data['id'] . '" data-nim="' . $data['nim'] . '"><i class="fa fa-folder-open"></i> Lihat</button>';
-			} else if (in_group('pengawas')) {
-				return '<div class="btn-group">
-							<button type="button" title="isi absen" class="btn btn-sm btn-info btn_absensi" data-id="' . $data['id'] . '" data-nim="' . $data['nim'] . '"><i class="fa fa-check"></i></button>
-							<button type="button" title="batal absen" class="btn btn-sm btn-danger btn_absensi_batal" data-id="' . $data['id'] . '" data-nim="' . $data['nim'] . '"><i class="fa fa-times"></i></button>
-							<button type="button" title="check absen" class="btn btn-sm btn-secondary btn_absensi_check" data-id="' . $data['id'] . '" data-nim="' . $data['nim'] . '"><i class="fa fa-question"></i></button>
-							</div>';
-			} else {
-				return '-';
-			}
-		});
+		// vdebug($dt->getQuery());
 
 		$this->_json($dt->generate(), false);
 	}
@@ -2736,6 +2761,38 @@ class Ujian extends MY_Controller
 				$daftar_hadir->absen_by           = $users_groups->id;
 				$ok                               = $daftar_hadir->save();
 			}
+		}
+
+		$this->_json(['ok' => $ok]);
+	}
+
+	protected function _bapu_pengawas()
+	{
+		$this->_akses_pengawas();
+
+		$user_id = get_logged_user()->id;
+		$mahasiswa_ujian_id = $this->input->post('mahasiswa_ujian_id');
+		$bapu = $this->input->post('bapu');
+
+		$users_groups = Users_groups_orm::where([
+			'user_id'  => $user_id,
+			'group_id' => PENGAWAS_GROUP_ID
+		])->firstOrFail();
+
+		$ok = false;
+
+		// JIKA MENGISI ABSEN
+		$daftar_hadir = Daftar_hadir_orm::where([
+			'mahasiswa_ujian_id' => $mahasiswa_ujian_id,
+			'absen_by' => $users_groups->id,
+		])->first();
+
+		if(!empty($daftar_hadir)){
+			$daftar_hadir->mahasiswa_ujian_id = $mahasiswa_ujian_id;
+			$daftar_hadir->is_terlihat_pada_layar           = $bapu['is_terlihat_pada_layar'];
+			$daftar_hadir->is_perjokian           = $bapu['is_perjokian'];
+			$daftar_hadir->is_sering_buka_page_lain           = $bapu['is_sering_buka_page_lain'];
+			$ok                               = $daftar_hadir->save();
 		}
 
 		$this->_json(['ok' => $ok]);
@@ -2819,15 +2876,27 @@ class Ujian extends MY_Controller
 			}
 		}
 
-		$today = date('Y-m-d H:i:s');
-		//echo $paymentDate; // echos today!
-		$date_start = date('Y-m-d H:i:s', strtotime($h_ujian->m_ujian->tgl_mulai));
-		if(!empty($h_ujian->m_ujian->terlambat))
-			$date_end = date('Y-m-d H:i:s', strtotime($h_ujian->m_ujian->terlambat));
-		else
-			$date_end = date('Y-m-d H:i:s', strtotime('+1 days'));
+		// $today = date('Y-m-d H:i:s');
+		$today = Carbon::now();
 
-		if (!(($today >= $date_start) && ($today < $date_end))) { // JIKA BUKAN MASA UJIAN
+		//echo $paymentDate; // echos today!
+
+		// $date_start = date('Y-m-d H:i:s', strtotime($h_ujian->m_ujian->tgl_mulai));
+		$date_start = Carbon::createFromFormat('Y-m-d H:i:s', $h_ujian->m_ujian->tgl_mulai);
+
+		if(!empty($h_ujian->m_ujian->terlambat)){
+			// $date_end = date('Y-m-d H:i:s', strtotime($h_ujian->m_ujian->terlambat));
+			$date_end = Carbon::createFromFormat('Y-m-d H:i:s', $h_ujian->m_ujian->terlambat);
+		}else{
+			// $date_end = date('Y-m-d H:i:s', strtotime('+1 days'));
+			$date_end = $today->addDays(1);
+		}
+
+		// if (!(($today >= $date_start) && ($today < $date_end))) { // JIKA BUKAN MASA UJIAN
+		// 	show_404(); 
+		// }
+
+		if (!$today->between($date_start, $date_end)) { // JIKA BUKAN MASA UJIAN
 			show_404(); 
 		}
 
@@ -2840,9 +2909,11 @@ class Ujian extends MY_Controller
 		}
 
 		$ujian_ke = Hujian_history_orm::where('mahasiswa_ujian_id', $h_ujian->mahasiswa_ujian_id)->max('ujian_ke');
+
 		if(empty($h_ujian->tgl_selesai)){
 			show_error("Kesalahan tgl selesai", 500, 'Perhatian'); // ===>> KEJADIAN ANEH BELUM KETEMU ALASANNYA
 		}
+
 		try{
 			begin_db_trx();
 			// vdebug(date('Y-m-d H:i:s', strtotime($h_ujian->tgl_selesai)));
@@ -2917,6 +2988,9 @@ class Ujian extends MY_Controller
 	}
 
 	public function tutorial(){
+
+		$this->_akses_mahasiswa();
+
 		$user = $this->ion_auth->user()->row();
 		$data['user'] = $user;
 
@@ -2972,7 +3046,7 @@ class Ujian extends MY_Controller
 			begin_db_trx();
 			$selected_paket = json_decode($selected_paket);
 			$selected_ujian = json_decode($selected_ujian);
-			$now = Carbon::now('utc')->toDateTimeString();
+			$now = Carbon::now()->toDateTimeString();
 			if(!empty($selected_paket)){
 				
 				if(!$is_ignore_paket){
@@ -3187,14 +3261,14 @@ class Ujian extends MY_Controller
 			}
 		}
 
-		$mhs = $query->get();
-
 		$mhs_ujian = $m_ujian->mhs_ujian()->pluck('mahasiswa_id')->toArray() ;
 
 		$mhs_ujian_has_hasil = Hujian_orm::where('ujian_id', $ujian_id)->pluck('mahasiswa_id')->toArray() ;
 		$mhs_ujian_has_hasil_history = Hujian_history_orm::where('ujian_id', $ujian_id)->pluck('mahasiswa_id')->toArray() ;
 		
 		$mhs_ujian_has_hasil_valid = array_unique(array_merge($mhs_ujian_has_hasil, $mhs_ujian_has_hasil_history), SORT_REGULAR);
+
+		$mhs = $query->whereNotIn('id_mahasiswa', $mhs_ujian_has_hasil_valid)->get();
 
 		$mhs_ujian_valid = array_diff($mhs_ujian, $mhs_ujian_has_hasil_valid);
 

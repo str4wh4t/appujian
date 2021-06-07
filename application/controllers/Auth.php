@@ -417,7 +417,7 @@ class Auth extends CI_Controller
 
 					$paket_bonus_membership = get_paket_bonus_membership($membership);
 
-					$now = Carbon::now('utc')->toDateTimeString();
+					$now = Carbon::now()->toDateTimeString();
 		
 					if (!empty($paket_bonus_membership)) {
 						$matkul_ids_exist = [];
@@ -500,7 +500,8 @@ class Auth extends CI_Controller
 								}
 								if(!empty($insert))
 									Mhs_ujian_orm::insert($insert);
-								
+								/** MHS_MATKUL SUDAH TIDAK DIPAKAI, 4/6/2021 */
+								/*
 								foreach($paket->m_ujian as $m_ujian){
 									if(!empty($m_ujian->matkul)){
 										// [START] JIKA UJIAN SOURCE DARI MATERI
@@ -533,6 +534,7 @@ class Auth extends CI_Controller
 										// [END] JIKA UJIAN SOURCE DARI BUNDLE
 									}
 								}
+								*/
 							}
 
 						}

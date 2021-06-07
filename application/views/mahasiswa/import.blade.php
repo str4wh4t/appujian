@@ -60,8 +60,8 @@ function init_page_level(){
                 <div class="alert bg-info">
                     <ul class="">
                         <li>Silahkan import data dari excel, menggunakan format yang sudah disediakan</li>
-                        <li>Data tidak boleh ada yang kosong, harus terisi semua</li>
-                        <li>Data Materi Ujian harus sesuai dengan ID yang ada</li>
+                        <li>Selain materi ujian, data tidak boleh ada yang kosong, harus terisi semua</li>
+                        <li>Jika ada, isian materi ujian harus sesuai dengan ID yang ada</li>
                         <li>Maks. ukuran file yg diupload 5mb</li>
                     </ul>
                 </div>

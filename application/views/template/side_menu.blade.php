@@ -15,37 +15,37 @@
 				<i class="ft-more-horizontal ft-minus" data-toggle="tooltip" data-placement="right" data-original-title="MAIN MENU"></i>
           	</li> --}}
 			<li class="{{ $page == 'dashboard' ? "active" : "" }} nav-item">
-				<a href="{{ site_url('dashboard') }}">
+				<a href="{{ url('dashboard') }}">
 					<i class="icon-home"></i><span class="menu-title" data-i18n="nav.dash.main">Dashboard</span>
 				</a>
 			</li>
 
 			@if(is_admin())
 			<li class="{{ in_array($page, $master)  ? "active menu-open" : "" }} nav-item">
-                <a href="{{ site_url('matkul') }}">
+                <a href="{{ url('matkul') }}">
                     <i class="fa fa-folder"></i><span class="menu-title" data-i18n="nav.templates.main">Master</span>
                 </a>
                 <ul class="menu-content">
 					<li class="{{ $page=='matkul'?"active":"" }}">
-						<a class="menu-item" href="{{ site_url('matkul') }}">
+						<a class="menu-item" href="{{ url('matkul') }}">
 							<i class="fa {{ $page == 'matkul' ? "fa-play-circle-o" : "fa-circle-o" }}"></i>
 							Materi Ujian
 						</a>
 					</li>
 					<li class="{{ $page=='topik'?"active":"" }}">
-						<a class="menu-item" href="{{ site_url('topik') }}">
+						<a class="menu-item" href="{{ url('topik') }}">
 							<i class="fa {{ $page == 'topik' ? "fa-play-circle-o" : "fa-circle-o" }}"></i>
 							Topik
 						</a>
 					</li>
 					<li class="{{ $page=='mahasiswa'?"active":"" }}">
-						<a class="menu-item" href="{{ site_url('mahasiswa') }}">
+						<a class="menu-item" href="{{ url('mahasiswa') }}">
 							<i class="fa {{ $page == 'mahasiswa' ? "fa-play-circle-o" : "fa-circle-o" }}"></i>
 							Peserta Ujian
 						</a>
 					</li>
 					<li class="{{ $page=='dosen'?"active":"" }}">
-						<a class="menu-item" href="{{ site_url('dosen') }}">
+						<a class="menu-item" href="{{ url('dosen') }}">
 							<i class="fa {{ $page == 'dosen' ? "fa-play-circle-o" : "fa-circle-o" }}"></i>
 							Dosen
 						</a>
@@ -55,12 +55,12 @@
 {{--						<a class="menu-item" href="#" data-i18n="nav.components.components_buttons.main">Group</a>--}}
 {{--						<ul class="menu-content">--}}
 {{--							<li class="{{ $page=='jurusan'?"active":"" }}">--}}
-{{--								<a class="menu-item" href="{{ site_url('jurusan') }}" data-i18n="nav.components.components_buttons.component_buttons_basic">--}}
+{{--								<a class="menu-item" href="{{ url('jurusan') }}" data-i18n="nav.components.components_buttons.component_buttons_basic">--}}
 {{--									<i class="fa fa-circle-o"></i> Jurusan--}}
 {{--								</a>--}}
 {{--							</li>--}}
 {{--							<li class="{{ $page=='kelas'?"active":"" }}">--}}
-{{--								<a class="menu-item" href="{{ site_url('kelas') }}" data-i18n="nav.components.components_buttons.component_buttons_extended">--}}
+{{--								<a class="menu-item" href="{{ url('kelas') }}" data-i18n="nav.components.components_buttons.component_buttons_extended">--}}
 {{--									<i class="fa fa-circle-o"></i> Kelas--}}
 {{--								</a>--}}
 {{--							</li>--}}
@@ -68,12 +68,12 @@
 {{--					</li>--}}
 
 {{--						<li class="{{ $page=='jurusan'?"active":"" }}">--}}
-{{--							<a class="menu-item" href="{{ site_url('jurusan') }}">--}}
+{{--							<a class="menu-item" href="{{ url('jurusan') }}">--}}
 {{--								<i class="fa fa-circle-o"></i> Jurusan--}}
 {{--							</a>--}}
 {{--						</li>--}}
 {{--						<li class="{{ $page=='kelas'?"active":"" }}">--}}
-{{--							<a class="menu-item" href="{{ site_url('kelas') }}">--}}
+{{--							<a class="menu-item" href="{{ url('kelas') }}">--}}
 {{--								<i class="fa fa-circle-o"></i> Kelas--}}
 {{--							</a>--}}
 {{--						</li>--}}
@@ -82,24 +82,24 @@
 			</li>
 
 			<li class="{{ $page == 'soal' ? "active" : "" }} nav-item">
-                <a href="{{ site_url('soal') }}">
+                <a href="{{ url('soal') }}">
                     <i class="fa fa-folder"></i><span class="menu-title" data-i18n="nav.templates.main">Soal Manaj.</span>
                 </a>
                 <ul class="menu-content">
 					<li class="{{ $method  == 'bobot_soal' ? "active":"" }}">
-						<a class="menu-item" href="{{ site_url('soal/bobot_soal') }}">
+						<a class="menu-item" href="{{ url('soal/bobot_soal') }}">
 							<i class="fa {{ $method  == 'bobot_soal' ? "fa-play-circle-o" : "fa-circle-o" }}"></i>
 							Bobot Soal
 						</a>
 					</li>
 					<li class="{{ ($page == 'soal') && $method == 'index' ? "active":"" }}">
-						<a class="menu-item" href="{{ site_url('soal/index') }}">
+						<a class="menu-item" href="{{ url('soal/index') }}">
 							<i class="fa {{ ($page == 'soal') && $method  == 'index' ? "fa-play-circle-o" : "fa-circle-o" }}"></i>
 							List Soal
 						</a>
 					</li>
 					<li class="{{ $method == 'bundle_soal' ? "active":"" }}">
-						<a class="menu-item" href="{{ site_url('soal/bundle_soal') }}">
+						<a class="menu-item" href="{{ url('soal/bundle_soal') }}">
 							<i class="fa {{ $method  == 'bundle_soal' ? "fa-play-circle-o" : "fa-circle-o" }}"></i>
 							Bundle Soal
 						</a>
@@ -108,41 +108,43 @@
 			</li>
 			@endif
 
-			@if(in_group('dosen') || in_group('penyusun_soal'))
+			@if(in_group(DOSEN_GROUP_ID) || in_group(PENYUSUN_SOAL_GROUP_ID))
 			<li class="{{ $page == 'soal' ? "active" : "" }} nav-item">
-				<a href="{{ site_url('soal') }}">
+				<a href="{{ url('soal') }}">
 					<i class="fa fa-file-text-o"></i><span class="menu-title" data-i18n="nav.dash.main">Soal Manaj.</span>
 				</a>
 			</li>
 			@endif
 
-			@if( is_admin() || in_group('dosen') || in_group('pengawas') )
+			@if( is_admin() || in_group(DOSEN_GROUP_ID) || in_group(PENGAWAS_GROUP_ID) || in_group(KOORD_PENGAWAS_GROUP_ID) )
 			
 			@if( APP_TYPE == 'tryout' )
 			<li class="{{ ($page == 'ujian') || ($page == 'paket') ? "active" : "" }} nav-item">
-			<a href="{{ site_url('ujian/master') }}">
+			<a href="{{ url('ujian/master') }}">
 				<i class="fa fa-folder"></i><span class="menu-title" data-i18n="nav.templates.main">Ujian Manaj.</span>
 			</a>
 				<ul class="menu-content">
 					<li class="{{ $method == 'master' ? "active":"" }}">
-						<a class="menu-item" href="{{ site_url('ujian/master') }}">
+						<a class="menu-item" href="{{ url('ujian/master') }}">
 							<i class="fa {{ $method  == 'master' ? "fa-play-circle-o" : "fa-circle-o" }}"></i>
 							List Ujian
 						</a>
 					</li>
+					@if( is_admin() )
 					<li class="{{ ($page == 'paket') && ($method == 'index') ? "active":"" }}">
-						<a class="menu-item" href="{{ site_url('paket/index') }}">
+						<a class="menu-item" href="{{ url('paket/index') }}">
 							<i class="fa {{ ($page == 'paket') && $method  == 'index' ? "fa-play-circle-o" : "fa-circle-o" }}"></i>
 							Paket Ujian
 						</a>
 					</li>
+					@endif
 				</ul>
 			</li>
 
 			@else 
 
 			<li class="{{ $page == 'ujian' ? "active" : "" }} nav-item">
-				<a href="{{ site_url('ujian/master') }}">
+				<a href="{{ url('ujian/master') }}">
 					<i class="fa fa-calendar"></i><span class="menu-title" data-i18n="nav.dash.main">Ujian Manaj.</span>
 				</a>
 			</li>
@@ -150,86 +152,88 @@
 			@endif
 			@endif
 
-			@if( in_group('mahasiswa') )
+			@if( in_group(MHS_GROUP_ID) )
 				@if( APP_TYPE == 'tryout' )
 				<li class="{{ $page == 'membership' ? "active" : "" }} nav-item">
-					<a href="{{ site_url('membership/list') }}">
+					<a href="{{ url('membership/list') }}">
 						<i class="icon-diamond"></i><span class="menu-title" data-i18n="nav.dash.main">Membership</span>
 					</a>
 				</li>
 				<li class="{{ $page == 'paket' ? "active" : "" }} nav-item">
-					<a href="{{ site_url('paket/list') }}">
+					<a href="{{ url('paket/list') }}">
 						<i class="icon-basket-loaded"></i><span class="menu-title" data-i18n="nav.dash.main">Paket Materi</span>
 					</a>
 				</li>
 				<li class="{{ ($page == 'ujian' && $method == 'latihan_soal' ) ? "active" : "" }} nav-item">
-					<a href="{{ site_url('ujian/latihan_soal') }}">
+					<a href="{{ url('ujian/latihan_soal') }}">
 						<i class="ft-edit-3"></i><span class="menu-title" data-i18n="nav.dash.main">Latihan Soal</span>
 					</a>
 				</li>
 				<li class="{{ ($page == 'ujian' && $method == 'tryout' ) ? "active" : "" }} nav-item">
-					<a href="{{ site_url('ujian/tryout') }}">
+					<a href="{{ url('ujian/tryout') }}">
 						<i class="fa fa-trophy"></i><span class="menu-title" data-i18n="nav.dash.main">Tryout</span>
 					</a>
 				</li>
 				@else
 				<li class="{{ $page == 'ujian' ? "active" : "" }} nav-item">
-					<a href="{{ site_url('ujian/list') }}">
+					<a href="{{ url('ujian/list') }}">
 						<i class="fa fa-calendar"></i><span class="menu-title" data-i18n="nav.dash.main">Ujian</span>
 					</a>
 				</li>
 				@endif
 			@endif
 
-			@if( is_admin() || in_group('dosen') )
+			@if( is_admin() || in_group(DOSEN_GROUP_ID) )
 			{{-- <li class="navigation-header" style="background-color: #ffcb60;text-align: left;">
 				<span data-i18n="nav.category.ui">LAPORAN</span>
 				<i class="ft-more-horizontal ft-minus" data-toggle="tooltip" data-placement="right" data-original-title="LAPORAN"></i>
           	</li> --}}
 			<li class="{{ $page == 'hasilujian' ? "active" : "" }} nav-item">
-				<a href="{{ site_url('hasilujian') }}">
+				<a href="{{ url('hasilujian') }}">
 					<i class="fa fa-file"></i><span class="menu-title" data-i18n="nav.dash.main">Hasil Ujian</span>
 				</a>
 			</li>
 			@endif
 
-			@if(is_admin())
+			@if(is_admin() || in_group(KOORD_PENGAWAS_GROUP_ID))
 			{{-- <li class="navigation-header" style="background-color: #ffcb60;text-align: left;">
 				<span data-i18n="nav.category.ui">SETTING</span>
 				<i class="ft-more-horizontal ft-minus" data-toggle="tooltip" data-placement="right" data-original-title="ADMINISTRATOR"></i>
           	</li> --}}
-
-			@if( APP_TYPE == 'tryout' )
-			  <li class="{{ $page == 'payment' ? "active" : "" }} nav-item">
-				  <a href="{{ site_url('payment') }}">
-					  <i class="fa fa-shopping-bag"></i><span class="menu-title" data-i18n="nav.dash.main">Payment</span>
-				  </a>
-				  <ul class="menu-content">
-					  <li class="{{ $method  == 'order_list' ? "active":"" }}">
-						  <a class="menu-item" href="{{ site_url('payment/order_list') }}">
-							  <i class="fa {{ $method  == 'order_list' ? "fa-play-circle-o" : "fa-circle-o" }}"></i>
-							  Order List
-						  </a>
-					  </li>
-				  </ul>
-			  </li>
+			
+			@if(is_admin())
+				@if( APP_TYPE == 'tryout' )
+				<li class="{{ $page == 'payment' ? "active" : "" }} nav-item">
+					<a href="{{ url('payment/order_list') }}">
+						<i class="fa fa-shopping-bag"></i><span class="menu-title" data-i18n="nav.dash.main">Payment</span>
+					</a>
+					<ul class="menu-content">
+						<li class="{{ $method  == 'order_list' ? "active":"" }}">
+							<a class="menu-item" href="{{ url('payment/order_list') }}">
+								<i class="fa {{ $method  == 'order_list' ? "fa-play-circle-o" : "fa-circle-o" }}"></i>
+								Order List
+							</a>
+						</li>
+					</ul>
+				</li>
+				@endif
 			@endif
 
-			<li class="{{ $page == 'users' ? "active" : "" }} nav-item">
-				<a href="{{ site_url('users') }}">
+			<li class="{{ (($page == 'users') && ($method != 'edit' || !empty($param1)))  ? "active" : "" }} nav-item">
+				<a href="{{ url('users') }}">
 					<i class="fa fa-users"></i><span class="menu-title" data-i18n="nav.dash.main">User Manaj.</span>
 				</a>
 			</li>
 
 			@endif
 
-			@if( in_group('dosen') || in_group('mahasiswa') || in_group('penyusun_soal') )
+			@if( !is_admin() )
 			{{-- <li class="navigation-header" style="background-color: #ffcb60;text-align: left;">
 				<span data-i18n="nav.category.ui">SETTING</span>
 				<i class="ft-more-horizontal ft-minus" data-toggle="tooltip" data-placement="right" data-original-title="ADMINISTRATOR"></i>
           	</li> --}}
-			<li class="{{ $page == 'users' ? "active" : "" }} nav-item">
-				<a href="{{ site_url('users/edit') }}">
+			<li class="{{ ($page == 'users' && $method == 'edit' && empty($param1))? "active" : "" }} nav-item">
+				<a href="{{ url('users/edit') }}">
 					<i class="fa fa-cog"></i><span class="menu-title" data-i18n="nav.dash.main">Setting</span>
 				</a>
 			</li>

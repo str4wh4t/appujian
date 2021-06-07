@@ -463,7 +463,7 @@ class Matkul extends MY_Controller
 					// 	$mhs_matkul->delete();
 					// }
 				}
-				$now = Carbon::now('utc')->toDateTimeString();
+				$now = Carbon::now()->toDateTimeString();
 				if(!empty($mhs_ids_insert)) {
 					$insert = [];
 					foreach ($mhs_ids_insert as $mhs_id) {

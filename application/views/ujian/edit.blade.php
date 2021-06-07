@@ -171,7 +171,14 @@ function init_page_level(){
     // $('#is_sekuen_topik').bootstrapSwitch('toggleState');
     @endif
 
+    @if(APP_TYPE == 'tryout')
+        ajx_overlay(true);
+        init_peserta_table_value(bundle_id_list).then(function(){
+            ajx_overlay(false);
+        });
+    @else
     $('#btn_refine_peserta').trigger('click');
+    @endif
 }
 
 const init_cascade_select2 = () => {
@@ -514,8 +521,14 @@ const init_peserta_table = (response_mhs, response_mhs_ujian) => {
     if(!$.isEmptyObject(response_mhs)) {
         $.each(response_mhs, function (i, item) {
             let chkbox = $('<input>').attr('class', 'chkbox_pilih_peserta').attr('type', 'checkbox').attr('name', 'peserta[]').attr('value', item.id_mahasiswa);
-            if(mhs_ujian_existing.includes(item.id_mahasiswa))
+            if(mhs_ujian_existing.includes(item.id_mahasiswa)){
                 chkbox.prop('checked', true);
+            }
+
+            @if(APP_TYPE == 'tryout')
+                chkbox.prop('disabled', true);
+            @endif
+
             $('<tr>').append(
                 $('<td>').css('text-align', 'center').append(chkbox),
                 $('<td>').text(item.nama),
@@ -532,10 +545,17 @@ const init_peserta_table = (response_mhs, response_mhs_ujian) => {
                 $('<td>').text('Tidak ada peserta tersedia').attr('colspan', '8').css('text-align', 'center')
             ).appendTo('#tbody_tb_peserta');
     }
-    $('#peserta_hidden').val(JSON.stringify(mhs_ujian_existing));
+    
     $('#chkbox_pilih_semua_peserta').prop('checked', false);
     $('.search_pes').val('');
     $('#span_total_peserta').text(mhs_ujian_existing.length);
+
+    @if(APP_TYPE == 'tryout')
+    mhs_ujian_existing = []; // EMPTYING THE ARRAY 
+    @endif
+
+    $('#peserta_hidden').val(JSON.stringify(mhs_ujian_existing));
+
 };
 
 $(document).on('change','#chkbox_pilih_semua_peserta',function () {
@@ -1027,6 +1047,7 @@ $(document).on('click','#btn_refine_peserta', function(){
                     </div>
                     <small class="help-block"></small>
                 </div>
+                @if(APP_TYPE == 'ujian')
                 <fieldset class="form-group" style="padding: 10px; border: 1px solid #ccc;">
                     <legend class="col-form-label col-sm-2" style="border: 1px solid #ccc; background-color: #fffcd4;">Cluster Peserta</legend>
                     <div class="form-group">
@@ -1114,8 +1135,12 @@ $(document).on('click','#btn_refine_peserta', function(){
                         <button type="button" id="btn_refine_peserta" class="btn btn-outline-info"><i class="icon-info"></i> Refine Peserta</button>
                     </div>
                 </fieldset>
-                 <div class="form-group">
-                    <label for="status_ujian">Peserta Ujian</label>  <small class="help-block text-danger"><b>***</b> Pilih peserta yg akan dienroll ke ujian</small>
+                @else
+                <input type="hidden" name="kelompok_ujian" value="null">
+                <input type="hidden" name="tahun_mhs" value="null">
+                @endif
+                <div class="form-group">
+                    <label for="status_ujian">Peserta Ujian</label>  <small class="help-block text-danger"><b>***</b> Pilih peserta yg akan dienroll ke ujian, jika peserta tidak terlihat pada tabel dibawah kemungkinan mhs tersebut sudah mengerjakan ujian terkait</small>
 {{--                        <div class="form-group">--}}
 {{--                             <label>Jalur</label>--}}
 {{--                             <select name="pilihan_jalur" id="pilihan_jalur" class="form-control" style="width:100% !important" multiple="multiple">--}}
@@ -1139,7 +1164,13 @@ $(document).on('click','#btn_refine_peserta', function(){
                      <table class="table table-bordered">
                         <thead>
                             <tr>
-                                <th style="text-align: center"><input type="checkbox" id="chkbox_pilih_semua_peserta"></th>
+                                <th style="text-align: center">
+                                    @if(APP_TYPE == 'tryout')
+                                    &nbsp;
+                                    @else
+                                    <input type="checkbox" id="chkbox_pilih_semua_peserta">
+                                    @endif
+                                </th>
                                 <th>Nama</th>
                                 <th>No Peserta</th>
                                 <th>Prodi</th>

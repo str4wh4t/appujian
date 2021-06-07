@@ -33,7 +33,7 @@ class Payment_model extends CI_Model {
 			$username = $info[0] ; // 
 			$mhs = Mhs_orm::where('nim', $username)->firstOrFail();
 
-			$now = Carbon::now('utc')->toDateTimeString();
+			$now = Carbon::now()->toDateTimeString();
 
 			if($notif->transaction_status == 'pending'){
 

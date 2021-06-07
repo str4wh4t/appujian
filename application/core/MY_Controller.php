@@ -32,45 +32,73 @@ class MY_Controller extends CI_Controller {
 		$this->output->set_content_type('application/json')->set_output($data);
 	}
 	
+	protected function _akses_admin()
+    {
+        if ( !is_admin() ){
+			show_error('Halaman ini khusus untuk admin', 403, 'Akses Terlarang');
+		}
+    }
+	
 	protected function _akses_dosen()
     {
-        if ( !$this->ion_auth->in_group('dosen') ){
+        if ( !in_group(DOSEN_GROUP_ID) ){
 			show_error('Halaman ini khusus untuk dosen', 403, 'Akses Terlarang');
+		}
+    }
+
+	protected function _akses_koord_pengawas()
+    {
+        if ( !in_group(KOORD_PENGAWAS_GROUP_ID) ){
+			show_error('Halaman ini khusus untuk koord pengawas', 403, 'Akses Terlarang');
+		}
+    }
+
+	protected function _akses_pengawas()
+    {
+        if ( !in_group(PENGAWAS_GROUP_ID) ){
+			show_error('Halaman ini khusus untuk pengawas', 403, 'Akses Terlarang');
+		}
+    }
+
+	protected function _akses_penyusun_soal()
+    {
+        if ( !in_group(PENYUSUN_SOAL_GROUP_ID) ){
+			show_error('Halaman ini khusus untuk penyusun soal', 403, 'Akses Terlarang');
 		}
     }
 
     protected function _akses_mahasiswa()
     {
-        if ( !$this->ion_auth->in_group('mahasiswa') ){
+        if ( !in_group(MHS_GROUP_ID) ){
 			show_error('Halaman ini khusus untuk mahasiswa', 403, 'Akses Terlarang');
-		}
-    }
-    
-    protected function _akses_admin()
-    {
-        if ( !$this->ion_auth->in_group('admin') ){
-			show_error('Halaman ini khusus untuk admin', 403, 'Akses Terlarang');
-		}
-    }
-    
-    protected function _akses_pengawas()
-    {
-        if ( !$this->ion_auth->in_group('pengawas') ){
-			show_error('Halaman ini khusus untuk pengawas', 403, 'Akses Terlarang');
 		}
     }
 
 	protected function _akses_selain_mahasiswa()
     {
-        if ( $this->ion_auth->in_group('mahasiswa') ){
+        if ( in_group(MHS_GROUP_ID) ){
 			show_error('Halaman ini khusus untuk selain mahasiswa', 403, 'Akses Terlarang');
+		}
+    }
+
+	protected function _akses_selain_mahasiswa_dan_penyusun_soal()
+    {
+        if ( in_group(MHS_GROUP_ID) || in_group(PENYUSUN_SOAL_GROUP_ID) ){
+			show_error('Halaman ini khusus untuk selain mahasiswa dan penyusun soal', 403, 'Akses Terlarang');
 		}
     }
 
 	protected function _akses_admin_dan_dosen()
     {
-        if (!$this->ion_auth->in_group('admin') && !$this->ion_auth->in_group('dosen')) {
-			show_error('Halaman ini khusus untuk selain mahasiswa', 403, 'Akses Terlarang');
+        if (!is_admin() && !in_group(DOSEN_GROUP_ID)) {
+			show_error('Halaman ini khusus untuk selain admin dan dosen', 403, 'Akses Terlarang');
+		}
+    }
+
+	protected function _akses_admin_dan_koord_pengawas()
+    {
+        if (!is_admin() && !in_group(KOORD_PENGAWAS_GROUP_ID)) {
+			show_error('Halaman ini khusus untuk selain admin dan koord pengawas', 403, 'Akses Terlarang');
 		}
     }
 	

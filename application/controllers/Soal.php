@@ -1659,7 +1659,7 @@ class Soal extends MY_Controller
 			begin_db_trx();
 			$selected_bundle = json_decode($selected_bundle);
 			$selected_soal = json_decode($selected_soal);
-			$now = Carbon::now('utc')->toDateTimeString();
+			$now = Carbon::now()->toDateTimeString();
 			if(!empty($selected_bundle)){
 				if(!$is_ignore_bundle){
 					$bundle_ids_before = Bundle_soal_orm::whereIn('id_soal', $selected_soal)

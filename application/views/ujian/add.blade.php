@@ -943,6 +943,7 @@ $(document).on('click','#btn_refine_peserta', function(){
                     </div>
                     <small class="help-block"></small>
                 </div>
+                @if(APP_TYPE == 'ujian')
                 <fieldset class="form-group" style="padding: 10px; border: 1px solid #ccc;">
                     <legend class="col-form-label col-sm-2" style="border: 1px solid #ccc; background-color: #fffcd4;">Cluster Peserta</legend>
                     <div class="form-group">
@@ -1067,7 +1068,12 @@ $(document).on('click','#btn_refine_peserta', function(){
                     <small class="help-block"></small>
                     <div class="alert border-danger text-center text-danger"><i class="icon-info"></i> Total peserta dipilih : <b><span id="span_total_peserta">0</span></b></div>
                 </div>
-                <div class="form-group pull-right">
+                @else 
+                <input type="hidden" name="kelompok_ujian" value="null">
+                <input type="hidden" name="tahun_mhs" value="null">
+                <hr />
+                @endif
+                <div class="form-group text-center">
                     <a href="{{ site_url('ujian/master') }}" class="btn btn-flat btn-warning">
                         <i class="fa fa-arrow-left"></i> Kembali
                     </a>

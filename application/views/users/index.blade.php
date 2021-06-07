@@ -7,6 +7,7 @@
 {{--<link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/vendors/css/tables/extensions/rowReorder.dataTables.min.css') }}">--}}
 {{--<link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/vendors/css/tables/extensions/responsive.dataTables.min.css') }}">--}}
 <link rel="stylesheet" type="text/css" href="{{ asset('assets/yarn/node_modules/bootstrap4-datetimepicker/build/css/bootstrap-datetimepicker.css') }}">
+<link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/vendors/css/forms/icheck/icheck.css') }}">
 <!-- END PAGE LEVEL JS-->
 @endpush
 
@@ -21,6 +22,7 @@
 <script src="{{ asset('assets/yarn/node_modules/moment/min/moment.min.js') }}"></script>
 <script src="{{ asset('assets/yarn/node_modules/bootstrap4-datetimepicker/build/js/bootstrap-datetimepicker.min.js') }}"></script>
 <script src="{{ asset('assets/yarn/node_modules/jquery-validation/dist/jquery.validate.min.js') }}"></script>
+<script src="{{ asset('assets/template/robust/app-assets/vendors/js/forms/icheck/icheck.min.js') }}"></script>
 <!-- END PAGE VENDOR -->
 @endpush
 
@@ -60,7 +62,7 @@ $(document).on('click','#btn_cari_pegawai',function(){
     if(input_pegawai.trim() == ''){
         return false;
     }
-
+    ajx_overlay(true);
     $.ajax({
             url: '{{ url('users/ajax/cari_pegawai') }}',
             data: {'nip': input_pegawai},
@@ -90,18 +92,24 @@ $(document).on('click','#btn_cari_pegawai',function(){
                 icon: "warning"
             });
             ok_submit_pengawas = false;
+        },
+        complete: function(){
+            ajx_overlay(false);
         }
     })
 });
 
 $(document).on('click','#btn_simpan_pengawas',function(){
+    let is_koord_pengawas = $('#is_koord_pengawas').is(':checked') ? 1 : 0 ;
     if(ok_submit_pengawas && (nip_pengawas != '')){
+        ajx_overlay(true);
         $.ajax({
             url: '{{ url('users/ajax/save_pengawas') }}',
-            data: {'nip': nip_pengawas},
+            data: {'nip': nip_pengawas, 'is_koord_pengawas' : is_koord_pengawas},
             type: 'POST',
             success: function (res) {
                 if(res.status){
+                    reload_ajax();
                     $('#modal_tambah_pengawas').modal('hide');
                     Swal.fire({
                         title: "Perhatian",
@@ -122,18 +130,19 @@ $(document).on('click','#btn_simpan_pengawas',function(){
                     text: "Terjadi kesalahan",
                     icon: "warning"
                 });
+            },
+            complete: function(){
+                ajx_overlay(false);
             }
         });
     }else{
         Swal.fire({
-                title: "Perhatian",
-                text: "Pegawai tidak ditemukan",
-                icon: "warning"
-              });
-
+            title: "Perhatian",
+            text: "Pegawai tidak ditemukan",
+            icon: "warning"
+        });
     }
 });
-
 
 jQuery.validator.addMethod("valid_email", function(value, element) {
     // allow any non-whitespace characters as the host part
@@ -144,8 +153,6 @@ jQuery.validator.addMethod("valid_date", function(value, element) {
     // allow any non-whitespace characters as the host part
     return this.optional( element ) || /{{ REGEX_DATE_VALID }}/.test( value );
 }, 'Please enter a valid date');
-
-
 
 let validator = $("#form_tambah_penyusun_soal").validate({
     debug: false,
@@ -211,48 +218,53 @@ $(document).on('click','#btn_simpan_penyusun_soal',function(){
     
     if(valid){
     
-    let nm_lengkap_ps = $('#nm_lengkap_ps').val();
-    let tgl_lahir_ps = $('#tgl_lahir_ps').val();
-    let email_ps = $('#email_ps').val();
-    
-    ajx_overlay(true);
-    $.ajax({
-        url: '{{ url('users/ajax/save_penyusun_soal') }}',
-        data: {'nm_lengkap': nm_lengkap_ps, 'tgl_lahir': tgl_lahir_ps, 'email': email_ps},
-        type: 'POST',
-        success: function (res) {
-            if(res.status){
-                $('#modal_tambah_penyusun_soal').modal('hide');
+        let nm_lengkap_ps = $('#nm_lengkap_ps').val();
+        let tgl_lahir_ps = $('#tgl_lahir_ps').val();
+        let email_ps = $('#email_ps').val();
+        
+        ajx_overlay(true);
+        $.ajax({
+            url: '{{ url('users/ajax/save_penyusun_soal') }}',
+            data: {'nm_lengkap': nm_lengkap_ps, 'tgl_lahir': tgl_lahir_ps, 'email': email_ps},
+            type: 'POST',
+            success: function (res) {
+                if(res.status){
+                    reload_ajax();
+                    $('#modal_tambah_penyusun_soal').modal('hide');
+                    Swal.fire({
+                        title: "Perhatian",
+                        text: "Penyusun_soal telah ditambahkan",
+                        icon: "success"
+                    });
+                }else{
+                    Swal.fire({
+                        title: "Perhatian",
+                        text: res.msg,
+                        icon: "warning"
+                    });
+                }
+            },
+            error: function () {
                 Swal.fire({
                     title: "Perhatian",
-                    text: "Penyusun_soal telah ditambahkan",
-                    icon: "success"
-                });
-            }else{
-                Swal.fire({
-                    title: "Perhatian",
-                    text: res.msg,
+                    text: "Terjadi kesalahan",
                     icon: "warning"
                 });
+            },
+            complete: function(){
+                ajx_overlay(false);
             }
-        },
-        error: function () {
-            Swal.fire({
-                title: "Perhatian",
-                text: "Terjadi kesalahan",
-                icon: "warning"
-            });
-        },
-        complete: function(){
-            ajx_overlay(false);
-        }
-    });
+        });
 
     }
 });
 
-
-
+function init_page_level(){
+    $('.icheck').iCheck({
+        checkboxClass: 'icheckbox_square-red',
+        radioClass: 'iradio_square-red',
+    });
+}
 
 </script>
 <script src="{{ asset('assets/dist/js/app/users/index.js') }}"></script>
@@ -277,13 +289,15 @@ $(document).on('click','#btn_simpan_penyusun_soal',function(){
         <div class="mb-3">
             <button type="button" onclick="reload_ajax()" class="btn btn-sm btn-flat btn-outline-secondary"><i class="fa fa-refresh"></i> Reload</button>
             <button type="button" class="btn btn-sm btn-flat btn-primary" id="btn_tambah_pengawas"><i class="fa fa-plus-circle"></i> Tambah Pengawas</button>
+            @if(is_admin())
             <button type="button" class="btn btn-sm btn-flat btn-info" id="btn_tambah_penyusun_soal"><i class="fa fa-plus-circle"></i> Tambah Penyusun Soal</button>
             <div class="pull-right">
                 <label for="show_me">
-                    <input type="checkbox" id="show_me">
+                    <input type="checkbox" id="show_me" class="icheck">
                     Tampilkan saya
                 </label>
             </div>
+            @endif
         </div>
     </div>
 </div>
@@ -370,6 +384,16 @@ $(document).on('click','#btn_simpan_penyusun_soal',function(){
                                 </div>
                             </div>
                         </div>
+                        @if(is_admin())
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label for="is_koord_pengawas" style="display: block">Koord Pengawas</label>
+                                    <input type="checkbox" id="is_koord_pengawas" class="icheck"> &nbsp;&nbsp; Jadikan sbg koordinator pengawas
+                                </div>
+                            </div>
+                        </div>
+                        @endif
                     </div>
                 </form>
             </div>

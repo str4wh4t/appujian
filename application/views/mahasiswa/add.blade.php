@@ -143,7 +143,6 @@ $(document).on('keyup','input[name="foto"]',function(){
             <div class="form-group">
                 <label for="matkul">Materi Ujian</label>
                 <select name="matkul[]" id="matkul" class="form-control" multiple="multiple" style="width: 100%!important">
-{{--                            <option value="" disabled selected>Pilih Mata Kuliah</option>--}}
                     <?php foreach ($matkul as $row) : ?>
                         <option value="<?=$row->id_matkul?>"><?=$row->nama_matkul?></option>
                     <?php endforeach; ?>

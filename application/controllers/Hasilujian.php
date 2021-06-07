@@ -217,6 +217,8 @@ class HasilUjian extends MY_Controller {
 			'nilai'	=> $nilai,
 			'hasil'	=> $hasil
 		];
+
+		$tpk = Topik_orm::pluck('nama_topik','id')->toArray();
 		
 		$new_hasil = [];
 		foreach ($data['hasil'] as $hasil){
@@ -225,8 +227,8 @@ class HasilUjian extends MY_Controller {
             if(!empty($hasil_ujian_per_topik)) {
 	            foreach ($hasil_ujian_per_topik as $t => $v) {
 		            $return .= '<tr>';
-		            $tpk    = Topik_orm::findOrFail($t);
-		            $return .= '<td width="80%">' . $tpk->nama_topik . '</td>';
+		            // $tpk    = Topik_orm::findOrFail($t);
+		            $return .= '<td width="80%">' . $tpk[$t] . '</td>';
 		            if(SHOW_DETAIL_HASIL)
                         $return .= '<td width="20%">' . $v . '</td>';
 		            $return .= '</tr>';
@@ -238,13 +240,73 @@ class HasilUjian extends MY_Controller {
 				'nama' => $hasil->nama,
 				'nilai' => $hasil->nilai,
 				'nilai_bobot_benar' => $hasil->nilai_bobot_benar,
-				'detail_bobot_benar' => $return
+				'detail_bobot_benar' => $return,
+				// 'absensi' => empty($hasil->absen_by) ? 'BELUM' : 'SUDAH',
+				// 'is_terlihat_pada_layar' => empty($hasil->is_terlihat_pada_layar) ? '-' : ($hasil->is_terlihat_pada_layar ? 'YA' : '-'),
+				// 'is_perjokian' => empty($hasil->is_perjokian) ? '-' : ($hasil->is_perjokian ? 'YA' : '-'),
+				// 'is_sering_buka_page_lain' => empty($hasil->is_sering_buka_page_lain) ? '-' : ($hasil->is_sering_buka_page_lain ? 'YA' : '-'),
 			];
 		}
 		
 		$data['hasil'] = $new_hasil;
 
 		$this->load->view('hasilujian/cetak_detail', $data);
+	}
+
+	public function cetak_detail_xls($id)
+	{
+		ini_set('max_execution_time', 0);
+		if(in_group('mahasiswa')){
+			$id = integer_read_from_uuid($id);
+		}
+		
+		$m_ujian = Mujian_orm::findOrFail($id);
+		
+		if(in_group('mahasiswa')){
+			if(!$m_ujian->tampilkan_hasil){
+				show_404();
+			}
+		}
+
+		$ujian = $m_ujian;
+		$nilai = $this->ujian->bandingNilai($id);
+		$hasil = $this->ujian->HslUjianById($id)->result();
+
+		$data = [
+			'ujian'	=> $ujian,
+			'nilai'	=> $nilai,
+			'hasil'	=> $hasil,
+			'materi_ujian_list'	=> [],
+		];
+
+		$tpk = Topik_orm::pluck('nama_topik','id')->toArray();
+		
+		$new_hasil = [];
+		foreach ($data['hasil'] as $hasil){
+			$hasil_ujian_per_topik = json_decode($hasil->detail_bobot_benar);
+			$return = [];
+            if(!empty($hasil_ujian_per_topik)) {
+	            foreach ($hasil_ujian_per_topik as $t => $v) {
+					$return[$t] = $v;
+	            }
+            }
+            $new_hasil[] = [
+				'nim' => $hasil->nim,
+				'nama' => $hasil->nama,
+				'nilai' => $hasil->nilai,
+				'nilai_bobot_benar' => $hasil->nilai_bobot_benar,
+				'detail_bobot_benar' => $return,
+				'absensi' => empty($hasil->absen_by) ? 'BELUM' : 'SUDAH',
+				'is_terlihat_pada_layar' => empty($hasil->is_terlihat_pada_layar) ? '-' : ($hasil->is_terlihat_pada_layar ? 'YA' : '-'),
+				'is_perjokian' => empty($hasil->is_perjokian) ? '-' : ($hasil->is_perjokian ? 'YA' : '-'),
+				'is_sering_buka_page_lain' => empty($hasil->is_sering_buka_page_lain) ? '-' : ($hasil->is_sering_buka_page_lain ? 'YA' : '-'),
+			];
+		}
+		
+		$data['hasil'] = $new_hasil;
+		$data['nama_file'] = 'download_hasil_' . str_replace('.', '_', APP_ID) . '_' . url_title($m_ujian->nama_ujian, '_', true) . '_' . date('Ymd');
+
+		$this->load->view('hasilujian/cetak_detail_xls', $data);
 	}
 
 	public function jawaban($id)

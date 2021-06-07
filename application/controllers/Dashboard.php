@@ -23,7 +23,7 @@ class Dashboard extends CI_Controller {
 			'subjudul'		=> 'Data Aplikasi',
 		];
 
-		if ( $this->ion_auth->is_admin() ) {
+		if ( is_admin() ) {
 
 			$box = [
 				[
@@ -72,11 +72,9 @@ class Dashboard extends CI_Controller {
 			$info_box = json_decode(json_encode($box), FALSE);
 
 			$data['info_box'] = $info_box;
-		} elseif ( $this->ion_auth->in_group('pengawas') ) {
+		} elseif ( in_group(KOORD_PENGAWAS_GROUP_ID) || in_group(PENGAWAS_GROUP_ID) || in_group(PENYUSUN_SOAL_GROUP_ID) ) {
 			$data['user'] = $user;
-		} elseif ( $this->ion_auth->in_group('penyusun_soal') ) {
-			$data['user'] = $user;
-		} elseif ( $this->ion_auth->in_group('dosen') ) {
+		} elseif ( in_group(DOSEN_GROUP_ID) ) {
 //			$matkul = ['matkul' => 'dosen.matkul_id=matkul.id_matkul'];
 //			$data['dosen'] = $this->dashboard->get_where('dosen', 'nip', $user->username, $matkul)->row();
 			$data['dosen'] = Orm\Dosen_orm::where('nip',$user->username)->firstOrFail();
@@ -95,7 +93,7 @@ class Dashboard extends CI_Controller {
 //		$this->load->view('_templates/dashboard/_footer.php');
 
 		if(APP_TYPE == 'tryout'){
-			if($this->ion_auth->in_group('mahasiswa')){
+			if(in_group(MHS_GROUP_ID)){
 				view('dashboard/tryout/mhs/index',$data);
 			}else{
 				view('dashboard/index',$data);

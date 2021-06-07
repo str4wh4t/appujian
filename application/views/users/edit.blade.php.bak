@@ -29,7 +29,22 @@
 function init_page_level(){
     $('.select2').select2();
 }
+@if($user_login->id === $user_cari->id)
+$(document).on('submit','form#change_password', function(e){
+    e.preventDefault();
+    e.stopImmediatePropagation();
 
+    let btn = $('#btn-pass');
+    btn.attr('disabled', 'disabled').text('Process...');
+
+    url = $(this).attr('action');
+    data = $(this).serialize();
+    msg = "Password anda berhasil diganti";
+    submitajax(url, data, msg, btn);
+});
+@endif
+
+@if(is_admin())
 $('form#form_reset_password_by_admin').on('submit', function (e) {
         e.preventDefault();
         e.stopImmediatePropagation();
@@ -75,7 +90,10 @@ $('form#form_reset_password_by_admin').on('submit', function (e) {
             });
         }
     });
-});
+
+
+    });
+@endif
 
 </script>
 <script src="{{ asset('assets/dist/js/app/users/edit.js') }}"></script>
@@ -97,20 +115,75 @@ $('form#form_reset_password_by_admin').on('submit', function (e) {
 <!---- --->
 <div class="row">
     <div class="col-md-12">
-        <div class="row">
-            <div class="col-md-2">
-                <a href="{{ site_url('users') }}" class="btn btn-warning">
-                    <i class="fa fa-arrow-left"></i> Batal
-                </a>
-            </div>
-            <div class="col-md-10">
-                <div class="alert bg-info"><b>User :</b> {{ $user_cari->full_name }} ( {{ $user_cari->username }} ), <b>Level :</b> {{ strtoupper($level->name) }}</div>
-            </div>
-        </div>
-       <div class="row">
-
-            @if(is_admin())
+            <!--
             <div class="col-md-4">
+                <div class="alert mt-2" style="border: 1px solid #ccc">
+                <?=form_open('users/edit_info', array('id'=>'user_info'), array('id'=>$user_cari->id))?>
+                <div class="box box-info">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">Data User</h3>
+                        <hr>
+                    </div>
+                    <div class="box-body pb-0">
+                        <div class="form-group">
+                            <label for="username">Username</label>
+                            <input type="text" name="username" class="form-control" disabled="disabled" value="<?=$user_cari->username?>">
+                            <small class="help-block"></small>
+                        </div>
+                        <div class="row">
+                            <div class="form-group col-md-12">
+                                <label for="first_name">Nama</label>
+                                <input type="text" name="full_name" class="form-control" value="<?=$user_cari->full_name?>">
+                                <small class="help-block"></small>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Email</label>
+                            <input type="email" name="email" class="form-control" value="<?=$user_cari->email?>">
+                            <small class="help-block"></small>
+                        </div>
+                    </div>
+                    <div class="box-footer">
+                        <button type="submit" id="btn-info" class="btn btn-info">Simpan</button>
+                    </div>
+                </div>
+                <?=form_close()?>
+                </div>
+            </div>
+            -->
+
+            <div class="col-md-4">
+                <!--
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="alert mt-2" style="border: 1px solid #ccc">
+                            <?=form_open('users/edit_level', array('id'=>'user_level'), array('id'=>$user_cari->id))?>
+                            <div class="box box-primary">
+                                <div class="box-header with-border">
+                                    <h3 class="box-title">Level</h3>
+                                    <hr>
+                                </div>
+                                <div class="box-body pb-0">
+                                    <div class="form-group">
+{{--                                        <select id="level" name="level" class="form-control select2" style="width: 100%!important">--}}
+                                        <select id="level" name="level" class="form-control select2" disabled="disabled" style="width: 100%!important">
+                                            <option value="">Pilih Level</option>
+                                            <?php foreach ($groups as $row) : ?>
+                                                <option <?=$level->id===$row->id ? "selected" : ""?> value="<?=$row->id?>"><?=$row->name?></option>
+                                            <?php endforeach; ?>
+                                        </select>
+                                        <small class="help-block"></small>
+                                    </div>
+                                </div>
+                                <div class="box-footer">
+{{--                                    <button type="submit" id="btn-level" class="btn btn-primary">Simpan</button>--}}
+                                </div>
+                            </div>
+                            <?=form_close()?>
+                        </div>
+                    </div>
+                </div>
+                -->
                 <div class="row">
                     <div class="col-md-12">
                         <div class="alert mt-2" style="border: 1px solid #ccc; height: 250px">
@@ -143,7 +216,6 @@ $('form#form_reset_password_by_admin').on('submit', function (e) {
                     </div>
                 </div>
             </div>
-            @endif
 
             <div class="col-md-4">
                     <div class="alert mt-2" style="border: 1px solid #ccc; height: 250px">
@@ -172,7 +244,6 @@ $('form#form_reset_password_by_admin').on('submit', function (e) {
                 </div>
              </div>
         </div>
-
     </div>
 </div>
 <!---- --->

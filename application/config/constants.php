@@ -89,10 +89,12 @@ require_once(APPPATH.'config/constants_depend_app_'. APP_INDEX .'.php');
 
 defined('UPLOAD_DIR') OR define('UPLOAD_DIR', FCPATH . 'uploads/');
 
+defined('ADMIN_GROUP_ID')      OR define('ADMIN_GROUP_ID', 1);
 defined('DOSEN_GROUP_ID')      OR define('DOSEN_GROUP_ID', 2);
 defined('MHS_GROUP_ID')      OR define('MHS_GROUP_ID', 3);
 defined('PENGAWAS_GROUP_ID')      OR define('PENGAWAS_GROUP_ID', 4);
 defined('PENYUSUN_SOAL_GROUP_ID')      OR define('PENYUSUN_SOAL_GROUP_ID', 5);
+defined('KOORD_PENGAWAS_GROUP_ID')      OR define('KOORD_PENGAWAS_GROUP_ID', 6);
 defined('TEMPLATE_LEMBAR_UJIAN')      OR define('TEMPLATE_LEMBAR_UJIAN', 'utbk');
 
 defined('MHS_ID_LENGTH')      OR define('MHS_ID_LENGTH', 12);

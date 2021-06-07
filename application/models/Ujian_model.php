@@ -36,18 +36,19 @@ class Ujian_model extends CI_Model {
         
         if($status_ujian == 'active'){
         	$this->db->where('a.status_ujian', 1);
+            $this->db->group_start();
         	$this->db->where('a.terlambat >', date('Y-m-d H:i:s'));
-            $this->db->or_where('a.terlambat is NULL', NULL, FALSE);
+            $this->db->or_where('a.terlambat is NULL', null, false);
+            $this->db->group_end();
         }
         
         if($status_ujian == 'expired'){
-            $this->db->where('a.terlambat is NOT NULL', NULL, FALSE);
-        	$this->db->where('a.terlambat <=', date('Y-m-d H:i:s'));
+            $this->db->where('a.terlambat is NOT NULL', null, false);
+        	$this->db->where('a.terlambat <', date('Y-m-d H:i:s'));
         }
         
         if($status_ujian == 'close'){
         	$this->db->where('a.status_ujian', 0);
-        	$this->db->where('a.terlambat >', date('Y-m-d H:i:s'));
         }
         
         if($status_ujian == 'semua'){
@@ -84,7 +85,7 @@ class Ujian_model extends CI_Model {
         	$return = '';
         	if(($role->name == 'admin') || ($role->name == 'dosen')) {
         		$return = '<a href="'. site_url('ujian/edit/' . $data['id_ujian']) .'" >'. $data['nama_ujian'] .'</a >';
-	        }else if($role->name == 'pengawas') {
+	        }else if(($role->name == 'pengawas') || ($role->name == 'koord_pengawas')) {
 		        $return = '<a href="'. site_url('ujian/monitor/' . $data['id_ujian']) .'" >'. $data['nama_ujian'] .'</a >';
         	}
             return $return ;
@@ -131,7 +132,7 @@ class Ujian_model extends CI_Model {
 											<i class="fa fa-desktop"></i> Monitor
 										</a>
 									</div>';
-	        }else if($role->name == 'pengawas') {
+	        }else if(($role->name == 'pengawas') || ($role->name == 'koord_pengawas')) {
 		
 		        $return = '<a href="' . site_url('ujian/monitor/' . $data['id_ujian']) . '" class="btn btn-sm btn-info">
 											<i class="fa fa-desktop"></i> Monitor
@@ -303,19 +304,20 @@ class Ujian_model extends CI_Model {
     public function getHasilUjian($nip = null)
     {
         $this->datatables->select('b.id_ujian, b.nama_ujian, b.jumlah_soal, CONCAT(b.waktu, " Menit") as waktu, b.tgl_mulai');
-        $this->datatables->select('c.nama_matkul');
+        // $this->datatables->select('c.nama_matkul');
         $this->datatables->from('h_ujian a');
         $this->datatables->join('m_ujian b', 'a.ujian_id = b.id_ujian');
-        $this->datatables->join('matkul c', 'b.matkul_id = c.id_matkul');
+        // $this->datatables->join('matkul c', 'b.matkul_id = c.id_matkul');
         $this->datatables->group_by('b.id_ujian');
         if($nip !== null){
             $dosen = Dosen_orm::where('nip',$nip)->firstOrFail();
 			if(null !=  $dosen){
-				$ids_matkul = [null];
-				foreach ($dosen->matkul as $matkul){
-					$ids_matkul[] = $matkul->id_matkul;
-				}
-                $this->datatables->where_in('b.matkul_id', $ids_matkul);
+				// $ids_matkul = [null];
+				// foreach ($dosen->matkul as $matkul){
+				// 	$ids_matkul[] = $matkul->id_matkul;
+				// }
+                // $this->datatables->where_in('b.matkul_id', $ids_matkul);
+                $this->datatables->where_in('b.created_by', $dosen->nip);
 			}
         }
 //        $this->datatables->where('a.ujian_selesai', 'Y');
@@ -325,10 +327,11 @@ class Ujian_model extends CI_Model {
     public function HslUjianById($id, $dt=false)
     {
     	
-    	$this->db->select('d.id, a.nim, a.nama, d.detail_bobot_benar, d.nilai, d.nilai_bobot_benar, b.masa_berlaku_sert, b.tampilkan_jawaban, TIMESTAMPDIFF(SECOND, d.tgl_mulai, d.tgl_selesai) AS lama_pengerjaan, d.mahasiswa_ujian_id');
+    	$this->db->select('d.id, a.nim, a.nama, d.detail_bobot_benar, d.nilai, d.nilai_bobot_benar, b.masa_berlaku_sert, b.tampilkan_jawaban, TIMESTAMPDIFF(SECOND, d.tgl_mulai, d.tgl_selesai) AS lama_pengerjaan, d.mahasiswa_ujian_id, c.absen_by, c.is_terlihat_pada_layar, c.is_perjokian, c.is_sering_buka_page_lain');
         $this->db->from('h_ujian d');
 		$this->db->join('mahasiswa a', 'a.id_mahasiswa = d.mahasiswa_id');
 		$this->db->join('m_ujian b', 'd.ujian_id = b.id_ujian');
+        $this->db->join('daftar_hadir c', 'c.mahasiswa_ujian_id = d.mahasiswa_ujian_id', 'left');
         $this->db->where([ 'd.ujian_id' => $id, 'd.ujian_selesai' => 'Y']);
         $this->db->group_by('a.id_mahasiswa');
         $this->db->order_by('d.nilai_bobot_benar','desc');
@@ -353,14 +356,17 @@ class Ujian_model extends CI_Model {
 	
 	        $dt->query($query);
 	        
-			$topik = new Topik_orm();
-	        $dt->edit('detail_bobot_benar', function ($data) use ($topik){
+			// $topik = new Topik_orm();
+            $tpk = Topik_orm::pluck('nama_topik','id')->toArray();
+
+	        // $dt->edit('detail_bobot_benar', function ($data) use ($topik){
+            $dt->edit('detail_bobot_benar', function ($data) use ($tpk){
 	        	$hasil_ujian_per_topik = json_decode($data['detail_bobot_benar']);
 	        	$return = '<dl class="row">';
 	        	if(!empty($hasil_ujian_per_topik)) {
 			        foreach ($hasil_ujian_per_topik as $t => $v) {
-				        $tpk    = $topik->findOrFail($t);
-				        $return .= '<dt class="col-md-8">' . $tpk->nama_topik . '</dt>';
+				        // $tpk    = $topik->findOrFail($t);
+				        $return .= '<dt class="col-md-8">' . $tpk[$t] . '</dt>';
 				        if(SHOW_DETAIL_HASIL)
 	                            $return .= '<dd class="col-md-4">' . $v . '</dd>';
 			        }

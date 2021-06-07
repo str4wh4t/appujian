@@ -6,6 +6,7 @@
 {{--<link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/vendors/css/tables/datatable/dataTables.bootstrap4.min.css') }}">--}}
 {{--<link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/vendors/css/tables/extensions/rowReorder.dataTables.min.css') }}">--}}
 {{--<link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/vendors/css/tables/extensions/responsive.dataTables.min.css') }}">--}}
+<link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/vendors/css/forms/icheck/icheck.css') }}">
 <!-- END PAGE LEVEL JS-->
 @endpush
 
@@ -17,6 +18,7 @@
 {{--<script src="{{ asset('assets/template/robust/app-assets/vendors/js/tables/datatable/dataTables.bootstrap4.min.js') }}"></script>--}}
 {{--<script src="{{ asset('assets/template/robust/app-assets/vendors/js/tables/datatable/dataTables.responsive.min.js') }}"></script>--}}
 {{--<script src="{{ asset('assets/template/robust/app-assets/vendors/js/tables/datatable/dataTables.rowReorder.min.js') }}"></script>--}}
+<script src="{{ asset('assets/template/robust/app-assets/vendors/js/forms/icheck/icheck.min.js') }}"></script>
 <!-- END PAGE VENDOR -->
 @endpush
 
@@ -38,6 +40,12 @@ body {
 .modal {
     z-index: 9996;
 }
+.table th, .table td {
+    padding: 10px !important;
+}
+#tb_daftar_hadir > thead > tr > th {
+    vertical-align: middle;
+}
 </style>
 @endpush
 
@@ -55,6 +63,7 @@ body {
     let jml_daftar_hadir_by_pengawas = {{ $jml_daftar_hadir_by_pengawas }};
     let as = null ;
     let user_id = null ;
+    let trigger_by_user = true;
     
     function init_page_level() {
         ajaxcsrf();
@@ -62,7 +71,12 @@ body {
         $('#jml_mhs_absen').text(jml_daftar_hadir);
         $('#jml_mhs_absen_by_self').text(jml_daftar_hadir_by_pengawas);
 
-        table = $("#tb_daftar_hadir").DataTable({
+        $('.icheck').iCheck({
+            checkboxClass: 'icheckbox_square-red',
+            radioClass: 'iradio_square-red',
+        });
+
+    table = $("#tb_daftar_hadir").DataTable({
         initComplete: function() {
           var api = this.api();
           $("#tb_daftar_hadir_filter input")
@@ -86,6 +100,11 @@ body {
             // $.each(list_absensi, function(index, item){
             //     $('#badge_absensi_' + item).text('SUDAH').removeClass('danger').removeClass('border-danger').addClass('border-success').addClass('success');
             // });
+
+            $('.icheck').iCheck({
+                checkboxClass: 'icheckbox_square-red',
+                radioClass: 'iradio_square-red',
+            });
         },
         lengthMenu: [[10, 50, -1], [10, 50, "All"]],
         dom:
@@ -93,7 +112,7 @@ body {
           "<'row'<'col-sm-12'tr>>" +
           "<'row'<'col-sm-5'i><'col-sm-7'p>>",
         buttons: [
-          @if(in_group('pengawas'))
+          @if(in_group(PENGAWAS_GROUP_ID))
           // {
           //     text: '<i class="fa fa-save"></i> Tampilkan Absensi Anda',
           //     className: 'btn btn-info btn-glow',
@@ -109,16 +128,16 @@ body {
                       reset_filter_dt();
                   }
             }
-      ],
+        ],
         oLanguage: {
-          sProcessing: "loading..."
+            sProcessing: "loading..."
         },
         processing: true,
         serverSide: true,
         ajax: {
-          url: "{{ url('ujian/ajax/data_daftar_hadir') }}",
-          type: "POST",
-          data: function ( d ) {
+            url: "{{ url('ujian/ajax/data_daftar_hadir') }}",
+            type: "POST",
+            data: function ( d ) {
                 d.id = '{{ $m_ujian->id_ujian }}';
                 d.as = as;
                 d.user_id = user_id;
@@ -129,13 +148,31 @@ body {
                 "data": 'absensi',
                 "orderable": false,
                 "searchable": false,
-                "width": "5%"
+                "width": "10%"
             },
             {
                 "data": 'absen_by',
                 "orderable": false,
                 "searchable": false,
                 "width": "5%"
+            },
+            {
+                "data": 'bapu_a',
+                "orderable": false,
+                "searchable": false,
+                "width": "3%"
+            },
+            {
+                "data": 'bapu_b',
+                "orderable": false,
+                "searchable": false,
+                "width": "3%"
+            },
+            {
+                "data": 'bapu_c',
+                "orderable": false,
+                "searchable": false,
+                "width": "3%"
             },
             {
                 "data": 'koneksi',
@@ -161,25 +198,29 @@ body {
                 "searchable": false,
                 "width": "5%"
             },
-            { "data": 'nim', "width": "10%" },
+            { 
+                "data": 'nim', 
+                "width": "10%" 
+            },
             { "data": 'nama' },
             {
                 "data": 'prodi',
                 "orderable": false,
-                "searchable": false
+                "searchable": false,
+                "width": "15%"
             }
         ],
-        order: [[6, "asc"], [8, "asc"]],
-        rowId: function(a) {
-          return a;
-        },
-        rowCallback: function(row, data, iDisplayIndex) {
+        order: [[9, "asc"], [10, "asc"]],
+        // rowId: function(a) {
+        //   return a;
+        // },
+        // rowCallback: function(row, data, iDisplayIndex) {
           // var info = this.fnPagingInfo();
           // var page = info.iPage;
           // var length = info.iLength;
           // var index = page * length + (iDisplayIndex + 1);
           // $("td:eq(1)", row).html(index);
-        },
+        // },
         // scrollX:        true,
         // fixedColumns:   {
         //     leftColumns: 6,
@@ -279,15 +320,27 @@ body {
                         }
 
                         $('#badge_absensi_' + data.nim).text('BELUM').removeClass('success').removeClass('border-success').addClass('border-danger').addClass('danger');
-                    } else {
-                        if (data.user_id == '{{ get_logged_user()->id }}') {
-                            Swal.fire({
-                                title: "Perhatian",
-                                text: "Bukan absensi anda",
-                                icon: "error",
-                                confirmButtonText: "Tutup"
-                            });
+                    }
+                } else if (data.cmd == 'DO_BAPU') {
+                    if (data.ok) {
+                        trigger_by_user = false ;
+                        if (data.user_id != '{{ get_logged_user()->id }}') { // BIAR TIDAK TER-TRIGGER 2 KALI
+                            if(data.bapu.is_terlihat_pada_layar)
+                                $('#checkbox_is_terlihat_pada_layar_' + data.nim).iCheck('check');
+                            else
+                                $('#checkbox_is_terlihat_pada_layar_' + data.nim).iCheck('uncheck');
+
+                            if(data.bapu.is_perjokian)
+                                $('#checkbox_is_perjokian_' + data.nim).iCheck('check');
+                            else
+                                $('#checkbox_is_perjokian_' + data.nim).iCheck('uncheck');
+
+                            if(data.bapu.is_sering_buka_page_lain)
+                                $('#checkbox_is_sering_buka_page_lain_' + data.nim).iCheck('check');
+                            else
+                                $('#checkbox_is_sering_buka_page_lain_' + data.nim).iCheck('uncheck');
                         }
+                        trigger_by_user = true ;
                     }
                 } else if (data.cmd == 'PING') {
                     $('#badge_koneksi_' + data.nim).text('ONLINE').removeClass('bg-danger').removeClass('bg-warning').addClass('bg-success');
@@ -386,7 +439,7 @@ body {
                     }else{
                         Swal.fire({
                             title: "Perhatian",
-                            text: "Kesalahan pada absen",
+                            text: "Anda bukan yg mengabsenkan / Belum diabsenkan",
                             icon: "warning"
                         });
                     }
@@ -617,6 +670,56 @@ $(document).on('click','#btn_absensi_semua',function(){
 });
 
 
+$(document).on('ifChanged','.check_bapu',function(){
+
+    if(trigger_by_user){
+        let mahasiswa_ujian_id = $(this).data('id');
+        let nim = $(this).data('nim');
+
+        let bapu = {
+            'is_terlihat_pada_layar': $('#checkbox_is_terlihat_pada_layar_' + nim).is(':checked') ? 1 : 0,
+            'is_perjokian': $('#checkbox_is_perjokian_' + nim).is(':checked') ? 1 : 0,
+            'is_sering_buka_page_lain': $('#checkbox_is_sering_buka_page_lain_' + nim).is(':checked') ? 1 : 0,
+        };
+
+        ajx_overlay(true);
+        let el = $(this);
+        $.post('{{ url('ujian/ajax/bapu_pengawas') }}', {'mahasiswa_ujian_id' : mahasiswa_ujian_id, 'nim' : nim, 'bapu' : bapu}, function (res){
+            if(res.ok) {
+                sendmsg(JSON.stringify({
+                    'mahasiswa_ujian_id': mahasiswa_ujian_id,
+                    'user_id': '{{ get_logged_user()->id }}',
+                    'as': '{{ get_selected_role()->name }}',
+                    'nim': nim,
+                    'cmd': 'DO_BAPU',
+                    'bapu': bapu,
+                    'app_id': '{{ APP_ID }}',
+                }));
+            }else{
+                Swal.fire({
+                    title: "Perhatian",
+                    text: "Anda bukan yg mengabsenkan / Belum diabsenkan",
+                    icon: "warning"
+                });
+                // el.prop('checked', false);
+                // el.iCheck('update');
+                // if(el.is(':checked'))
+                trigger_by_user = false;
+                if(el.is(':checked'))
+                    el.iCheck('uncheck');
+                else
+                    el.iCheck('check');
+                trigger_by_user = true;
+                
+            }
+        }).always(function() {
+            ajx_overlay(false);
+        });
+    }
+
+});
+
+
 </script>
 <!-- END PAGE LEVEL JS-->
 @endpush
@@ -645,7 +748,7 @@ $(document).on('click','#btn_absensi_semua',function(){
                     JUMLAH MHS ONLINE : <span id="jml_mhs_online">0</span>
                 </button>
 
-                @if(in_group('pengawas'))
+                @if(in_group(PENGAWAS_GROUP_ID))
                 <button type="button" class="btn btn-outline-primary btn-glow" id="btn_absensi_pengawas">
                     JUMLAH MHS ABSEN OLEH ANDA : <span id="jml_mhs_absen_by_self">0</span>
                 </button>
@@ -656,22 +759,42 @@ $(document).on('click','#btn_absensi_semua',function(){
                 </button>
         </div>
     </div>
-    <div class="table-responsive pb-3" style="">
-        <table id="tb_daftar_hadir" class="table table-striped table-bordered table-hover">
+    <div class="table-responsive pb-2" style="">
+        <table id="tb_daftar_hadir" class="table table-striped table-bordered table-hover w-100">
         <thead>
             <tr>
-                <th class="text-center">&nbsp;</th>
+                <th style="text-align: center" rowspan="2">Menu</th>
+                <th rowspan="2">Absensi</th>
+                <th style="text-align: center" colspan="3">Bapu</th>
+                <th rowspan="2">Online</th>
+                <th rowspan="2">Latency</th>
+                <th rowspan="2">Status</th>
+                <th rowspan="2">Aksi</th>
+                <th rowspan="2">No Peserta</th>
+                <th rowspan="2">Nama</th>
+                <th rowspan="2">Prodi</th>
+            </tr>
+            <tr>
+                <th style="text-align: center"><small>Tidak Terlihat<br/>Pada Layar</small></th>
+                <th style="text-align: center"><small>Perjokian</small></th>
+                <th style="text-align: center"><small>Sering Buka<br/>Laman Lain</small></th>
+            </tr>
+
+            {{-- <tr>
+                <th style="text-align: center">Menu</th>
                 <th>Absensi</th>
+                <th style="text-align: center">A</th>
+                <th style="text-align: center">B</th>
+                <th style="text-align: center">C</th>
                 <th>Online</th>
                 <th>Latency</th>
                 <th>Status</th>
                 <th>Aksi</th>
                 <th>No Peserta</th>
                 <th>Nama</th>
-                {{-- <th>NIK</th> --}}
-                {{-- <th>Tgl Lahir</th> --}}
                 <th>Prodi</th>
-            </tr>
+            </tr> --}}
+
         </thead>
         </table>
     </div>

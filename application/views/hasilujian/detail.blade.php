@@ -105,6 +105,9 @@ $(document).on('click','.btn_reset_hasil',function(){
             <a target="_blank" href="{{ site_url('hasilujian/cetak_detail/' . segment(3)) }}" class="btn btn-danger btn-flat btn-sm">
                 <i class="fa fa-print"></i> Cetak Hasil Ujian
             </a>
+            <a target="_blank" href="{{ site_url('hasilujian/cetak_detail_xls/' . segment(3)) }}" class="btn btn-success btn-flat btn-sm">
+                <i class="fa fa-print"></i> Cetak Hasil Ujian .xls
+            </a>
         </div>
         @endif
     </div>

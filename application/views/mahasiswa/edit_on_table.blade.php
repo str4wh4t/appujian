@@ -231,7 +231,7 @@ html body {
                                     <li>Data Nama min. 3 karakter dan maks. 250 karakter</li>
                                     <li>Data Email maks. 250 karakter</li>
                                     <li>Data Jk hanya berisi L atau P</li>
-                                    <li>Data Materi Ujian harus sesuai dengan ID yang ada</li>
+                                    <li>Jika ada, data Materi Ujian harus sesuai dengan ID yang ada</li>
                                 </ul>
                             </div>
                             <div class="alert bg-success">

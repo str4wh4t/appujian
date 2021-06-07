@@ -104,7 +104,7 @@
     </div>
 </div>
 
-@elseif(in_group('dosen'))
+@elseif(in_group(DOSEN_GROUP_ID))
 
 <div class="row">
     <div class="col-md-6">
@@ -153,7 +153,7 @@
     </div>
 </div>
 
-@elseif(in_group('pengawas'))
+@elseif(in_group(PENGAWAS_GROUP_ID) || in_group(KOORD_PENGAWAS_GROUP_ID))
 
 <div class="row">
     <div class="col-md-6">
@@ -204,7 +204,7 @@
     </div>
 </div>
 
-@elseif(in_group('penyusun_soal'))
+@elseif(in_group(PENYUSUN_SOAL_GROUP_ID))
 
 <div class="row">
     <div class="col-md-6">

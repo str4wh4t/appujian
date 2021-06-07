@@ -47,7 +47,7 @@
             <tr>
                 <th>No.</th>
                 <th>Nama Ujian</th>
-                <th>Materi Ujian</th>
+                {{-- <th>Materi Ujian</th> --}}
                 <th>Jumlah Soal</th>
                 <th>Waktu</th>
                 <th>Tanggal</th>

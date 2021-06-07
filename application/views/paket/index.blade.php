@@ -124,16 +124,16 @@ function init_page_level(){
       }
     ],
     order: [[1, "asc"]],
-    rowId: function(a) {
-      return a;
-    },
-    rowCallback: function(row, data, iDisplayIndex) {
+    // rowId: function(a) {
+    //   return a;
+    // },
+    // rowCallback: function(row, data, iDisplayIndex) {
       // var info = this.fnPagingInfo();
       // var page = info.iPage;
       // var length = info.iLength;
       // var index = page * length + (iDisplayIndex + 1);
       // $("td:eq(1)", row).html(index);
-    }
+    // }
   });
 
 }

@@ -42,7 +42,7 @@ $(document).ready(function() {
         searchable: false
       },
       { data: "nama_ujian" },
-      { data: "nama_matkul" },
+      // { data: "nama_matkul" },
       { data: "jumlah_soal" },
       { data: "waktu" },
       { data: "tgl_mulai" },
@@ -53,7 +53,7 @@ $(document).ready(function() {
     ],
     columnDefs: [
       {
-        targets: 6,
+        targets: 5,
         data: "id_ujian",
         render: function(data, type, row, meta) {
           return `

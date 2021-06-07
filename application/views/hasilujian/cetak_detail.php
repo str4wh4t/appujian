@@ -84,33 +84,27 @@ $html = <<<EOD
 <!--</p>-->
 <table>
     <tr>
-        <th>Nama Ujian</th>
-        <td>{$ujian->nama_ujian}</td>
-        <th>Materi Ujian</th>
-        <td>{$ujian->matkul->nama_matkul}</td>
-    </tr>
-    <tr>
-        <th>Jumlah Soal</th>
-        <td>{$ujian->jumlah_soal} soal</td>
-        <th>Topik</th>
+        <td>Topik</td>
         <td>{$str_topik}</td>
+        <td>Jadwal Selesai Ujian</td>
+        <td>{$selesai}</td>
     </tr>
     <tr>
-        <th>Waktu</th>
-        <td>{$ujian->waktu} Menit</td>
-        <th>Nilai Terendah</th>
-        <td>{$min_nilai}</td>
-    </tr>
-    <tr>
-        <th>Jadwal Mulai Ujian</th>
-        <td>{$mulai}</td>
-        <th>Nilai Tertinggi</th>
+        <td>Jml Soal</td>
+        <td>{$ujian->jumlah_soal} soal</td>
+        <td>Nilai Tertinggi</td>
         <td>{$max_nilai}</td>
     </tr>
     <tr>
-        <th>Jadwal Selesai Ujian</th>
-        <td>{$selesai}</td>
-        <th>Rata-rata Nilai</th>
+        <td>Waktu</td>
+        <td>{$ujian->waktu} menit</td>
+        <td>Nilai Terendah</td>
+        <td>{$min_nilai}</td>
+    </tr>
+    <tr>
+        <td>Jadwal Mulai Ujian</td>
+        <td>{$mulai}</td>
+        <td>Rata-rata Nilai</td>
         <td>{$rata_rata_ujian}</td>
     </tr>
 </table>

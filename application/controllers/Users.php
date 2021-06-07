@@ -21,15 +21,19 @@ class Users extends MY_Controller {
 	}
 	
 
-    public function data($id = null)
+    protected function _data()
     {
-		$this->_akses_admin();
-        $this->_json($this->users->getDataUsers($id), false);
+		$id = $this->input->post('id');
+
+		$this->_akses_admin_dan_koord_pengawas();
+
+        $this->_json($this->users->getDataUsers($id, get_selected_role()), false);
     }
 
     public function index()
 	{
-		$this->_akses_admin();
+		$this->_akses_admin_dan_koord_pengawas();
+
 		$data = [
 			'user' => $this->ion_auth->user()->row(),
 			'judul'	=> 'User',
@@ -41,20 +45,26 @@ class Users extends MY_Controller {
 		view('users/index',$data);
 	}
 	
-	public function edit($id = "")
-	{
-		if(is_admin()){
-			Users_orm::findOrFail($id);
-		}else{
+	public function edit($id = null)
+	{	
+		if(empty($id)){
 			$id = $this->ion_auth->user()->row()->id;
+		}else{
+			if(is_admin() || in_group(KOORD_PENGAWAS_GROUP_ID)){
+				$user_orm = Users_orm::findOrFail($id);
+			}else{
+				$id = $this->ion_auth->user()->row()->id;
+			}
 		}
 		
 		$level = $this->ion_auth->get_users_groups($id)->result();
+		$user_login = $this->ion_auth->user()->row();
+		$user_cari = $this->ion_auth->user($id)->row();
 		$data = [
-			'user' 		=> $this->ion_auth->user()->row(),
+			'user_login' 		=> $user_login,
 			'judul'		=> 'User Management',
 			'subjudul'	=> 'Edit Data User',
-			'users' 	=> $this->ion_auth->user($id)->row(),
+			'user_cari' 	=> $user_cari,
 			'groups'	=> $this->ion_auth->groups()->result(),
 			'level'		=> $level[0]
 		];
@@ -63,7 +73,10 @@ class Users extends MY_Controller {
 //		$this->load->view('_templates/dashboard/_header.php', $data);
 //		$this->load->view('users/edit');
 //		$this->load->view('_templates/dashboard/_footer.php');
-		view('users/edit',$data);
+		if($user_login->id == $user_cari->id)
+			view('users/edit_pribadi',$data);
+		else
+			view('users/edit',$data);
 	}
 
 	public function edit_info()
@@ -232,7 +245,9 @@ class Users extends MY_Controller {
 	}
 	
 	public function reset_password_by_admin(){
-		$this->_akses_admin();
+
+		$this->_akses_admin_dan_koord_pengawas();
+
 		$this->form_validation->set_rules('id', 'Id User', 'required');
 		
 		if($this->form_validation->run()===FALSE){
@@ -265,7 +280,12 @@ class Users extends MY_Controller {
 
 	public function delete($id)
 	{
-		$this->_akses_admin();
+		$this->_akses_admin_dan_koord_pengawas();
+
+		$user = $this->ion_auth->user()->row();
+
+		if($id == $user->id) show_404(); // JIKA YG DIDELETE ADALAH DIRI SENDIRI
+
 		$data['status'] = $this->ion_auth->delete_user($id) ? true : false;
 		$this->_json($data);
 	}
@@ -302,10 +322,11 @@ class Users extends MY_Controller {
 	protected function _save_pengawas()
 	{
 
-		$this->_akses_admin();
+		$this->_akses_admin_dan_koord_pengawas();
 		
 		$nip = $this->input->post('nip', true);
-		
+		$is_koord_pengawas = $this->input->post('is_koord_pengawas', true);
+
 		$client = new \GuzzleHttp\Client();
 		$data = [];
 		try{
@@ -341,7 +362,11 @@ class Users extends MY_Controller {
 					'tgl_lahir'  => $tgl_lahir,
 				];
 				
-				$group           = [ PENGAWAS_GROUP_ID ]; // Sets user to pengawas
+				if(!$is_koord_pengawas)
+					$group           = [ PENGAWAS_GROUP_ID ]; // Sets user to pengawas
+				else
+					$group           = [ KOORD_PENGAWAS_GROUP_ID ]; // Sets user to pengawas
+
 				$msg = null;
 
 				try {

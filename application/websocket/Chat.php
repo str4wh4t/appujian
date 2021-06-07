@@ -127,7 +127,28 @@ class Chat implements MessageComponentInterface {
 				    'nim'     => $req->nim,
 				    'user_id' => $req->user_id,
 				    'ok'      => $ok,
-				    'app_id'      => $req->app_id,
+				    'app_id'  => $req->app_id,
+			    ];
+
+			    // foreach ($this->clients as $conn_id => $conn) {
+				//     $conn->send(json_encode($res));
+			    // }
+				
+				$msg = json_encode($res);
+				$this->msg_to_admin($msg);
+
+		    }
+	    }elseif($req->cmd == 'DO_BAPU'){
+		    if($req->as == 'pengawas') {
+
+			    $ok =  true;
+			    $res = [
+				    'cmd'     => $req->cmd,
+					'bapu' 	  => $req->bapu,
+				    'nim'     => $req->nim,
+				    'user_id' => $req->user_id,
+				    'ok'      => $ok,
+				    'app_id'  => $req->app_id,
 			    ];
 
 			    // foreach ($this->clients as $conn_id => $conn) {

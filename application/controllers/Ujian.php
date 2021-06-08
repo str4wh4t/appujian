@@ -3196,7 +3196,6 @@ class Ujian extends MY_Controller
 				}
 			}
 
-			$query = Mhs_orm::query();
 			if(!empty($filter_table)){
 				foreach($filter_table as $key => $v){
 					$query->whereIn($key, $v);
@@ -3253,7 +3252,6 @@ class Ujian extends MY_Controller
 				}
 			}
 
-			$query = Mhs_orm::query();
 			if(!empty($filter_table)){
 				foreach($filter_table as $key => $v){
 					$query->whereIn($key, $v);

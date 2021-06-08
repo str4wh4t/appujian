@@ -31,7 +31,10 @@ class Ujian_model extends CI_Model {
     	
 	    $dt = new Datatables( new MySQL($config) );
 	    
-	    $this->db->select('a.id_ujian, status_ujian, a.token, a.nama_ujian, a.jumlah_soal, a.tgl_mulai, a.terlambat, CONCAT(a.waktu, " Mnt") AS waktu, CONCAT(a.jenis , "/" , a.jenis_jawaban) AS jenis, GROUP_CONCAT(c.name SEPARATOR "---") as paket, GROUP_CONCAT(CONCAT("[", c.id, "]")) as paket_ids, a.created_by as oleh, a.pakai_token');
+	    $this->db->select('a.id_ujian, status_ujian, a.token, a.nama_ujian, a.jumlah_soal, a.tgl_mulai, 
+        a.terlambat, CONCAT(a.waktu, " Mnt") AS waktu, CONCAT(a.jenis , "/" , a.jenis_jawaban) AS jenis, 
+        GROUP_CONCAT(c.name SEPARATOR "---") as paket, GROUP_CONCAT(CONCAT("[", c.id, "]")) as paket_ids, 
+        created_by as oleh, a.pakai_token, a.repeatable');
         $this->db->from('m_ujian a');
         
         if($status_ujian == 'active'){

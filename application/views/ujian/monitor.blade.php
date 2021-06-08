@@ -772,12 +772,13 @@ $(document).on('ifChanged','.check_bapu',function(){
                 <th rowspan="2">Aksi</th>
                 <th rowspan="2">No Peserta</th>
                 <th rowspan="2">Nama</th>
-                <th rowspan="2">Prodi</th>
+                <th >Prodi</th>
             </tr>
             <tr>
                 <th style="text-align: center"><small>Tidak Terlihat<br/>Pada Layar</small></th>
                 <th style="text-align: center"><small>Perjokian</small></th>
                 <th style="text-align: center"><small>Sering Buka<br/>Laman Lain</small></th>
+                <th style=""><small>Pilihan Prodi</small></th>
             </tr>
 
             {{-- <tr>

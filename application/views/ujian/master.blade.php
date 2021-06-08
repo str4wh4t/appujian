@@ -72,7 +72,7 @@ function init_page_level(){
         buttons: [
           {
             extend: "copy",
-            exportOptions: { columns: [2, 3, 4, 5, 6, 7, 8, 9, 10], format: {
+            exportOptions: { columns: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11], format: {
                   body: function ( data, columnIdx, rowIdx ) {
                     if(rowIdx == 0)
                       return (columnIdx + 1);
@@ -83,7 +83,7 @@ function init_page_level(){
           },
           {
             extend: "print",
-            exportOptions: { columns: [2, 3, 4, 5, 6, 7, 8, 9, 10], format: {
+            exportOptions: { columns: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11], format: {
                   body: function ( data, columnIdx, rowIdx ) {
                     if(rowIdx == 0)
                       return (columnIdx + 1);
@@ -94,7 +94,7 @@ function init_page_level(){
           },
           {
             extend: "excel",
-            exportOptions: { columns: [2, 3, 4, 5, 6, 7, 8, 9, 10], format: {
+            exportOptions: { columns: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11], format: {
                   body: function ( data, columnIdx, rowIdx ) {
                     if(rowIdx == 0)
                       return (columnIdx + 1);
@@ -105,7 +105,7 @@ function init_page_level(){
           },
           {
             extend: "pdf",
-            exportOptions: { columns: [2, 3, 4, 5, 6, 7, 8, 9, 10], format: {
+            exportOptions: { columns: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11], format: {
                   body: function ( data, columnIdx, rowIdx ) {
                     if(rowIdx == 0)
                       return (columnIdx + 1);
@@ -141,6 +141,7 @@ function init_page_level(){
             { "data": 'waktu' },
             { "data": 'jenis' },
             { "data": 'oleh' },
+            { "data": 'repeatable' },
             {
                 "data": 'token',
                 "orderable": false
@@ -193,6 +194,16 @@ function init_page_level(){
             },
             {
                 "targets": 9,
+                "render": function (data, type, row, meta) {
+                    if(data == '1'){
+                        return `<span class="badge badge-success">YA</span>`;
+                    }else{
+                        return `<span class="badge badge-danger">TIDAK</span>`;
+                    }
+                }
+            },
+            {
+                "targets": 10,
                 "data": "token",
                 "render": function (data, type, row, meta) {
                     if(row.pakai_token == '0'){
@@ -205,7 +216,7 @@ function init_page_level(){
                 }
             },
             {
-                "targets": 10,
+                "targets": 11,
                 "data": "aksi",
             },
         ],
@@ -439,6 +450,7 @@ $(document).on('click', '#btn_close_alert_paket', function(){
                 <th>Lama Ujian</th>
                 <th>Acak Soal/Jwbn</th>
                 <th>Oleh</th>
+                <th	>Repeatbl</th>
                 <th	class="text-center">Token</th>
                 <th class="text-center">Aksi</th>
             </tr>

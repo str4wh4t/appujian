@@ -11,8 +11,8 @@
     <meta name="{{ csrf_name() }}" content="{{ csrf_token() }}">
 
     <title>{{ APP_NAME }}</title>
-    <link rel="apple-touch-icon" href="{{ asset('assets/icon/'. APP_FAVICON_APPLE) }}">
-	<link rel="shortcut icon" type="image/x-icon" href="{{ asset('assets/icon/'. APP_FAVICON) }}">
+    <link rel="apple-touch-icon" href="{{ asset('uploads/img_app/'. APP_FAVICON_APPLE) }}">
+	<link rel="shortcut icon" type="image/x-icon" href="{{ asset('uploads/img_app/'. APP_FAVICON) }}">
     <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i%7CMuli:300,400,500,700" rel="stylesheet">
     <!-- BEGIN VENDOR CSS-->
     <link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/css/vendors.css') }}">

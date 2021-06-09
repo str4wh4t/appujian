@@ -9,8 +9,8 @@
     <meta name="author" content="<?= APP_NAME ?>">
     <title>ERROR :: <?= APP_NAME ?></title>
 
-    <link rel="apple-touch-icon" href="<?= asset('assets/icon/'. APP_FAVICON_APPLE) ?>">
-	  <link rel="shortcut icon" type="image/x-icon" href="<?= asset('assets/icon/'. APP_FAVICON) ?>">
+    <link rel="apple-touch-icon" href="<?= asset('uploads/img_app/'. APP_FAVICON_APPLE) ?>">
+	  <link rel="shortcut icon" type="image/x-icon" href="<?= asset('uploads/img_app/'. APP_FAVICON) ?>">
 
     <link href="<?= base_url('assets/yarn/node_modules/typeface-muli/index.css') ?>" rel="stylesheet">
   	<link href="<?= base_url('assets/yarn/node_modules/typeface-open-sans/index.css') ?>" rel="stylesheet">

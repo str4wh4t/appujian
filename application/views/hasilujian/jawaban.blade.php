@@ -269,9 +269,9 @@ use Illuminate\Database\Eloquent\Builder;
 									<div class="card-content">
 										<div class="card-body">
 											<?php 
-															$badge_benar = '<div class="badge badge-success round"><i class="fa fa-check font-medium-2"></i><span> Benar</span></div>';    
-															$badge_salah = '<div class="badge badge-danger round"><i class="fa fa-times font-medium-2"></i><span> Salah</span></div>';    
-															$badge_ragu = '<div class="badge badge-warning round"><i class="icon-info font-medium-2"></i><span> Ragu</span></div>';    
+															$badge_benar = '<div class="badge badge-success round">Benar</span></div>';    
+															$badge_salah = '<div class="badge badge-danger round">Salah</span></div>';    
+															$badge_ragu = '<div class="badge badge-warning round">Ragu</span></div>';    
 															?>
 											<h4 class="card-title">
 												@if (!empty($jawaban_ujian->jawaban))

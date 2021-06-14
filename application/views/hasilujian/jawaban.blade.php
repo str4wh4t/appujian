@@ -83,7 +83,7 @@ use Illuminate\Database\Eloquent\Builder;
 
 		if(is_show_banner_ads){
 			setTimeout(function () {
-				$.featherlight('{{ asset('uploads/img_app/tryout-udid.png') }}');
+				$.featherlight('{{ asset('assets/imgs/tryout_udid_banner.png') }}');
 				stop_ping = true;
 			}, 2000);
 		}

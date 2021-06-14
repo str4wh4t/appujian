@@ -26,6 +26,8 @@ $(document).on('click', '#btn_checkout', function(){
     // );
     // return false;
 
+    let va_provider_id = $('input[name="pilihan_va"]:checked').val();
+
     Swal.fire({
         title: "Perhatian",
         text: "Apakah yakin, tagihan anda akan di issue",
@@ -39,10 +41,11 @@ $(document).on('click', '#btn_checkout', function(){
             ajx_overlay(true);
             $.ajax({
                 url: '{{ url('payment/ajax/snap') }}',
-                data: {'info': '{{ $info }}'},
+                data: {'info': '{{ $info }}', 'va_provider_id' : va_provider_id},
                 type: 'POST',
                 success: function(response) {
                     if (response.token) {
+                        // JIKA PEMBAYARAN VIA MIDTRANS
                         snap.pay(response.token);
                         // snap.pay(response.token,
                         // {
@@ -89,8 +92,34 @@ $(document).on('click', '#btn_checkout', function(){
                         //         // alert('you closed the popup without finishing the payment');
                         //     }
                         // });
+                        
+                    }else{
+                        // JIKA PEMBAYARAN VIA SELAIN MIDTRANS / UDID
+                        if(response.status == 'ok'){
+                            Swal.fire({
+                                title: "Perhatian",
+                                text: "Order berhasil",
+                                icon: "success",
+                                confirmButtonText: "Lihat pembayaran",
+                                allowOutsideClick: false,
+                                allowEscapeKey: false,
+                            }).then(result => {
+                                if (result.value) {
+                                    window.location.href = '{{ url('payment/history') }}';
+                                }
+                            });
+
+                        }else{
+                            Swal.fire({
+                                title: "Gagal",
+                                text: "Terjadi kesalahan : " + response.msg,
+                                icon: "error"
+                            });
+
+                        }
                     }
                 },
+                
                 error: function () {
                     Swal.fire({
                         title: "Gagal",
@@ -105,6 +134,10 @@ $(document).on('click', '#btn_checkout', function(){
         }
     });
 });
+
+function init_page_level(){
+    $('input[name="pilihan_va"]:first').prop('checked', true); // PILIH VA PERTAMA JIKA TERSEDIA
+}
 </script>
 <!-- END PAGE LEVEL JS-->
 @endpush
@@ -135,6 +168,7 @@ $(document).on('click', '#btn_checkout', function(){
     <div class="col-12">
         <div class="alert bg-info">Rincian Pembelian</div>
         <div class="table-responsive">
+            @php($total_biaya = 0)
             <table class="table w-100">
                 <thead>
                     <tr>
@@ -161,12 +195,63 @@ $(document).on('click', '#btn_checkout', function(){
                             @endif
                         </td>
                         <td>{!! substr($info, 0, 1) == 'M' ? $item->durasi . ' Bulan' : $item->kuota_latihan_soal . 'x' . ' atau <b class="text-danger">UNLIMITED</b> jika membership '  !!}</td>
-                        <td>{{ number_format($item->price, 0, ",", ".") }}</td>
+                        <td style="text-align: right">{{ number_format($item->price, 0, ",", ".") }}</td>
                     </tr>
+                    @php($total_biaya = $total_biaya + $item->price)
                 </tbody>
                 <tfoot>
+
+                    @if(APP_UDID)
+                    
+                    @if(!empty($additional_cost))
                     <tr>
-                        <td colspan="3">
+                        <td colspan="5" style="background-color: #fee; border: 1px solid #fee;"></td>
+                    </tr>
+                    @foreach ($additional_cost as $add_cost)
+                    <tr>
+                        <td colspan="2">&nbsp;</td>
+                        <td >
+                            {{ strtoupper($add_cost->name) }}
+                        </td>
+                        <td style="text-align: right">{{ number_format($add_cost->nominal, 0, ",", ".") }}</td>
+                    </tr>
+                    @php($total_biaya = $total_biaya + $add_cost->nominal)
+                    @endforeach
+
+                    @endif
+
+                    <tr>
+                        <td colspan="2">&nbsp;</td>
+                        <td >
+                            <b>TOTAL BIAYA</b>
+                        </td>
+                        <td style="text-align: right"><b>{{ number_format($total_biaya, 0, ",", ".") }}</b></td>
+                    </tr>
+
+                    @if(!empty($va_provider))
+                    <tr>
+                        <td colspan="5" style="background-color: #eef; border: 1px solid #eef;"></td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">&nbsp;</td>
+                        <td >
+                            PILIHAN PEMBAYARAN
+                        </td>
+                        <td style="text-align: center">
+                            @foreach ($va_provider as $vp)
+                            <div style="display: block">
+                                <input type="radio" name="pilihan_va" value="{{ $vp->virtual_account_provider_code }}" >
+                                {!! show_logo_va_udid($vp->provider_name) !!}
+                            </div>
+                            @endforeach
+                        </td>
+                    </tr>
+                    @endif
+
+                    @endif
+
+                    <tr>
+                        <td colspan="3" style="">
                             <div class="alert bg-warning rounded-0">
                                 <i class="fa fa-exclamation-circle"></i> Selalu pastikan kesesuaian harga dengan produk yg akan dibayar
                             </div>

@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Builder;
 @push('page_level_css')
 <!-- BEGIN PAGE LEVEL JS-->
 <link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/vendors/css/charts/morris.css') }}">
+<link rel="stylesheet" type="text/css" href="{{ asset('assets/yarn/node_modules/featherlight/release/featherlight.min.css') }}" />
 <!-- END PAGE LEVEL JS-->
 @endpush
 
@@ -15,7 +16,8 @@ use Illuminate\Database\Eloquent\Builder;
 <script src="{{ asset('assets/yarn/node_modules/moment/min/moment-with-locales.min.js') }}"></script>
 <script src="{{ asset('assets/template/robust/app-assets/vendors/js/charts/raphael-min.js') }}"></script>
 <script src="{{ asset('assets/template/robust/app-assets/vendors/js/charts/morris.min.js') }}"></script>
-<!-- END PAGE VENDOR -->
+<script src="{{ asset('assets/yarn/node_modules/featherlight/release/featherlight.min.js') }}"></script>
+<!-- END PAGE VENDOR JS-->
 @endpush
 
 @push('page_level_js')
@@ -79,12 +81,24 @@ use Illuminate\Database\Eloquent\Builder;
         });
 		/**[STOP] CHART */
 
+		if(is_show_banner_ads){
+			setTimeout(function () {
+				$.featherlight('{{ asset('uploads/img_app/tryout-udid.png') }}');
+				stop_ping = true;
+			}, 2000);
+		}
+
 	}
 	
 	
 	$(document).on('click','.btn_penjelasan',function(){
 		toastr.warning('Fitur tsb sedang dalam pengembangan.', 'Mohon Maaf');
 	});
+
+
+$(document).on('click','img.featherlight-image',function(){
+    window.location = "https://sso.undip.id";
+});
 	
 </script>
 <!-- END PAGE LEVEL JS-->

@@ -14,6 +14,9 @@ class Dashboard extends CI_Controller {
 
 	public function index()
 	{
+
+		// vdebug($_SESSION);
+
 		$user = $this->user;
 		$user_groups = $this->ion_auth->get_users_groups($user->id)->result();
 		$data = [

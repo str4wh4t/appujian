@@ -33,6 +33,7 @@ let conn ;
 let enable_ping = {{ PING_INTERVAL > 0 ? 'true' : 'false' }};
 let stop_ping = false ;
 let socket_enable = {{ SOCKET_ENABLE ? 'true' : 'false' }};
+let is_show_banner_ads = {{ IS_SHOW_BANNER_ads ? 'true' : 'false' }};
 
 function print_page(data) {
     let mywindow = window.open('', 'new div', 'height=600,width=600');
@@ -80,39 +81,25 @@ function reload_ajax(){
 let i_reconnect_socket = 0;
 let batas_reconnect_socket = 3;
 
-sendmsg = function (message, callback) {
-    waitForConnection(function () {
-        if (typeof conn !== 'undefined') {
+const sendmsg = function (message, callback) {
+    if(socket_enable){
+        waitForConnection(function () {
             conn.send(message);
-        }
-        if (typeof callback !== 'undefined') {
-          callback();
-        }
-    }, 1000);
+            if (typeof callback !== 'undefined') {
+                callback();
+            }
+        }, 2000);
+    }
 };
 
-waitForConnection = function (callback, interval) {
-
+const waitForConnection = function (callback, interval) {
     // console.log('conn.readyState', conn.readyState);
-
-    if (typeof conn !== 'undefined') {
+    if (typeof conn !== 'undefined') { // JIKA conn TELAH DI INISIASI SBG obj WEBSOCKET
         if (conn.readyState === 1) {
             callback();
         } else {
             if(i_reconnect_socket > batas_reconnect_socket){
-                Swal.fire({
-                    title: "Perhatian",
-                    text: "Koneksi ke server terputus",
-                    icon: "warning",
-                    confirmButtonText: "Refresh",
-                    allowOutsideClick: false,
-                    allowEscapeKey: false,
-                }).then(result => {
-                    if (result.value) {
-                        window.location.href = '{{ current_url() }}';
-                    }
-                });
-                stop_ping = true;
+                socketConnectionFailure();
             }else{
                 // var that = this;
                 // optional: implement backoff for interval here
@@ -122,7 +109,25 @@ waitForConnection = function (callback, interval) {
             }
             i_reconnect_socket++;
         }
+    }else{
+        socketConnectionFailure();
     }
+};
+
+const socketConnectionFailure = function (){
+    stop_ping = true;
+    Swal.fire({
+        title: "Perhatian",
+        text: "Koneksi ke server terputus",
+        icon: "warning",
+        confirmButtonText: "Refresh",
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+    }).then(result => {
+        if (result.value) {
+            window.location.href = '{{ current_url() }}';
+        }
+    });
 };
 
 let latency = 0;
@@ -131,13 +136,24 @@ let ip = '{{ '-' }}' ; <?php /* get_client_ip() ;  */ ?>
 
 $(document).ready(function(){
 
+    // swal.setDefaults({ heightAuto : false }); // remove heightAuto in swal2 because broken the height of page when appeaer
+
+    @if(flash_data('message_rootpage'))
+        @php($msg = flash_data('message_rootpage'))
+        Swal.fire({
+           title: "{{ $msg['header'] }}",
+           text: "{{ $msg['content'] }}",
+           icon: "{{ $msg['type'] }}",
+        //    heightAuto: false,
+        });
+    @endif
+
     /* [START] WEBSOCKET BOOTSTRAP */
     @if(in_group('mahasiswa'))
+    /* JIKA USER MHS */
     @php($identifier = mt_rand())
-
     
     if(socket_enable){
-
         conn = new WebSocket('{{ ws_url() }}');
         conn.onopen = function(e) {
             sendmsg(JSON.stringify({
@@ -186,60 +202,13 @@ $(document).ready(function(){
                 'app_id': '{{ APP_ID }}',
             }));
         };
-
     }
+    @else
 
-        p.ping("{{ url('/') }}", function(err, data) {
-            sendmsg(JSON.stringify({
-                'nim':'{{ get_logged_user()->username }}',
-                'as':'{{ get_selected_role()->name }}',
-                'cmd':'PING',
-                'ip': ip,
-                'app_id': '{{ APP_ID }}',
-                'latency': data ,
-            }));
-            latency = data;
-            toastr.info('', 'latency : ' + latency + 'ms', {positionClass: 'toast-bottom-right', containerId: 'toast-bottom-right', timeOut: 0});
-        });
-
-        if(enable_ping){
-            setInterval(function() {
-                // let mctime = moment().valueOf();
-                if(!stop_ping){
-                    p.ping("{{ url('/') }}", function(err, data) {
-                        // console.log('ping', data);
-                        sendmsg(JSON.stringify({
-                            'nim':'{{ get_logged_user()->username }}',
-                            'as':'{{ get_selected_role()->name }}',
-                            'cmd':'PING',
-                            'ip': ip,
-                            'app_id': '{{ APP_ID }}',
-                            'latency': data ,
-                        }));
-                        latency = data;
-                        toastr.remove();
-                        toastr.info('', 'latency : ' + latency + 'ms', {positionClass: 'toast-bottom-right', containerId: 'toast-bottom-right', timeOut: 0});
-                    });
-                }
-            },{{ PING_INTERVAL }});
-        }
-
-
-          // Also display error if err is returned.
-          // let mctime = moment().valueOf();
-          {{--  sendmsg(JSON.stringify({--}}
-          {{--      'nim':'{{ get_logged_user()->username }}',--}}
-          {{--      'as':'{{ get_selected_role()->name }}',--}}
-          {{--      'cmd':'PING',--}}
-          {{--      'app_id': '{{ APP_ID }}',--}}
-          {{--      'mctime': mctime ,--}}
-          {{--  }));--}}
-
-
+    // UNTUK WEBSOOCKET SELAIN MHS CUMA BERADA DI PAGE MONITORING
+    
     @endif
     /* [END] WEBSOCKET BOOTSTRAP */
-
-    // swal.setDefaults({ heightAuto : false }); // remove heightAuto in swal2 because broken the height of page when appeaer
 
     if (typeof init_page_level == 'function') {
 		/**
@@ -248,17 +217,58 @@ $(document).ready(function(){
 		init_page_level();
 	}
 
-    @if(flash_data('message_rootpage'))
-        @php($msg = flash_data('message_rootpage'))
-        Swal.fire({
-           title: "{{ $msg['header'] }}",
-           text: "{{ $msg['content'] }}",
-           icon: "{{ $msg['type'] }}",
-        //    heightAuto: false,
-        });
-    @endif
+    /* [START] PINGER */
+    @if(in_group('mahasiswa'))
+    /* JIKA USER MHS */
+    p.ping("{{ url('/') }}", function(err, data) {
+        sendmsg(JSON.stringify({
+            'nim':'{{ get_logged_user()->username }}',
+            'as':'{{ get_selected_role()->name }}',
+            'cmd':'PING',
+            'ip': ip,
+            'app_id': '{{ APP_ID }}',
+            'latency': data ,
+        }));
+        latency = data;
+        toastr.info('', 'latency : ' + latency + 'ms', {positionClass: 'toast-bottom-right', containerId: 'toast-bottom-right', timeOut: 0});
+    });
+
+    if(enable_ping){
+        setInterval(function() {
+            // let mctime = moment().valueOf();
+            if(!stop_ping){
+                p.ping("{{ url('/') }}", function(err, data) {
+                    // console.log('ping', data);
+                    sendmsg(JSON.stringify({
+                        'nim':'{{ get_logged_user()->username }}',
+                        'as':'{{ get_selected_role()->name }}',
+                        'cmd':'PING',
+                        'ip': ip,
+                        'app_id': '{{ APP_ID }}',
+                        'latency': data ,
+                    }));
+                    latency = data;
+                    toastr.remove();
+                    toastr.info('', 'latency : ' + latency + 'ms', {positionClass: 'toast-bottom-right', containerId: 'toast-bottom-right', timeOut: 0});
+                });
+            }
+        },{{ PING_INTERVAL }});
+    }
+
+
+    // Also display error if err is returned.
+    // let mctime = moment().valueOf();
+    {{--  sendmsg(JSON.stringify({--}}
+    {{--      'nim':'{{ get_logged_user()->username }}',--}}
+    {{--      'as':'{{ get_selected_role()->name }}',--}}
+    {{--      'cmd':'PING',--}}
+    {{--      'app_id': '{{ APP_ID }}',--}}
+    {{--      'mctime': mctime ,--}}
+    {{--  }));--}}
+
     
-    @if(!in_group('mahasiswa'))
+    @else
+    /* JIKA USER SELAIN MHS */
     p.ping("{{ url('/') }}", function(err, data) {
         latency = data;
         toastr.info('', 'latency : ' + latency + 'ms', {positionClass: 'toast-bottom-right', containerId: 'toast-bottom-right', timeOut: 0});
@@ -275,8 +285,10 @@ $(document).ready(function(){
             }
         },{{ PING_INTERVAL }});
     }
-    @endif
 
+    @endif
+    /* [STOP] PINGER */
+    
 });
 
 

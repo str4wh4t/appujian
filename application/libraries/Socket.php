@@ -30,14 +30,14 @@ class Socket
 		$server->run();
     }
 
-    public function notif_ws($send_msg = ''){
+    public function notif_ws($msg = ''){
 		if(SOCKET_ENABLE){
-			Client\connect(ws_url())->then(function($conn) use ($send_msg){
+			Client\connect(ws_url())->then(function($conn) use ($msg){
 				$conn->on('message', function($msg) use ($conn) {
 					// echo "Received: {$msg}\n";
-					$conn->close();
+					$conn->close(); // <== KONEKSI DI CLOSE SETELAH KIRIM PESAN
 				});
-				$conn->send($send_msg);
+				$conn->send($msg);
 			}, function ($e) {
 				echo "Could not connect: {$e->getMessage()}\n";
 			});

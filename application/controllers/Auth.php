@@ -14,6 +14,7 @@ use Orm\Tahun;
 use Orm\Mhs_ujian_orm;
 use Orm\Users_temp_orm;
 use Carbon\Carbon;
+use GuzzleHttp\Client;
 
 class Auth extends CI_Controller
 {
@@ -71,7 +72,7 @@ class Auth extends CI_Controller
 	// 	$this->form_validation->set_rules('identity', str_replace(':', '', $this->lang->line('login_identity_label')), 'required|trim');
 	// 	$this->form_validation->set_rules('password', str_replace(':', '', $this->lang->line('login_password_label')), 'required|trim');
 
-	// 	if ($this->form_validation->run() === TRUE)	{
+	// 	if ($this->form_validation->run() === true)	{
 	// 		$remember = (bool)$this->input->post('remember');
 	// 		if ($this->ion_auth->login($this->input->post('identity'), $this->input->post('password'), $remember)){
 	// 			$this->cek_akses();
@@ -103,18 +104,26 @@ class Auth extends CI_Controller
 		$this->form_validation->set_rules('identity', str_replace(':', '', $this->lang->line('login_identity_label')), 'required|trim');
 		$this->form_validation->set_rules('password', str_replace(':', '', $this->lang->line('login_password_label')), 'required|trim');
 
-		if ($this->form_validation->run() === TRUE)	{
+		if ($this->form_validation->run() === true)	{
 			$remember = (bool)$this->input->post('remember');
 			if ($this->ion_auth->login($this->input->post('identity'), $this->input->post('password'), $remember)){
 				$user = $this->ion_auth->user()->row();
+				$login_as = $this->ion_auth->get_users_groups($user->id)->result()[0];
+
+				if(APP_UDID && ($login_as->name == 'mahasiswa')){
+					// JIKA LOGIN SBG MHS atau APP_UDID = true 
+					redirect('/logout', 'refresh');
+				}
+
 //				if(!$user->is_online){
 					$session_data = [
 	                        'username'          => $user->username,
 	                        'nama_lengkap'      => $user->full_name,
 	                        'user'              => $user,
 	                        'login_at'          => date('Y-m-d H:i:s'),
-	                        'login_as'          => $this->ion_auth->get_users_groups($user->id)->result()[0],
+	                        'login_as'          => $login_as,
 	                    ];
+					
 					$this->session->set_userdata('session_data',$session_data);
 					$message_rootpage = [
 						'header' => 'Welcome',
@@ -136,6 +145,133 @@ class Auth extends CI_Controller
 		}
 
 
+	}
+
+	public function cek_login_udid()
+	{
+		$token = null;
+		$this->load->library('verification_jwt');
+		$this->load->library('sso_udid_adapter', [
+			'property' => [
+				'client_id'         => APP_UDID_ID,
+				'client_secret'     => APP_UDID_SECRET,
+				'redirect_uri'      => url('auth/cek_login_udid'),
+				'scope'             => 'User.Read User.Payment.Read User.Payment.Write',
+				'authorization_url' => 'https://login.undip.id/oauth2/authorize/login',
+				'access_token_url'  => 'https://login.undip.id/oauth2/authorize/access_token',
+			],
+			'settings' => [
+		//		'verify' => false, /*default*/
+			],
+			'debug' => [
+				'exception' => true, /*debug all exception*/
+				'token'     => false, /*debug token request*/
+				'response'  => false, /*debug all response non token*/
+			],
+		]);
+
+		try{
+			$token = $this->sso_udid_adapter->auth();
+			$this->session->set_userdata('token_udid', $token);
+
+		}catch (Exception $e) {
+			$this->session->set_flashdata('error_login_msg', '1. '. $e->getMessage());
+			redirect('/', 'refresh');
+		}
+
+		try {
+			$result = $this->sso_udid_adapter->request([
+				'method'      => 'POST',
+				'endpoint'    => APP_UDID_API . '/api-user/api/get_akun',
+				'body_params' => [
+		//					'body' => json_encode([
+		//						'token' => $token,
+		//					]),
+		//					'debug' => true,
+				],
+				'header_params' => [
+		//			'Content-Type' => 'application/json',
+					'Accept'       => 'application/json',
+				]
+			],$token);
+			
+
+			$notif = json_decode($result);
+
+		}catch (Exception $e) {
+			$this->session->set_flashdata('error_login_msg', '2. '. $e->getMessage());
+			redirect('/', 'refresh');
+		}
+
+		$data = $notif->payload;
+
+		// vdebug($data);
+
+		// $sso_udid_id = '123455' ; // $this->input->post('sso_udid_id');
+		$user = Users_orm::where('sso_udid_id', $data->cuid)->first();
+
+		if (empty($user)) {
+			// DIDAFTARKAN USERNYA 
+			$users_temp = new Users_temp_orm();
+			try {
+				begin_db_trx();
+				$users_temp->full_name = $data->nama;
+				// $users_temp->nik = $this->input->post('nik');
+				$users_temp->email = $data->email;
+				$users_temp->phone = $data->mobile_phone;
+				// $users_temp->jenis_kelamin = $this->input->post('jenis_kelamin');
+				$users_temp->kota_asal = 'Kota Semarang';
+				$users_temp->tmp_lahir = 'Kota Semarang';
+				$users_temp->tgl_lahir = $data->tgl_lhr;
+				$users_temp->password = '123456';
+				$users_temp->sso_udid_id = $data->cuid;
+				$users_temp->save();
+				commit_db_trx();
+
+				// $this->session->set_flashdata('success_registrasi_msg', 'Pendaftaran berhasil, silahkan cek email untuk aktivasi');
+				// redirect('auth/registrasi', 'refresh');
+				
+				
+			} catch (Exception $e) {
+				rollback_db_trx();
+				$this->session->set_flashdata('error_login_msg', '3. '. $e->getMessage());
+				redirect('/', 'refresh');
+				
+			}
+			$this->cron_auto_registrasi($users_temp);
+			$user = Users_orm::where('sso_udid_id', $data->cuid)->first();
+
+		}
+
+		$this->ion_auth->set_session($user);
+		$login_as = $this->ion_auth->get_users_groups($user->id)->result()[0];
+
+		if(!APP_UDID || ($login_as->name != 'mahasiswa')){
+			// JIKA LOGIN SBG NON MHS atau APP_UDID = true 
+			redirect('/logout', 'refresh');
+		}
+
+//		if(!$user->is_online){
+			$session_data = [
+					'username'          => $user->username,
+					'nama_lengkap'      => $user->full_name,
+					'user'              => $user,
+					'login_at'          => date('Y-m-d H:i:s'),
+					'login_as'          => $login_as,
+				];
+			
+			$this->session->set_userdata('session_data',$session_data);
+			$message_rootpage = [
+				'header' => 'Welcome',
+				'content' => 'Login berhasil.',
+				'type' => 'success'
+			];
+			$this->session->set_flashdata('message_rootpage', $message_rootpage);
+			redirect('/dashboard', 'refresh');
+//		}else{
+//			redirect('not_valid_login', 'refresh');
+//		}
+		
 	}
 
 
@@ -165,11 +301,11 @@ class Auth extends CI_Controller
 	 * @param int         $id   The user ID
 	 * @param string|bool $code The activation code
 	 */
-	public function activate($id, $code = FALSE)
+	public function activate($id, $code = false)
 	{
-		$activation = FALSE;
+		$activation = false;
 
-		if ($code !== FALSE)
+		if ($code !== false)
 		{
 			$activation = $this->ion_auth->activate($id, $code);
 		}
@@ -281,16 +417,14 @@ class Auth extends CI_Controller
 				$this->form_validation->set_message('required', 'Kolom {field} wajib diisi');
 				$this->form_validation->set_message('is_unique', '{field} tsb sudah terdaftar');
 
-				if ($this->form_validation->run() === FALSE)
+				if ($this->form_validation->run() === false)
 				{
 					// $this->session->set_flashdata('error_registrasi_msg', $this->form_validation->error_string());
 					// redirect('auth/registrasi', 'refresh');
 				}else{
 
 					try {
-
 						begin_db_trx();
-
 						$users_temp = new Users_temp_orm();
 						$users_temp->full_name = $this->input->post('full_name');
 						// $users_temp->nik = $this->input->post('nik');
@@ -302,7 +436,6 @@ class Auth extends CI_Controller
 						$users_temp->tgl_lahir = $this->input->post('tgl_lahir');
 						$users_temp->password = $this->input->post('password');
 						$users_temp->save();
-
 						commit_db_trx();
 
 						$this->session->set_flashdata('success_registrasi_msg', 'Pendaftaran berhasil, silahkan cek email untuk aktivasi');
@@ -325,30 +458,42 @@ class Auth extends CI_Controller
 
 	}
 
-	public function cron_auto_registrasi(){
+	public function cron_auto_registrasi($users_temp = null){
 
-		if(!is_cli()) show_404();
+		/** JIKA $users_temp_list BUKAN null BERATI USER DI DAFTAR KAN LANGSUNG OLEH SSO */
 
-		$users_temp_list = Users_temp_orm::where('is_processed', 0)->orderBy('created_at')->get();
+		if(empty($users_temp)){
+			if(!is_cli()) show_404();
+	
+			$users_temp_list = Users_temp_orm::where('is_processed', 0)->orderBy('created_at')->get();
+
+		}else{
+			$users_temp_list = collect();
+			$users_temp_list->push($users_temp);
+		}
 		
 		if($users_temp_list->isNotEmpty()) {
 			$cron_end = date("Y-m-d H:i:s", strtotime("+1 minutes"));
 
 			foreach ($users_temp_list as $users_temp) {
+
 				$today = date('Y-m-d H:i:s');
-				if($today > $cron_end){
-					die('Waktu cron habis');
+
+				if(empty($users_temp)){
+					if($today > $cron_end){
+						die('Waktu cron habis');
+					}
 				}
 
-				echo 'Nama : '. strtoupper($users_temp->full_name) ." ===> ";
+				if(empty($users_temp)){
+					echo 'Nama : '. strtoupper($users_temp->full_name) ." ===> ";
+				}
 
 				// MENDAFTARKAN SBG USER
 				$nama       = explode(' ', $users_temp->full_name, 2);
 				$first_name = $nama[0];
 				$last_name  = end($nama);
 				$full_name  = $users_temp->full_name;
-		
-		
 		
 				$username        = date('ymdHis'); // USERNAME DIGENERATE OTOMATIS
 				$password        = $users_temp->password;
@@ -361,6 +506,7 @@ class Auth extends CI_Controller
 					'full_name'  => $full_name,
 					'phone'		 => $users_temp->phone,
 					'no_billkey' => $username, // BILLKEY DISAMAKAN DENGN USERNAME
+					'sso_udid_id' => isset($users_temp->sso_udid_id) ? $users_temp->sso_udid_id : null,
 				];
 				$group           = [MHS_GROUP_ID]; // Sets user to mhs.
 		
@@ -544,7 +690,9 @@ class Auth extends CI_Controller
 					$users_temp->is_processed = 1 ; //  FLAG SUDAH DIPROSES
 					$users_temp->save();
 
-					echo 'DONE' . "\n";
+					if(empty($users_temp)){
+						echo 'DONE' . "\n";
+					}
 					
 					commit_db_trx();
 		
@@ -576,7 +724,7 @@ class Auth extends CI_Controller
 
 			$this->form_validation->set_rules('identity', 'Email', 'required|valid_email');
 
-			if ($this->form_validation->run() === FALSE)
+			if ($this->form_validation->run() === false)
 			{
 				
 				$this->session->set_flashdata('error_resend_password_msg', 'Oops, isian anda salah.');
@@ -630,7 +778,7 @@ class Auth extends CI_Controller
 			$this->form_validation->set_rules('new', 'Password', 'required|min_length[' . $this->config->item('min_password_length', 'ion_auth') . ']|matches[new_confirm]');
 			$this->form_validation->set_rules('new_confirm', 'Password Confirm', 'required');
 	
-			if ($this->form_validation->run() === FALSE)
+			if ($this->form_validation->run() === false)
 			{
 				$this->session->set_flashdata('error_set_password_msg', 'Isian password anda salah');
 				redirect("auth/set_password/" . $code, 'refresh');

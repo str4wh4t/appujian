@@ -51,7 +51,7 @@ $rata_rata_ujian = number_format($nilai->avg_nilai,2,'.', '') ;
         <td rowspan="2" ><b>No Peserta</b></td>
         <td rowspan="2" ><b>Nama</b></td>
         <td rowspan="2" ><b>Kehadiran</b></td>
-        <td colspan="3" ><b>Bapu</b></td>
+        <td colspan="4" ><b>Bapu</b></td>
         <?php if(SHOW_DETAIL_HASIL): ?>
         <?php foreach($ujian->topik AS $topik): ?>
             <td rowspan="2"><b><?= $topik->nama_topik ?></b></td>
@@ -66,6 +66,7 @@ $rata_rata_ujian = number_format($nilai->avg_nilai,2,'.', '') ;
         <td ><b>Terlihat Pada Layar</b></td>
         <td ><b>Perjokian</b></td>
         <td ><b>Sering Buka Laman Lain</b></td>
+        <td ><b>Catatan</b></td>
     </tr>
     <?php
     $no = 1;
@@ -83,6 +84,7 @@ $rata_rata_ujian = number_format($nilai->avg_nilai,2,'.', '') ;
         <td ><?= $row['is_terlihat_pada_layar'] ?></td>
         <td ><?= $row['is_perjokian'] ?></td>
         <td ><?= $row['is_sering_buka_page_lain'] ?></td>
+        <td ><?= $row['catatan_pengawas'] ?></td>
         <?php if(SHOW_DETAIL_HASIL): ?>
         <?php foreach($ujian->topik AS $topik): ?>
             <td><?= $row['detail_bobot_benar'][$topik->id] ?></td>

@@ -35,6 +35,12 @@ class Payment_model extends CI_Model {
 
 			$now = Carbon::now()->toDateTimeString();
 
+            $nett_amount = $notif->gross_amount ;
+            if(APP_UDID){
+                // NET AMOUNT HANYA ADA DI UDID, KRN UDID MENAMBAHKAN ADD FEE
+                $nett_amount = $notif->nett_amount;
+            }
+
 			if($notif->transaction_status == 'pending'){
 
 				// JIKA TERJADI PEMESANAN
@@ -48,6 +54,7 @@ class Payment_model extends CI_Model {
 					$trx_payment->stts = PAYMENT_ORDER_BELUM_DIPROSES;
 					$trx_payment->tgl_order = $notif->transaction_time;
 					$trx_payment->jml_bayar = $notif->gross_amount;
+                    $trx_payment->jml_bayar_nett = $nett_amount;
 
 					$keterangan = '';
 					if(substr($info[1], 0, 1) == 'M'){
@@ -60,6 +67,8 @@ class Payment_model extends CI_Model {
 					}
 
 					$trx_payment->keterangan = $keterangan;
+                    $trx_payment->trx_by = $trx_by;
+                    $trx_payment->order_id_udid = $notif->order_id_udid;
 
 					$trx_payment->save();
 				}
@@ -77,23 +86,29 @@ class Payment_model extends CI_Model {
 					$term = $info[0] . '-' . $info[1]; // SETALAH PAKET ID, contoh : 210423223442-P2
 				}
 
-				$trx_midtrans_before = Trx_midtrans_orm::where('transaction_status', 'pending')
-													->where('order_id', 'like', $term . '%')
-													->where('is_expire_processed', 0)
-													->get();
+                
+                if(PAYMENT_METHOD == 'midtrans'){
+                    
+                    $trx_midtrans_before = Trx_midtrans_orm::where('transaction_status', 'pending')
+                                                        ->where('order_id', 'like', $term . '%')
+                                                        ->where('is_expire_processed', 0)
+                                                        ->get();
 
-				if($trx_midtrans_before->isNotEmpty()){
-					$client = new Client();
-					foreach($trx_midtrans_before AS $trx){
-						$order_number = $trx->order_id;
-						$client->request('POST', MIDTRANS_API_URL . $order_number . '/expire', [
-							'auth' => [MIDTRANS_SERVER_KEY, '']
-						]);
-						$trx->is_expire_processed = 1;
-						$trx->save();
-						// echo $res->getBody()->getContents(); die;
-					}
-				}
+                    if($trx_midtrans_before->isNotEmpty()){
+                        $client = new Client();
+                        foreach($trx_midtrans_before AS $trx){
+                            $order_number = $trx->order_id;
+                            $client->request('POST', MIDTRANS_API_URL . $order_number . '/expire', [
+                                'auth' => [MIDTRANS_SERVER_KEY, '']
+                            ]);
+                            $trx->is_expire_processed = 1;
+                            $trx->save();
+                            // echo $res->getBody()->getContents(); die;
+                        }
+                    }
+                }
+
+                
 
                 // SET EXPIRE FOR TRX_PAYMENT 
 
@@ -103,13 +118,62 @@ class Payment_model extends CI_Model {
                                                         ->get();
                 
                 if($trx_payment_before->isNotEMpty()){
+
+                    if(APP_UDID){
+                        // JIKA APP_UDID
+    
+                        $this->load->library('verification_jwt');
+                        $this->load->library('sso_udid_adapter', [
+                            'property' => [
+                                'client_id'         => APP_UDID_ID,
+                                'client_secret'     => APP_UDID_SECRET,
+                                'redirect_uri'      => url('auth/cek_login_udid'),
+                                'scope'             => 'User.Read User.Payment.Read User.Payment.Write',
+                                'authorization_url' => 'https://login.undip.id/oauth2/authorize/login',
+                                'access_token_url'  => 'https://login.undip.id/oauth2/authorize/access_token',
+                            ],
+                            'settings' => [
+                        //		'verify' => false, /*default*/
+                            ],
+                            'debug' => [
+                                'exception' => true, /*debug all exception*/
+                                'token'     => false, /*debug token request*/
+                                'response'  => false, /*debug all response non token*/
+                            ],
+                        ]);
+                        
+                        $token = $this->session->userdata('token_udid');
+    
+    
+                    }
+
                     foreach($trx_payment_before as $trx){
                         $trx->stts = PAYMENT_ORDER_EXPIRED;
 						$trx->save();
+
+                        if(APP_UDID){
+                            // LANJUTAN DARI LOGIC APP_UDID DIATAS
+                            try {
+                                $result = $this->sso_udid_adapter->request([
+                                    'method'      => 'POST',
+                                    'endpoint'    => APP_UDID_API . '/api-payment/api/cancel_payment',
+                                    'body_params' => [
+                                        'form_params' => [
+                                            'order_id' => $trx->order_id_udid,
+                                        ],
+                                    ],
+                                    'header_params' => [
+                            //			'Content-Type' => 'application/json',
+                                        'Accept'       => 'application/json',
+                                    ]
+                                ], $token);
+                    
+                            }catch (Exception $e) {
+                                show_error($e->getMessage(), 500, 'Perhatian');
+                            }
+                        }
                     }
                 }
-
-
 
                 //[END] LOGIC UNTUK EXPIRE KAN ORDER SEBELUMNYA
 
@@ -456,6 +520,9 @@ class Payment_model extends CI_Model {
                             if(!empty($insert))
                                 Mhs_ujian_orm::insert($insert);
                             
+                            /*
+                             * UNTUK SEKARANG TIDAK PERLU MEN-SET MHS KE MATERI UJIAN
+                             * 
                             foreach($paket->m_ujian as $m_ujian){
                                 if(!empty($m_ujian->matkul)){
                                     // [START] JIKA UJIAN SOURCE DARI MATERI
@@ -488,6 +555,7 @@ class Payment_model extends CI_Model {
                                     // [END] JIKA UJIAN SOURCE DARI BUNDLE
                                 }
                             }
+                             */
                         }
             
                     }

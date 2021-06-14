@@ -153,8 +153,67 @@ class Payment extends MY_Controller
         }
 
 
+        $additional_cost = [];
+        $va_provider = [];
+
+
+        if(APP_UDID){
+            
+            $this->load->library('verification_jwt');
+            $this->load->library('sso_udid_adapter', [
+                'property' => [
+                    'client_id'         => APP_UDID_ID,
+                    'client_secret'     => APP_UDID_SECRET,
+                    'redirect_uri'      => url('auth/cek_login_udid'),
+                    'scope'             => 'User.Read User.Payment.Read User.Payment.Write',
+                    'authorization_url' => 'https://login.undip.id/oauth2/authorize/login',
+                    'access_token_url'  => 'https://login.undip.id/oauth2/authorize/access_token',
+                ],
+                'settings' => [
+            //		'verify' => false, /*default*/
+                ],
+                'debug' => [
+                    'exception' => true, /*debug all exception*/
+                    'token'     => false, /*debug token request*/
+                    'response'  => false, /*debug all response non token*/
+                ],
+            ]);
+
+            $token = $this->session->userdata('token_udid');
+
+            try {
+                $result = $this->sso_udid_adapter->request([
+                    'method'      => 'POST',
+                    'endpoint'    => APP_UDID_API . '/api-payment/api/init_payment',
+                    'body_params' => [
+                        'form_params' => [
+                            'nominal' => $item->price,
+                        ],
+                    ],
+                    'header_params' => [
+            //			'Content-Type' => 'application/json',
+                        'Accept'       => 'application/json',
+                    ]
+                ], $token);
+                
+                $notif = json_decode($result);
+    
+            }catch (Exception $e) {
+                show_error($e->getMessage(), 500, 'Perhatian');
+            }
+            
+            if($notif->status != 'ok'){
+                show_error('Kesalahan data pada srv udid', 500, 'Perhatian');
+            }
+            
+            $additional_cost = $notif->payload->additional_cost ;
+            $va_provider = $notif->payload->va_provider ;
+        }
+
         $data['info'] = $m_or_p . $membership_or_paket_id;
         $data['item'] = $item;
+        $data['additional_cost'] = $additional_cost;
+        $data['va_provider'] = $va_provider;
         $data['user']   = $user_beli;
 
         view('payment/beli', $data);
@@ -165,10 +224,16 @@ class Payment extends MY_Controller
         
         $user = $this->ion_auth->user()->row();
         $info =  $this->input->post('info');
+        $va_provider_id =  $this->input->post('va_provider_id');
 
         $user_beli = Users_orm::findOrFail($user->id);
             
         $gross_amount = 0;
+        $nett_amount = 0;
+
+        $keterangan = '';
+
+        $item = null;
         
         if(substr($info, 0, 1) == 'M'){
             // JIKA PEMBELIAN MEMBERSHIP
@@ -181,7 +246,11 @@ class Payment extends MY_Controller
                 show_error('Terjadi kesalahan pembelian', 500, 'Perhatian');
             }
 
+            $item = $membership;
+
             $gross_amount = $membership->price;
+            $nett_amount = $membership->price;
+            $keterangan = 'Pembelian membership ' . strtoupper(get_membership_text(substr($info[1], 1))) ;
 
         }
 
@@ -199,7 +268,11 @@ class Payment extends MY_Controller
             //     show_error('Terjadi kesalahan pembelian', 500, 'Perhatian');
             // }
 
+            $item = $paket;
+
             $gross_amount = $paket->price;
+            $nett_amount = $paket->price;
+            $keterangan = 'Pembelian paket ' . strtoupper($paket->name) ;
 
         }
         
@@ -208,37 +281,179 @@ class Payment extends MY_Controller
 
         $trx_payment_existing_count = Trx_payment_orm::where(DB::raw('substr(order_number, 1, 22)'), '=', $order_number_pattern)->get()->count();
 
-        
         $order_number = $order_number_pattern . '-' . ($trx_payment_existing_count++);
 
-        // Set your Merchant Server Key
-        \Midtrans\Config::$serverKey = MIDTRANS_SERVER_KEY;
-        // Set to Development/Sandbox Environment (default). Set to true for Production Environment (accept real transaction).
-        \Midtrans\Config::$isProduction = MIDTRANS_IS_PRODUCTION;
-        // Set sanitization on (default)
-        \Midtrans\Config::$isSanitized = true;
-        // Set 3DS transaction for credit card to true
-        \Midtrans\Config::$is3ds = true;
-        
-        $params = array(
-            'transaction_details' => [
-                'order_id' => $order_number,
-                'gross_amount' => $gross_amount,
-            ],
-            'customer_details' => [
-                'first_name' => $user_beli->first_name,
-                'last_name' => $user_beli->last_name,
-                'email' => $user_beli->email,
-                'phone' => $user_beli->phone,
-            ],
-            // 'callbacks' => [
-            //   'finish' => url('payment/history'),
-            // ]
-        );
-            
-        $snapToken = \Midtrans\Snap::getSnapToken($params);
+        $snapToken = null ;
 
-        $this->_json(['token' => $snapToken]);
+        $status = 'ok' ;
+
+        $msg = null ;
+
+        if(APP_UDID){
+
+            if(empty($va_provider_id)){
+                show_error('VA provider tdk valid', 500, 'Perhatian');
+            }
+
+            $this->load->library('verification_jwt');
+            $this->load->library('sso_udid_adapter', [
+                'property' => [
+                    'client_id'         => APP_UDID_ID,
+                    'client_secret'     => APP_UDID_SECRET,
+                    'redirect_uri'      => url('auth/cek_login_udid'),
+                    'scope'             => 'User.Read User.Payment.Read User.Payment.Write',
+                    'authorization_url' => 'https://login.undip.id/oauth2/authorize/login',
+                    'access_token_url'  => 'https://login.undip.id/oauth2/authorize/access_token',
+                ],
+                'settings' => [
+            //		'verify' => false, /*default*/
+                ],
+                'debug' => [
+                    'exception' => true, /*debug all exception*/
+                    'token'     => false, /*debug token request*/
+                    'response'  => false, /*debug all response non token*/
+                ],
+            ]);
+            
+            $token = $this->session->userdata('token_udid');
+
+            try {
+                $result = $this->sso_udid_adapter->request([
+                    'method'      => 'POST',
+                    'endpoint'    => APP_UDID_API . '/api-payment/api/init_payment',
+                    'body_params' => [
+                        'form_params' => [
+                            'nominal' => $gross_amount,
+                        ],
+                    ],
+                    'header_params' => [
+            //			'Content-Type' => 'application/json',
+                        'Accept'       => 'application/json',
+                    ]
+                ], $token);
+                
+                $notif = json_decode($result);
+    
+            }catch (Exception $e) {
+                show_error($e->getMessage(), 500, 'Perhatian');
+            }
+            
+            if($notif->status != 'ok'){
+                show_error('Kesalahan data pada srv udid', 500, 'Perhatian');
+            }
+            
+            $additional_cost = $notif->payload->additional_cost ;
+            $va_provider = $notif->payload->va_provider ;
+
+            if(!empty($va_provider)){
+                $vp_list = [];
+                foreach($va_provider as $vp){
+                    $vp_list[] = $vp->virtual_account_provider_code;
+                }
+                if(!in_array($va_provider_id, $vp_list)){
+                    show_error('VP ID salah');
+                }
+            }
+
+            if(!empty($additional_cost)){
+                foreach($additional_cost as $add_cost){
+                    $gross_amount = (int)$gross_amount + (int)$add_cost->nominal;
+                }
+            }
+
+            try {
+                $result = $this->sso_udid_adapter->request([
+                    'method'      => 'POST',
+                    'endpoint'    => APP_UDID_API . '/api-payment/api/set_payment',
+                    'body_params' => [
+                        'form_params' => [
+                            'nominal' => $gross_amount,
+                            'invoice_code' => $order_number,
+                            'description' => $keterangan,
+                            'customer_id' => $user_beli->sso_udid_id,
+                            'virtual_account_provider_code' => $va_provider_id,
+                            'occurance' => 'once',
+                            'installment' => 0,
+                            'item_detail' => json_encode([
+                                [
+                                    'item' => $item->name,
+                                    'amount' => 1,
+                                    'nominal' => $item->price,
+                                ]
+                            ]),
+                        ],
+                    ],
+                    'header_params' => [
+            //			'Content-Type' => 'application/json',
+                        'Accept'       => 'application/json',
+                    ]
+                ], $token);
+                
+                $notif = json_decode($result);
+    
+            }catch (Exception $e) {
+                show_error($e->getMessage(), 500, 'Perhatian');
+            }
+            
+            if($notif->status != 'ok'){
+                show_error('Kesalahan data pada srv udid', 500, 'Perhatian');
+            }
+
+            // [order_id] => CKPWG8DQY00019MY60O7Q0YGY
+            // [serialized_id] => CKPWG8DQY00019MY60O7Q0YGY.1623665022
+            // [va_code] => 12345667
+            // [nominal] => 202500
+
+            // vdebug($notif);
+
+            $notif_payment = (object)[
+                'order_id' => $order_number,
+                'transaction_status' => $notif->payload->status,
+                'transaction_time' => $notif->payload->transaction_time,
+                'gross_amount' => $notif->payload->nominal,
+                'nett_amount' => $nett_amount,
+                'order_id_udid' => $notif->payload->order_id,
+            ];
+            
+            $this->load->model('payment_model');
+            $return = $this->payment_model->exec_payment($notif_payment, 'udid_api');
+
+            if($return != 'SUCCESS'){
+                $status = 'ko';
+                $msg = $return;
+            }
+
+        }else{
+
+            // Set your Merchant Server Key
+            \Midtrans\Config::$serverKey = MIDTRANS_SERVER_KEY;
+            // Set to Development/Sandbox Environment (default). Set to true for Production Environment (accept real transaction).
+            \Midtrans\Config::$isProduction = MIDTRANS_IS_PRODUCTION;
+            // Set sanitization on (default)
+            \Midtrans\Config::$isSanitized = true;
+            // Set 3DS transaction for credit card to true
+            \Midtrans\Config::$is3ds = true;
+            
+            $params = array(
+                'transaction_details' => [
+                    'order_id' => $order_number,
+                    'gross_amount' => $gross_amount,
+                ],
+                'customer_details' => [
+                    'first_name' => $user_beli->first_name,
+                    'last_name' => $user_beli->last_name,
+                    'email' => $user_beli->email,
+                    'phone' => $user_beli->phone,
+                ],
+                // 'callbacks' => [
+                //   'finish' => url('payment/history'),
+                // ]
+            );
+                
+            $snapToken = \Midtrans\Snap::getSnapToken($params);
+        }
+
+        $this->_json(['token' => $snapToken, 'status' => $status, 'msg' => $msg]);
     }
 
     public function history($user_id = null){
@@ -260,59 +475,124 @@ class Payment extends MY_Controller
 
     protected function _status(){
         $order_number = $this->input->post('id');
-        $client = new Client();
-        $res = $client->request('GET', MIDTRANS_API_URL . $order_number . '/status', [
-            'auth' => [MIDTRANS_SERVER_KEY, '']
-        ]);
 
-        // $res = $client->get(MIDTRANS_API_URL . $order_number . '/status', [
-        //     'auth' => [
-        //         MIDTRANS_SERVER_KEY, 
-        //         ''
-        //     ]
-        // ]);
+        if(APP_UDID){
 
+            $trx_payment = Trx_payment_orm::where('order_number', $order_number)->firstOrFail();
 
-        // $credentials = base64_encode(MIDTRANS_SERVER_KEY . ':');
-        // $res = $client->get(MIDTRANS_API_URL . $order_number . '/status', [
-        //     'Authorization' => ['Basic '.$credentials]
-        // ]);
+            $this->load->library('verification_jwt');
+            $this->load->library('sso_udid_adapter', [
+                'property' => [
+                    'client_id'         => APP_UDID_ID,
+                    'client_secret'     => APP_UDID_SECRET,
+                    'redirect_uri'      => url('auth/cek_login_udid'),
+                    'scope'             => 'User.Read User.Payment.Read User.Payment.Write',
+                    'authorization_url' => 'https://login.undip.id/oauth2/authorize/login',
+                    'access_token_url'  => 'https://login.undip.id/oauth2/authorize/access_token',
+                ],
+                'settings' => [
+            //		'verify' => false, /*default*/
+                ],
+                'debug' => [
+                    'exception' => true, /*debug all exception*/
+                    'token'     => false, /*debug token request*/
+                    'response'  => false, /*debug all response non token*/
+                ],
+            ]);
+            
+            $token = $this->session->userdata('token_udid');
 
-        $notif = $res->getBody()->getContents();
+            try {
+                $result = $this->sso_udid_adapter->request([
+                    'method'      => 'POST',
+                    'endpoint'    => APP_UDID_API . '/api-payment/api/check_payment',
+                    'body_params' => [
+                        'form_params' => [
+                            'order_id' => $trx_payment->order_id_udid,
+                        ],
+                    ],
+                    'header_params' => [
+            //			'Content-Type' => 'application/json',
+                        'Accept'       => 'application/json',
+                    ]
+                ], $token);
+                
+                $notif = json_decode($result);
 
-
-        $va_number = null ;
-		$bank = 'lainnya' ;
-
-        // vdebug(json_decode($notif));
-
-        $notif = json_decode($notif);
-
-		if(isset($notif->va_numbers)){
-			$bank = $notif->va_numbers[0]->bank ;
-			$va_number = $notif->va_numbers[0]->va_number ;
-		}
-
-		if(isset($notif->biller_code)){
-			if($notif->biller_code == '70012'){
-				$bank = 'mandiri ('. $notif->biller_code .')';
-				$va_number = $notif->bill_key ;
-			}
-		}
-
-        if($notif->payment_type == 'cstore'){
-            if(isset($notif->payment_code)){
-                $bank = $notif->store;
-                $va_number = $notif->payment_code;
+                $bank = $notif->payload->va_provider;
+                $va_number = $notif->payload->va_code;
+                $status = $notif->payload->status;
+                $payment_type = $notif->payload->transaction_type;
+                $order_id = $notif->payload->invoice_code; // $order_id = $this->input->post('order_id');
+                $transaction_time = $notif->payload->created_at;
+    
+            }catch (Exception $e) {
+                show_error($e->getMessage(), 500, 'Perhatian');
             }
+
+            // vdebug($notif);
+
+
+        }else{
+            $client = new Client();
+            $res = $client->request('GET', MIDTRANS_API_URL . $order_number . '/status', [
+                'auth' => [MIDTRANS_SERVER_KEY, '']
+            ]);
+
+            // $res = $client->get(MIDTRANS_API_URL . $order_number . '/status', [
+            //     'auth' => [
+            //         MIDTRANS_SERVER_KEY, 
+            //         ''
+            //     ]
+            // ]);
+
+
+            // $credentials = base64_encode(MIDTRANS_SERVER_KEY . ':');
+            // $res = $client->get(MIDTRANS_API_URL . $order_number . '/status', [
+            //     'Authorization' => ['Basic '.$credentials]
+            // ]);
+
+            $notif = $res->getBody()->getContents();
+
+            $va_number = null ;
+            $bank = 'lainnya' ;
+    
+            $notif = json_decode($notif);
+    
+            if(isset($notif->va_numbers)){
+                $bank = $notif->va_numbers[0]->bank ;
+                $va_number = $notif->va_numbers[0]->va_number ;
+            }
+    
+            if(isset($notif->biller_code)){
+                if($notif->biller_code == '70012'){
+                    $bank = 'mandiri ('. $notif->biller_code .')';
+                    $va_number = $notif->bill_key ;
+                }
+            }
+    
+            if($notif->payment_type == 'cstore'){
+                if(isset($notif->payment_code)){
+                    $bank = $notif->store;
+                    $va_number = $notif->payment_code;
+                }
+            }
+    
+            if($notif->payment_type == 'qris'){
+                // if(isset($notif->payment_code)){
+                    $bank = $notif->acquirer;
+                    // $va_number = $notif->payment_code;
+                // }
+            }
+
+            $status = $notif->transaction_status;
+            $payment_type = $notif->payment_type;
+            $order_id = $notif->order_id;
+            $transaction_time = $notif->transaction_time;
+
         }
 
-        if($notif->payment_type == 'qris'){
-            // if(isset($notif->payment_code)){
-                $bank = $notif->acquirer;
-                // $va_number = $notif->payment_code;
-            // }
-        }
+
 
 		// if(isset($notif->permata_va_number)){
 		// 	$bank = 'permata';
@@ -321,10 +601,10 @@ class Payment extends MY_Controller
 
         $data['bank'] = strtoupper($bank);
         $data['va_number'] = strtoupper($va_number);
-        $data['status'] = strtoupper($notif->transaction_status);
-        $data['payment_type'] = strtoupper($notif->payment_type);
-        $data['order_id'] = $notif->order_id;
-        $data['transaction_time'] = $notif->transaction_time;
+        $data['status'] = strtoupper($status);
+        $data['payment_type'] = strtoupper($payment_type);
+        $data['order_id'] = $order_id;
+        $data['transaction_time'] = $transaction_time;
 
         $this->_json($data);
     }

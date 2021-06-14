@@ -300,6 +300,7 @@ class HasilUjian extends MY_Controller {
 				'is_terlihat_pada_layar' => empty($hasil->is_terlihat_pada_layar) ? '-' : ($hasil->is_terlihat_pada_layar ? 'YA' : '-'),
 				'is_perjokian' => empty($hasil->is_perjokian) ? '-' : ($hasil->is_perjokian ? 'YA' : '-'),
 				'is_sering_buka_page_lain' => empty($hasil->is_sering_buka_page_lain) ? '-' : ($hasil->is_sering_buka_page_lain ? 'YA' : '-'),
+				'catatan_pengawas' => $hasil->catatan_pengawas,
 			];
 		}
 		

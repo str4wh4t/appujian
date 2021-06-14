@@ -21,13 +21,14 @@ class Soal_model extends CI_Model {
     	
 	    $dt = new Datatables( new MySQL($config) );
 	    
-	    $this->db->select('a.id_soal, a.no_urut, a.soal, a.created_at, a.updated_at, d.bobot, c.nama_matkul, b.nama_topik, GROUP_CONCAT(f.nama_bundle SEPARATOR "---") as bundle, GROUP_CONCAT(CONCAT("[", f.id, "]")) as bundle_ids, a.created_by as oleh');
+	    $this->db->select('a.id_soal, a.no_urut, a.soal, a.created_at, a.updated_at, d.bobot, c.nama_matkul, b.nama_topik, GROUP_CONCAT(f.nama_bundle SEPARATOR "---") as bundle, GROUP_CONCAT(CONCAT("[", f.id, "]")) as bundle_ids, g.full_name as oleh');
         $this->db->from('tb_soal a');
         $this->db->join('topik b', 'b.id = a.topik_id');
         $this->db->join('matkul c', 'c.id_matkul = b.matkul_id');
         $this->db->join('bobot_soal d', 'd.id = a.bobot_soal_id');
         $this->db->join('bundle_soal e', 'e.id_soal = a.id_soal', 'left');
         $this->db->join('bundle f', 'f.id = e.bundle_id', 'left');
+        $this->db->join('users g', 'a.created_by = g.username');
         $this->db->group_by('a.id_soal');
 
 		if (!empty($data_filter)) {
@@ -73,10 +74,10 @@ class Soal_model extends CI_Model {
 		// echo $query; die;
 	    $user_orm = new Users_orm();
         $dt->query($query);
-        $dt->edit('oleh', function ($data) use ($user_orm) {
-            $user = $user_orm->where('username',$data['oleh'])->first();
-            return $user != null ? $user->full_name : '';
-        });
+        // $dt->edit('oleh', function ($data) use ($user_orm) {
+        //     $user = $user_orm->where('username',$data['oleh'])->first();
+        //     return $user != null ? $user->full_name : '';
+        // });
         
         return $dt->generate();
         

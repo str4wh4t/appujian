@@ -106,3 +106,9 @@ function get_app_id(){
 	$ci =& get_instance();
 	return $ci->config->item('app_id');
 }
+
+function show_logo_va_udid($va_bank_name){
+	if($va_bank_name == 'BNI'){
+		return '<img style="width: 75px" src="'. asset('assets/imgs/logo_bni_245_125.png') .'" />';
+	}
+}

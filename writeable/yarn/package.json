@@ -9,6 +9,7 @@
     "bootstrap4-datetimepicker": "^5.2.3",
     "datatables.net-plugins": "^1.10.20",
     "enjoyhint.js": "^1.2.1",
+    "featherlight": "^1.7.14",
     "gasparesganga-jquery-loading-overlay": "^2.1.7",
     "inputmask": "^5.0.5",
     "jquery-validation": "^1.19.2",

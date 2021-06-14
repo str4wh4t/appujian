@@ -1,24 +1,26 @@
 @extends('template.main')
 
 @push('page_level_css')
-<!-- BEGIN PAGE LEVEL JS-->
+<!-- BEGIN PAGE LEVEL CSS-->
 <link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/vendors/css/tables/datatable/datatables.min.css') }}">
 {{--<link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/vendors/css/tables/datatable/dataTables.bootstrap4.min.css') }}">--}}
 {{--<link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/vendors/css/tables/extensions/rowReorder.dataTables.min.css') }}">--}}
 {{--<link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/vendors/css/tables/extensions/responsive.dataTables.min.css') }}">--}}
-<!-- END PAGE LEVEL JS-->
+<link rel="stylesheet" type="text/css" href="{{ asset('assets/yarn/node_modules/featherlight/release/featherlight.min.css') }}" />
+<!-- END PAGE LEVEL CSS-->
 @endpush
 
 @push('page_vendor_level_js')
 <!-- BEGIN PAGE VENDOR JS-->
 <script src="{{ asset('assets/template/robust/app-assets/vendors/js/tables/datatable/datatables.min.js') }}"></script>
 <script src="{{ asset('assets/yarn/node_modules/datatables.net-plugins/api/fnPagingInfo.js') }}"></script>
+<script src="{{ asset('assets/yarn/node_modules/featherlight/release/featherlight.min.js') }}"></script>
 {{--<script src="{{ asset('assets/template/robust/app-assets/vendors/js/tables/jquery.dataTables.min.js') }}"></script>--}}
 {{--<script src="{{ asset('assets/template/robust/app-assets/vendors/js/tables/datatable/dataTables.bootstrap4.min.js') }}"></script>--}}
 {{--<script src="{{ asset('assets/template/robust/app-assets/vendors/js/tables/datatable/dataTables.responsive.min.js') }}"></script>--}}
 {{--<script src="{{ asset('assets/template/robust/app-assets/vendors/js/tables/datatable/dataTables.rowReorder.min.js') }}"></script>--}}
 {{--    <script src="{{ asset('assets/bower_components/moment/min/moment.min.js') }}"></script>--}}
-<!-- END PAGE VENDOR -->
+<!-- END PAGE VENDOR JS -->
 @endpush
 
 @push('page_level_js')
@@ -76,6 +78,21 @@ $(document).on('click','.btn_reset_hasil',function(){
         }
     });
 });
+
+function init_page_level(){
+    if(is_show_banner_ads){
+        setTimeout(function () {
+            $.featherlight('{{ asset('uploads/img_app/tryout-udid.png') }}');
+            stop_ping = true;
+        }, 2000);
+    }
+}
+
+$(document).on('click','img.featherlight-image',function(){
+    window.location = "https://sso.undip.id";
+});
+
+
 </script>
 <script src="{{ asset('assets/dist/js/app/hasilujian/detail.js') }}"></script>
 <!-- END PAGE LEVEL JS-->

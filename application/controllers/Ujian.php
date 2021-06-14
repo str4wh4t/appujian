@@ -2589,7 +2589,7 @@ class Ujian extends MY_Controller
 
 		$dt = new Datatables(new CodeigniterAdapter);
 
-		$this->db->select('a.id, c.nim, c.nama, c.nik, c.jenis_kelamin, c.tgl_lahir, c.prodi, d.absen_by, d.is_terlihat_pada_layar, d.is_perjokian, d.is_sering_buka_page_lain, e.ujian_selesai AS status');
+		$this->db->select('a.id, c.nim, c.nama, c.nik, c.jenis_kelamin, c.tgl_lahir, c.prodi, d.absen_by, d.is_terlihat_pada_layar, d.is_perjokian, d.is_sering_buka_page_lain, d.catatan_pengawas, e.ujian_selesai AS status');
 		$this->db->from('mahasiswa_ujian AS a');
 		$this->db->join('mahasiswa AS c', 'a.mahasiswa_id = c.id_mahasiswa');
 		$this->db->join('daftar_hadir AS d', 'a.id = d.mahasiswa_ujian_id', 'left');
@@ -2610,28 +2610,37 @@ class Ujian extends MY_Controller
 
 		$dt->query($query);
 
-		$dt->add('bapu_a', function ($data) {
-			return '<div class="text-center"><input '. (in_group(PENGAWAS_GROUP_ID) ? '' : 'disabled="disabled"') .' 
+		$is_in_group_pengawas = in_group(PENGAWAS_GROUP_ID);
+
+		$dt->add('bapu_a', function ($data) use($is_in_group_pengawas) {
+			return '<div class="text-center"><input '. ($is_in_group_pengawas ? '' : 'disabled="disabled"') .' 
 			'. ($data['is_terlihat_pada_layar'] ? 'checked="checked"' : '') .' 
-			type="checkbox" class="icheck check_bapu" 
+			type="checkbox" class="icheck checkbox_bapu" 
 			id="checkbox_is_terlihat_pada_layar_' . $data['nim'] . '" data-id="' . $data['id'] . '" 
 			data-nim="' . $data['nim'] . '"></div>';
 		});
 
-		$dt->add('bapu_b', function ($data) {
-			return '<div class="text-center"><input '. (in_group(PENGAWAS_GROUP_ID) ? '' : 'disabled="disabled"') .' 
+		$dt->add('bapu_b', function ($data) use($is_in_group_pengawas){
+			return '<div class="text-center"><input '. ($is_in_group_pengawas ? '' : 'disabled="disabled"') .' 
 			'. ($data['is_perjokian'] ? 'checked="checked"' : '') .' 
-			type="checkbox" class="icheck check_bapu" 
+			type="checkbox" class="icheck checkbox_bapu" 
 			id="checkbox_is_perjokian_' . $data['nim'] . '" data-id="' . $data['id'] . '" 
 			data-nim="' . $data['nim'] . '"></div>';
 		});
 
-		$dt->add('bapu_c', function ($data) {
-			return '<div class="text-center"><input '. (in_group(PENGAWAS_GROUP_ID) ? '' : 'disabled="disabled"') .' 
+		$dt->add('bapu_c', function ($data) use($is_in_group_pengawas){
+			return '<div class="text-center"><input '. ($is_in_group_pengawas ? '' : 'disabled="disabled"') .' 
 			'. ($data['is_sering_buka_page_lain'] ? 'checked="checked"' : '') .' 
-			type="checkbox" class="icheck check_bapu" 
+			type="checkbox" class="icheck checkbox_bapu" 
 			id="checkbox_is_sering_buka_page_lain_' . $data['nim'] . '" data-id="' . $data['id'] . '" 
 			data-nim="' . $data['nim'] . '"></div>';
+		});
+
+		$dt->add('bapu_catatan', function ($data) {
+			return '<div data-id="' . $data['id'] . '" data-nim="' . $data['nim'] . '" 
+			id="bapu_catatan_' . $data['nim'] . '" 
+			class="text-center '. (empty($data['catatan_pengawas']) ? 'text-success' : 'text-danger' ) .' div_catatan" >
+			<i class="icon-pencil"></i></div>';
 		});
 
 		$dt->add('koneksi', function ($data) {
@@ -2650,8 +2659,8 @@ class Ujian extends MY_Controller
 						</div>';
 		});
 
-		$dt->add('absensi', function ($data) {
-			if (in_group(PENGAWAS_GROUP_ID)) {
+		$dt->add('absensi', function ($data) use($is_in_group_pengawas) {
+			if($is_in_group_pengawas) {
 				return '<div class="text-center">
 							<div class="btn-group">
 							<button type="button" title="isi absen" class="btn btn-sm btn-info btn_absensi" data-id="' . $data['id'] . '" data-nim="' . $data['nim'] . '"><i class="fa fa-check"></i></button>
@@ -3272,6 +3281,29 @@ class Ujian extends MY_Controller
 
 		// $this->_json(['mhs' => $mhs,'mhs_ujian' => $mhs_ujian]);
 		$this->_json(['mhs' => $mhs, 'mhs_ujian' => $mhs_ujian_valid]);
+	}
+
+	protected function _get_catatan_pengawas(){
+		$mahasiswa_ujian_id = $this->input->post('mahasiswa_ujian_id');
+		$users_groups = Users_groups_orm::where([
+			'user_id'  => get_logged_user()->id,
+			'group_id' => PENGAWAS_GROUP_ID
+		])->firstOrFail();
+		$daftar_hadir = Daftar_hadir_orm::where(['mahasiswa_ujian_id' => $mahasiswa_ujian_id, 'absen_by' => $users_groups->id ])->firstOrFail();
+		$this->_json(['catatan_pengawas' => $daftar_hadir->catatan_pengawas]);
+	}
+
+	protected function _set_catatan_pengawas(){
+		$mahasiswa_ujian_id = $this->input->post('mahasiswa_ujian_id');
+		$catatan_pengawas = $this->input->post('catatan_pengawas');
+		$users_groups = Users_groups_orm::where([
+			'user_id'  => get_logged_user()->id,
+			'group_id' => PENGAWAS_GROUP_ID
+		])->firstOrFail();
+		$daftar_hadir = Daftar_hadir_orm::where(['mahasiswa_ujian_id' => $mahasiswa_ujian_id, 'absen_by' => $users_groups->id ])->firstOrFail();
+		$daftar_hadir->catatan_pengawas = $catatan_pengawas;
+		$daftar_hadir->save();
+		$this->_json(['stts' => 'ok']);
 	}
 
 	//	function c(){

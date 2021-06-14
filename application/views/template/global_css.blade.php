@@ -88,4 +88,8 @@
         padding-left:2.5em;
     }
 
+    img.featherlight-image{
+        cursor: pointer;
+    }
+
 </style>

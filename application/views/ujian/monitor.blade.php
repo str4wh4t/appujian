@@ -46,6 +46,13 @@ body {
 #tb_daftar_hadir > thead > tr > th {
     vertical-align: middle;
 }
+.div_catatan {
+    border-bottom: 1px dashed #aaa;
+    padding-bottom: 5px;
+    margin: 0 8px;
+    /* padding: 0 5px 5px 5px; */
+    cursor: pointer;
+}
 </style>
 @endpush
 
@@ -76,156 +83,162 @@ body {
             radioClass: 'iradio_square-red',
         });
 
-    table = $("#tb_daftar_hadir").DataTable({
-        initComplete: function() {
-          var api = this.api();
-          $("#tb_daftar_hadir_filter input")
-            .off(".DT")
-            .on("keypress.DT", function(e) {
-              if(e.which == 13) {
-                api.search(this.value).draw();
-                return false;
-              }
-            });
+        table = $("#tb_daftar_hadir").DataTable({
+            initComplete: function() {
+                var api = this.api();
+                $("#tb_daftar_hadir_filter input")
+                    .off(".DT")
+                    .on("keypress.DT", function(e) {
+                    if(e.which == 13) {
+                        api.search(this.value).draw();
+                        return false;
+                    }
+                });
 
-            if(socket_enable)
-                init_socket();
+                if(socket_enable)
+                    init_socket();
 
-        },
-        "drawCallback": function( settings ) {
-            $.each(list_mhs_online, function(index, item){
-                $('#badge_koneksi_' + item).text('ONLINE').removeClass('bg-danger').addClass('bg-success');
-                // $('#badge_ip_' + item).text(list_mhs_online_ips[item]).show();
-            });
-            // $.each(list_absensi, function(index, item){
-            //     $('#badge_absensi_' + item).text('SUDAH').removeClass('danger').removeClass('border-danger').addClass('border-success').addClass('success');
-            // });
+            },
+            "drawCallback": function( settings ) {
+                $.each(list_mhs_online, function(index, item){
+                    $('#badge_koneksi_' + item).text('ONLINE').removeClass('bg-danger').addClass('bg-success');
+                    // $('#badge_ip_' + item).text(list_mhs_online_ips[item]).show();
+                });
+                // $.each(list_absensi, function(index, item){
+                //     $('#badge_absensi_' + item).text('SUDAH').removeClass('danger').removeClass('border-danger').addClass('border-success').addClass('success');
+                // });
 
-            $('.icheck').iCheck({
-                checkboxClass: 'icheckbox_square-red',
-                radioClass: 'iradio_square-red',
-            });
-        },
-        lengthMenu: [[10, 50, -1], [10, 50, "All"]],
-        dom:
-          "<'row'<'col-sm-3'l><'col-sm-6 text-center'B><'col-sm-3'f>>" +
-          "<'row'<'col-sm-12'tr>>" +
-          "<'row'<'col-sm-5'i><'col-sm-7'p>>",
-        buttons: [
-          @if(in_group(PENGAWAS_GROUP_ID))
-          // {
-          //     text: '<i class="fa fa-save"></i> Tampilkan Absensi Anda',
-          //     className: 'btn btn-info btn-glow',
-          //     action: function ( e, dt, node, config ) {
-          //         load_absen_pengawas();
-          //     }
-          // },
-          @endif
-            {
-                  text: '<i class="fa fa-th"></i> Tampilkan Semua Daftar Peserta',
-                  className: 'btn btn-success btn-glow ml-1',
-                  action: function ( e, dt, node, config ) {
-                      reset_filter_dt();
-                  }
-            }
-        ],
-        oLanguage: {
-            sProcessing: "loading..."
-        },
-        processing: true,
-        serverSide: true,
-        ajax: {
-            url: "{{ url('ujian/ajax/data_daftar_hadir') }}",
-            type: "POST",
-            data: function ( d ) {
-                d.id = '{{ $m_ujian->id_ujian }}';
-                d.as = as;
-                d.user_id = user_id;
-            }
-        },
-        columns: [
-            {
-                "data": 'absensi',
-                "orderable": false,
-                "searchable": false,
-                "width": "10%"
+                $('.icheck').iCheck({
+                    checkboxClass: 'icheckbox_square-red',
+                    radioClass: 'iradio_square-red',
+                });
             },
-            {
-                "data": 'absen_by',
-                "orderable": false,
-                "searchable": false,
-                "width": "5%"
+            lengthMenu: [[10, 50, -1], [10, 50, "All"]],
+            dom:
+            "<'row'<'col-sm-3'l><'col-sm-6 text-center'B><'col-sm-3'f>>" +
+            "<'row'<'col-sm-12'tr>>" +
+            "<'row'<'col-sm-5'i><'col-sm-7'p>>",
+            buttons: [
+            @if(in_group(PENGAWAS_GROUP_ID))
+            // {
+            //     text: '<i class="fa fa-save"></i> Tampilkan Absensi Anda',
+            //     className: 'btn btn-info btn-glow',
+            //     action: function ( e, dt, node, config ) {
+            //         load_absen_pengawas();
+            //     }
+            // },
+            @endif
+                {
+                    text: '<i class="fa fa-th"></i> Tampilkan Semua Daftar Peserta',
+                    className: 'btn btn-success btn-glow ml-1',
+                    action: function ( e, dt, node, config ) {
+                        reset_filter_dt();
+                    }
+                }
+            ],
+            oLanguage: {
+                sProcessing: "loading..."
             },
-            {
-                "data": 'bapu_a',
-                "orderable": false,
-                "searchable": false,
-                "width": "3%"
+            processing: true,
+            serverSide: true,
+            ajax: {
+                url: "{{ url('ujian/ajax/data_daftar_hadir') }}",
+                type: "POST",
+                data: function ( d ) {
+                    d.id = '{{ $m_ujian->id_ujian }}';
+                    d.as = as;
+                    d.user_id = user_id;
+                }
             },
-            {
-                "data": 'bapu_b',
-                "orderable": false,
-                "searchable": false,
-                "width": "3%"
-            },
-            {
-                "data": 'bapu_c',
-                "orderable": false,
-                "searchable": false,
-                "width": "3%"
-            },
-            {
-                "data": 'koneksi',
-                "orderable": false,
-                "searchable": false,
-                "width": "5%"
-            },
-            {
-                "data": 'latency',
-                "orderable": false,
-                "searchable": false,
-                "width": "5%"
-            },
-            {
-                "data": 'status',
-                "orderable": false,
-                "searchable": false,
-                "width": "5%"
-            },
-            {
-                "data": 'aksi',
-                "orderable": false,
-                "searchable": false,
-                "width": "5%"
-            },
-            { 
-                "data": 'nim', 
-                "width": "10%" 
-            },
-            { "data": 'nama' },
-            {
-                "data": 'prodi',
-                "orderable": false,
-                "searchable": false,
-                "width": "15%"
-            }
-        ],
-        order: [[9, "asc"], [10, "asc"]],
-        // rowId: function(a) {
-        //   return a;
-        // },
-        // rowCallback: function(row, data, iDisplayIndex) {
-          // var info = this.fnPagingInfo();
-          // var page = info.iPage;
-          // var length = info.iLength;
-          // var index = page * length + (iDisplayIndex + 1);
-          // $("td:eq(1)", row).html(index);
-        // },
-        // scrollX:        true,
-        // fixedColumns:   {
-        //     leftColumns: 6,
-        // }
-      });
+            columns: [
+                {
+                    "data": 'absensi',
+                    "orderable": false,
+                    "searchable": false,
+                    "width": "10%"
+                },
+                {
+                    "data": 'absen_by',
+                    "orderable": false,
+                    "searchable": false,
+                    "width": "5%"
+                },
+                {
+                    "data": 'bapu_a',
+                    "orderable": false,
+                    "searchable": false,
+                    "width": "3%"
+                },
+                {
+                    "data": 'bapu_b',
+                    "orderable": false,
+                    "searchable": false,
+                    "width": "3%"
+                },
+                {
+                    "data": 'bapu_c',
+                    "orderable": false,
+                    "searchable": false,
+                    "width": "3%"
+                },
+                {
+                    "data": 'bapu_catatan',
+                    "orderable": false,
+                    "searchable": false,
+                    "width": "3%"
+                },
+                {
+                    "data": 'koneksi',
+                    "orderable": false,
+                    "searchable": false,
+                    "width": "5%"
+                },
+                {
+                    "data": 'latency',
+                    "orderable": false,
+                    "searchable": false,
+                    "width": "5%"
+                },
+                {
+                    "data": 'status',
+                    "orderable": false,
+                    "searchable": false,
+                    "width": "5%"
+                },
+                {
+                    "data": 'aksi',
+                    "orderable": false,
+                    "searchable": false,
+                    "width": "5%"
+                },
+                { 
+                    "data": 'nim', 
+                    "width": "10%" 
+                },
+                { "data": 'nama' },
+                {
+                    "data": 'prodi',
+                    "orderable": false,
+                    "searchable": false,
+                    "width": "15%"
+                }
+            ],
+            order: [[10, "asc"], [11, "asc"]],
+            // rowId: function(a) {
+            //   return a;
+            // },
+            // rowCallback: function(row, data, iDisplayIndex) {
+            // var info = this.fnPagingInfo();
+            // var page = info.iPage;
+            // var length = info.iLength;
+            // var index = page * length + (iDisplayIndex + 1);
+            // $("td:eq(1)", row).html(index);
+            // },
+            // scrollX:        true,
+            // fixedColumns:   {
+            //     leftColumns: 6,
+            // }
+        });
 
     }
 
@@ -302,7 +315,9 @@ body {
                             $('#jml_mhs_absen_by_self').text(++jml_daftar_hadir_by_pengawas);
                         }
 
-                        $('#badge_absensi_' + data.nim).text('SUDAH').removeClass('danger').removeClass('border-danger').addClass('border-success').addClass('success');
+                        if (data.user_id != '{{ get_logged_user()->id }}') {
+                            $('#badge_absensi_' + data.nim).text('SUDAH').removeClass('danger').removeClass('border-danger').addClass('border-success').addClass('success');
+                        }
                     }
                 } else if (data.cmd == 'DO_ABSENSI_BATAL') {
                     if (data.ok) {
@@ -318,8 +333,10 @@ body {
                         if (data.user_id == '{{ get_logged_user()->id }}') {
                             $('#jml_mhs_absen_by_self').text(--jml_daftar_hadir_by_pengawas);
                         }
-
-                        $('#badge_absensi_' + data.nim).text('BELUM').removeClass('success').removeClass('border-success').addClass('border-danger').addClass('danger');
+                        
+                        if (data.user_id != '{{ get_logged_user()->id }}') {
+                            $('#badge_absensi_' + data.nim).text('BELUM').removeClass('success').removeClass('border-success').addClass('border-danger').addClass('danger');
+                        }
                     }
                 } else if (data.cmd == 'DO_BAPU') {
                     if (data.ok) {
@@ -397,6 +414,7 @@ body {
         ajx_overlay(true);
         $.post('{{ url('ujian/ajax/absen_pengawas') }}', {'mahasiswa_ujian_id' : mahasiswa_ujian_id, 'nim' : nim}, function (res){
             if(res.ok) {
+                $('#badge_absensi_' + nim).text('SUDAH').removeClass('danger').removeClass('border-danger').addClass('border-success').addClass('success');
                 sendmsg(JSON.stringify({
                     'mahasiswa_ujian_id': mahasiswa_ujian_id,
                     'user_id': '{{ get_logged_user()->id }}',
@@ -428,6 +446,7 @@ body {
                 ajx_overlay(true);
                 $.post('{{ url('ujian/ajax/absen_pengawas') }}', {'mahasiswa_ujian_id' : mahasiswa_ujian_id, 'nim' : nim, 'aksi' : 'batal'}, function (res){
                     if(res.ok) {
+                        $('#badge_absensi_' + nim).text('BELUM').removeClass('success').removeClass('border-success').addClass('border-danger').addClass('danger');
                         sendmsg(JSON.stringify({
                             'mahasiswa_ujian_id': mahasiswa_ujian_id,
                             'user_id': '{{ get_logged_user()->id }}',
@@ -650,11 +669,11 @@ $(document).on('click','.btn_foto',function(){
 $(document).on('click','#btn_reload_foto',function(){
     ajx_overlay(true);
     checkImage(foto_url, function(){
-            console.log('good');
+            // console.log('good');
             $('#img_profile').attr('src',foto_url);
             ajx_overlay(false);
         }, function(){
-            console.log('bad');
+            // console.log('bad');
             $('#img_profile').attr('src','{{ asset('assets/imgs/no_profile.jpg') }}');
             ajx_overlay(false);
         }
@@ -670,7 +689,7 @@ $(document).on('click','#btn_absensi_semua',function(){
 });
 
 
-$(document).on('ifChanged','.check_bapu',function(){
+$(document).on('ifChanged','.checkbox_bapu',function(){
 
     if(trigger_by_user){
         let mahasiswa_ujian_id = $(this).data('id');
@@ -719,6 +738,46 @@ $(document).on('ifChanged','.check_bapu',function(){
 
 });
 
+$(document).on('click','.div_catatan',function(){
+    ajx_overlay(true);
+    let mahasiswa_ujian_id = $(this).data('id');
+    let nim = $(this).data('nim');
+    $.post('{{ url('ujian/ajax/get_catatan_pengawas') }}',{'mahasiswa_ujian_id': mahasiswa_ujian_id}, function(data){
+        $('#span_no_peserta_2').text(nim);
+        $('#btn_submit_catatan').data('id', mahasiswa_ujian_id);
+        $('#btn_submit_catatan').data('nim', nim);
+        $('#catatan_pengawas').val(data.catatan_pengawas);
+        $('#modal_catatan_peserta').modal('show');
+    }).fail(function() {
+        Swal.fire({
+            title: "Perhatian",
+            text: "Anda bukan yg mengabsenkan / Belum diabsenkan",
+            icon: "warning"
+        });
+    }).always(function() {
+        ajx_overlay(false);
+    });
+});
+
+$(document).on('click','#btn_submit_catatan',function(){
+    ajx_overlay(true);
+    let mahasiswa_ujian_id = $(this).data('id');
+    let nim = $(this).data('nim');
+    let catatan_pengawas = $('#catatan_pengawas').val();
+    $.post('{{ url('ujian/ajax/set_catatan_pengawas') }}',{'mahasiswa_ujian_id': mahasiswa_ujian_id, 'catatan_pengawas': catatan_pengawas}, function(data){
+        Swal.fire({
+            title: "Perhatian",
+            text: "Catatan berhasil disimpan",
+            icon: "success"
+        });
+        if(catatan_pengawas.length)
+            $('#bapu_catatan_' + nim).removeClass('text-success').addClass('text-danger');
+        else
+            $('#bapu_catatan_' + nim).removeClass('text-danger').addClass('text-success');
+        $('#modal_catatan_peserta').modal('hide');
+        ajx_overlay(false);
+    });
+});
 
 </script>
 <!-- END PAGE LEVEL JS-->
@@ -765,7 +824,7 @@ $(document).on('ifChanged','.check_bapu',function(){
             <tr>
                 <th style="text-align: center" rowspan="2">Menu</th>
                 <th rowspan="2">Absensi</th>
-                <th style="text-align: center" colspan="3">Bapu</th>
+                <th style="text-align: center" colspan="4">Bapu</th>
                 <th rowspan="2">Online</th>
                 <th rowspan="2">Latency</th>
                 <th rowspan="2">Status</th>
@@ -778,6 +837,7 @@ $(document).on('ifChanged','.check_bapu',function(){
                 <th style="text-align: center"><small>Tidak Terlihat<br/>Pada Layar</small></th>
                 <th style="text-align: center"><small>Perjokian</small></th>
                 <th style="text-align: center"><small>Sering Buka<br/>Laman Lain</small></th>
+                <th style="text-align: center"><small>Catatan</small></th>
                 <th style=""><small>Pilihan Prodi</small></th>
             </tr>
 
@@ -814,13 +874,13 @@ $(document).on('ifChanged','.check_bapu',function(){
 </section>
 
 <!-- Modal -->
-<div class="modal text-left"
+<div class="modal"
      id="modal_foto_peserta"
      tabindex="-1"
      role="dialog"
      aria-labelledby="myModalLabel11"
      aria-hidden="true">
-    <div class="modal-dialog"
+    <div class="modal-dialog modal-dialog-centered"
          role="document">
         <div class="modal-content">
             <div class="modal-header bg-info white">
@@ -833,6 +893,36 @@ $(document).on('ifChanged','.check_bapu',function(){
             <div class="modal-footer">
                 <button type="button"
                         class="btn btn-info" id="btn_reload_foto">Reload Foto
+                </button>
+                <button type="button"
+                        class="btn grey btn-outline-secondary"
+                        data-dismiss="modal">Tutup
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal"
+     id="modal_catatan_peserta"
+     tabindex="-1"
+     role="dialog"
+     aria-labelledby="myModalLabel12"
+     aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered"
+         role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-info white">
+                <h4 class="modal-title white"
+                    id="myModalLabel12">No Peserta : <span id="span_no_peserta_2"></span></h4>
+            </div>
+            <div class="modal-body">
+                <label>Catatan Pengawas</label>
+                <textarea id="catatan_pengawas" rows="10" class="form_input w-100"></textarea>
+            </div>
+            <div class="modal-footer">
+                <button type="button"
+                        class="btn btn-info" id="btn_submit_catatan">Submit
                 </button>
                 <button type="button"
                         class="btn grey btn-outline-secondary"

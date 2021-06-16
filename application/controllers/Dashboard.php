@@ -68,7 +68,7 @@ class Dashboard extends CI_Controller {
 					'box' 		=> 'olive',
 					'total' 	=> $this->dashboard->total('m_ujian'),
 					'title'		=> 'Ujian',
-					'link'		=> 'ujian',
+					'link'		=> 'ujian/master',
 					'icon'		=> 'book'
 				],
 			];

@@ -184,6 +184,29 @@
     .enjoyhint_close_btn {
         display: none;
     }
+
+    #q_n_a{
+        max-height: 700px; /* OVERIDED LATER */
+        overflow-y: scroll;
+    }
+
+    #panel_user{
+        max-height: 750px; /* OVERIDED LATER */
+        overflow-y: scroll;
+    }
+
+    #lembar_ujian{
+        background-color: #fff; 
+        overflow-x: hidden;
+    }
+
+    #ujian_card_header{
+        border-bottom: 2px solid blue;
+    }
+
+    #div_navigasi{
+        border-top: 1px solid grey;
+    }
 </style>
 @endpush
 
@@ -461,6 +484,14 @@ function init_page_level(){
     $(".step, .back, .selesai").hide();
     $("#widget_1").show();
     $("#widget_jawaban_1").show();
+
+    let width = $(window).width();
+
+    let height = $(window).height();
+    
+    $('#q_n_a').css('max-height', (height - (87.85 + 68.5)));
+    $('#q_n_a').css('min-height', (height - (87.85 + 68.5)));
+    $('#panel_user').css('max-height', (height - (87.85)));
 }
 
 function buka(id_widget) {
@@ -730,10 +761,10 @@ $(document).on('click','input[type="radio"]',function(){
 @endpush
 
 @section('content')
-<section id="lembar_ujian" style="background-color: #f3f3f3; overflow-x: hidden;" class="card card-fullscreen">
+<section id="lembar_ujian" class="card card-fullscreen">
     <div class="row">
         <div class="col-12">
-            <div class="card">
+            <div class="card" id="ujian_card_header">
                 <div class="card-header" style="padding: 1rem">
                     <h4 class="card-title" style="width: 500px; margin: 0 auto;text-align: center;">
                         <span id="sisa_waktu" style="font-size: 2rem">0:0:0</span>
@@ -755,8 +786,7 @@ $(document).on('click','input[type="radio"]',function(){
                                     <tr>
                                         <th colspan="2" style="text-align: center; white-space: normal;">
                                             <label style="display: block;">{{ $user->full_name }}</label>
-                                            <label style="display: block; font-weight: normal;">( {{ $user->username }}
-                                                )</label>
+                                            <label style="display: block; font-weight: normal; margin-bottom: 0;">( {{ $user->username }} )</label>
                                         </th>
                                     </tr>
                                     <tr>
@@ -803,7 +833,7 @@ $(document).on('click','input[type="radio"]',function(){
                             <div class="card">
                                 <div class="card-content">
                                     <div class="card-body" id="isi_pertanyaan">
-                                        <span style="font-size: 20px" class="">Pertanyaan #<span id="soalke"></span></span>
+                                        <span style="font-size: 20px" class="">Soal #<span id="soalke"></span></span>
                                         <span class="float-right text-danger" id="text_info_topik" style="font-size: 15px; font-weight: bold; padding-top: 5px; text-transform: uppercase">&nbsp;</span>
                                         <hr>
                                         <div class="step step_pertanyaan" id="widget_1">
@@ -1003,9 +1033,9 @@ $(document).on('click','input[type="radio"]',function(){
                     </div>
                 </div>
                 <div class="col-md-12">
-                    <div class="card mb-0" style="background-color: rgb(255, 254, 212)">
+                    <div class="card mb-0" id="div_navigasi">
                         <div class="card-content">
-                            <div class="card-body text-center" style="padding: 0.5rem">
+                            <div class="card-body text-center" style="padding: 1rem">
                                 <div class="btn-group" role="group" aria-label="" id="next_prev_pertanyaan">
                                     <button type="button" class="action back btn btn-info" rel="0"
                                         onclick="return back();"><i class="fa fa-chevron-left"></i>

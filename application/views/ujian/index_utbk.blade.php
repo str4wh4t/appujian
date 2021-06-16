@@ -176,13 +176,26 @@ legend{
 }
 
 #q_n_a{
-    max-height: 700px;
+    max-height: 700px; /* OVERIDED LATER */
     overflow-y: scroll;
 }
 
 #panel_user{
-    max-height: 750px;
+    max-height: 750px; /* OVERIDED LATER */
     overflow-y: scroll;
+}
+
+#lembar_ujian{
+    background-color: #fff; 
+    overflow-x: hidden;
+}
+
+#ujian_card_header{
+    border-bottom: 2px solid blue;
+}
+
+#div_navigasi{
+    border-top: 1px solid grey;
 }
 
 </style>
@@ -298,6 +311,8 @@ const update_time = () => {
         success: function (date_ajax) {
 
             curr_date = moment(date_ajax, "YYYY-MM-DD HH:mm:ss");
+
+            // console.log('srv_date', curr_date);
             
             $.each(urutan_topik, function(i, v){
                 let akhir_topik = moment(topik_waktu[v], "YYYY-MM-DD HH:mm:ss");
@@ -330,7 +345,6 @@ const update_time = () => {
                 duration = moment.duration(duration - interval, 'milliseconds');
                 if(duration.as('milliseconds') > 0){
                     duration_text = Math.floor(duration.as('hours')) + ":" + duration.minutes() + ":" + duration.seconds() ;
-                    $('#btn_lanjut_ujian').removeClass('btn-danger').addClass('btn-success');
                     if(duration.as('milliseconds') == 599000){
                         // JIKA WAKTU KURANG 10 MENIT
                         Swal.fire({
@@ -342,7 +356,6 @@ const update_time = () => {
                     }
                 }else{
                     duration_text = "0:0:0";
-                    $('#btn_lanjut_ujian').removeClass('btn-success').addClass('btn-danger');
                    
                     if(is_sekuen_topik){
                         if(last_topik_id == topik_aktif)
@@ -383,15 +396,6 @@ const update_time = () => {
 };
 
 // setInterval(update_time, 1000); // PER SECOND
-
-$(document).on('click','#btn_lanjut_ujian',function(){
-    if($(this).hasClass('btn-danger')){
-        Swal.fire('Perhatian', 'Anda berada diluar jadwal ujian', 'error');
-        return false;
-    }else{
-        location.href = '{!! site_url('ujian/?key='. $one_time_token .'&id='. $id_tes ) !!}';
-    }
-});
 
 let id_tes          = "{{ $id_tes }}";
 let widget          = $(".step_pertanyaan");
@@ -460,7 +464,8 @@ function init_page_level(){
 
     let height = $(window).height();
     
-    $('#q_n_a').css('max-height', (height - (87.85 + 54.5)));
+    $('#q_n_a').css('max-height', (height - (87.85 + 68.5)));
+    $('#q_n_a').css('min-height', (height - (87.85 + 68.5)));
     $('#panel_user').css('max-height', (height - (87.85)));
 
 }
@@ -610,10 +615,10 @@ function selesai(ended_by = '') {
 @endpush
 
 @section('content')
-<section id="lembar_ujian"  style="background-color: #f3f3f3; overflow-x: hidden;" class="card card-fullscreen">
+<section id="lembar_ujian" class="card card-fullscreen">
 <div class="row">
     <div class="col-12">
-        <div class="card">
+        <div class="card" id="ujian_card_header">
             <div class="card-header" style="padding: 1rem">
                 <h4 class="card-title" style="width: 500px; margin: 0 auto;text-align: center;">
                     <span id="sisa_waktu" style="font-size: 2rem">0:0:0</span>
@@ -639,7 +644,7 @@ function selesai(ended_by = '') {
                                     </th>
                                 </tr>
                                 <tr>
-                                    <th colspan="2" style="text-align: center"><img src="{{ APP_TYPE == 'tryout' ? asset('assets/imgs/no_profile_120_150.jpg') : $h_ujian->mhs->foto }}" style="height: 150px; width: 120px;" /></th>
+                                    <th colspan="2" style="text-align: center"><img src="{{ APP_TYPE == 'tryout' ? asset('assets/imgs/no_profile_120_150.jpg') : (empty($h_ujian->mhs->foto) ? asset('assets/imgs/no_profile_120_150.jpg') : $h_ujian->mhs->foto ) }}" style="height: 150px; width: 120px;" /></th>
                                 </tr>
                             </table>
                             <div class="row">
@@ -702,9 +707,9 @@ function selesai(ended_by = '') {
                 </div>
             </div>
             <div class="col-md-12">
-                <div class="card mb-0" style="background-color: rgb(255, 254, 212)">
+                <div class="card mb-0" id="div_navigasi">
                     <div class="card-content">
-                        <div class="card-body text-center" style="padding: 0.5rem">
+                        <div class="card-body text-center" style="padding: 1rem">
                             <div class="btn-group" role="group" aria-label="" id="next_prev_pertanyaan">
                                 <button type="button" class="action back btn btn-info rounded-0" rel="0" onclick="return back();"><i class="fa fa-chevron-left"></i> Back</button>
                                 <button type="button" class="ragu_ragu btn btn-warning" rel="1" onclick="return tidak_jawab();" style="display: none"><i class="fa fa-pause"></i> <span class="span_ragu">Ragu-Ragu</span></button>

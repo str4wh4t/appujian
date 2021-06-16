@@ -23,7 +23,8 @@ $(document).ready(function () {
                         icon:"success",
                         text: "Data berhasil disimpan"
                     }).then(result => {
-                        window.location.href = base_url+"ujian/master";
+                        // window.location.href = base_url+"ujian/master";
+                        window.location.reload();
                     });
                 } else {
                     Swal.fire({

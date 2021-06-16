@@ -269,10 +269,12 @@ function go_ujian(token){
                         <td><?=$ujian->nama_ujian?></td>
                     </tr>
                     @if($ujian->sumber_ujian == 'materi')
+                    {{--
                     <tr>
                         <th>Materi Ujian</th>
                         <td><?=$ujian->matkul->nama_matkul?></td>
                     </tr>
+                    --}}
                     <tr>
                         <th colspan="2">
                             <dl class="row">
@@ -280,48 +282,55 @@ function go_ujian(token){
                             </dl>
                             @php( $i = 1)
                             @foreach($urutan_topik as $topik_id => $val)
-                            @php($topik = $topik_orm->findOrFail($topik_id))
+                            @php($topik = $topik_key_nama_array[$topik_id])
                             <dl class="row">
                                 <dt class="col-sm-6">{{ $i }}. {{ $topik->nama_topik }}</dt>
-                                <dd class="col-sm-3 text-success">{{ $topik_ujian_jml_soal[$topik->id] }} Soal</dd>
+                                <dd class="col-sm-3 text-success">{{ $topik_ujian_jml_soal[$topik_id] }} Soal</dd>
                                 @if ($ujian->is_sekuen_topik)
                                 <dd class="col-sm-3">{{ $val['waktu'] }} Menit</dd>
                                 @endif
                             </dl>
                             @php( $i++)
                             @endforeach
-                        </td>
+                        </th>
                     </tr>
                     @elseif($ujian->sumber_ujian == 'bundle')
-                    @php( $j = 1)
-                    @foreach($matkul_bundle_list as $matkul)
-                    <tr>
-                        <th>Materi Ujian ({{ $j }})</th>
-                        <td><?=$matkul->nama_matkul?></td>
-                    </tr>
                     <tr>
                         <th colspan="2">
                             <dl class="row">
                             <dt class="col-sm-12 text-danger">Topik Ujian :</dt>
                             </dl>
-                            @php( $i = 1)
+
+                    @php( $j = 1)
+                    @php( $i = 1)
+                    @foreach($matkul_bundle_list as $matkul)
+                    {{-- 
+                    <tr>
+                        <th>Materi Ujian ({{ $j }})</th>
+                        <td><?=$matkul->nama_matkul?></td>
+                    </tr>
+                    --}}
+                    
+                        
+                            {{-- @php( $i = 1) --}}
                             @foreach($urutan_topik as $topik_id => $val)
-                            @php($topik = $topik_orm->findOrFail($topik_id))
+                            @php($topik = $topik_key_nama_array[$topik_id])
                             @if($matkul->id_matkul == $topik->matkul_id)
                             <dl class="row">
                                 <dt class="col-sm-6">{{ $i }}. {{ $topik->nama_topik }}</dt>
                                 @if ($ujian->is_sekuen_topik)
-                                <dd class="col-sm-3 text-success">{{ $topik_ujian_jml_soal[$topik->id] }} Soal</dd>
+                                <dd class="col-sm-3 text-success">{{ $topik_ujian_jml_soal[$topik_id] }} Soal</dd>
                                 <dd class="col-sm-3">{{ $val['waktu'] }} Menit</dd>
                                 @endif
                             </dl>
                             @php( $i++)
                             @endif
                             @endforeach
-                        </td>
-                    </tr>
                     @php( $j++)
                     @endforeach
+
+                        </th>
+                    </tr>
                     @endif
                     <tr>
                         <th>Jumlah Soal</th>

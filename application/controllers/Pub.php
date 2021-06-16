@@ -366,8 +366,7 @@ class Pub extends MY_Controller {
 
 		// $cron_end = date("Y-m-d H:i:s", strtotime("+1 minutes"));
 
-		$dt_1 = Carbon::now();
-		$cron_end = $dt_1->addMinutes(1);
+		$cron_end = Carbon::now()->addMinutes(1);
 
 		$h_ujian_list = $h_ujian_list->where('ujian_selesai', 'N')->get();
 		if($h_ujian_list->isNotEmpty()){

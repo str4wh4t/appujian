@@ -21,7 +21,7 @@ class Soal_model extends CI_Model {
     	
 	    $dt = new Datatables( new MySQL($config) );
 	    
-	    $this->db->select('a.id_soal, a.no_urut, a.soal, a.created_at, a.updated_at, d.bobot, c.nama_matkul, b.nama_topik, GROUP_CONCAT(f.nama_bundle SEPARATOR "---") as bundle, GROUP_CONCAT(CONCAT("[", f.id, "]")) as bundle_ids, g.full_name as oleh');
+	    $this->db->select('a.id_soal, a.no_urut, a.soal, a.created_at, a.updated_at, a.is_reported, d.bobot, c.nama_matkul, b.nama_topik, GROUP_CONCAT(f.nama_bundle SEPARATOR "---") as bundle, GROUP_CONCAT(CONCAT("[", f.id, "]")) as bundle_ids, g.full_name as oleh');
         $this->db->from('tb_soal a');
         $this->db->join('topik b', 'b.id = a.topik_id');
         $this->db->join('matkul c', 'c.id_matkul = b.matkul_id');
@@ -72,13 +72,13 @@ class Soal_model extends CI_Model {
         
         $query = $this->db->get_compiled_select() ; // GET QUERY PRODUCED BY ACTIVE RECORD WITHOUT RUNNING I
 		// echo $query; die;
-	    $user_orm = new Users_orm();
+	    // $user_orm = new Users_orm();
         $dt->query($query);
         // $dt->edit('oleh', function ($data) use ($user_orm) {
         //     $user = $user_orm->where('username',$data['oleh'])->first();
         //     return $user != null ? $user->full_name : '';
         // });
-        
+
         return $dt->generate();
         
     }

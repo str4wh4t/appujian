@@ -280,6 +280,48 @@ $(document).on('click', '#btn_close_alert_bundle', function(){
 
 });
 
+$(document).on('click', '.btn-report-soal', function(){
+
+	let id_soal = $(this).data('id');
+	ajx_overlay(true);
+	$.ajax({
+		url: "{{ url('soal/ajax/report_soal') }}",
+		data: { 'id_soal': id_soal },
+		type: 'POST',
+		success: function (response) {
+			if(response.stts == 'ok'){
+				// if(response.is_reported)
+				// 	$('#dt_tr_' + response.id_soal).addClass('bg-warning');
+				// else
+				// 	$('#dt_tr_' + response.id_soal).removeClass('bg-warning');
+
+				reload_ajax();
+			}else{
+				Swal.fire({
+					title: "Perhatian",
+					text: "Kesalahan : " . response.msg,
+					icon: "warning",
+					confirmButtonText: "Ok",
+				});
+			}
+		},
+		error: function(){
+
+			Swal.fire({
+					title: "Perhatian",
+					text: "Terjadi kesalahan/Anda bukan admin",
+					icon: "warning",
+					confirmButtonText: "Ok",
+				});
+
+		},
+		complete: function(){
+			ajx_overlay(false);
+			$('#modal_bundle').modal('hide');
+		}
+	});
+
+});
 
 </script>
 <script src="{{ asset('assets/dist/js/app/soal/index.js') }}"></script>
@@ -292,6 +334,7 @@ $(document).on('click', '#btn_close_alert_bundle', function(){
 .select2-selection--multiple .select2-search__field{
   width:100%!important;
 }
+
 </style>
 <!-- END PAGE LEVEL CSS-->
 @endpush

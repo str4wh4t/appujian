@@ -101,5 +101,12 @@ class MY_Controller extends CI_Controller {
 			show_error('Halaman ini khusus untuk selain admin dan koord pengawas', 403, 'Akses Terlarang');
 		}
     }
+
+	protected function _akses_admin_dosen_dan_penyusun_soal() 
+    {
+        if (!is_admin() && !in_group(DOSEN_GROUP_ID) && !in_group(PENYUSUN_SOAL_GROUP_ID)) {
+			show_error('Halaman ini khusus untuk selain admin, dosen dan penyusun soal', 403, 'Akses Terlarang');
+		}
+    }
 	
 }

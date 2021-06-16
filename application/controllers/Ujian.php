@@ -290,7 +290,7 @@ class Ujian extends MY_Controller
 				}
 				$jumlah_soal_total_min = $jumlah_soal_total + 1;
 
-				$this->form_validation->set_rules('jumlah_soal_total', 'Jumlah Soal Total', "required|is_natural_no_zero|less_than[{$jumlah_soal_total_min}]", ['less_than' => "Soal tidak cukup, matkul tsb hanya memiliki {$jumlah_soal_total} soal"]);
+				$this->form_validation->set_rules('jumlah_soal_total', 'Jumlah Soal Total', "required|is_natural_no_zero|less_than[{$jumlah_soal_total_min}]", ['less_than' => "Soal tidak cukup, total tsb hanya memiliki {$jumlah_soal_total} soal"]);
 
 				$jumlah_soal_list = $this->input->post('jumlah_soal', true);
 
@@ -318,7 +318,7 @@ class Ujian extends MY_Controller
 
 							/**[START] TEST JUMLAH SOAL SESUAI ATAU TIDAK */
 
-							$soal = Soal_orm::where(['topik_id' => $topik_id, 'bobot_soal_id' => $bobot_soal_id]);
+							$soal = Soal_orm::where(['topik_id' => $topik_id, 'bobot_soal_id' => $bobot_soal_id, 'is_reported' => NO_REPORTED_SOAL]);
 							if (!empty($filter)) {
 								$soal->where($filter);
 							}
@@ -342,13 +342,13 @@ class Ujian extends MY_Controller
 
 				$soal       = Soal_orm::whereHas('bundle_soal', function (Builder $query) use($bundle_ids) {
 					$query->whereIn('bundle_id', $bundle_ids);
-				});
+				})->where('is_reported', NO_REPORTED_SOAL);
 
 				$jumlah_soal_total = $soal->count();
 
 				$jumlah_soal_total_min = $jumlah_soal_total + 1;
 
-				$this->form_validation->set_rules('jumlah_soal_total', 'Jumlah Soal Total', "required|is_natural_no_zero|less_than[{$jumlah_soal_total_min}]", ['less_than' => "Soal tidak cukup, matkul tsb hanya memiliki {$jumlah_soal_total} soal"]);
+				$this->form_validation->set_rules('jumlah_soal_total', 'Jumlah Soal Total', "required|is_natural_no_zero|less_than[{$jumlah_soal_total_min}]", ['less_than' => "Soal tidak cukup, total hanya memiliki {$jumlah_soal_total} soal"]);
 
 				$jumlah_soal_list = $this->input->post('jumlah_soal', true);
 
@@ -358,7 +358,7 @@ class Ujian extends MY_Controller
 
 							/**[START] TEST JUMLAH SOAL SESUAI ATAU TIDAK */
 
-							$soal = Soal_orm::where(['topik_id' => $topik_id, 'bobot_soal_id' => $bobot_soal_id])
+							$soal = Soal_orm::where(['topik_id' => $topik_id, 'bobot_soal_id' => $bobot_soal_id, 'is_reported' => NO_REPORTED_SOAL])
 												->whereHas('bundle_soal', function (Builder $query) use($bundle_ids) {
 													$query->whereIn('bundle_id', $bundle_ids);
 												});
@@ -1073,24 +1073,36 @@ class Ujian extends MY_Controller
 					$h_ujian_list = Hujian_orm::where('ujian_id', $m_ujian_orm->id_ujian)->get();
 					if($h_ujian_list->isNotEmpty()){
 						$this->load->library('socket');
+						$role_name = get_selected_role()->name ;
+
 						foreach($h_ujian_list as $h_ujian){
-							$h_ujian_start = $h_ujian->tgl_mulai;
-							$minutes_to_add = $m_ujian_orm->waktu;
-
-							$time = new DateTime($h_ujian_start);
-							$time->add(new DateInterval('PT' . $minutes_to_add . 'M'));
-
-							$h_ujian_stop_new = $time->format('Y-m-d H:i:s');
-
-							$date_end = date('Y-m-d H:i:s', strtotime($m_ujian_orm->terlambat));
-							$waktu_selesai 	= $h_ujian_stop_new > $date_end ? $date_end : $h_ujian_stop_new;
-
-							$h_ujian->tgl_selesai = $waktu_selesai;
 							if($h_ujian->ujian_selesai == 'N'){
-								$cmd = '{"as":"'. get_selected_role()->name .'","cmd":"UPDATE_TIME","nim":"'. $h_ujian->mhs->nim .'","app_id":"'. APP_ID .'"}';
+
+								$nim = $h_ujian->mhs->nim;
+								$h_ujian_start = $h_ujian->tgl_mulai;
+								$minutes_to_add = $m_ujian_orm->waktu;
+
+								// $time = new DateTime($h_ujian_start);
+								// $time->add(new DateInterval('PT' . $minutes_to_add . 'M'));
+
+								$waktu_selesai = Carbon::createFromFormat('Y-m-d H:i:s', $h_ujian_start)->addMinutes($minutes_to_add);
+
+								// $h_ujian_stop_new = $time->format('Y-m-d H:i:s');
+								// $date_end = date('Y-m-d H:i:s', strtotime($m_ujian_orm->terlambat));
+								// $waktu_selesai 	= $h_ujian_stop_new > $date_end ? $date_end : $h_ujian_stop_new;
+
+								if(!empty($m_ujian_orm->terlambat)){
+									$date_end = Carbon::createFromFormat('Y-m-d H:i:s', $m_ujian_orm->terlambat);
+									$waktu_selesai = $waktu_selesai->greaterThan($date_end) ? $date_end : $waktu_selesai ;
+								}
+
+								$h_ujian->tgl_selesai = $waktu_selesai->toDateTimeString();
+								$h_ujian->save();
+							
+								$cmd = '{"as":"'. $role_name .'","cmd":"UPDATE_TIME","nim":"'. $nim .'","app_id":"'. APP_ID .'"}';
 								$this->socket->notif_ws($cmd);
+								
 							}
-							$h_ujian->save();
 						}
 					}
 					// [STOP] EDIT EXISTING H_UJIAN
@@ -1591,15 +1603,34 @@ class Ujian extends MY_Controller
 		
 		$data['urutan_topik'] = $urutan_topik;
 
-		$topik_orm = new Topik_orm();
-		$data['topik_orm'] = $topik_orm;
+		$topik_list = Topik_orm::all();
+		$topik_key_nama_array = [];
+		foreach($topik_list as $topik){
+			$topik_key_nama_array[$topik->id] = (object)[
+				'matkul_id' => $topik->matkul_id,
+				'nama_topik' => $topik->nama_topik,
+			];
+		}
+		$data['topik_key_nama_array'] = $topik_key_nama_array;
 
-		$topik_ujian_jml_soal = $m_ujian->topik_ujian()->groupBy('topik_id')->pluck('jumlah_soal', 'topik_id')->toArray();
+		// vdebug($t->get()->toArray());
+		$topik_ujian_jml_soal = [];
+		$topik_ujian_jml_soal_tmp = [];
+		foreach($m_ujian->topik_ujian as $topik_ujian){
+			if(!in_array($topik_ujian->topik_id, $topik_ujian_jml_soal_tmp)){
+				$topik_ujian_jml_soal_tmp[] = $topik_ujian->topik_id;
+				$topik_ujian_jml_soal[$topik_ujian->topik_id] = $topik_ujian->jumlah_soal;
+			}else{
+				$topik_ujian_jml_soal[$topik_ujian->topik_id] = ((int)$topik_ujian_jml_soal[$topik_ujian->topik_id]) + $topik_ujian->jumlah_soal;
+			}
+		}
+
 		$data['topik_ujian_jml_soal'] = $topik_ujian_jml_soal;
 
 		$matkul_bundle_list = [];
 		foreach($urutan_topik as $topik_id => $val){
-			$topik = $topik_orm->findOrFail($topik_id);
+			// $topik = $topik_orm->findOrFail($topik_id);
+			$topik = $topik_key_nama_array[$topik_id];
 			if(!in_array($topik->matkul_id, $matkul_bundle_ids_list)){
 				$matkul_bundle_list[] = Matkul_orm::findOrFail($topik->matkul_id);
 				$matkul_bundle_ids_list[] = $topik->matkul_id;
@@ -1683,73 +1714,37 @@ class Ujian extends MY_Controller
 
 		$cek_sudah_ikut = empty($h_ujian) ? false : true;
 
+		$today = Carbon::now();
+
 		if (!$cek_sudah_ikut) {
-
-			// CEK UNTUK TRYOUT
-			if(APP_TYPE == 'tryout'){
-				// $mhs_aktif_membership = get_mhs_aktif_membership($mhs);
-				if($ujian->repeatable){
-					// JIKA UJIAN LATIHAN SOAL
-					// if($mhs_aktif_membership->membership->is_limit_by_kuota){
-						// $membership_history_user = Membership_history_orm::findOrFail($mhs_aktif_membership->id);
-						// $membership_history_user->sisa_kuota_latihan_soal = ($membership_history_user->sisa_kuota_latihan_soal - 1);
-						// $membership_history_user->save();
-					// }
-
-					if(is_mhs_limit_by_kuota()){
-
-						// if($ujian->sumber_ujian == 'materi'){
-						// 	$mhs_matkul = $mhs->mhs_matkul()->where('matkul_id', $ujian->matkul_id)->first();
-						// 	$mhs_matkul->sisa_kuota_latihan_soal = ($mhs_matkul->sisa_kuota_latihan_soal - 1);
-						// 	$mhs_matkul->save();
-
-						// }else if($ujian->sumber_ujian == 'bundle'){
-						// 	$bundle_ids = $ujian->bundle()
-						// 						->groupBy('bundle.id')
-						// 						// ->get(['bundle.id'])
-						// 						->pluck('bundle.id')
-						// 						->toArray();
-						// 	$matkul_ids = get_matkul_ids_from_bundle_ids($bundle_ids);
-	
-						// 	if(!empty($matkul_ids)){
-						// 		foreach($matkul_ids as $matkul_id){
-						// 			$mhs_matkul = $mhs->mhs_matkul()->where('matkul_id', $matkul_id)->first();
-						// 			if(!empty($mhs_matkul)){
-						// 				if($mhs_matkul->sisa_kuota_latihan_soal > 0){
-						// 					$mhs_matkul = $mhs->mhs_matkul()->where('matkul_id', $matkul_id)->first();
-						// 					$mhs_matkul->sisa_kuota_latihan_soal = ($mhs_matkul->sisa_kuota_latihan_soal - 1);
-						// 					$mhs_matkul->save();
-						// 					break;
-						// 				}
-						// 			}
-						// 		}	
-						// 	}else{
-						// 		show_404();
-						// 	}
-						// }
-
-						$mhs_ujian = Mhs_ujian_orm::where(['mahasiswa_id' => $mhs->id_mahasiswa, 'ujian_id' => $ujian->id_ujian])->firstOrFail();
-						$mhs_ujian->sisa_kuota_latihan_soal = ($mhs_ujian->sisa_kuota_latihan_soal - 1);
-						$mhs_ujian->save();
-
-					}
-
-				}
-			}
 
 			/*
 			 * [START]CHECK VALID TIME M_UJIAN
 			 */
 
-			$today = date('Y-m-d H:i:s');
-			//echo $paymentDate; // echos today!
-			$date_start = date('Y-m-d H:i:s', strtotime($ujian->tgl_mulai));
-			if(!empty($ujian->terlambat)){
-				$date_end = date('Y-m-d H:i:s', strtotime($ujian->terlambat));
+			// $today = date('Y-m-d H:i:s');
+			// $today = Carbon::now();
 
-				if (!(($today >= $date_start) && ($today < $date_end))) {
-					show_404();
+			// $date_start = date('Y-m-d H:i:s', strtotime($ujian->tgl_mulai));
+			$date_start = Carbon::createFromFormat('Y-m-d H:i:s', $ujian->tgl_mulai);
+			$waktu_selesai = Carbon::now()->addMinutes($ujian->waktu);
+
+			// vdebug($waktu_selesai->toDateTimeString());
+
+			if(!empty($ujian->terlambat)){
+				// $date_end = date('Y-m-d H:i:s', strtotime($ujian->terlambat));
+				$date_end = Carbon::createFromFormat('Y-m-d H:i:s', $ujian->terlambat);
+
+				// if (!(($today >= $date_start) && ($today < $date_end))) {
+				// 	show_404();
+				// }
+				
+				if (!$today->between($date_start, $date_end)) { // JIKA BUKAN MASA UJIAN
+					show_404(); 
 				}
+
+				$waktu_selesai 	= $waktu_selesai->greaterThan($date_end)? $date_end : $waktu_selesai;
+
 			}
 
 			/*
@@ -1759,10 +1754,13 @@ class Ujian extends MY_Controller
 			$soal 		= [];
 			$soal_topik = [];
 			$i = 0;
+			
+			$topik_array_temp = [];
 			foreach ($ujian->topik_ujian as $topik_ujian) {
 				$jumlah_soal_diset = $topik_ujian->jumlah_soal;
 				$soal_avail = Soal_orm::where('topik_id', $topik_ujian->topik_id)
-										->where('bobot_soal_id', $topik_ujian->bobot_soal_id);
+										->where('bobot_soal_id', $topik_ujian->bobot_soal_id)
+										->where('is_reported', NO_REPORTED_SOAL);
 
 				if($ujian->sumber_ujian == 'bundle'){
 					$bundle_ids = $ujian->bundle()->pluck('bundle.id')->toArray();
@@ -1791,7 +1789,12 @@ class Ujian extends MY_Controller
 					$soal_avail->where($filter);
 				}
 
-				$soal_avail = $soal_avail->get()->sortBy('no_urut');
+				if ($ujian->jenis == 'urut') {
+					$soal_avail = $soal_avail->orderBy('no_urut')->get();
+				}else{
+					// DIACAK SEBELUM DIPILIH
+					$soal_avail = $soal_avail->inRandomOrder()->get();
+				}
 
 				if ($jumlah_soal_diset > $soal_avail->count()) {
 					show_error('Jumlah soal tidak memenuhi untuk ujian', 500, 'Perhatian');
@@ -1807,21 +1810,49 @@ class Ujian extends MY_Controller
 				}
 
 				if ($ujian->jenis == 'acak') {
+					// DIACAK SETELAH DIPILIH
 					shuffle($soal_topik);
 				}
 
-				$soal[$topik_ujian->topik_id][$topik_ujian->bobot_soal_id] = $soal_topik;
+				// $soal[$topik_ujian->topik_id][$topik_ujian->bobot_soal_id] = $soal_topik;
+
+				if(!in_array($topik_ujian->topik_id, $topik_array_temp)){
+					$topik_array_temp[] = $topik_ujian->topik_id;
+					$soal[$topik_ujian->topik_id] = $soal_topik;
+				}else{
+					// INI JIKA MEMBUAT UJIAN MULTI BOBOT SOAL , CONTOH ADA YG MUDAH ADA YG SUSAH DI GABUNG
+					$soal_topik_new = array_merge($soal[$topik_ujian->topik_id], $soal_topik);
+					if ($ujian->jenis == 'acak') {
+						// DIACAK SETELAH DIPILIH LAGI
+						shuffle($soal_topik_new);
+					}
+					$soal[$topik_ujian->topik_id] = $soal_topik_new;
+				}
+
 				$soal_topik = [];
 				$i = 0;
 			}
 
-			$waktu_selesai 	= date('Y-m-d H:i:s', strtotime('+'. $ujian->waktu .'minute'));
+			// vdebug($soal);
+			// $dd = [];
+			// foreach ($soal as $topik_id => $t) {
+			// 	foreach ($t as $d) {
+			// 		$dd[] = [
+			// 			'ujian_id' => 11,
+			// 			'soal_id' => $d->id_soal,
+			// 		];
+			// 	}
+			// }
 
-			if(!empty($ujian->terlambat)){
-				$waktu_selesai 	= $waktu_selesai > $date_end ? $date_end : $waktu_selesai;
-			}
+			// vdebug($dd);
 
-			$time_mulai		= date('Y-m-d H:i:s');
+			// $waktu_selesai 	= date('Y-m-d H:i:s', strtotime('+'. $ujian->waktu .'minute'));
+
+			// if(!empty($ujian->terlambat)){
+				// $waktu_selesai 	= $waktu_selesai > $date_end ? $date_end : $waktu_selesai;
+			// }
+
+			// $time_mulai		= date('Y-m-d H:i:s');
 
 			$mhs_ujian = Mhs_ujian_orm::where(['mahasiswa_id' => $mhs->id_mahasiswa, 'ujian_id' => $ujian->id_ujian])->firstOrFail();
 
@@ -1836,11 +1867,14 @@ class Ujian extends MY_Controller
 				'nilai_bobot_benar'			=> 0,
 				'total_bobot'			=> 0,
 				'nilai_bobot'	=> 0,
-				'tgl_mulai'		=> $time_mulai,
-				'tgl_selesai'	=> $waktu_selesai,
+				// 'tgl_mulai'		=> $time_mulai,
+				'tgl_mulai'		=> $today->toDateTimeString(),
+				'tgl_selesai'	=> $waktu_selesai->toDateTimeString(),
 				'ujian_selesai'		=> 'N',
 			];
 			//			$this->master->create('h_ujian', $input);
+
+			// vdebug($input);
 
 			try {
 				begin_db_trx();
@@ -1860,13 +1894,33 @@ class Ujian extends MY_Controller
 				$h_ujian->ujian_selesai = $input['ujian_selesai'];
 				$h_ujian->save();
 
+				// foreach ($soal as $topik_id => $t) {
+				// 	foreach ($t as $bobot_soal_id => $d) {
+				// 		foreach ($d as $s) {
+				// 			$jawaban_ujian_orm           = new Jawaban_ujian_orm();
+				// 			$jawaban_ujian_orm->ujian_id = $h_ujian->id;
+				// 			$jawaban_ujian_orm->soal_id  = $s->id_soal;
+				// 			$jawaban_ujian_orm->save();
+				// 		}
+				// 	}
+				// }
+
 				foreach ($soal as $topik_id => $t) {
-					foreach ($t as $bobot_soal_id => $d) {
-						foreach ($d as $s) {
-							$jawaban_ujian_orm           = new Jawaban_ujian_orm();
-							$jawaban_ujian_orm->ujian_id = $h_ujian->id;
-							$jawaban_ujian_orm->soal_id  = $s->id_soal;
-							$jawaban_ujian_orm->save();
+					foreach ($t as $d) {
+						$jawaban_ujian_orm           = new Jawaban_ujian_orm();
+						$jawaban_ujian_orm->ujian_id = $h_ujian->id;
+						$jawaban_ujian_orm->soal_id  = $d->id_soal;
+						$jawaban_ujian_orm->save();
+					}
+				}
+
+				// CEK UNTUK TRYOUT
+				if(APP_TYPE == 'tryout'){
+					if($ujian->repeatable){
+						if(is_mhs_limit_by_kuota()){
+							$mhs_ujian = Mhs_ujian_orm::where(['mahasiswa_id' => $mhs->id_mahasiswa, 'ujian_id' => $ujian->id_ujian])->firstOrFail();
+							$mhs_ujian->sisa_kuota_latihan_soal = ($mhs_ujian->sisa_kuota_latihan_soal - 1);
+							$mhs_ujian->save();
 						}
 					}
 				}
@@ -1892,13 +1946,21 @@ class Ujian extends MY_Controller
 		 * [START]CHECK VALID TIME H_UJIAN
 		 */
 
-		$today = date('Y-m-d H:i:s');
-		//echo $paymentDate; // echos today!
-		$date_start = date('Y-m-d H:i:s', strtotime($h_ujian->tgl_mulai));
-		$date_end = date('Y-m-d H:i:s', strtotime($h_ujian->tgl_selesai));
+		// $today = date('Y-m-d H:i:s');
+		// $date_start = date('Y-m-d H:i:s', strtotime($h_ujian->tgl_mulai));
+		// $date_end = date('Y-m-d H:i:s', strtotime($h_ujian->tgl_selesai));
 
-		if (!(($today >= $date_start) && ($today < $date_end))) {
-			show_404();
+		// if (!(($today >= $date_start) && ($today < $date_end))) {
+		// 	show_404();
+		// }
+
+		$date_start = Carbon::createFromFormat('Y-m-d H:i:s', $h_ujian->tgl_mulai);
+
+		if(!empty($ujian->terlambat)){
+			$date_end = Carbon::createFromFormat('Y-m-d H:i:s', $h_ujian->tgl_selesai);
+			if (!$today->between($date_start, $date_end)) { // JIKA BUKAN MASA UJIAN
+				show_404(); 
+			}
 		}
 
 		/*
@@ -2423,10 +2485,7 @@ class Ujian extends MY_Controller
 
 		$action = $this->_akhiri_ujian($h_ujian->id, $ended_by);
 
-		$data = [
-			'status' => $action,
-		];
-		$this->_json($data);
+		$this->_json(['status' => $action]);
 	}
 
 	private function _akhiri_ujian($id_h_ujian, $ended_by)
@@ -2488,10 +2547,8 @@ class Ujian extends MY_Controller
 		// $stop_ujian_max = date('Y-m-d H:i:s', strtotime($h_ujian->tgl_mulai . '+' . $h_ujian->m_ujian->waktu . ' minutes')) ;
 		// $stop_ujian 	= $stop_ujian > $stop_ujian_max ? $stop_ujian_max : $stop_ujian;
 
-		$dt_1 = Carbon::now();
-		$dt_2 = Carbon::createFromFormat('Y-m-d H:i:s', $h_ujian->tgl_mulai);
-		$stop_ujian = $dt_1;
-		$stop_ujian_max = $dt_2->addMinutes($h_ujian->m_ujian->waktu);
+		$stop_ujian = Carbon::now();
+		$stop_ujian_max = Carbon::createFromFormat('Y-m-d H:i:s', $h_ujian->tgl_mulai)->addMinutes($h_ujian->m_ujian->waktu);
 		$stop_ujian = $stop_ujian->greaterThan($stop_ujian_max) ? $stop_ujian_max : $stop_ujian ;
 
 		if(!empty($h_ujian->m_ujian->terlambat)){
@@ -2499,13 +2556,11 @@ class Ujian extends MY_Controller
 			// $waktu_selesai 	= $stop_ujian > $date_end ? $date_end : $stop_ujian;
 
 			$date_end = Carbon::createFromFormat('Y-m-d H:i:s', $h_ujian->m_ujian->terlambat);
-			$waktu_selesai 	= $stop_ujian->greaterThan($date_end) ? $date_end : $stop_ujian;
+			$stop_ujian = $stop_ujian->greaterThan($date_end) ? $date_end : $stop_ujian;
 
-		}else{
-			$waktu_selesai 	= $stop_ujian ;
 		}
 
-		$h_ujian->tgl_selesai =  $waktu_selesai->toDateTimeString();
+		$h_ujian->tgl_selesai =  $stop_ujian->toDateTimeString();
 		$h_ujian->ujian_selesai    =  'Y';
 		$h_ujian->ended_by =  $ended_by;
 		$action = $h_ujian->save();
@@ -2896,17 +2951,14 @@ class Ujian extends MY_Controller
 		if(!empty($h_ujian->m_ujian->terlambat)){
 			// $date_end = date('Y-m-d H:i:s', strtotime($h_ujian->m_ujian->terlambat));
 			$date_end = Carbon::createFromFormat('Y-m-d H:i:s', $h_ujian->m_ujian->terlambat);
-		}else{
-			// $date_end = date('Y-m-d H:i:s', strtotime('+1 days'));
-			$date_end = $today->addDays(1);
-		}
 
-		// if (!(($today >= $date_start) && ($today < $date_end))) { // JIKA BUKAN MASA UJIAN
-		// 	show_404(); 
-		// }
+			// if (!(($today >= $date_start) && ($today < $date_end))) { // JIKA BUKAN MASA UJIAN
+			// 	show_404(); 
+			// }
 
-		if (!$today->between($date_start, $date_end)) { // JIKA BUKAN MASA UJIAN
-			show_404(); 
+			if (!$today->between($date_start, $date_end)) { // JIKA BUKAN MASA UJIAN
+				show_404(); 
+			}
 		}
 
 		if(!$h_ujian->m_ujian->repeatable){ // JIKA TIDAK REPEATABLE
@@ -2969,7 +3021,6 @@ class Ujian extends MY_Controller
 			$h_ujian_history->save();     
 
 			foreach($h_ujian->jawaban_ujian as $jawaban_ujian){
-
 
 				$jawaban_ujian_history = new Jawaban_ujian_history_orm();
 				$jawaban_ujian_history->ujian_id = $h_ujian_history->id;

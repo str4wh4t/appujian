@@ -1157,6 +1157,7 @@ class Soal extends MY_Controller
 	public function delete_bobot_soal($id)
 	{
 		$this->_akses_admin();
+		
 		$bobot_soal = Bobot_soal_orm::findOrFail($id);
 
 		if (empty(count($bobot_soal->soal))) {
@@ -1200,9 +1201,6 @@ class Soal extends MY_Controller
 
 	protected function _get_jml_soal_per_topik()
 	{
-		if (!$this->ion_auth->is_admin() && !$this->ion_auth->in_group('dosen')) {
-			show_error('Hanya Administrator dan dosen yang diberi hak untuk mengakses halaman ini', 403, 'Akses Terlarang');
-		}
 
 		$topik_ids = $this->input->post('topik_ids');
 		$topik_ids = json_decode($topik_ids);
@@ -1225,7 +1223,7 @@ class Soal extends MY_Controller
 		if (!empty($topik_ids)) {
 			//            $topik = Topik_orm::whereIn('id',$topik_ids)->get();
 			//            $bobot_soal = Bobot_soal_orm::whereIn('id',$topik_ids)->get();
-			$soal = Soal_orm::whereIn('topik_id', $topik_ids);
+			$soal = Soal_orm::whereIn('topik_id', $topik_ids)->where('is_reported', NO_REPORTED_SOAL);
 			if(!empty($filter)){
 				$soal->where($filter);
 			}
@@ -1249,9 +1247,6 @@ class Soal extends MY_Controller
 	}
 
 	protected function _get_matkul_from_selected_bundle(){
-		if (!$this->ion_auth->is_admin() && !$this->ion_auth->in_group('dosen')) {
-			show_error('Hanya Administrator dan dosen yang diberi hak untuk mengakses halaman ini', 403, 'Akses Terlarang');
-		}
 
 		$bundle_ids = $this->input->post('bundle_ids');
 		$bundle_ids = json_decode($bundle_ids);
@@ -1290,9 +1285,6 @@ class Soal extends MY_Controller
 	}
 
 	protected function _get_topik_from_selected_bundle(){
-		if (!$this->ion_auth->is_admin() && !$this->ion_auth->in_group('dosen')) {
-			show_error('Hanya Administrator dan dosen yang diberi hak untuk mengakses halaman ini', 403, 'Akses Terlarang');
-		}
 
 		$bundle_ids = $this->input->post('bundle_ids');
 		$bundle_ids = json_decode($bundle_ids);
@@ -1476,6 +1468,9 @@ class Soal extends MY_Controller
 
 	public function do_import()
 	{
+
+		$this->_akses_admin_dosen_dan_penyusun_soal();
+
 		$input = json_decode($this->input->post('data', true));
 		//		$data = [];
 		try {
@@ -1652,6 +1647,9 @@ class Soal extends MY_Controller
 	}
 
 	protected function _asign_soal_bundle(){
+
+		$this->_akses_admin();
+
 		$selected_bundle = $this->input->post('selected_bundle');
 		$selected_soal = $this->input->post('selected_soal');
 		$is_ignore_bundle = $this->input->post('is_ignore_bundle') == 'true' ? true : false;
@@ -1721,6 +1719,9 @@ class Soal extends MY_Controller
 	}
 
 	protected function _save_section(){
+
+		$this->_akses_admin_dosen_dan_penyusun_soal();
+
 		$keterangan = $this->input->post('keterangan');
 		$konten = $this->input->post('konten');
 
@@ -1781,6 +1782,9 @@ class Soal extends MY_Controller
 	}
 
 	protected function _select_section(){
+
+		$this->_akses_admin_dosen_dan_penyusun_soal();
+
 		$id = $this->input->post('id');
 		try{
 			$section = Section_orm::findOrFail($id);
@@ -1792,5 +1796,27 @@ class Soal extends MY_Controller
 			$this->_json(['stts' => 'ko', 'msg' => $e->getMessage()]);
 		}
 
+	}
+
+	protected function _report_soal(){
+
+		$this->_akses_admin();
+
+		$id = $this->input->post('id_soal');
+		try{
+			$soal = Soal_orm::findOrFail($id);
+			if($soal->is_reported)
+				$soal->is_reported = 0 ;
+			else
+				$soal->is_reported = 1 ;
+
+			$soal->save();
+
+			$this->_json(['stts' => 'ok', 'id_soal' => $id, 'is_reported' => $soal->is_reported]);
+
+		}catch(Exception $e){
+
+			$this->_json(['stts' => 'ko', 'msg' => $e->getMessage()]);
+		}
 	}
 }

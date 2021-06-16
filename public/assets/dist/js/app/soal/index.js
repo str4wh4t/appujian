@@ -133,19 +133,30 @@ $(document).ready(function() {
         data: "id_soal",
         render: function(data, type, row, meta) {
           return `<div class="btn-group btn-group-sm" role="group" aria-label="">
-                                <a href="${base_url}soal/detail/${data}" class="btn btn-sm btn-outline-info">
+                                <a href="${base_url}soal/detail/${data}" class="btn btn-sm btn-info">
                                     <i class="fa fa-eye"></i>
                                 </a>
-                                <a href="${base_url}soal/edit/${data}" class="btn btn-sm btn-outline-warning">
+                                <a href="${base_url}soal/edit/${data}" class="btn btn-sm btn-success">
                                     <i class="fa fa-edit"></i>
                                 </a>
+                                <button type="button" data-id="${data}" class="btn btn-sm btn-danger btn-report-soal">
+                                    <i class="ft-alert-circle"></i>
+                                </button>
                             </div>`;
         }
       }
     ],
     order: [[2, "asc"], [3, "asc"], [7, "asc"]],
-    rowId: function(a) {
-      return a;
+    rowId: function(data) {
+      return 'dt_tr_' + data.id_soal;
+    },
+    createdRow: function (row, data, dataIndex) {
+      if(data.is_reported == 1){
+        $(row).addClass('bg-warning');
+      }else{
+        $(row).removeClass('bg-warning');
+      }
+
     },
     rowCallback: function(row, data, iDisplayIndex) {
       // var info = this.fnPagingInfo();

@@ -226,7 +226,7 @@ $(document).on('click','img.featherlight-image',function(){
 												</div> --}}
 									<div class="card-content">
 										<div class="card-body">
-											<h4 class="card-title">Pertanyaan : <div class="badge badge-danger round">{{ $i }}</div> <span class="float-right">( Poin
+											<h4 class="card-title" data-id="{{ $jawaban_ujian->soal->id_soal }}">Pertanyaan : <div class="badge badge-danger round">{{ $i }}</div> <span class="float-right">( Poin
 													Soal : {{ $jawaban_ujian->soal->bobot_soal->nilai }} )</span></h4>
 											<div class="">
 												@if(!empty($jawaban_ujian->soal->section_id))

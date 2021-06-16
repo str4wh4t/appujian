@@ -452,7 +452,7 @@ $('#topik_id').on('select2:unselect', function (e) {
 
 });
 
-$(document).on('keyup','.input_jumlah_soal',function () {
+$(document).on('keyup mouseup','.input_jumlah_soal',function () {
     let  topik_id = $(this).data('topik_id');
     let  bobot_soal_id = $(this).data('bobot_soal_id');
     topik_jumlah_soal[topik_id] = topik_jumlah_soal[topik_id] ? topik_jumlah_soal[topik_id] : [] ;

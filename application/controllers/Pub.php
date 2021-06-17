@@ -1151,5 +1151,34 @@ class Pub extends MY_Controller {
 			sleep(1);
 		}
 	}
+
+	public function fix_column_in_trx_payment(){
+		$trx_payment_list = Orm\Trx_payment_orm::all();
+		try{
+			if($trx_payment_list->isNotEmpty()){
+				begin_db_trx();
+				foreach($trx_payment_list as $trx_payment){
+					$item_array = explode('-', $trx_payment->order_number);
+					$item = $item_array[1]; // RETURN P OR M
+					$id = substr($item, 1);
+					$type = substr($item, 0, 1);
+					if($type == 'M'){
+						$trx_payment->membership_id = $id;
+					}else{
+						$trx_payment->paket_id = $id;
+					}
+					echo $type . " : ";
+					echo $id . " ==> ";
+					$trx_payment->save();
+					echo 'DONE' . "\n";
+				}
+				commit_db_trx();
+			}
+		}catch(Exception $e){
+			rollback_db_trx();
+			echo "\n" . "\n" ;
+			echo $e->getMessage();
+		}
+	}
 	
 }

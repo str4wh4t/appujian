@@ -259,6 +259,24 @@ $(document).on('click','#btn_simpan_penyusun_soal',function(){
     }
 });
 
+$(document).on('click','.btn_loginas',function(){
+    let id_user = $(this).data('id');
+    let nama = $(this).data('nama');
+    Swal.fire({
+        title: "Perhatian",
+        text: "Anda akan masuk sebagai user : " + nama ,
+        icon: "warning",
+        confirmButtonText: "Masuk Sekarang",
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        showCancelButton: true,
+    }).then(result => {
+        if (result.value) {
+            window.location.href = '{{ url('auth/login_as/') }}' + id_user;
+        }
+    });
+});
+
 function init_page_level(){
     $('.icheck').iCheck({
         checkboxClass: 'icheckbox_square-red',

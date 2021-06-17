@@ -101,6 +101,9 @@ $(document).ready(function() {
                                     <button type="button" class="btn btn-sm btn-danger" onclick="hapus(${data})">
                                         <i class="fa fa-trash"></i>
                                     </button>
+                                    <button type="button" class="btn btn-sm btn-success btn_loginas" data-nama="${row.full_name}" data-id="${data}">
+                                        <i class="ft-unlock"></i>
+                                    </button>
                                 </div>`;
                     }
                 }

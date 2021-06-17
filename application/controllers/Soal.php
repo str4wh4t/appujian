@@ -232,6 +232,7 @@ class Soal extends MY_Controller
 		$data['smt'] = $this->input->get('smt') == 'null' ? null : $this->input->get('smt');
 		$data['tahun'] = $this->input->get('tahun') == 'null' ? null : $this->input->get('tahun');
 		$data['bundle'] = $this->input->get('bundle') == 'null' ? null : $this->input->get('bundle');
+		$data['is_reported'] = $this->input->get('is_reported') == '1' ? 1 : 0; // DI TERNARY BUAT FILTER SAJA
 
 		$username = null;
 		if ($this->ion_auth->in_group('dosen')) {
@@ -1157,7 +1158,7 @@ class Soal extends MY_Controller
 	public function delete_bobot_soal($id)
 	{
 		$this->_akses_admin();
-		
+
 		$bobot_soal = Bobot_soal_orm::findOrFail($id);
 
 		if (empty(count($bobot_soal->soal))) {

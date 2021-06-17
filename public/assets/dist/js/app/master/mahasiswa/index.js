@@ -265,12 +265,12 @@ function bulk_delete() {
     $("#bulk").attr("action", base_url + "mahasiswa/ajax/delete");
     Swal.fire({
       title: "Anda yakin?",
-      text: "Data akan dihapus!",
+      text: "Semua data terkait pada peserta tsb akan dihapus!",
       icon: "warning",
       showCancelButton: true,
       confirmButtonColor: "#3085d6",
       cancelButtonColor: "#d33",
-      confirmButtonText: "Hapus!"
+      confirmButtonText: "Hapus"
     }).then(result => {
       if (result.value) {
         $("#bulk").submit();

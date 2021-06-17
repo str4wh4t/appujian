@@ -387,6 +387,7 @@ $(document).on('click', '#btn_close_alert_paket', function(){
 
 
 <!---- --->
+@if(is_admin() || in_group(DOSEN_GROUP_ID))
 <div class="row pb-3">
     <div class="col-lg-12 pb-1">
         <div class="row">
@@ -431,6 +432,7 @@ $(document).on('click', '#btn_close_alert_paket', function(){
         </div>
     </div>
 </div>
+@endif
 
 <div class="row">
     <div class="col-md-12">

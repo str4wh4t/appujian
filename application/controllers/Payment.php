@@ -546,13 +546,14 @@ class Payment extends MY_Controller
             //     ]
             // ]);
 
-
             // $credentials = base64_encode(MIDTRANS_SERVER_KEY . ':');
             // $res = $client->get(MIDTRANS_API_URL . $order_number . '/status', [
             //     'Authorization' => ['Basic '.$credentials]
             // ]);
 
             $notif = $res->getBody()->getContents();
+
+            // vdebug($notif);
 
             $va_number = null ;
             $bank = 'lainnya' ;
@@ -591,8 +592,6 @@ class Payment extends MY_Controller
             $transaction_time = $notif->transaction_time;
 
         }
-
-
 
 		// if(isset($notif->permata_va_number)){
 		// 	$bank = 'permata';

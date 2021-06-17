@@ -16,7 +16,7 @@ use Orm\Users_temp_orm;
 use Carbon\Carbon;
 use GuzzleHttp\Client;
 
-class Auth extends CI_Controller
+class Auth extends MY_Controller
 {
 	public $data = [];
 
@@ -110,9 +110,11 @@ class Auth extends CI_Controller
 				$user = $this->ion_auth->user()->row();
 				$login_as = $this->ion_auth->get_users_groups($user->id)->result()[0];
 
-				if(APP_UDID && ($login_as->name == 'mahasiswa')){
-					// JIKA LOGIN SBG MHS atau APP_UDID = true 
-					redirect('/logout', 'refresh');
+				if(APP_UDID){
+					if ($login_as->name == 'mahasiswa'){
+						// JIKA LOGIN SBG MHS atau APP_UDID = true 
+						redirect('/logout', 'refresh');
+					}
 				}
 
 //				if(!$user->is_online){
@@ -243,35 +245,42 @@ class Auth extends CI_Controller
 
 		}
 
+		$this->_setup_user_login($user);
+		
+	}
+
+	public function login_as($id_user){
+
+		$this->_akses_admin_dan_koord_pengawas();
+
+		$user = Users_orm::findOrFail($id_user);
+		
+		$this->_setup_user_login($user);
+		
+	}
+
+	private function _setup_user_login($user){
+
 		$this->ion_auth->set_session($user);
 		$login_as = $this->ion_auth->get_users_groups($user->id)->result()[0];
 
-		if(!APP_UDID || ($login_as->name != 'mahasiswa')){
-			// JIKA LOGIN SBG NON MHS atau APP_UDID = true 
-			redirect('/logout', 'refresh');
-		}
-
-//		if(!$user->is_online){
-			$session_data = [
-					'username'          => $user->username,
-					'nama_lengkap'      => $user->full_name,
-					'user'              => $user,
-					'login_at'          => date('Y-m-d H:i:s'),
-					'login_as'          => $login_as,
-				];
-			
-			$this->session->set_userdata('session_data',$session_data);
-			$message_rootpage = [
-				'header' => 'Welcome',
-				'content' => 'Login berhasil.',
-				'type' => 'success'
+		$session_data = [
+				'username'          => $user->username,
+				'nama_lengkap'      => $user->full_name,
+				'user'              => $user,
+				'login_at'          => date('Y-m-d H:i:s'),
+				'login_as'          => $login_as,
 			];
-			$this->session->set_flashdata('message_rootpage', $message_rootpage);
-			redirect('/dashboard', 'refresh');
-//		}else{
-//			redirect('not_valid_login', 'refresh');
-//		}
 		
+		$this->session->set_userdata('session_data',$session_data);
+		$message_rootpage = [
+			'header' => 'Welcome',
+			'content' => 'Login berhasil.',
+			'type' => 'success'
+		];
+		$this->session->set_flashdata('message_rootpage', $message_rootpage);
+		redirect('/dashboard', 'refresh');
+
 	}
 
 

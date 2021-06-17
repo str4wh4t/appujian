@@ -38,6 +38,7 @@ let filter = {
 	smt: null,
 	tahun: null,
 	bundle: null,
+	is_reported: 0,
 };
 
 function init_page_level(){
@@ -128,7 +129,7 @@ $(document).on('change','#tahun_filter', function(){
 
 function filter_soal(){
 	let src = '{{ url('soal/ajax/data') }}';
-	let url = src + '?matkul_id=' + filter.matkul_id + '&topik_id=' + filter.topik_id + '&gel=' + filter.gel + '&smt=' + filter.smt + '&tahun=' + filter.tahun  + '&bundle=' + filter.bundle ;
+	let url = src + '?matkul_id=' + filter.matkul_id + '&topik_id=' + filter.topik_id + '&gel=' + filter.gel + '&smt=' + filter.smt + '&tahun=' + filter.tahun + '&is_reported=' + filter.is_reported  + '&bundle=' + filter.bundle ;
 	table.ajax.url(url);
 	reload_ajax();
 }
@@ -323,6 +324,20 @@ $(document).on('click', '.btn-report-soal', function(){
 
 });
 
+$(document).on('click', '#btn_is_reported_soal', function(){
+
+	if(filter.is_reported){
+		filter.is_reported = 0;
+		$(this).addClass('btn-warning').removeClass('btn-danger');
+	}
+	else{
+		filter.is_reported = 1;
+		$(this).addClass('btn-danger').removeClass('btn-warning');
+	}
+	filter_soal();
+
+});
+
 </script>
 <script src="{{ asset('assets/dist/js/app/soal/index.js') }}"></script>
 <!-- END PAGE LEVEL JS-->
@@ -360,6 +375,7 @@ $(document).on('click', '.btn-report-soal', function(){
 				@if(is_admin())
 				<button class="btn btn-sm btn-flat btn-success" id="btn_create_bundle"><i class="ft-link"></i> Jadikan Bundle</button>
 				@endif
+				<button class="btn btn-sm btn-flat btn-warning" id="btn_is_reported_soal"><i class="ft-alert-circle"></i> Reported Soal</button>
 				<button type="button" onclick="reload_ajax()" class="btn btn-flat btn-sm btn-outline-secondary"><i class="fa fa-refresh"></i> Reload</button>
 			</div>
 			<div class="col-lg-4 col-sm-12">

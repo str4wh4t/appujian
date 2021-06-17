@@ -318,7 +318,7 @@ class Ujian extends MY_Controller
 
 							/**[START] TEST JUMLAH SOAL SESUAI ATAU TIDAK */
 
-							$soal = Soal_orm::where(['topik_id' => $topik_id, 'bobot_soal_id' => $bobot_soal_id, 'is_reported' => NO_REPORTED_SOAL]);
+							$soal = Soal_orm::where(['topik_id' => $topik_id, 'bobot_soal_id' => $bobot_soal_id, 'is_reported' => NON_REPORTED_SOAL]);
 							if (!empty($filter)) {
 								$soal->where($filter);
 							}
@@ -342,7 +342,7 @@ class Ujian extends MY_Controller
 
 				$soal       = Soal_orm::whereHas('bundle_soal', function (Builder $query) use($bundle_ids) {
 					$query->whereIn('bundle_id', $bundle_ids);
-				})->where('is_reported', NO_REPORTED_SOAL);
+				})->where('is_reported', NON_REPORTED_SOAL);
 
 				$jumlah_soal_total = $soal->count();
 
@@ -358,7 +358,7 @@ class Ujian extends MY_Controller
 
 							/**[START] TEST JUMLAH SOAL SESUAI ATAU TIDAK */
 
-							$soal = Soal_orm::where(['topik_id' => $topik_id, 'bobot_soal_id' => $bobot_soal_id, 'is_reported' => NO_REPORTED_SOAL])
+							$soal = Soal_orm::where(['topik_id' => $topik_id, 'bobot_soal_id' => $bobot_soal_id, 'is_reported' => NON_REPORTED_SOAL])
 												->whereHas('bundle_soal', function (Builder $query) use($bundle_ids) {
 													$query->whereIn('bundle_id', $bundle_ids);
 												});
@@ -1760,7 +1760,7 @@ class Ujian extends MY_Controller
 				$jumlah_soal_diset = $topik_ujian->jumlah_soal;
 				$soal_avail = Soal_orm::where('topik_id', $topik_ujian->topik_id)
 										->where('bobot_soal_id', $topik_ujian->bobot_soal_id)
-										->where('is_reported', NO_REPORTED_SOAL);
+										->where('is_reported', NON_REPORTED_SOAL);
 
 				if($ujian->sumber_ujian == 'bundle'){
 					$bundle_ids = $ujian->bundle()->pluck('bundle.id')->toArray();

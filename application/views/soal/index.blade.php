@@ -38,12 +38,15 @@ let filter = {
 	smt: null,
 	tahun: null,
 	bundle: null,
-	is_reported: 0,
+	is_reported: null,
 };
 
 function init_page_level(){
 
 	$('.select2').select2();
+
+	$('.select2-container--default:first .select2-selection--single').css('background-color', '#ffc');
+
 	$('#bundle').select2({
 		placeholder: "Pilih bundle soal"
 	});
@@ -124,6 +127,13 @@ $(document).on('change','#smt_filter', function(){
 $(document).on('change','#tahun_filter', function(){
 	let tahun = $(this).val();
 	filter.tahun = tahun;
+	filter_soal();
+});
+
+
+$(document).on('change', '#is_reported_filter', function(){
+	let is_reported = $(this).val();
+	filter.is_reported = is_reported;
 	filter_soal();
 });
 
@@ -324,20 +334,6 @@ $(document).on('click', '.btn-report-soal', function(){
 
 });
 
-$(document).on('click', '#btn_is_reported_soal', function(){
-
-	if(filter.is_reported){
-		filter.is_reported = 0;
-		$(this).addClass('btn-warning').removeClass('btn-danger');
-	}
-	else{
-		filter.is_reported = 1;
-		$(this).addClass('btn-danger').removeClass('btn-warning');
-	}
-	filter_soal();
-
-});
-
 </script>
 <script src="{{ asset('assets/dist/js/app/soal/index.js') }}"></script>
 <!-- END PAGE LEVEL JS-->
@@ -375,7 +371,6 @@ $(document).on('click', '#btn_is_reported_soal', function(){
 				@if(is_admin())
 				<button class="btn btn-sm btn-flat btn-success" id="btn_create_bundle"><i class="ft-link"></i> Jadikan Bundle</button>
 				@endif
-				<button class="btn btn-sm btn-flat btn-warning" id="btn_is_reported_soal"><i class="ft-alert-circle"></i> Reported Soal</button>
 				<button type="button" onclick="reload_ajax()" class="btn btn-flat btn-sm btn-outline-secondary"><i class="fa fa-refresh"></i> Reload</button>
 			</div>
 			<div class="col-lg-4 col-sm-12">
@@ -397,7 +392,14 @@ $(document).on('click', '#btn_is_reported_soal', function(){
 				<div class="row">
 					<div class="col-sm-12">
 						<div class="row">
-							<div class="col-lg-3 col-sm-12">
+							<div class="col-lg-2 col-sm-12">
+								<select id="is_reported_filter" class="form-control select2" style="">
+									<option value="null">Semua Soal</option>
+									<option value="{{ REPORTED_SOAL }}">Reported</option>
+									<option value="{{ NON_REPORTED_SOAL }}">Non Reported</option>
+								</select>
+							</div>
+							<div class="col-lg-2 col-sm-12">
 								<select id="matkul_filter" class="form-control select2" style="">
 									<option value="null">Semua Matkul</option>
 									<?php foreach ($matkul as $m) :?>
@@ -405,7 +407,7 @@ $(document).on('click', '#btn_is_reported_soal', function(){
 									<?php endforeach; ?>
 								</select>
 							</div>
-							<div class="col-lg-3 col-sm-12">
+							<div class="col-lg-2 col-sm-12">
 								<select id="topik_filter" class="form-control select2" style="">
 									<option value="null">Semua Topik</option>
 									<?php foreach ($topik as $t) :?>

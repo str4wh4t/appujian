@@ -318,8 +318,8 @@ function go_ujian(token){
                             @if($matkul->id_matkul == $topik->matkul_id)
                             <dl class="row">
                                 <dt class="col-sm-6">{{ $i }}. {{ $topik->nama_topik }}</dt>
-                                @if ($ujian->is_sekuen_topik)
                                 <dd class="col-sm-3 text-success">{{ $topik_ujian_jml_soal[$topik_id] }} Soal</dd>
+                                @if ($ujian->is_sekuen_topik)
                                 <dd class="col-sm-3">{{ $val['waktu'] }} Menit</dd>
                                 @endif
                             </dl>

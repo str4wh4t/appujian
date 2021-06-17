@@ -232,7 +232,7 @@ class Soal extends MY_Controller
 		$data['smt'] = $this->input->get('smt') == 'null' ? null : $this->input->get('smt');
 		$data['tahun'] = $this->input->get('tahun') == 'null' ? null : $this->input->get('tahun');
 		$data['bundle'] = $this->input->get('bundle') == 'null' ? null : $this->input->get('bundle');
-		$data['is_reported'] = $this->input->get('is_reported') == '1' ? 1 : 0; // DI TERNARY BUAT FILTER SAJA
+		$data['is_reported'] = $this->input->get('is_reported') == 'null' ? null : $this->input->get('is_reported');
 
 		$username = null;
 		if ($this->ion_auth->in_group('dosen')) {
@@ -1224,7 +1224,7 @@ class Soal extends MY_Controller
 		if (!empty($topik_ids)) {
 			//            $topik = Topik_orm::whereIn('id',$topik_ids)->get();
 			//            $bobot_soal = Bobot_soal_orm::whereIn('id',$topik_ids)->get();
-			$soal = Soal_orm::whereIn('topik_id', $topik_ids)->where('is_reported', NO_REPORTED_SOAL);
+			$soal = Soal_orm::whereIn('topik_id', $topik_ids)->where('is_reported', NON_REPORTED_SOAL);
 			if(!empty($filter)){
 				$soal->where($filter);
 			}

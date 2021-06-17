@@ -50,7 +50,7 @@ class Soal_model extends CI_Model {
             if(!empty($data_filter['tahun'])){
                 $this->db->where('a.tahun', $data_filter['tahun']);
             }
-            if(!empty($data_filter['is_reported'])){
+            if($data_filter['is_reported'] !== null){
                 $this->db->where('a.is_reported', $data_filter['is_reported']);
             }
             if(!empty($data_filter['bundle'])){

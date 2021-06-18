@@ -1308,7 +1308,8 @@ class Ujian extends MY_Controller
 			function (Builder $query){
 				$query->where('status_ujian', 1);
 			}
-		)->get();
+		)->get()
+		->sortByDesc('m_ujian.tgl_mulai');
 
 		$data['mhs_ujian_all'] = $mhs_ujian_all;
 
@@ -1374,7 +1375,8 @@ class Ujian extends MY_Controller
 				$query->where('status_ujian', 1);
 				$query->where('repeatable', 1); // LATIHAN SOAL JIKA UJIAN IS REPEATABLE
 			}
-		)->get();
+		)->get()
+		->sortByDesc('m_ujian.tgl_mulai');
 
 		$data['mhs_ujian_all'] = $mhs_ujian_all;
 
@@ -1440,7 +1442,8 @@ class Ujian extends MY_Controller
 				$query->where('status_ujian', 1);
 				$query->where('repeatable', 0); // TRYOUT SOAL JIKA UJIAN IS NOT REPEATABLE
 			}
-		)->get();
+		)->get()
+		->sortByDesc('m_ujian.tgl_mulai');
 
 		$data['mhs_ujian_all'] = $mhs_ujian_all;
 

@@ -177,7 +177,7 @@
                                             <div class="row">
                                                 @if ($is_show_tutorial)
                                                 <div class="col-md-4 col-sm-12">
-                                                    <div class="card box-shadow-0 border-success" style="background-color: #ffffcc;">
+                                                    <div class="card box-shadow-0 border-success" style="background-color: #ffc;">
                                                         <div class="card-header " style="min-height: 85px;">
                                                             <h6><b>TUTORIAL UJIAN</b></h6>
                                                             <small class="text-danger"><b>***</b> Latihan contoh ujian dan cara menjawab nya.</small>
@@ -215,8 +215,30 @@
                                                 </div>
                                                 @endif
                                                 @forelse ($mhs_ujian_all as $mhs_ujian)
+
+                                                @php
+                                                    $today = date('Y-m-d H:i:s');
+                                                    $date_start = date('Y-m-d H:i:s', strtotime($mhs_ujian->m_ujian->tgl_mulai));
+                                                    $status_ujian = 'active';
+                                                    if(!empty($mhs_ujian->m_ujian->terlambat)){
+                                                        $date_end = date('Y-m-d H:i:s', strtotime($mhs_ujian->m_ujian->terlambat));
+                                                        
+                                                    }else{
+                                                        $date_end = date('Y-m-d H:i:s', strtotime('+1 days'));
+                                                    }
+
+                                                    if (($today >= $date_start) && ($today <= $date_end)){
+                                                        // $status_ujian = 'active';
+                                                    }else{
+                                                        if($today < $date_start)
+                                                            $status_ujian = 'upcoming';
+                                                        else
+                                                            $status_ujian = 'expired';
+                                                    }
+                                                @endphp
+
                                                 <div class="col-md-4 col-sm-12">
-                                                    <div class="card box-shadow-0 border-primary">
+                                                    <div class="card box-shadow-0 border-primary" style="background-color: {{ (($status_ujian == 'active')||($status_ujian == 'upcoming')) ? '#fff' : '#ffcacf' }};">
                                                         {{-- <div class="card-header"></div> --}}
                                                         <div class="card-header " style="min-height: 85px;">
                                                             <h6><b>{{ $mhs_ujian->m_ujian->nama_ujian }}</b></h6>
@@ -246,27 +268,6 @@
                                                             </div>
                                                             <div class="card-footer border-top-blue-grey border-top-lighten-5 text-muted">
                                                                 
-                                                                @php
-                                                                    $today = date('Y-m-d H:i:s');
-                                                                    $date_start = date('Y-m-d H:i:s', strtotime($mhs_ujian->m_ujian->tgl_mulai));
-                                                                    $status_ujian = 'active';
-                                                                    if(!empty($mhs_ujian->m_ujian->terlambat)){
-                                                                        $date_end = date('Y-m-d H:i:s', strtotime($mhs_ujian->m_ujian->terlambat));
-                                                                        
-                                                                    }else{
-                                                                        $date_end = date('Y-m-d H:i:s', strtotime('+1 days'));
-                                                                    }
-
-                                                                    if (($today >= $date_start) && ($today <= $date_end)){
-                                                                        // $status_ujian = 'active';
-                                                                    }else{
-                                                                        if($today < $date_start)
-                                                                            $status_ujian = 'upcoming';
-                                                                        else
-                                                                            $status_ujian = 'expired';
-                                                                    }
-                                                                @endphp
-
                                                                 @if(empty($mhs_ujian->h_ujian))
 
                                                                     @if (($status_ujian == 'active')||($status_ujian == 'upcoming'))

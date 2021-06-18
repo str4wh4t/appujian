@@ -297,19 +297,19 @@ function simpan_view() {
         if (jawab != undefined) {
             if (ragu == "Y") {
                 if (jawab == "-") {
-                    hasil_jawaban += '<button type="button" id="btn_soal_' + (i) + '" class="class_topik_id_' + topik_id + ' btn btn-outline-primary btn_soal" style="padding: 10px; font-size:10px; margin-right:10px; margin-bottom: 10px; border-radius: 0; border-color: #967adc !important" onclick="return buka(' + (i) + ');">' + (label_soal) + "</button>";
+                    hasil_jawaban += '<button type="button" id="btn_soal_' + (i) + '" class="class_topik_id_' + topik_id + ' btn btn-outline-primary btn_soal" style="padding: 5px; font-size:10px; margin-right:5px; margin-bottom: 8px; border-radius: 0; border-color: #967adc !important" onclick="return buka(' + (i) + ');">' + (label_soal) + "</button>";
                 } else {
-                    hasil_jawaban += '<button type="button" id="btn_soal_' + (i) + '" class="class_topik_id_' + topik_id + ' btn btn-warning btn_soal" style="padding: 10px; font-size:10px; margin-right:10px; margin-bottom: 10px; border-radius: 0; border-color: #967adc !important" onclick="return buka(' + (i) + ');">' + (label_soal) + "</button>";
+                    hasil_jawaban += '<button type="button" id="btn_soal_' + (i) + '" class="class_topik_id_' + topik_id + ' btn btn-warning btn_soal" style="padding: 5px; font-size:10px; margin-right:5px; margin-bottom: 8px; border-radius: 0; border-color: #967adc !important" onclick="return buka(' + (i) + ');">' + (label_soal) + "</button>";
                 }
             } else {
                 if (jawab == "-") {
-                    hasil_jawaban += '<button type="button" id="btn_soal_' + (i) + '" class="class_topik_id_' + topik_id + ' btn btn-outline-primary btn_soal" style="padding: 10px; font-size:10px; margin-right:10px; margin-bottom: 10px; border-radius: 0; border-color: #967adc !important" onclick="return buka(' + (i) + ');">' + (label_soal) + "</button>";
+                    hasil_jawaban += '<button type="button" id="btn_soal_' + (i) + '" class="class_topik_id_' + topik_id + ' btn btn-outline-primary btn_soal" style="padding: 5px; font-size:10px; margin-right:5px; margin-bottom: 8px; border-radius: 0; border-color: #967adc !important" onclick="return buka(' + (i) + ');">' + (label_soal) + "</button>";
                 } else {
-                    hasil_jawaban += '<button type="button" id="btn_soal_' + (i) + '" class="class_topik_id_' + topik_id + ' btn btn-success btn_soal" style="padding: 10px; font-size:10px; margin-right:10px; margin-bottom: 10px; border-radius: 0; border-color: #967adc !important" onclick="return buka(' + (i) + ');">' + (label_soal) + "</button>";
+                    hasil_jawaban += '<button type="button" id="btn_soal_' + (i) + '" class="class_topik_id_' + topik_id + ' btn btn-success btn_soal" style="padding: 5px; font-size:10px; margin-right:5px; margin-bottom: 8px; border-radius: 0; border-color: #967adc !important" onclick="return buka(' + (i) + ');">' + (label_soal) + "</button>";
                 }
             }
         } else {
-            hasil_jawaban += '<button type="button" id="btn_soal_' + (i) + '" class="class_topik_id_' + topik_id + ' btn btn-outline-primary btn_soal" style="padding: 10px; font-size:10px; margin-right:10px; margin-bottom: 10px; border-radius: 0; border-color: #967adc !important" onclick="return buka(' + (i) + ');">' + (label_soal) + "</button>";
+            hasil_jawaban += '<button type="button" id="btn_soal_' + (i) + '" class="class_topik_id_' + topik_id + ' btn btn-outline-primary btn_soal" style="padding: 5px; font-size:10px; margin-right:5px; margin-bottom: 8px; border-radius: 0; border-color: #967adc !important" onclick="return buka(' + (i) + ');">' + (label_soal) + "</button>";
         }
 
         if(label_soal == topik[topik_id]){

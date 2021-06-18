@@ -58,12 +58,16 @@ class Payment_model extends CI_Model {
 
 					$keterangan = '';
 					if(substr($info[1], 0, 1) == 'M'){
-						$keterangan = 'Pembelian membership ' . strtoupper(get_membership_text(substr($info[1], 1))) ;
+                        $membership_id = substr($info[1], 1);
+						$keterangan = 'Pembelian membership ' . strtoupper(get_membership_text($membership_id)) ;
+                        $trx_payment->membership_id =  $membership_id;
 					}
 
 					if(substr($info[1], 0, 1) == 'P'){
-						$paket = Paket_orm::findOrFail(substr($info[1], 1));
+                        $paket_id = substr($info[1], 1);
+						$paket = Paket_orm::findOrFail($paket_id);
 						$keterangan = 'Pembelian paket ' . strtoupper($paket->name) ;
+                        $trx_payment->paket_id =  $paket_id;
 					}
 
 					$trx_payment->keterangan = $keterangan;

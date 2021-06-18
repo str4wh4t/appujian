@@ -73,9 +73,10 @@
 
     .funkyradio input[type="radio"]:checked~label,
     .funkyradio input[type="checkbox"]:checked~label {
-        color: #fff;
-        background: #86C186;
-        font-weight: bold;
+        /* color: #fff; */
+        /* background: #86C186; */
+        /* font-weight: bold; */
+        border-color: #86C186;
     }
 
     .funkyradio input[type="radio"]:checked~label:before,
@@ -132,6 +133,10 @@
         margin-left: -36px;
         /*margin-top: 9px;*/
         position: absolute;
+    }
+
+    .funkyradio-success .huruf_opsi{
+        color: #fff;
     }
 
     .pertanyaan {
@@ -541,19 +546,19 @@ function simpan_view() {
         if (jawab != undefined) {
             if (ragu == "Y") {
                 if (jawab == "-") {
-                    hasil_jawaban += '<button type="button" id="btn_soal_' + (i) + '" class="class_topik_id_' + topik_id + ' btn btn-outline-primary btn_soal" style="padding: 10px; font-size:10px; margin-right:10px; margin-bottom: 10px; border-radius: 0; border-color: #967adc !important" onclick="return buka(' + (i) + ');">' + (i) + "</button>";
+                    hasil_jawaban += '<button type="button" id="btn_soal_' + (i) + '" class="class_topik_id_' + topik_id + ' btn btn-outline-primary btn_soal" style="padding: 5px; font-size:10px; margin-right: 5px; margin-bottom: 8px; border-radius: 0; border-color: #967adc !important" onclick="return buka(' + (i) + ');">' + (i) + "</button>";
                 } else {
-                    hasil_jawaban += '<button type="button" id="btn_soal_' + (i) + '" class="class_topik_id_' + topik_id + ' btn btn-warning btn_soal" style="padding: 10px; font-size:10px; margin-right:10px; margin-bottom: 10px; border-radius: 0; border-color: #967adc !important" onclick="return buka(' + (i) + ');">' + (i) + "</button>";
+                    hasil_jawaban += '<button type="button" id="btn_soal_' + (i) + '" class="class_topik_id_' + topik_id + ' btn btn-warning btn_soal" style="padding: 5px; font-size:10px; margin-right: 5px; margin-bottom: 8px; border-radius: 0; border-color: #967adc !important" onclick="return buka(' + (i) + ');">' + (i) + "</button>";
                 }
             } else {
                 if (jawab == "-") {
-                    hasil_jawaban += '<button type="button" id="btn_soal_' + (i) + '" class="class_topik_id_' + topik_id + ' btn btn-outline-primary btn_soal" style="padding: 10px; font-size:10px; margin-right:10px; margin-bottom: 10px; border-radius: 0; border-color: #967adc !important" onclick="return buka(' + (i) + ');">' + (i) + "</button>";
+                    hasil_jawaban += '<button type="button" id="btn_soal_' + (i) + '" class="class_topik_id_' + topik_id + ' btn btn-outline-primary btn_soal" style="padding: 5px; font-size:10px; margin-right: 5px; margin-bottom: 8px; border-radius: 0; border-color: #967adc !important" onclick="return buka(' + (i) + ');">' + (i) + "</button>";
                 } else {
-                    hasil_jawaban += '<button type="button" id="btn_soal_' + (i) + '" class="class_topik_id_' + topik_id + ' btn btn-success btn_soal" style="padding: 10px; font-size:10px; margin-right:10px; margin-bottom: 10px; border-radius: 0; border-color: #967adc !important" onclick="return buka(' + (i) + ');">' + (i) + "</button>";
+                    hasil_jawaban += '<button type="button" id="btn_soal_' + (i) + '" class="class_topik_id_' + topik_id + ' btn btn-success btn_soal" style="padding: 5px; font-size:10px; margin-right: 5px; margin-bottom: 8px; border-radius: 0; border-color: #967adc !important" onclick="return buka(' + (i) + ');">' + (i) + "</button>";
                 }
             }
         } else {
-            hasil_jawaban += '<button type="button" id="btn_soal_' + (i) + '" class="class_topik_id_' + topik_id + ' btn btn-outline-primary btn_soal" style="padding: 10px; font-size:10px; margin-right:10px; margin-bottom: 10px; border-radius: 0; border-color: #967adc !important" onclick="return buka(' + (i) + ');">' + (i) + "</button>";
+            hasil_jawaban += '<button type="button" id="btn_soal_' + (i) + '" class="class_topik_id_' + topik_id + ' btn btn-outline-primary btn_soal" style="padding: 5px; font-size:10px; margin-right: 5px; margin-bottom: 8px; border-radius: 0; border-color: #967adc !important" onclick="return buka(' + (i) + ');">' + (i) + "</button>";
         }
 
     }

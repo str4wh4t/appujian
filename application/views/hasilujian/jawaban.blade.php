@@ -106,6 +106,17 @@ $(document).on('click','img.featherlight-image',function(){
 <!-- END PAGE LEVEL JS-->
 @endpush
 
+@push('page_custom_css')
+<style type="text/css">
+.border-gray {
+    border-color: #ccc;
+}
+.text-gray {
+    border-color: #ccc;
+}
+</style>
+@endpush
+
 @section('content')
 <section class="row">
 	<div class="col-12">
@@ -239,39 +250,39 @@ $(document).on('click','img.featherlight-image',function(){
 												@endif
 												{!! $jawaban_ujian->soal->soal !!}
 											</div>
+											<?php $text_color = ('A' == $jawaban_ujian->jawaban) ? 'success' : (('A' == $jawaban_ujian->soal->jawaban) ? 'danger' : 'grey');  ?>
 											<div
-												class="alert alert-light border-success {{ ('A' == $jawaban_ujian->jawaban) ? (($jawaban_ujian->jawaban == $jawaban_ujian->soal->jawaban) ? 'bg-success' : 'bg-danger') :  (('A' == $jawaban_ujian->soal->jawaban) ? 'bg-success' : '') }}">
-												<?php $text_color = ('A' == $jawaban_ujian->jawaban) ? 'white' : (('A' == $jawaban_ujian->soal->jawaban) ? 'white' : 'success');  ?>
+												class="alert alert-light text-{{ $text_color }} {{ ('A' == $jawaban_ujian->jawaban) ? 'border-success border-2' : (('A' == $jawaban_ujian->soal->jawaban) ? 'border-danger border-2' : 'border-grey')}}">
 												<span style="font-size: 1.5rem"
-													class="float-left mr-1 text-{{ $text_color }}">A. </span>{!!
+													class="float-left mr-1">A. </span>{!!
 												$jawaban_ujian->soal->opsi_a !!}
 											</div>
+											<?php $text_color = ('B' == $jawaban_ujian->jawaban) ? 'success' : (('B' == $jawaban_ujian->soal->jawaban) ? 'danger' : 'grey');  ?>
 											<div
-												class="alert alert-light border-success {{ ('B' == $jawaban_ujian->jawaban) ? (($jawaban_ujian->jawaban == $jawaban_ujian->soal->jawaban) ? 'bg-success' : 'bg-danger') :  (('B' == $jawaban_ujian->soal->jawaban) ? 'bg-success' : '') }}">
-												<?php $text_color = ('B' == $jawaban_ujian->jawaban) ? 'white' : (('B' == $jawaban_ujian->soal->jawaban) ? 'white' : 'success');  ?>
+												class="alert alert-light text-{{ $text_color }} {{ ('B' == $jawaban_ujian->jawaban) ? 'border-success border-2' : (('B' == $jawaban_ujian->soal->jawaban) ? 'border-danger border-2' : 'border-grey')}}">
 												<span style="font-size: 1.5rem"
-													class="float-left mr-1 text-{{ $text_color }}">B. </span>{!!
+													class="float-left mr-1">B. </span>{!!
 												$jawaban_ujian->soal->opsi_b !!}
 											</div>
+											<?php $text_color = ('C' == $jawaban_ujian->jawaban) ? 'success' : (('C' == $jawaban_ujian->soal->jawaban) ? 'danger' : 'grey');  ?>
 											<div
-												class="alert alert-light border-success {{ ('C' == $jawaban_ujian->jawaban) ? (($jawaban_ujian->jawaban == $jawaban_ujian->soal->jawaban) ? 'bg-success' : 'bg-danger') :  (('C' == $jawaban_ujian->soal->jawaban) ? 'bg-success' : '') }}">
-												<?php $text_color = ('C' == $jawaban_ujian->jawaban) ? 'white' : (('C' == $jawaban_ujian->soal->jawaban) ? 'white' : 'success');  ?>
+												class="alert alert-light text-{{ $text_color }} {{ ('C' == $jawaban_ujian->jawaban) ? 'border-success border-2' : (('C' == $jawaban_ujian->soal->jawaban) ? 'border-danger border-2' : 'border-grey')}}">
 												<span style="font-size: 1.5rem"
-													class="float-left mr-1 text-{{ $text_color }}">C. </span>{!!
+													class="float-left mr-1 ">C. </span>{!!
 												$jawaban_ujian->soal->opsi_c !!}
 											</div>
+											<?php $text_color = ('D' == $jawaban_ujian->jawaban) ? 'success' : (('D' == $jawaban_ujian->soal->jawaban) ? 'danger' : 'grey');  ?>
 											<div
-												class="alert alert-light border-success {{ ('D' == $jawaban_ujian->jawaban) ? (($jawaban_ujian->jawaban == $jawaban_ujian->soal->jawaban) ? 'bg-success' : 'bg-danger') :  (('D' == $jawaban_ujian->soal->jawaban) ? 'bg-success' : '') }}">
-												<?php $text_color = ('D' == $jawaban_ujian->jawaban) ? 'white' : (('D' == $jawaban_ujian->soal->jawaban) ? 'white' : 'success');  ?>
+												class="alert alert-light text-{{ $text_color }} {{ ('D' == $jawaban_ujian->jawaban) ? 'border-success border-2' : (('D' == $jawaban_ujian->soal->jawaban) ? 'border-danger border-2' : 'border-grey')}}">
 												<span style="font-size: 1.5rem"
 													class="float-left mr-1 text-{{ $text_color }}">D. </span>{!!
 												$jawaban_ujian->soal->opsi_d !!}
 											</div>
+											<?php $text_color = ('E' == $jawaban_ujian->jawaban) ? 'success' : (('E' == $jawaban_ujian->soal->jawaban) ? 'danger' : 'grey');  ?>
 											<div
-												class="alert alert-light border-success {{ ('E' == $jawaban_ujian->jawaban) ? (($jawaban_ujian->jawaban == $jawaban_ujian->soal->jawaban) ? 'bg-success' : 'bg-danger') :  (('E' == $jawaban_ujian->soal->jawaban) ? 'bg-success' : '') }}">
-												<?php $text_color = ('E' == $jawaban_ujian->jawaban) ? 'white' : (('E' == $jawaban_ujian->soal->jawaban) ? 'white' : 'success');  ?>
+												class="alert alert-light text-{{ $text_color }} {{ ('E' == $jawaban_ujian->jawaban) ? 'border-success border-2' : (('E' == $jawaban_ujian->soal->jawaban) ? 'border-danger border-2' : 'border-grey')}}">
 												<span style="font-size: 1.5rem"
-													class="float-left mr-1 text-{{ $text_color }}">E. </span>{!!
+													class="float-left mr-1">E. </span>{!!
 												$jawaban_ujian->soal->opsi_e !!}
 											</div>
 										</div>

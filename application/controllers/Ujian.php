@@ -1272,39 +1272,46 @@ class Ujian extends MY_Controller
 
 		$user = $this->ion_auth->user()->row();
 		$mhs_orm = Mhs_orm::where('nim', $user->username)->firstOrFail();
-		// $mhs_matkul = Mhs_matkul_orm::where(['mahasiswa_id' => $mhs_orm->id_mahasiswa])->get();
-		$mhs_ujian_aktif = Mhs_ujian_orm::where('mahasiswa_id', $mhs_orm->id_mahasiswa)
+
+		// $mhs_ujian_aktif = Mhs_ujian_orm::where('mahasiswa_id', $mhs_orm->id_mahasiswa)
+		// ->whereHas(
+		// 	'm_ujian',
+		// 	function (Builder $query){
+		// 		$query->where('status_ujian', 1);
+		// 	}
+		// )->whereDoesntHave(
+		// 	'h_ujian',
+		// 	function (Builder $query){
+		// 		$query->where('ujian_selesai', 'Y');
+		// 	}
+		// )->get();
+
+		// $mhs_ujian_riwayat = Mhs_ujian_orm::where('mahasiswa_id', $mhs_orm->id_mahasiswa)
+		// ->whereHas(
+		// 	'm_ujian',
+		// 	function (Builder $query){
+		// 		$query->where('status_ujian', 1);
+		// 	}
+		// )->whereHas(
+		// 	'h_ujian',
+		// 	function (Builder $query){
+		// 		$query->where('ujian_selesai', 'Y');
+		// 	}
+		// )->get();
+
+		// $data['mhs_ujian_aktif'] = $mhs_ujian_aktif;
+		// $data['mhs_ujian_riwayat'] = $mhs_ujian_riwayat;
+
+		$mhs_ujian_all = Mhs_ujian_orm::where('mahasiswa_id', $mhs_orm->id_mahasiswa)
 		->whereHas(
 			'm_ujian',
 			function (Builder $query){
 				$query->where('status_ujian', 1);
 			}
-		)->whereDoesntHave(
-			'h_ujian',
-			function (Builder $query){
-				$query->where('ujian_selesai', 'Y');
-			}
 		)->get();
 
-		$mhs_ujian_riwayat = Mhs_ujian_orm::where('mahasiswa_id', $mhs_orm->id_mahasiswa)
-		->whereHas(
-			'm_ujian',
-			function (Builder $query){
-				$query->where('status_ujian', 1);
-			}
-		)->whereHas(
-			'h_ujian',
-			function (Builder $query){
-				$query->where('ujian_selesai', 'Y');
-			}
-		)->get();
+		$data['mhs_ujian_all'] = $mhs_ujian_all;
 
-		// vdebug($m_ujian->count());
-		// $data['ujian_aktif'] =  Mhs_matkul_orm::where(['mahasiswa_id' => $mhs_orm->id_mahasiswa])->mhs_ujian();
-		// vdebug($data['ujian_aktif']);
-
-		$data['mhs_ujian_aktif'] = $mhs_ujian_aktif;
-		$data['mhs_ujian_riwayat'] = $mhs_ujian_riwayat;
 		$data['is_show_tutorial'] = true;
 
 		view('ujian/list', $data);
@@ -1316,7 +1323,6 @@ class Ujian extends MY_Controller
 
 		if(APP_TYPE == 'ujian')
 			redirect('ujian/list');
-
 
 		$user = $this->ion_auth->user()->row();
 
@@ -1330,36 +1336,48 @@ class Ujian extends MY_Controller
 		$user = $this->ion_auth->user()->row();
 		$mhs_orm = Mhs_orm::where('nim', $user->username)->firstOrFail();
 
-		$mhs_ujian_aktif = Mhs_ujian_orm::where('mahasiswa_id', $mhs_orm->id_mahasiswa)
+		// $mhs_ujian_aktif = Mhs_ujian_orm::where('mahasiswa_id', $mhs_orm->id_mahasiswa)
+		// ->whereHas(
+		// 	'm_ujian',
+		// 	function (Builder $query){
+		// 		$query->where('status_ujian', 1);
+		// 		$query->where('repeatable', 1); // LATIHAN SOAL JIKA UJIAN IS REPEATABLE
+		// 	}
+		// )->whereDoesntHave(
+		// 	'h_ujian',
+		// 	function (Builder $query){
+		// 		$query->where('ujian_selesai', 'Y');
+		// 	}
+		// )->get();
+
+		// $mhs_ujian_riwayat = Mhs_ujian_orm::where('mahasiswa_id', $mhs_orm->id_mahasiswa)
+		// ->whereHas(
+		// 	'm_ujian',
+		// 	function (Builder $query){
+		// 		$query->where('status_ujian', 1);
+		// 		$query->where('repeatable', 1); // LATIHAN SOAL JIKA UJIAN IS REPEATABLE
+		// 	}
+		// )->whereHas(
+		// 	'h_ujian',
+		// 	function (Builder $query){
+		// 		$query->where('ujian_selesai', 'Y');
+		// 	}
+		// )->get();
+
+		// $data['mhs_ujian_aktif'] = $mhs_ujian_aktif;
+		// $data['mhs_ujian_riwayat'] = $mhs_ujian_riwayat;
+
+		$mhs_ujian_all = Mhs_ujian_orm::where('mahasiswa_id', $mhs_orm->id_mahasiswa)
 		->whereHas(
 			'm_ujian',
 			function (Builder $query){
 				$query->where('status_ujian', 1);
 				$query->where('repeatable', 1); // LATIHAN SOAL JIKA UJIAN IS REPEATABLE
 			}
-		)->whereDoesntHave(
-			'h_ujian',
-			function (Builder $query){
-				$query->where('ujian_selesai', 'Y');
-			}
 		)->get();
 
-		$mhs_ujian_riwayat = Mhs_ujian_orm::where('mahasiswa_id', $mhs_orm->id_mahasiswa)
-		->whereHas(
-			'm_ujian',
-			function (Builder $query){
-				$query->where('status_ujian', 1);
-				$query->where('repeatable', 1); // LATIHAN SOAL JIKA UJIAN IS REPEATABLE
-			}
-		)->whereHas(
-			'h_ujian',
-			function (Builder $query){
-				$query->where('ujian_selesai', 'Y');
-			}
-		)->get();
+		$data['mhs_ujian_all'] = $mhs_ujian_all;
 
-		$data['mhs_ujian_aktif'] = $mhs_ujian_aktif;
-		$data['mhs_ujian_riwayat'] = $mhs_ujian_riwayat;
 		$data['is_show_tutorial'] = true;
 
 		view('ujian/list', $data);
@@ -1377,43 +1395,55 @@ class Ujian extends MY_Controller
 		$data = [
 			'user' 		=> $user,
 			'judul'		=> 'Ujian',
-			'subjudul'	=> 'List Latihan Soal',
+			'subjudul'	=> 'List Tryout',
 			'mhs' 		=> $this->ujian->getIdMahasiswa($user->username),
 		];
 
 		$user = $this->ion_auth->user()->row();
 		$mhs_orm = Mhs_orm::where('nim', $user->username)->firstOrFail();
 
-		$mhs_ujian_aktif = Mhs_ujian_orm::where('mahasiswa_id', $mhs_orm->id_mahasiswa)
+		// $mhs_ujian_aktif = Mhs_ujian_orm::where('mahasiswa_id', $mhs_orm->id_mahasiswa)
+		// ->whereHas(
+		// 	'm_ujian',
+		// 	function (Builder $query){
+		// 		$query->where('status_ujian', 1);
+		// 		$query->where('repeatable', 0); // TRYOUT SOAL JIKA UJIAN IS NOT REPEATABLE
+		// 	}
+		// )->whereDoesntHave(
+		// 	'h_ujian',
+		// 	function (Builder $query){
+		// 		$query->where('ujian_selesai', 'Y');
+		// 	}
+		// )->get();
+
+		// $mhs_ujian_riwayat = Mhs_ujian_orm::where('mahasiswa_id', $mhs_orm->id_mahasiswa)
+		// ->whereHas(
+		// 	'm_ujian',
+		// 	function (Builder $query){
+		// 		$query->where('status_ujian', 1);
+		// 		$query->where('repeatable', 0); // TRYOUT SOAL JIKA UJIAN IS NOT REPEATABLE
+		// 	}
+		// )->whereHas(
+		// 	'h_ujian',
+		// 	function (Builder $query){
+		// 		$query->where('ujian_selesai', 'Y');
+		// 	}
+		// )->get();
+
+		// $data['mhs_ujian_aktif'] = $mhs_ujian_aktif;
+		// $data['mhs_ujian_riwayat'] = $mhs_ujian_riwayat;
+
+		$mhs_ujian_all = Mhs_ujian_orm::where('mahasiswa_id', $mhs_orm->id_mahasiswa)
 		->whereHas(
 			'm_ujian',
 			function (Builder $query){
 				$query->where('status_ujian', 1);
 				$query->where('repeatable', 0); // TRYOUT SOAL JIKA UJIAN IS NOT REPEATABLE
 			}
-		)->whereDoesntHave(
-			'h_ujian',
-			function (Builder $query){
-				$query->where('ujian_selesai', 'Y');
-			}
 		)->get();
 
-		$mhs_ujian_riwayat = Mhs_ujian_orm::where('mahasiswa_id', $mhs_orm->id_mahasiswa)
-		->whereHas(
-			'm_ujian',
-			function (Builder $query){
-				$query->where('status_ujian', 1);
-				$query->where('repeatable', 0); // TRYOUT SOAL JIKA UJIAN IS NOT REPEATABLE
-			}
-		)->whereHas(
-			'h_ujian',
-			function (Builder $query){
-				$query->where('ujian_selesai', 'Y');
-			}
-		)->get();
+		$data['mhs_ujian_all'] = $mhs_ujian_all;
 
-		$data['mhs_ujian_aktif'] = $mhs_ujian_aktif;
-		$data['mhs_ujian_riwayat'] = $mhs_ujian_riwayat;
 		$data['is_show_tutorial'] = false;
 
 		view('ujian/list', $data);

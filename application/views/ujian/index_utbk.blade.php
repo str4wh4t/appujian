@@ -72,9 +72,10 @@
 
 .funkyradio input[type="radio"]:checked ~ label,
 .funkyradio input[type="checkbox"]:checked ~ label {
-    color: #fff;
-    background: #86C186;
-    font-weight: bold;
+    /* color: #fff; */
+    /* background: #86C186; */
+    /* font-weight: bold; */
+    border-color: #86C186;
 }
 
 .funkyradio input[type="radio"]:checked ~ label:before,
@@ -127,9 +128,12 @@
     background-color: #5bc0de;
 }
 .huruf_opsi {
-	margin-left: -36px;
-	/*margin-top: 9px;*/
-	position: absolute;
+    margin-left: -36px;
+    /*margin-top: 9px;*/
+    position: absolute;
+}
+.funkyradio-success .huruf_opsi{
+    color: #fff;
 }
 .pertanyaan{
     line-height: 2rem;

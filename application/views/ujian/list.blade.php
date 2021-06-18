@@ -159,9 +159,9 @@
                         </div>
                         <div class="row">
                             <div class="col-md-12 col-sm-12">
-                                <div class="card box-shadow-0 border-success bg-gradient-striped-grey">
-                                    <div class="card-header card-head-inverse bg-success">
-                                        <h4 class="card-title text-white">Ujian Aktif</h4>
+                                <div class="card box-shadow-0 border-primary bg-gradient-striped-grey">
+                                    <div class="card-header card-head-inverse bg-primary">
+                                        <h4 class="card-title text-white">Daftar Ujian</h4>
                                         {{-- <a class="heading-elements-toggle"><i class="fa fa-ellipsis-v font-medium-3"></i></a>
                                         <div class="heading-elements">
                                             <ul class="list-inline mb-0">
@@ -173,7 +173,7 @@
                                     </div>
                                     <div class="card-content collapse show">
                                         <div class="card-body">
-                                            {{-- [START] FOREACH UJIAN AKTIF  --}}
+                                            {{-- [START] FOREACH UJIAN SUDAH  --}}
                                             <div class="row">
                                                 @if ($is_show_tutorial)
                                                 <div class="col-md-4 col-sm-12">
@@ -207,127 +207,14 @@
                                                             </div>
                                                         </div>
                                                         <div class="card-footer border-top-blue-grey border-top-lighten-5 text-muted">
-                                                            <a class="btn btn-success" href="{{ url('ujian/tutorial') }}">
+                                                            <a class="btn btn-sm btn-success" href="{{ url('ujian/tutorial') }}">
                                                                 <i class="fa fa-pencil"></i> Masuk
                                                             </a>
                                                         </div>
                                                     </div>
                                                 </div>
                                                 @endif
-                                                @forelse ($mhs_ujian_aktif as $mhs_ujian)
-                                                <div class="col-md-4 col-sm-12">
-                                                    <div class="card box-shadow-0 border-success">
-                                                        {{-- <div class="card-header"></div> --}}
-                                                        <div class="card-header " style="min-height: 85px;">
-                                                            <h6><b>{{ $mhs_ujian->m_ujian->nama_ujian }}</b></h6>
-                                                        </div>
-                                                        <div class="card-content collapse show">
-                                                            <div class="card-body">
-                                                                {{-- <dl class="row">
-                                                                    <dt class="col-sm-5 text-left">Materi Ujian</dt>
-                                                                    <dd class="col-sm-7">{{ $mhs_ujian->m_ujian->matkul->nama_matkul }}</dd>
-                                                                </dl> --}}
-                                                                <dl class="row">
-                                                                    <dt class="col-sm-5 text-left">Jml Soal</dt>
-                                                                    <dd class="col-sm-7">{{ $mhs_ujian->m_ujian->jumlah_soal }}</dd>
-                                                                </dl>
-                                                                <dl class="row">
-                                                                    <dt class="col-sm-5 text-left">Lama Ujian</dt>
-                                                                    <dd class="col-sm-7">{{ $mhs_ujian->m_ujian->waktu }} Mnt</dd>
-                                                                </dl>
-                                                                <dl class="row">
-                                                                    <dt class="col-sm-5 text-left">Wkt Mulai</dt>
-                                                                    <dd class="col-sm-7">{{ $mhs_ujian->m_ujian->tgl_mulai }}</dd>
-                                                                </dl>
-                                                                <dl class="row">
-                                                                    <dt class="col-sm-5 text-left">Wkt Selesai</dt>
-                                                                    <dd class="col-sm-7">{!! empty($mhs_ujian->m_ujian->terlambat) ? '&infin;' : $mhs_ujian->m_ujian->terlambat  !!}</dd>
-                                                                </dl>
-                                                            </div>
-                                                        </div>
-                                                        <div class="card-footer border-top-blue-grey border-top-lighten-5 text-muted">
-                                                            @php
-                                                                $today = date('Y-m-d H:i:s');
-                                                                //echo $paymentDate; // echos today!
-                                                                $data_start = date('Y-m-d H:i:s', strtotime($mhs_ujian->m_ujian->tgl_mulai));
-                                                                $status_ujian = 'active';
-                                                                if(!empty($mhs_ujian->m_ujian->terlambat)){
-                                                                    $date_end = date('Y-m-d H:i:s', strtotime($mhs_ujian->m_ujian->terlambat));
-                                                                    if (($today >= $data_start) && ($today <= $date_end)){
-                                                                        // $status_ujian = 'active';
-                                                                    }else{
-                                                                        if($today < $data_start)
-                                                                            $status_ujian = 'upcoming';
-                                                                        else
-                                                                            $status_ujian = 'expired';
-                                                                    }
-                                                                }
-                                                            @endphp
-                                                            {{-- @if ($status_ujian == 'active')
-                                                                <a class="btn btn-success" href="{{ url('ujian/token/' . uuid_create_from_integer($mhs_ujian->m_ujian->id_ujian)) }}">
-                                                                    <i class="fa fa-pencil"></i> Masuk
-                                                                </a>
-                                                            @elseif ($status_ujian == 'upcoming')
-                                                                <button type="button" class="btn btn-info">
-                                                                    <i class="fa fa-exclamation-circle"></i> Upcoming
-                                                                </button> --}}
-                                                            @if (($status_ujian == 'active')||($status_ujian == 'upcoming'))
-                                                                <a class="btn btn-success" href="{{ url('ujian/token/' . uuid_create_from_integer($mhs_ujian->m_ujian->id_ujian)) }}">
-                                                                    <i class="fa fa-pencil"></i> Masuk
-                                                                </a>
-                                                            @elseif ($status_ujian == 'expired')
-                                                                <button type="button" class="btn btn-warning">
-                                                                    <i class="fa fa-times-circle"></i> Ujian Expired
-                                                                </button>
-                                                            @else
-                                                                
-                                                            @endif
-                                                            
-                                                            @if(($mhs_ujian->m_ujian->tampilkan_hasil)&&($mhs_ujian->m_ujian->tampilkan_jawaban)) 
-
-                                                                @if (!empty($mhs_ujian->h_ujian()->where('ujian_selesai', 'Y')->first()) || $mhs_ujian->h_ujian_history->isNotEmpty())
-                                                                <a href="{{ url('hasilujian/history/' . uuid_create_from_integer($mhs_ujian->id)) }}" class="btn btn-outline-primary float-right">
-                                                                        <i class="fa fa-eye"></i> History Ujian
-                                                                    </a>
-                                                                @endif
-                                                                
-                                                            @endif
-
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                @empty
-                                                <div class="alert bg-warning alert-icon-left alert-arrow-left w-100" role="alert">
-                                                    <span class="alert-icon"><i class="fa fa-warning"></i></span> 
-                                                    <b>Belum ada ujian aktif.</b>
-                                                </div>
-                                                @endforelse
-                                            </div>
-                                            {{-- [STOP] FOREACH UJIAN AKTIF  --}}
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-12 col-sm-12">
-                                <div class="card box-shadow-0 border-primary bg-gradient-striped-grey">
-                                    <div class="card-header card-head-inverse bg-primary">
-                                        <h4 class="card-title text-white">Riwayat Ujian</h4>
-                                        {{-- <a class="heading-elements-toggle"><i class="fa fa-ellipsis-v font-medium-3"></i></a>
-                                        <div class="heading-elements">
-                                            <ul class="list-inline mb-0">
-                                                <li><a data-action="collapse"><i class="ft-minus"></i></a></li>
-                                                <li><a data-action="reload"><i class="ft-rotate-cw"></i></a></li>
-                                                <li><a data-action="close"><i class="ft-x"></i></a></li>
-                                            </ul>
-                                        </div> --}}
-                                    </div>
-                                    <div class="card-content collapse show">
-                                        <div class="card-body">
-                                            {{-- [START] FOREACH UJIAN SUDAH  --}}
-                                            <div class="row">
-                                                @forelse ($mhs_ujian_riwayat as $mhs_ujian)
+                                                @forelse ($mhs_ujian_all as $mhs_ujian)
                                                 <div class="col-md-4 col-sm-12">
                                                     <div class="card box-shadow-0 border-primary">
                                                         {{-- <div class="card-header"></div> --}}
@@ -358,34 +245,62 @@
                                                                 </dl>
                                                             </div>
                                                             <div class="card-footer border-top-blue-grey border-top-lighten-5 text-muted">
-                                                                @if ($mhs_ujian->m_ujian->tampilkan_hasil)
-                                                                <a class="btn btn-primary" href="{{ url('hasilujian/detail/' . uuid_create_from_integer($mhs_ujian->m_ujian->id_ujian)) }}">
-                                                                    <i class="fa fa-check-square"></i> Hasil Ujian
-                                                                </a>
-                                                                @else
-                                                                <button type="button" class="btn btn-warning">
-                                                                    <i class="fa fa-exclamation-circle"></i> Sudah Ujian
-                                                                </button>
-                                                                @endif
-
-                                                                @if($mhs_ujian->m_ujian->repeatable) 
-
-                                                                <?php 
-                                                                    $today = date('Y-m-d H:i:s');
-                                                                    //echo $paymentDate; // echos today!
-                                                                    $date_start = date('Y-m-d H:i:s', strtotime($mhs_ujian->m_ujian->tgl_mulai));
-                                                                    if(!empty($mhs_ujian->m_ujian->terlambat))
-                                                                        $date_end = date('Y-m-d H:i:s', strtotime($mhs_ujian->m_ujian->terlambat));
-                                                                    else
-                                                                        $date_end = date('Y-m-d H:i:s', strtotime('+1 days'));
-                                                                ?>
-
-                                                                @if (($today >= $date_start) && ($today < $date_end)) 
-                                                                <button class="btn btn-outline-danger float-right btn_ulangi_ujian" data-hid="{{ uuid_create_from_integer($mhs_ujian->h_ujian->id) }}" data-mid="{{ uuid_create_from_integer($mhs_ujian->m_ujian->id_ujian) }}">
-                                                                    <i class="fa fa-refresh"></i> Ulangi Ujian
-                                                                </button>
-                                                                @endif
                                                                 
+                                                                @php
+                                                                    $today = date('Y-m-d H:i:s');
+                                                                    $date_start = date('Y-m-d H:i:s', strtotime($mhs_ujian->m_ujian->tgl_mulai));
+                                                                    $status_ujian = 'active';
+                                                                    if(!empty($mhs_ujian->m_ujian->terlambat)){
+                                                                        $date_end = date('Y-m-d H:i:s', strtotime($mhs_ujian->m_ujian->terlambat));
+                                                                        
+                                                                    }else{
+                                                                        $date_end = date('Y-m-d H:i:s', strtotime('+1 days'));
+                                                                    }
+
+                                                                    if (($today >= $date_start) && ($today <= $date_end)){
+                                                                        // $status_ujian = 'active';
+                                                                    }else{
+                                                                        if($today < $date_start)
+                                                                            $status_ujian = 'upcoming';
+                                                                        else
+                                                                            $status_ujian = 'expired';
+                                                                    }
+                                                                @endphp
+
+                                                                @if(empty($mhs_ujian->h_ujian))
+
+                                                                    @if (($status_ujian == 'active')||($status_ujian == 'upcoming'))
+                                                                        <a class="btn btn-sm btn-success" href="{{ url('ujian/token/' . uuid_create_from_integer($mhs_ujian->m_ujian->id_ujian)) }}">
+                                                                            <i class="fa fa-pencil"></i> Masuk
+                                                                        </a>
+                                                                    @elseif ($status_ujian == 'expired')
+                                                                        <button type="button" class="btn btn-sm btn-warning">
+                                                                            <i class="fa fa-times-circle"></i> Ujian Expired
+                                                                        </button>
+                                                                    @else
+                                                                        
+                                                                    @endif
+
+                                                                @else
+                                                                    @if ($mhs_ujian->m_ujian->tampilkan_hasil)
+                                                                        <a class="btn btn-sm btn-primary" href="{{ url('hasilujian/detail/' . uuid_create_from_integer($mhs_ujian->m_ujian->id_ujian)) }}">
+                                                                            <i class="fa fa-check-square"></i> Hasil Ujian
+                                                                        </a>
+                                                                    @else
+                                                                        <button type="button" class="btn btn-sm btn-warning">
+                                                                            <i class="fa fa-exclamation-circle"></i> Sudah Ujian
+                                                                        </button>
+                                                                    @endif
+
+                                                                    @if($mhs_ujian->m_ujian->repeatable) 
+
+                                                                        @if (($status_ujian == 'active')||($status_ujian == 'upcoming'))
+                                                                            <button class="btn btn-sm btn-outline-danger float-right btn_ulangi_ujian" data-hid="{{ uuid_create_from_integer($mhs_ujian->h_ujian->id) }}" data-mid="{{ uuid_create_from_integer($mhs_ujian->m_ujian->id_ujian) }}">
+                                                                                <i class="fa fa-refresh"></i> Ulangi Ujian
+                                                                            </button>
+                                                                        @endif
+                                                                    
+                                                                    @endif
                                                                 @endif
 
                                                             </div>
@@ -393,10 +308,12 @@
                                                     </div>
                                                 </div>
                                                 @empty
-                                                <div class="alert bg-warning alert-icon-left alert-arrow-left w-100" role="alert">
-                                                    <span class="alert-icon"><i class="fa fa-warning"></i></span> 
-                                                    <b>Anda belum memiliki hasil ujian.</b>
-                                                </div>
+                                                    @if (!$is_show_tutorial)
+                                                        <div class="alert bg-warning alert-icon-left alert-arrow-left w-100" role="alert">
+                                                            <span class="alert-icon"><i class="fa fa-warning"></i></span> 
+                                                            <b>Anda belum memiliki ujian.</b>
+                                                        </div>
+                                                    @endif
                                                 @endforelse
                                             </div>
                                             {{-- [STOP] FOREACH UJIAN AKTIF  --}}

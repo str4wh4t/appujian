@@ -81,14 +81,12 @@ $(document).on('click','.btn_reset_hasil',function(){
 
 function init_page_level(){
 
-    @if(in_group(MHS_GROUP_ID))
     if(is_show_banner_ads){
         setTimeout(function () {
             $.featherlight('{{ asset('assets/imgs/tryout_udid_banner.png') }}');
             stop_ping = true;
         }, 2000);
     }
-    @endif
 
 }
 

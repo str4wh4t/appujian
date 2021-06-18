@@ -33,7 +33,7 @@ let conn ;
 let enable_ping = {{ PING_INTERVAL > 0 ? 'true' : 'false' }};
 let stop_ping = false ;
 let socket_enable = {{ SOCKET_ENABLE ? 'true' : 'false' }};
-let is_show_banner_ads = {{ IS_SHOW_BANNER_ads ? 'true' : 'false' }};
+let is_show_banner_ads = {{ IS_SHOW_BANNER_ads ? (in_group(MHS_GROUP_ID) ? 'true' : 'false') : 'false' }};
 
 function print_page(data) {
     let mywindow = window.open('', 'new div', 'height=600,width=600');
@@ -88,7 +88,7 @@ const sendmsg = function (message, callback) {
             if (typeof callback !== 'undefined') {
                 callback();
             }
-        }, 2000);
+        }, 2500);
     }
 };
 

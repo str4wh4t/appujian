@@ -286,8 +286,8 @@ class Chat implements MessageComponentInterface {
 					$conn->send(json_encode($res));
 				}
 
-				$msg = json_encode($res);
-				$this->msg_to_admin($msg);
+				// $msg = json_encode($res);
+				// $this->msg_to_admin($msg);
 
 			}
 	    }
@@ -310,13 +310,14 @@ class Chat implements MessageComponentInterface {
 		        	if(isset($this->data_clients_mhs[$app_id][$nim])) {
 				        unset($this->data_clients_mhs[$app_id][$nim]);
 				        unset($this->data_clients_mhs_ips[$app_id][$nim]);
-				        $res = [
+				        $msg = [
 					        'cmd' => 'MHS_OFFLINE',
 					        'nim' => $nim,
 				        ];
-				        foreach ($this->clients as $conn_id => $conn) {
-					        $conn->send(json_encode($res));
-				        }
+				        // foreach ($this->clients as $conn_id => $conn) {
+					    //     $conn->send(json_encode($msg));
+				        // }
+						$this->msg_to_admin($msg);
 						return;
 				        // break;
 				        // break;

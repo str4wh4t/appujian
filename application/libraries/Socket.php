@@ -15,19 +15,52 @@ class Socket
         
 	}
 
-    public function run($port): void{
-        $wsServer = new WsServer(new Chat());
+    public function run($port, $is_secure = false, $local_cert = null, $local_pk = null ): void{
+
+		if($is_secure){
 		
-		$server = IoServer::factory(
-		    new HttpServer(
-		        $wsServer
-		    ),
-		    $port
-		);
-		
-		$wsServer->enableKeepAlive($server->loop, 30);
-		
-		$server->run();
+			$loop   = \React\EventLoop\Factory::create();
+			$webSock = new \React\Socket\SecureServer(
+				new \React\Socket\Server('0.0.0.0:' . $port, $loop),
+				$loop,
+				array(
+					'local_cert'        => $local_cert, // path to your cert
+					'local_pk'          => $local_pk, // path to your server private key
+					'allow_self_signed' => TRUE, // Allow self signed certs (should be false in production)
+					'verify_peer' => FALSE
+				)
+			);
+
+			$wsServer = new WsServer(new Chat());
+
+			// Ratchet magic
+			$server = new IoServer(
+				new HttpServer(
+					$wsServer
+				),
+				$webSock
+			);
+
+			$wsServer->enableKeepAlive($server->loop, 30);
+
+			// $loop->run();
+			$server->run();
+		}else{
+
+			$wsServer = new WsServer(new Chat());
+			
+			$server = IoServer::factory(
+				new HttpServer(
+					$wsServer
+				),
+				$port
+			);
+			
+			$wsServer->enableKeepAlive($server->loop, 30);
+			
+			$server->run();
+		}
+
     }
 
     public function notif_ws($msg = ''){

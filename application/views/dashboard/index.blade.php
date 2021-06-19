@@ -140,16 +140,20 @@
         </dl>
     </div>
     <div class="col-md-6">
+        <div class="card">
+            <div class="card-body pt-0">
         <h3 class="box-title">Pengumuman</h3>
         <hr>
-        <p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Quidem in animi quibusdam nihil esse ratione, nulla sint enim natus, aut mollitia quas veniam, tempore quia!</p>
-        <ul class="pl-4">
-            <li>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Consectetur, culpa.</li>
-            <li>Provident dolores doloribus, fugit aperiam alias tempora saepe non omnis.</li>
-            <li>Doloribus sed eum et repellat distinctio a repudiandae quia voluptates.</li>
-            <li>Adipisci hic rerum illum odit possimus voluptatibus ad aliquid consequatur.</li>
-            <li>Laudantium sapiente architecto excepturi beatae est minus, labore non libero.</li>
-        </ul>
+                <p>
+                    Computer Assisted Test (CAT) {{ APP_NAME }} yang dikelola oleh Lembaga Pengembangan dan Penjaminan Mutu Pendidikan memberikan kemudahan dalam pelayanan test baik secara online maupun offline.</p>
+                <p>Test yang diadakan meliputi : Tes Potensi Akademik (TPA), Tes Substansi Bidang, Tes Prediksi dan lain-lain. Sistem ujian menggunakan CAT akan diperoleh hasil seleksi yang kredible, akurat dan cepat. </p>
+                <p>Informasi layanan CAT dapat menghubungi layanan ujian Undip di : </p>
+                <p><i class="fa fa-phone-square"></i> +62-24 7460041</p>
+                <p><i class="fa fa-whatsapp"></i> 0812-2561-1333</p>
+                <p><i class="ft-mail"></i> lp2mp@live.undip.ac.id</p>
+                <p><i class="icon-globe"></i> www.lp2mp.undip.ac.id</p>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -191,16 +195,20 @@
         </dl> --}}
     </div>
     <div class="col-md-6">
+        <div class="card">
+            <div class="card-body pt-0">
         <h3 class="box-title">Pengumuman</h3>
         <hr>
-        <p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Quidem in animi quibusdam nihil esse ratione, nulla sint enim natus, aut mollitia quas veniam, tempore quia!</p>
-        <ul class="pl-4">
-            <li>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Consectetur, culpa.</li>
-            <li>Provident dolores doloribus, fugit aperiam alias tempora saepe non omnis.</li>
-            <li>Doloribus sed eum et repellat distinctio a repudiandae quia voluptates.</li>
-            <li>Adipisci hic rerum illum odit possimus voluptatibus ad aliquid consequatur.</li>
-            <li>Laudantium sapiente architecto excepturi beatae est minus, labore non libero.</li>
-        </ul>
+                <p>
+                    Computer Assisted Test (CAT) {{ APP_NAME }} yang dikelola oleh Lembaga Pengembangan dan Penjaminan Mutu Pendidikan memberikan kemudahan dalam pelayanan test baik secara online maupun offline.</p>
+                <p>Test yang diadakan meliputi : Tes Potensi Akademik (TPA), Tes Substansi Bidang, Tes Prediksi dan lain-lain. Sistem ujian menggunakan CAT akan diperoleh hasil seleksi yang kredible, akurat dan cepat. </p>
+                <p>Informasi layanan CAT dapat menghubungi layanan ujian Undip di : </p>
+                <p><i class="fa fa-phone-square"></i> +62-24 7460041</p>
+                <p><i class="fa fa-whatsapp"></i> 0812-2561-1333</p>
+                <p><i class="ft-mail"></i> lp2mp@live.undip.ac.id</p>
+                <p><i class="icon-globe"></i> www.lp2mp.undip.ac.id</p>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -242,16 +250,20 @@
         </dl> --}}
     </div>
     <div class="col-md-6">
+        <div class="card">
+            <div class="card-body pt-0">
         <h3 class="box-title">Pengumuman</h3>
         <hr>
-        <p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Quidem in animi quibusdam nihil esse ratione, nulla sint enim natus, aut mollitia quas veniam, tempore quia!</p>
-        <ul class="pl-4">
-            <li>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Consectetur, culpa.</li>
-            <li>Provident dolores doloribus, fugit aperiam alias tempora saepe non omnis.</li>
-            <li>Doloribus sed eum et repellat distinctio a repudiandae quia voluptates.</li>
-            <li>Adipisci hic rerum illum odit possimus voluptatibus ad aliquid consequatur.</li>
-            <li>Laudantium sapiente architecto excepturi beatae est minus, labore non libero.</li>
-        </ul>
+                <p>
+                    Computer Assisted Test (CAT) {{ APP_NAME }} yang dikelola oleh Lembaga Pengembangan dan Penjaminan Mutu Pendidikan memberikan kemudahan dalam pelayanan test baik secara online maupun offline.</p>
+                <p>Test yang diadakan meliputi : Tes Potensi Akademik (TPA), Tes Substansi Bidang, Tes Prediksi dan lain-lain. Sistem ujian menggunakan CAT akan diperoleh hasil seleksi yang kredible, akurat dan cepat. </p>
+                <p>Informasi layanan CAT dapat menghubungi layanan ujian Undip di : </p>
+                <p><i class="fa fa-phone-square"></i> +62-24 7460041</p>
+                <p><i class="fa fa-whatsapp"></i> 0812-2561-1333</p>
+                <p><i class="ft-mail"></i> lp2mp@live.undip.ac.id</p>
+                <p><i class="icon-globe"></i> www.lp2mp.undip.ac.id</p>
+            </div>
+        </div>
     </div>
 </div>
 

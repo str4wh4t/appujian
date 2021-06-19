@@ -231,25 +231,34 @@ function go_ujian(token){
 <div class="box box-primary">
     <div class="box-body">
         <div class="row">
-            <div class="col-sm-4">
+            <div class="col-sm-5">
                 <a href="{{ $_SERVER['HTTP_REFERER'] ?? site_url('ujian/list') }}" class="btn btn-warning mb-1"><i class="fa fa-arrow-left"></i> Kembali</a>
-                <div class="alert bg-info">
-                    <p style="font-size: 20px">Tata Tertib Ujian<i class="pull-right fa fa-exclamation-triangle"></i></p>
+                <div class="">
+                    <p style="font-size: 20px; text-align: center; border: 1px solid #333; padding: 5px;">Tata Tertib Ujian</p>
                     <hr>
                     <p>
                         <ol>
-                            <li>Peserta tidak boleh melakukan perjokian, tidak jujur dan bentuk kecurangan lainnya.</li>
-                            <li>Peserta boleh mengerjakan soal berdasarkan waktu dimulainya pada aplikasi CAT.</li>
-                            <li>Peserta boleh melaporkan kepada panitia jika terjadi masalah pada aplikasi CAT.</li>
-                            <li>Peserta boleh menekan pilihan Ragu, jika ada keraguan dalam menjawab salah satu soal.</li>
-                            <li>Peserta yang sudah menyelesaikan seluruh soal ujian sebelum waktu ujian habis boleh menekan tombol selesai jika memang akan mengakhiri sebelum waktunya habis.</li>
-                            <li>Peserta tidak boleh melakukan menggandakan atau menyadur dengan mengambil gambar menggunakan kamera maupun meng copy paste soal.</li>
-                            <li>Peserta dilarang membuka halaman/aplikasi lain diluar aplikasi CAT.</li>
+                            <li>Selama ujian berlangsung, peserta wajib menghidupkan kamera/video zoom. Peserta menutup 
+                                kamera selama ujian, maka <b>pengawas memberhentikan ujian dan peserta tidak bisa melanjutkan 
+                                    ujian kembali </b></li>
+                            <li><b>Peserta dilarang meninggalkan zoom selama ujian berlangsung</b></li>
+                            <li>Peserta tidak boleh melakukan perjokian, tindakan tidak jujur dan bentuk kecurangan lainnya, antara lain </li>
+                            <ul>
+                                <li>Membuka halaman lain diluar aplikasi ujian dan zoom</li>
+                                <li>Mengoperasikan gawai/perangkat elektronik telekomunikasi lain (HP, Tab, Smartwactch, Kalkliator)</li>
+                                <li>Selama waktu ujian peserta <b>tidak boleh berkomunikasi dengan orang lain </b>dalam bentuk apapun. Menggerakkan bibir berbicara, 
+                                    menengok kanan kiri adalah termasuk sinyal komunikasi</li>
+                                <li>Menggandakan atau menyadur dengan mengambil gambar menggunakan kamera maupun mengcopy paste soal</li>
+                            </ul>
+                            <li>Peserta hanya mengerjakan soal berdasarkan <b>waktu dan alokasi waktu </b>yang ditetapkan pada aplikasi ujian</li>
+                            <li>Peserta wajib memiliki koneksi jaringan internet yang baik (disarankan menggunakan jaringan kabel). Apabila ada permasalahan 
+                                putusnya jaringan peserta, bukan tanggung jawab dari {{ strtoupper(APP_AUTHOR) }}. 
+                                <b>Tidak ada pengulangan atau tambahan waktu bagi peserta yang menemui kendalan ini</b></li>
                         </ol>
                     </p>
                 </div>
             </div>
-            <div class="col-sm-8">
+            <div class="col-sm-7">
                 <div class="alert bg-danger mt-5">
                     <span style="font-size: 20px">Waktu<i class="pull-right fa fa-clock-o"></i></span>
                     <hr>
@@ -443,7 +452,7 @@ function go_ujian(token){
             </div>
             <div class="modal-body">
                 <h5 style="text-align: center; border: 1px solid #333; padding: 5px; font-weight: bold;">
-                    TATA TERTIB BAGI PESERTA UJIAN MANDIRI<br>UNIVERSITAS DIPONEGORO</h5>
+                    TATA TERTIB BAGI PESERTA UJIAN <br>{{ strtoupper(APP_AUTHOR) }}</h5>
                 <p>
 
 
@@ -453,11 +462,13 @@ function go_ujian(token){
                                     ujian kembali </b></li>
                             <li><b>Peserta dilarang meninggalkan zoom selama ujian berlangsung</b></li>
                             <li>Peserta tidak boleh melakukan perjokian, tindakan tidak jujur dan bentuk kecurangan lainnya, antara lain </li>
-                            <ul>Membuka halaman lain diluar aplikasi ujian dan zoom</ul>
-                            <ul>Mengoperasikan gawai/perangkat elektronik telekomunikasi lain (HP, Tab, Smartwactch, Kalkulator)</ul>
-                            <ul>Selama waktu ujian peserta <b>tidak boleh berkomunikasi dengan orang lain </b>dalam bentuk apapun. Menggerakkan bibir berbicara, 
-                                menengok kanan kiri adalah termasuk sinyal komunikasi</ul>
-                            <ul>Menggandakan atau menyadur dengan mengambil gambar menggunakan kamera maupun mengcopy paste soal</ul>
+                            <ul>
+                                <li>Membuka halaman lain diluar aplikasi ujian dan zoom</li>
+                                <li>Mengoperasikan gawai/perangkat elektronik telekomunikasi lain (HP, Tab, Smartwactch, Kalkliator)</li>
+                                <li>Selama waktu ujian peserta <b>tidak boleh berkomunikasi dengan orang lain </b>dalam bentuk apapun. Menggerakkan bibir berbicara, 
+                                    menengok kanan kiri adalah termasuk sinyal komunikasi</li>
+                                <li>Menggandakan atau menyadur dengan mengambil gambar menggunakan kamera maupun mengcopy paste soal</li>
+                            </ul>
                             <li>Peserta hanya mengerjakan soal berdasarkan <b>waktu dan alokasi waktu </b>yang ditetapkan pada aplikasi ujian</li>
                             <li>Peserta wajib memiliki koneksi jaringan internet yang baik (disarankan menggunakan jaringan kabel). Apabila ada permasalahan 
                                 putusnya jaringan peserta, bukan tanggung jawab dari {{ strtoupper(APP_AUTHOR) }}. 

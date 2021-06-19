@@ -9,11 +9,15 @@ class Topik extends MY_Controller
 	public function __construct()
 	{
 		parent::__construct();
-		if (!$this->ion_auth->logged_in()) {
-			redirect('auth');
-		} else if (!$this->ion_auth->is_admin()) {
-			show_error('Hanya Administrator yang diberi hak untuk mengakses halaman ini', 403, 'Akses Terlarang');
-		}
+
+		// if (!$this->ion_auth->logged_in()) {
+		// 	redirect('auth');
+		// } else if (!$this->ion_auth->is_admin()) {
+		// 	show_error('Hanya Administrator yang diberi hak untuk mengakses halaman ini', 403, 'Akses Terlarang');
+		// }
+
+		$this->_akses_admin();
+
 		$this->load->library(['datatables', 'form_validation']); // Load Library Ignited-Datatables
 		$this->load->model('Master_model', 'master');
 		$this->form_validation->set_error_delimiters('', '');

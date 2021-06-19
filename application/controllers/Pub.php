@@ -192,7 +192,11 @@ class Pub extends MY_Controller {
 	
 	
 	public function socket($port, $is_secure = false, $local_cert = null, $local_pk = null){
+
 		if(!is_cli()) show_404();
+
+		$local_cert = FCPATH . 'uploads/files/' . $local_cert;
+		$local_pk = FCPATH . 'uploads/files/' . $local_pk;
 
 		$this->socket->run($port, $is_secure, $local_cert, $local_pk);
 	}

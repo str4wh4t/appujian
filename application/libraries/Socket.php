@@ -41,7 +41,7 @@ class Socket
 				$webSock
 			);
 
-			$wsServer->enableKeepAlive($server->loop, 30);
+			// $wsServer->enableKeepAlive($server->loop, 30);
 
 			// $loop->run();
 			$server->run();

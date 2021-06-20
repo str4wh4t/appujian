@@ -172,12 +172,12 @@ function init_page_level(){
     @endif
 
     @if(APP_TYPE == 'tryout')
-        ajx_overlay(true);
-        init_peserta_table_value(bundle_id_list).then(function(){
-            ajx_overlay(false);
-        });
+        // ajx_overlay(true);
+        // init_peserta_table_value(bundle_id_list).then(function(){
+        //     ajx_overlay(false);
+        // });
     @else
-    $('#btn_refine_peserta').trigger('click');
+    //  $('#btn_refine_peserta').trigger('click');
     @endif
 }
 

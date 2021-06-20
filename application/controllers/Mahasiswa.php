@@ -1525,7 +1525,7 @@ class Mahasiswa extends MY_Controller
 
 			if (!empty($mhs_ids_insert)) {
 
-				$chucked_ids = array_chunk($mhs_ids_insert, 100); // ARRAY DIBAGI PER 100
+				$chucked_ids = array_chunk($mhs_ids_insert, 10); // ARRAY DIBAGI PER 100
 
 				$part = 0;
 

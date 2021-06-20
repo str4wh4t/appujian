@@ -1454,6 +1454,12 @@ class Mahasiswa extends MY_Controller
 		$data['jml_tambah'] = count($mhs_ids_insert);
 		$data['jml_hapus'] = count($mhs_ids_delete);
 
+		// $data['data_impor_tambah'] = array_values($mhs_ids_insert);
+		// $data['data_impor_hapus'] = array_values($mhs_ids_delete);
+
+		$data['data_impor_tambah'] = [];
+		$data['data_impor_hapus'] = [];
+
 		$this->_json($data);
 	}
 
@@ -1466,11 +1472,14 @@ class Mahasiswa extends MY_Controller
 		$smt = $this->input->post('smt[]');
 		$tahun = $this->input->post('tahun[]');
 
+		// $data_impor_tambah = $this->input->post('data_impor_tambah');
+		// $data_impor_hapus = $this->input->post('data_impor_hapus');
+
 		// $mhs_source = Mhs_source_orm::whereIn('jalur', $jalur)
 		// 	->whereIn('gel', $gel)
 		// 	->whereIn('smt', $smt)
 		// 	->whereIn('tahun', $tahun)
-		// 	->get();
+		// 	->get(['id_mahasiswa']);
 
 		// $mhs_ids = [];
 		// if ($mhs_source->isNotEmpty()) {
@@ -1508,6 +1517,10 @@ class Mahasiswa extends MY_Controller
 
 		$mhs_ids_insert = array_diff($mhs_ids, $mhs_ids_before);
 		$mhs_ids_delete = array_diff($mhs_ids_before, $mhs_ids);
+
+		// $mhs_ids_insert = $data_impor_tambah;
+		// $mhs_ids_delete = $data_impor_hapus;
+
 		try {
 
 			if (!empty($mhs_ids_insert)) {
@@ -1518,9 +1531,7 @@ class Mahasiswa extends MY_Controller
 
 				foreach($chucked_ids as $chuck_mhs_ids_insert){
 
-					// vdebug($chuck_mhs_ids_insert);
-
-					// if($part > 2){
+					// if($part > 5){
 					// 	break;
 					// }
 						
@@ -1528,100 +1539,100 @@ class Mahasiswa extends MY_Controller
 					
 					$mhs_source_list = Mhs_source_orm::whereIn('id_mahasiswa', $chuck_mhs_ids_insert)->get();
 
-					foreach ($mhs_source_list as $mhs_source) {
-						$mhs = new Mhs_orm;
-						$mhs->id_mahasiswa = $mhs_source->id_mahasiswa;
-						$mhs->nim = $mhs_source->nim;
-						$mhs->nama = $mhs_source->nama;
-						$mhs->nik = $mhs_source->nik;
-						$mhs->tmp_lahir = $mhs_source->tmp_lahir;
-						$mhs->tgl_lahir = $mhs_source->tgl_lahir;
-						$mhs->email = $mhs_source->email;
-						// https://pendaftaran.undip.ac.id/assets/berkas_nfs/fotoprofile/fotoprofile-1.jpg
-						$foto_path = str_replace("https://pendaftaran.undip.ac.id/assets/berkas_nfs/fotoprofile", asset('foto'), $mhs_source->foto);
-						$mhs->foto = $foto_path;
-						$mhs->jenis_kelamin = $mhs_source->jenis_kelamin;
-						$mhs->no_billkey = $mhs_source->no_billkey;
-						$mhs->kodeps = $mhs_source->kodeps;
-						$mhs->prodi = $mhs_source->prodi;
-						$mhs->gel = $mhs_source->gel;
-						$mhs->smt = $mhs_source->smt;
-						$mhs->jalur = $mhs_source->jalur;
-						$mhs->tahun = $mhs_source->tahun;
-						$mhs->kelompok_ujian = $mhs_source->kelompok_ujian;
-						$mhs->tgl_ujian = empty($mhs_source->tgl_ujian) ? null : $mhs_source->tgl_ujian;
-						$mhs->save();
-
-						// MENDAFTARKAN SBG USER
-						$nama       = explode(' ', $mhs->nama, 2);
-						$first_name = $nama[0];
-						$last_name  = end($nama);
-						$full_name  = $mhs->nama;
-
-						$username        = $mhs->nim;
-						$password        = $mhs->no_billkey;
-						$email           = $mhs->email;
-						$additional_data = [
-							'first_name' => $first_name,
-							'last_name'  => $last_name,
-							'full_name'  => $full_name,
-							'no_billkey'  => $mhs->no_billkey,
-							'created_at'  => date('Y-m-d H:i:s'),
-						];
-						$group           = [MHS_GROUP_ID]; // Sets user to mhs.
-						$this->ion_auth->register($username, $password, $email, $additional_data, $group);
-					}
-
-					// $insert = [];
-
 					// foreach ($mhs_source_list as $mhs_source) {
-
+					// 	$mhs = new Mhs_orm;
+					// 	$mhs->id_mahasiswa = $mhs_source->id_mahasiswa;
+					// 	$mhs->nim = $mhs_source->nim;
+					// 	$mhs->nama = $mhs_source->nama;
+					// 	$mhs->nik = $mhs_source->nik;
+					// 	$mhs->tmp_lahir = $mhs_source->tmp_lahir;
+					// 	$mhs->tgl_lahir = $mhs_source->tgl_lahir;
+					// 	$mhs->email = $mhs_source->email;
+					// 	// https://pendaftaran.undip.ac.id/assets/berkas_nfs/fotoprofile/fotoprofile-1.jpg
 					// 	$foto_path = str_replace("https://pendaftaran.undip.ac.id/assets/berkas_nfs/fotoprofile", asset('foto'), $mhs_source->foto);
+					// 	$mhs->foto = $foto_path;
+					// 	$mhs->jenis_kelamin = $mhs_source->jenis_kelamin;
+					// 	$mhs->no_billkey = $mhs_source->no_billkey;
+					// 	$mhs->kodeps = $mhs_source->kodeps;
+					// 	$mhs->prodi = $mhs_source->prodi;
+					// 	$mhs->gel = $mhs_source->gel;
+					// 	$mhs->smt = $mhs_source->smt;
+					// 	$mhs->jalur = $mhs_source->jalur;
+					// 	$mhs->tahun = $mhs_source->tahun;
+					// 	$mhs->kelompok_ujian = $mhs_source->kelompok_ujian;
+					// 	$mhs->tgl_ujian = empty($mhs_source->tgl_ujian) ? null : $mhs_source->tgl_ujian;
+					// 	$mhs->save();
 
-					// 	$insert[] = [
-					// 		'id_mahasiswa' => $mhs_source->id_mahasiswa,
-					// 		'nim' => $mhs_source->nim,
-					// 		'nama' => $mhs_source->nama,
-					// 		'nik' => $mhs_source->nik,
-					// 		'tmp_lahir' => $mhs_source->tmp_lahir,
-					// 		'tgl_lahir' => $mhs_source->tgl_lahir,
-					// 		'email' => $mhs_source->email,
-					// 		'foto' => $foto_path,
-					// 		'jenis_kelamin' => $mhs_source->jenis_kelamin,
-					// 		'no_billkey' => $mhs_source->no_billkey,
-					// 		'kodeps' => $mhs_source->kodeps,
-					// 		'prodi' => $mhs_source->prodi,
-					// 		'gel' => $mhs_source->gel,
-					// 		'smt' => $mhs_source->smt,
-					// 		'jalur' => $mhs_source->jalur,
-					// 		'tahun' => $mhs_source->tahun,
-					// 		'kelompok_ujian' => $mhs_source->kelompok_ujian,
-					// 		'tgl_ujian' => empty($mhs_source->tgl_ujian) ? null : $mhs_source->tgl_ujian,
-					// 	];
-					// }
-
-					// Mhs_orm::insert($insert);
-
-					// foreach ($mhs_source_list as $mhs_source) {
 					// 	// MENDAFTARKAN SBG USER
-					// 	$nama       = explode(' ', $mhs_source->nama, 2);
+					// 	$nama       = explode(' ', $mhs->nama, 2);
 					// 	$first_name = $nama[0];
 					// 	$last_name  = end($nama);
-					// 	$full_name  = $mhs_source->nama;
+					// 	$full_name  = $mhs->nama;
 
-					// 	$username        = $mhs_source->nim;
-					// 	$password        = $mhs_source->no_billkey;
-					// 	$email           = $mhs_source->email;
+					// 	$username        = $mhs->nim;
+					// 	$password        = $mhs->no_billkey;
+					// 	$email           = $mhs->email;
 					// 	$additional_data = [
 					// 		'first_name' => $first_name,
 					// 		'last_name'  => $last_name,
 					// 		'full_name'  => $full_name,
-					// 		'no_billkey'  => $mhs_source->no_billkey,
+					// 		'no_billkey'  => $mhs->no_billkey,
 					// 		'created_at'  => date('Y-m-d H:i:s'),
 					// 	];
 					// 	$group           = [MHS_GROUP_ID]; // Sets user to mhs.
 					// 	$this->ion_auth->register($username, $password, $email, $additional_data, $group);
 					// }
+
+					$insert = [];
+
+					foreach ($mhs_source_list as $mhs_source) {
+
+						$foto_path = str_replace("https://pendaftaran.undip.ac.id/assets/berkas_nfs/fotoprofile", asset('foto'), $mhs_source->foto);
+
+						$insert[] = [
+							'id_mahasiswa' => $mhs_source->id_mahasiswa,
+							'nim' => $mhs_source->nim,
+							'nama' => $mhs_source->nama,
+							'nik' => $mhs_source->nik,
+							'tmp_lahir' => $mhs_source->tmp_lahir,
+							'tgl_lahir' => $mhs_source->tgl_lahir,
+							'email' => $mhs_source->email,
+							'foto' => $foto_path,
+							'jenis_kelamin' => $mhs_source->jenis_kelamin,
+							'no_billkey' => $mhs_source->no_billkey,
+							'kodeps' => $mhs_source->kodeps,
+							'prodi' => $mhs_source->prodi,
+							'gel' => $mhs_source->gel,
+							'smt' => $mhs_source->smt,
+							'jalur' => $mhs_source->jalur,
+							'tahun' => $mhs_source->tahun,
+							'kelompok_ujian' => $mhs_source->kelompok_ujian,
+							'tgl_ujian' => empty($mhs_source->tgl_ujian) ? null : $mhs_source->tgl_ujian,
+						];
+					}
+
+					Mhs_orm::insert($insert);
+
+					foreach ($mhs_source_list as $mhs_source) {
+						// MENDAFTARKAN SBG USER
+						$nama       = explode(' ', $mhs_source->nama, 2);
+						$first_name = $nama[0];
+						$last_name  = end($nama);
+						$full_name  = $mhs_source->nama;
+
+						$username        = $mhs_source->nim;
+						$password        = $mhs_source->no_billkey;
+						$email           = $mhs_source->email;
+						$additional_data = [
+							'first_name' => $first_name,
+							'last_name'  => $last_name,
+							'full_name'  => $full_name,
+							'no_billkey'  => $mhs_source->no_billkey,
+							'created_at'  => date('Y-m-d H:i:s'),
+						];
+						$group           = [MHS_GROUP_ID]; // Sets user to mhs.
+						$this->ion_auth->register($username, $password, $email, $additional_data, $group);
+					}
 				
 					commit_db_trx();
 

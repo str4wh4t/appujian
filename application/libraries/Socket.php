@@ -18,7 +18,7 @@ class Socket
     public function run($port, $is_secure = false, $local_cert = null, $local_pk = null ): void{
 
 		if($is_secure){
-		
+
 			$loop   = \React\EventLoop\Factory::create();
 			$webSock = new \React\Socket\SecureServer(
 				new \React\Socket\Server('0.0.0.0:' . $port, $loop),
@@ -38,10 +38,11 @@ class Socket
 				new HttpServer(
 					$wsServer
 				),
-				$webSock
+				$webSock,
+				$loop
 			);
 
-			// $wsServer->enableKeepAlive($server->loop, 30);
+			$wsServer->enableKeepAlive($server->loop, 30);
 
 			// $loop->run();
 			$server->run();

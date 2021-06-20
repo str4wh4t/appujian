@@ -28,6 +28,8 @@
 <script type="text/javascript">
 
 let tahun_dipilih = $('#tahun_filter').val();
+let data_impor_tambah = [];
+let data_impor_hapus = [];
 
 function init_page_level(){
 
@@ -53,6 +55,8 @@ $(document).on('click','#btn_proses_sync_mhs',function(){
         data: $('#form_sync_mhs').serialize(),
         type: "POST",
         success: function (respon) {
+            data_impor_tambah = respon.data_impor_tambah;
+            data_impor_hapus = respon.data_impor_hapus;
             Swal.fire({
                 title: "Perhatian",
                 text: "Data akan di-tambah : " + respon.jml_tambah , // + ", dan di-hapus : " + respon.jml_hapus,
@@ -65,7 +69,7 @@ $(document).on('click','#btn_proses_sync_mhs',function(){
                         ajx_overlay(true);
                         $.ajax({
                             url: '{{ url('mahasiswa/ajax/proses_sync') }}',
-                            data: $('#form_sync_mhs').serialize(),
+                            data: $('#form_sync_mhs').serialize() +'&'+ $.param({ 'data_impor_tambah': data_impor_tambah, 'data_impor_hapus': data_impor_hapus }),
                             type: "POST",
                             success: function (respon) {
                                 if (respon.status) {

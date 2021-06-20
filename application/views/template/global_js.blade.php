@@ -79,7 +79,7 @@ function reload_ajax(){
 }
 
 let i_reconnect_socket = 0;
-let batas_reconnect_socket = 3;
+let batas_reconnect_socket = 5;
 
 const sendmsg = function (message, callback) {
     if(socket_enable){
@@ -88,7 +88,7 @@ const sendmsg = function (message, callback) {
             if (typeof callback !== 'undefined') {
                 callback();
             }
-        }, 2500);
+        }, 5000); // <== 5 DETIK
     }
 };
 
@@ -101,33 +101,32 @@ const waitForConnection = function (callback, interval) {
             if(i_reconnect_socket > batas_reconnect_socket){
                 socketConnectionFailure();
             }else{
-                // var that = this;
-                // optional: implement backoff for interval here
                 setTimeout(function () {
                     waitForConnection(callback, interval);
                 }, interval);
             }
-            i_reconnect_socket++;
+            // i_reconnect_socket++; // <== DIMATIKAN BIAR EVERLASTING LOOPING
         }
     }else{
-        socketConnectionFailure();
+        // socketConnectionFailure();
+        waitForConnection(callback, interval);
     }
 };
 
 const socketConnectionFailure = function (){
     stop_ping = true;
-    Swal.fire({
-        title: "Perhatian",
-        text: "Koneksi ke server terputus",
-        icon: "warning",
-        confirmButtonText: "Refresh",
-        allowOutsideClick: false,
-        allowEscapeKey: false,
-    }).then(result => {
-        if (result.value) {
-            window.location.href = '{{ current_url() }}';
-        }
-    });
+    // Swal.fire({
+    //     title: "Perhatian",
+    //     text: "Koneksi ke server terputus",
+    //     icon: "warning",
+    //     confirmButtonText: "Refresh",
+    //     allowOutsideClick: false,
+    //     allowEscapeKey: false,
+    // }).then(result => {
+    //     if (result.value) {
+    //         window.location.href = '{{ current_url() }}';
+    //     }
+    // });
 };
 
 let latency = 0;

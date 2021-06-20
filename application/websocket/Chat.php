@@ -317,6 +317,7 @@ class Chat implements MessageComponentInterface {
 				        // foreach ($this->clients as $conn_id => $conn) {
 					    //     $conn->send(json_encode($msg));
 				        // }
+						$msg = json_encode($msg);
 						$this->msg_to_admin($msg);
 						return;
 				        // break;

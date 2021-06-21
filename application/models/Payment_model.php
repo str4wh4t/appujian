@@ -36,7 +36,7 @@ class Payment_model extends CI_Model {
 			$now = Carbon::now()->toDateTimeString();
 
             $nett_amount = $notif->gross_amount ;
-            
+
             if(APP_UDID){
                 // NET AMOUNT HANYA ADA DI UDID, KRN UDID MENAMBAHKAN ADD FEE
                 $nett_amount = $notif->nett_amount;
@@ -369,38 +369,38 @@ class Payment_model extends CI_Model {
                                     if(!empty($insert))
                                         Mhs_ujian_orm::insert($insert);
                                     
-                                    foreach($paket->m_ujian as $m_ujian){
-                                        if(!empty($m_ujian->matkul)){
-                                            // [START] JIKA UJIAN SOURCE DARI MATERI
-                                            if(!in_array($m_ujian->matkul->id_matkul, $matkul_ids_exist)){
-                                                $matkul_ids_exist[] = $m_ujian->matkul->id_matkul;
-                                                $mhs_matkul_orm = new Mhs_matkul_orm();
-                                                $mhs_matkul_orm->mahasiswa_id = $mhs->id_mahasiswa;
-                                                $mhs_matkul_orm->matkul_id = $m_ujian->matkul->id_matkul;
-                                                $mhs_matkul_orm->sisa_kuota_latihan_soal = 0 ;
-                                                $mhs_matkul_orm->save();
-                                            }
-                                            // [END] JIKA UJIAN SOURCE DARI MATERI
-                                        }
-                                        if($m_ujian->matkul_enable->isNotEmpty()){
-                                            // [START] JIKA UJIAN SOURCE DARI BUNDLE
-                                            $insert = [];
-                                            foreach($m_ujian->matkul_enable as $matkul){
-                                                if(!in_array($matkul->id_matkul, $matkul_ids_exist)){
-                                                    $matkul_ids_exist[] = $matkul->id_matkul;
-                                                    $insert[] = [
-                                                        'mahasiswa_id' => $mhs->id_mahasiswa,
-                                                        'matkul_id' => $matkul->id_matkul,
-                                                        'sisa_kuota_latihan_soal' => 0,
-                                                        'created_at' => $now,
-                                                    ];
-                                                }
-                                            }
-                                            if(!empty($insert))
-                                                Mhs_matkul_orm::insert($insert);
-                                            // [END] JIKA UJIAN SOURCE DARI BUNDLE
-                                        }
-                                    }
+                                    // foreach($paket->m_ujian as $m_ujian){
+                                    //     if(!empty($m_ujian->matkul)){
+                                    //         // [START] JIKA UJIAN SOURCE DARI MATERI
+                                    //         if(!in_array($m_ujian->matkul->id_matkul, $matkul_ids_exist)){
+                                    //             $matkul_ids_exist[] = $m_ujian->matkul->id_matkul;
+                                    //             $mhs_matkul_orm = new Mhs_matkul_orm();
+                                    //             $mhs_matkul_orm->mahasiswa_id = $mhs->id_mahasiswa;
+                                    //             $mhs_matkul_orm->matkul_id = $m_ujian->matkul->id_matkul;
+                                    //             $mhs_matkul_orm->sisa_kuota_latihan_soal = 0 ;
+                                    //             $mhs_matkul_orm->save();
+                                    //         }
+                                    //         // [END] JIKA UJIAN SOURCE DARI MATERI
+                                    //     }
+                                    //     if($m_ujian->matkul_enable->isNotEmpty()){
+                                    //         // [START] JIKA UJIAN SOURCE DARI BUNDLE
+                                    //         $insert = [];
+                                    //         foreach($m_ujian->matkul_enable as $matkul){
+                                    //             if(!in_array($matkul->id_matkul, $matkul_ids_exist)){
+                                    //                 $matkul_ids_exist[] = $matkul->id_matkul;
+                                    //                 $insert[] = [
+                                    //                     'mahasiswa_id' => $mhs->id_mahasiswa,
+                                    //                     'matkul_id' => $matkul->id_matkul,
+                                    //                     'sisa_kuota_latihan_soal' => 0,
+                                    //                     'created_at' => $now,
+                                    //                 ];
+                                    //             }
+                                    //         }
+                                    //         if(!empty($insert))
+                                    //             Mhs_matkul_orm::insert($insert);
+                                    //         // [END] JIKA UJIAN SOURCE DARI BUNDLE
+                                    //     }
+                                    // }
                                 }
                             }
                         }

@@ -527,7 +527,7 @@ class Payment extends MY_Controller
                     $payment_type = $notif->payload->transaction_type;
                     $order_id = $notif->payload->invoice_code; // $order_id = $this->input->post('order_id');
                     $transaction_time = $notif->payload->created_at;
-                    $gross_amount = $notif->payload->gross_amount;
+                    $gross_amount = $notif->payload->nominal;
 
                 }else{
                     throw new Exception('SERVER UDID ERROR');
@@ -688,7 +688,7 @@ class Payment extends MY_Controller
                             'payment_type' => $notif_udid->payload->transaction_type,
                             'order_id' => $notif_udid->payload->invoice_code, // $order_id = $this->input->post('order_id'),
                             'transaction_time' => $notif_udid->payload->created_at,
-                            'gross_amount' => $notif_udid->payload->gross_amount,
+                            'gross_amount' => $notif_udid->payload->nominal,
                         ];
 
                     }else{

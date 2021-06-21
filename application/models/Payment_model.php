@@ -36,6 +36,7 @@ class Payment_model extends CI_Model {
 			$now = Carbon::now()->toDateTimeString();
 
             $nett_amount = $notif->gross_amount ;
+            
             if(APP_UDID){
                 // NET AMOUNT HANYA ADA DI UDID, KRN UDID MENAMBAHKAN ADD FEE
                 $nett_amount = $notif->nett_amount;
@@ -171,6 +172,12 @@ class Payment_model extends CI_Model {
                                         'Accept'       => 'application/json',
                                     ]
                                 ], $token);
+
+                                $notif = json_decode($result);
+
+                                if($notif->status != 'ok'){
+                                    throw new Exception('SERVER UDID ERROR');
+                                }
                     
                             }catch (Exception $e) {
                                 show_error($e->getMessage(), 500, 'Perhatian');

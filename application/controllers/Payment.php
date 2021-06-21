@@ -391,13 +391,14 @@ class Payment extends MY_Controller
                 
                 $notif = json_decode($result);
     
+                if($notif->status != 'ok'){
+                    throw new Exception('SERVER UDID ERROR');
+                }
+
             }catch (Exception $e) {
                 show_error($e->getMessage(), 500, 'Perhatian');
             }
             
-            if($notif->status != 'ok'){
-                show_error('Kesalahan data pada srv udid', 500, 'Perhatian');
-            }
 
             // [order_id] => CKPWG8DQY00019MY60O7Q0YGY
             // [serialized_id] => CKPWG8DQY00019MY60O7Q0YGY.1623665022
@@ -519,12 +520,18 @@ class Payment extends MY_Controller
                 
                 $notif = json_decode($result);
 
-                $bank = $notif->payload->va_provider;
-                $va_number = $notif->payload->va_code;
-                $status = $notif->payload->status;
-                $payment_type = $notif->payload->transaction_type;
-                $order_id = $notif->payload->invoice_code; // $order_id = $this->input->post('order_id');
-                $transaction_time = $notif->payload->created_at;
+                if($notif->status == 'ok'){
+                    $bank = $notif->payload->va_provider;
+                    $va_number = $notif->payload->va_code;
+                    $status = $notif->payload->status;
+                    $payment_type = $notif->payload->transaction_type;
+                    $order_id = $notif->payload->invoice_code; // $order_id = $this->input->post('order_id');
+                    $transaction_time = $notif->payload->created_at;
+                    
+                }else{
+                    throw new Exception('SERVER UDID ERROR');
+                }
+
     
             }catch (Exception $e) {
                 show_error($e->getMessage(), 500, 'Perhatian');
@@ -624,14 +631,84 @@ class Payment extends MY_Controller
             $this->load->model('payment_model');
 
             $order_number = $payment->order_number;
-            $client = new Client();
-            
-            $res = $client->request('GET', MIDTRANS_API_URL . $order_number . '/status', [
-                'auth' => [MIDTRANS_SERVER_KEY, '']
-            ]);
 
-            $notif = $res->getBody()->getContents();
-            $notif = json_decode($notif);
+            $notif = null ;
+
+            if(APP_UDID){
+
+                $trx_payment = Trx_payment_orm::where('order_number', $order_number)->firstOrFail();
+
+                $this->load->library('verification_jwt');
+                $this->load->library('sso_udid_adapter', [
+                    'property' => [
+                        'client_id'         => APP_UDID_ID,
+                        'client_secret'     => APP_UDID_SECRET,
+                        'redirect_uri'      => url('auth/cek_login_udid'),
+                        'scope'             => 'User.Read User.Payment.Read User.Payment.Write',
+                        'authorization_url' => 'https://login.undip.id/oauth2/authorize/login',
+                        'access_token_url'  => 'https://login.undip.id/oauth2/authorize/access_token',
+                    ],
+                    'settings' => [
+                //		'verify' => false, /*default*/
+                    ],
+                    'debug' => [
+                        'exception' => true, /*debug all exception*/
+                        'token'     => false, /*debug token request*/
+                        'response'  => false, /*debug all response non token*/
+                    ],
+                ]);
+                
+                $token = $this->session->userdata('token_udid');
+
+                try {
+                    $result = $this->sso_udid_adapter->request([
+                        'method'      => 'POST',
+                        'endpoint'    => APP_UDID_API . '/api-payment/api/check_payment',
+                        'body_params' => [
+                            'form_params' => [
+                                'order_id' => $trx_payment->order_id_udid,
+                            ],
+                        ],
+                        'header_params' => [
+                //			'Content-Type' => 'application/json',
+                            'Accept'       => 'application/json',
+                        ]
+                    ], $token);
+                    
+                    $notif_udid = json_decode($result);
+
+                    if($notif_udid->status == 'ok'){
+                        $notif = [
+                            'bank' => $notif_udid->payload->va_provider,
+                            'va_number' => $notif_udid->payload->va_code,
+                            'status' => $notif_udid->payload->status,
+                            'payment_type' => $notif_udid->payload->transaction_type,
+                            'order_id' => $notif_udid->payload->invoice_code, // $order_id = $this->input->post('order_id'),
+                            'transaction_time' => $notif_udid->payload->created_at,
+                        ];
+
+                        $notif = json_encode($notif);
+                        $notif = json_decode($notif);
+
+                    }else{
+                        throw new Exception('SERVER UDID ERROR');
+                    }
+        
+                }catch (Exception $e) {
+                    show_error($e->getMessage(), 500, 'Perhatian');
+                }
+
+            }else{
+                $client = new Client();
+            
+                $res = $client->request('GET', MIDTRANS_API_URL . $order_number . '/status', [
+                    'auth' => [MIDTRANS_SERVER_KEY, '']
+                ]);
+
+                $notif = $res->getBody()->getContents();
+                $notif = json_decode($notif);
+
+            }
 
             $log_status = $this->payment_model->exec_payment($notif, 'admin');
 

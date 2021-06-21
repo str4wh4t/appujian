@@ -34,15 +34,15 @@ class Payment_model extends CI_Model {
 			$mhs = Mhs_orm::where('nim', $username)->firstOrFail();
 
 			$now = Carbon::now()->toDateTimeString();
-
-            $nett_amount = $notif->gross_amount ;
-
-            if(APP_UDID){
-                // NET AMOUNT HANYA ADA DI UDID, KRN UDID MENAMBAHKAN ADD FEE
-                $nett_amount = $notif->nett_amount;
-            }
-
+            
 			if($notif->transaction_status == 'pending'){
+
+                $nett_amount = $notif->gross_amount ;
+                
+                if(APP_UDID){
+                    // NET AMOUNT HANYA ADA DI UDID, KRN UDID MENAMBAHKAN ADD FEE
+                    $nett_amount = $notif->nett_amount;
+                }
 
 				// JIKA TERJADI PEMESANAN
 

@@ -288,9 +288,15 @@
                                                                             <i class="fa fa-check-square"></i> Hasil Ujian
                                                                         </a>
                                                                     @else
-                                                                        <button type="button" class="btn btn-sm btn-warning">
-                                                                            <i class="fa fa-exclamation-circle"></i> Sudah Ujian
-                                                                        </button>
+                                                                        @if (($status_ujian == 'active')||($status_ujian == 'upcoming'))
+                                                                            <a class="btn btn-sm btn-success" href="{{ url('ujian/token/' . uuid_create_from_integer($mhs_ujian->m_ujian->id_ujian)) }}">
+                                                                                <i class="fa fa-pencil"></i> Masuk
+                                                                            </a>
+                                                                        @else
+                                                                            <button type="button" class="btn btn-sm btn-warning">
+                                                                                <i class="fa fa-exclamation-circle"></i> Sudah Ujian
+                                                                            </button>
+                                                                        @endif
                                                                     @endif
 
                                                                     @if($mhs_ujian->m_ujian->repeatable) 

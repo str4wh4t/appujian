@@ -34,11 +34,7 @@ function init_page_level(){
 }
 
 $(document).on('click','img.featherlight-image',function(){
-    @if(date('Y-m-d') == '2021-06-20')
-    window.location = "https://www.ujianmu.com";
-    @else
     window.location = "https://sso.undip.id";
-    @endif
 });
 
 </script>

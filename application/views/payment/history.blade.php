@@ -33,8 +33,9 @@ $(document).on('click', '.bayar', function(){
                 $('#th_bank').text(res.bank);
                 $('#th_va_number').text(res.va_number);
                 $('#th_status').text(res.status);
-                $('#modal_info').modal('show');
+                $('#th_gross_amount').text(res.gross_amount);
                 $('#th_transaction_time').text(res.transaction_time);
+                $('#modal_info').modal('show');
             }
         },
         error: function () {
@@ -158,6 +159,10 @@ function init_page_level(){
                         <tr>
                             <th>Order Nmr</th>
                             <th id="th_order_id" class="text-danger"></th>
+                        </tr>
+                        <tr>
+                            <th>Amount</th>
+                            <th id="th_gross_amount" class="text-danger"></th>
                         </tr>
                         <tr>
                             <th>Payment Type</th>

@@ -37,6 +37,7 @@ $(document).on('click', '.bayar', function(){
                 $('#th_va_number').text(res.va_number);
                 $('#th_status').text(res.status);
                 $('#th_transaction_time').text(res.transaction_time);
+                $('#th_gross_amount').text(res.gross_amount);
 
                 if(res.status == 'SETTLEMENT' && stts_item == '{{ PAYMENT_ORDER_BELUM_DIPROSES }}')
                     $('#btn_exec_trx').addClass('btn-danger');
@@ -270,6 +271,10 @@ $(document).on('click', '#btn_exec_trx', function(){
                         <tr>
                             <th>Order Nmr</th>
                             <th id="th_order_id" class="text-danger"></th>
+                        </tr>
+                        <tr>
+                            <th>Amount</th>
+                            <th id="th_gross_amount" class="text-danger"></th>
                         </tr>
                         <tr>
                             <th>Payment Type</th>

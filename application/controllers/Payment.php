@@ -527,7 +527,8 @@ class Payment extends MY_Controller
                     $payment_type = $notif->payload->transaction_type;
                     $order_id = $notif->payload->invoice_code; // $order_id = $this->input->post('order_id');
                     $transaction_time = $notif->payload->created_at;
-                    
+                    $gross_amount = $notif->payload->gross_amount;
+
                 }else{
                     throw new Exception('SERVER UDID ERROR');
                 }
@@ -597,6 +598,7 @@ class Payment extends MY_Controller
             $payment_type = $notif->payment_type;
             $order_id = $notif->order_id;
             $transaction_time = $notif->transaction_time;
+            $gross_amount = $notif->gross_amount;
 
         }
 
@@ -611,6 +613,7 @@ class Payment extends MY_Controller
         $data['payment_type'] = strtoupper($payment_type);
         $data['order_id'] = $order_id;
         $data['transaction_time'] = $transaction_time;
+        $data['gross_amount'] = $gross_amount;
 
         $this->_json($data);
     }
@@ -678,17 +681,15 @@ class Payment extends MY_Controller
                     $notif_udid = json_decode($result);
 
                     if($notif_udid->status == 'ok'){
-                        $notif = [
+                        $notif = (object)[
                             'bank' => $notif_udid->payload->va_provider,
                             'va_number' => $notif_udid->payload->va_code,
                             'status' => $notif_udid->payload->status,
                             'payment_type' => $notif_udid->payload->transaction_type,
                             'order_id' => $notif_udid->payload->invoice_code, // $order_id = $this->input->post('order_id'),
                             'transaction_time' => $notif_udid->payload->created_at,
+                            'gross_amount' => $notif_udid->payload->gross_amount,
                         ];
-
-                        $notif = json_encode($notif);
-                        $notif = json_decode($notif);
 
                     }else{
                         throw new Exception('SERVER UDID ERROR');

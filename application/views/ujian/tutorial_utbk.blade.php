@@ -12,206 +12,226 @@
 
 @push('page_custom_css')
 <style type="text/css">
-    /* styling opsi */
-    .funkyradio div {
-        clear: both;
-        overflow: hidden;
-    }
+/* styling opsi */
+.funkyradio div {
+    clear: both;
+    overflow: hidden;
+}
 
-    .funkyradio label {
-        width: 100%;
-        border-radius: 3px;
-        border: 1px solid #D1D3D4;
-        font-weight: normal;
-        padding: 5px 0 5px 50px;
-    }
+.funkyradio label {
+    width: 100%;
+    border-radius: 3px;
+    border: 1px solid #D1D3D4;
+    font-weight: normal;
+    padding: 5px 0 5px 50px;
+}
 
-    .funkyradio input[type="radio"]:empty,
-    .funkyradio input[type="checkbox"]:empty {
-        display: none;
-    }
+.funkyradio input[type="radio"]:empty,
+.funkyradio input[type="checkbox"]:empty {
+    display: none;
+}
 
-    .funkyradio input[type="radio"]:empty~label,
-    .funkyradio input[type="checkbox"]:empty~label {
-        position: relative;
-        line-height: 2em;
-        /*text-indent: 3.25em;*/
-        margin-top: 5px;
-        cursor: pointer;
-        -webkit-user-select: none;
-        -moz-user-select: none;
-        -ms-user-select: none;
-        user-select: none;
-    }
+.funkyradio input[type="radio"]:empty~label,
+.funkyradio input[type="checkbox"]:empty~label {
+    position: relative;
+    line-height: 2em;
+    /*text-indent: 3.25em;*/
+    margin-top: 5px;
+    cursor: pointer;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
 
-    .funkyradio input[type="radio"]:empty~label:before,
-    .funkyradio input[type="checkbox"]:empty~label:before {
-        position: absolute;
-        display: block;
-        top: 0;
-        bottom: 0;
-        left: 0;
-        content: '';
-        width: 2.5em;
-        background: #D1D3D4;
-        border-radius: 3px 0 0 3px;
-    }
+.funkyradio input[type="radio"]:empty~label:before,
+.funkyradio input[type="checkbox"]:empty~label:before {
+    position: absolute;
+    display: block;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    content: '';
+    width: 2.5em;
+    background: #D1D3D4;
+    border-radius: 3px 0 0 3px;
+}
 
-    .funkyradio input[type="radio"]:hover:not(:checked)~label,
-    .funkyradio input[type="checkbox"]:hover:not(:checked)~label {
-        color: #888;
-    }
+.funkyradio input[type="radio"]:hover:not(:checked)~label,
+.funkyradio input[type="checkbox"]:hover:not(:checked)~label {
+    color: #888;
+}
 
-    .funkyradio input[type="radio"]:hover:not(:checked)~label:before,
-    .funkyradio input[type="checkbox"]:hover:not(:checked)~label:before {
-        /*content: '\2714';*/
-        text-indent: .9em;
-        color: #000;
-        font-weight: bold;
-        padding: 5px 0 0 0;
-    }
+.funkyradio input[type="radio"]:hover:not(:checked)~label:before,
+.funkyradio input[type="checkbox"]:hover:not(:checked)~label:before {
+    /*content: '\2714';*/
+    text-indent: .9em;
+    color: #000;
+    font-weight: bold;
+    padding: 5px 0 0 0;
+}
 
-    .funkyradio input[type="radio"]:checked~label,
-    .funkyradio input[type="checkbox"]:checked~label {
-        /* color: #fff; */
-        /* background: #86C186; */
-        /* font-weight: bold; */
-        border-color: #86C186;
-    }
+.funkyradio input[type="radio"]:checked~label,
+.funkyradio input[type="checkbox"]:checked~label {
+    /* color: #fff; */
+    /* background: #86C186; */
+    /* font-weight: bold; */
+    border-color: #86C186;
+}
 
-    .funkyradio input[type="radio"]:checked~label:before,
-    .funkyradio input[type="checkbox"]:checked~label:before {
-        /*content: '\2714';*/
-        text-indent: .9em;
-        color: #333;
-        background-color: #ccc;
-        padding: 5px 0 0 0;
-    }
+.funkyradio input[type="radio"]:checked~label:before,
+.funkyradio input[type="checkbox"]:checked~label:before {
+    /*content: '\2714';*/
+    text-indent: .9em;
+    color: #333;
+    background-color: #ccc;
+    padding: 5px 0 0 0;
+}
 
-    .funkyradio input[type="radio"]:focus~label:before,
-    .funkyradio input[type="checkbox"]:focus~label:before {
-        box-shadow: 0 0 0 3px #999;
-    }
+.funkyradio input[type="radio"]:focus~label:before,
+.funkyradio input[type="checkbox"]:focus~label:before {
+    box-shadow: 0 0 0 3px #999;
+}
 
-    .funkyradio-default input[type="radio"]:checked~label:before,
-    .funkyradio-default input[type="checkbox"]:checked~label:before {
-        color: #333;
-        background-color: #ccc;
-    }
+.funkyradio-default input[type="radio"]:checked~label:before,
+.funkyradio-default input[type="checkbox"]:checked~label:before {
+    color: #333;
+    background-color: #ccc;
+}
 
-    .funkyradio-primary input[type="radio"]:checked~label:before,
-    .funkyradio-primary input[type="checkbox"]:checked~label:before {
-        color: #fff;
-        background-color: #337ab7;
-    }
+.funkyradio-primary input[type="radio"]:checked~label:before,
+.funkyradio-primary input[type="checkbox"]:checked~label:before {
+    color: #fff;
+    background-color: #337ab7;
+}
 
-    .funkyradio-success input[type="radio"]:checked~label:before,
-    .funkyradio-success input[type="checkbox"]:checked~label:before {
-        color: #fff;
-        background-color: #5cb85c;
-    }
+.funkyradio-success input[type="radio"]:checked~label:before,
+.funkyradio-success input[type="checkbox"]:checked~label:before {
+    color: #fff;
+    background-color: #5cb85c;
+}
 
-    .funkyradio-danger input[type="radio"]:checked~label:before,
-    .funkyradio-danger input[type="checkbox"]:checked~label:before {
-        color: #fff;
-        background-color: #d9534f;
-    }
+.funkyradio-danger input[type="radio"]:checked~label:before,
+.funkyradio-danger input[type="checkbox"]:checked~label:before {
+    color: #fff;
+    background-color: #d9534f;
+}
 
-    .funkyradio-warning input[type="radio"]:checked~label:before,
-    .funkyradio-warning input[type="checkbox"]:checked~label:before {
-        color: #fff;
-        background-color: #f0ad4e;
-    }
+.funkyradio-warning input[type="radio"]:checked~label:before,
+.funkyradio-warning input[type="checkbox"]:checked~label:before {
+    color: #fff;
+    background-color: #f0ad4e;
+}
 
-    .funkyradio-info input[type="radio"]:checked~label:before,
-    .funkyradio-info input[type="checkbox"]:checked~label:before {
-        color: #fff;
-        background-color: #5bc0de;
-    }
+.funkyradio-info input[type="radio"]:checked~label:before,
+.funkyradio-info input[type="checkbox"]:checked~label:before {
+    color: #fff;
+    background-color: #5bc0de;
+}
 
-    .huruf_opsi {
-        margin-left: -36px;
-        /*margin-top: 9px;*/
-        position: absolute;
-    }
+.huruf_opsi {
+    margin-left: -36px;
+    /*margin-top: 9px;*/
+    position: absolute;
+}
 
-    .funkyradio-success .huruf_opsi{
-        color: #fff;
-    }
+.funkyradio-success .huruf_opsi{
+    color: #fff;
+}
 
-    .pertanyaan {
-        line-height: 2rem;
-    }
+.pertanyaan {
+    line-height: 2rem;
+}
 
-    html body {
-        height: auto;
-    }
+html body {
+    height: auto;
+}
 
-    body {
-        -webkit-user-select: none;
-        -moz-user-select: -moz-none;
-        -ms-user-select: none;
-        user-select: none;
+body {
+    -webkit-user-select: none;
+    -moz-user-select: -moz-none;
+    -ms-user-select: none;
+    user-select: none;
 
-        /*overflow: hidden;*/
-    }
+    /*overflow: hidden;*/
+}
 
-    .card {
-        border-radius: 0px
-    }
+.card {
+    border-radius: 0px
+}
 
-    fieldset {
-        border: 1px solid #ccc;
-        padding: 10px;
-        margin-bottom: 10px;
-    }
+fieldset {
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin-bottom: 10px;
+}
 
-    legend {
-        font-size: 1rem;
-        width: auto;
-        padding-left: 5px;
-        padding-right: 5px;
-        margin-bottom: 0px;
-    }
+legend {
+    font-size: 1rem;
+    width: auto;
+    padding-left: 5px;
+    padding-right: 5px;
+    margin-bottom: 0px;
+}
 
-    .card.card-fullscreen {
-        z-index: 9995 !important;
-    }
+.card.card-fullscreen {
+    z-index: 9995 !important;
+}
 
-    .enjoyhint {
-        z-index: 9996 !important;
-    }
+.enjoyhint {
+    z-index: 9996 !important;
+}
 
-    .swal2-container {
-        z-index: 9997 !important;
-    }
+.swal2-container {
+    z-index: 9997 !important;
+}
 
-    .enjoyhint_close_btn {
-        display: none;
-    }
+.enjoyhint_close_btn {
+    display: none;
+}
 
-    #q_n_a{
-        max-height: 700px; /* OVERIDED LATER */
-        overflow-y: scroll;
-    }
+#q_n_a{
+    /* max-height: 700px; OVERIDED LATER */
+    overflow-y: scroll;
+}
 
-    #panel_user{
-        max-height: 750px; /* OVERIDED LATER */
-        overflow-y: scroll;
-    }
+#panel_user{
+    /* max-height: 750px; OVERIDED LATER */
+    overflow-y: scroll;
+}
 
-    #lembar_ujian{
-        background-color: #fff; 
-        overflow-x: hidden;
-    }
+#lembar_ujian{
+    background-color: #fff; 
+    overflow-x: hidden;
+}
 
-    #ujian_card_header{
-        border-bottom: 2px solid blue;
-    }
+#ujian_card_header{
+    border-bottom: 2px solid blue;
+}
 
-    #div_navigasi{
-        border-top: 1px solid grey;
-    }
+#div_navigasi{
+    border-top: 1px solid grey;
+}
+
+#fixed_panel{
+    width: 250px;
+    height: 63px;
+    position: fixed;
+    top: 0;
+    background-color: #ffc;
+    border-left: 1px solid #F00;
+    border-bottom: 1px solid #f00;
+    border-radius: 0 0 0 10px;
+    z-index: 9996 !important;
+    right: 0;
+}
+
+#sisa_waktu_2{
+    margin: 10px auto;
+    width: 100px;
+    text-align: center;
+    font-size: 2rem;
+}
 </style>
 @endpush
 
@@ -278,6 +298,7 @@ let update_time = () => {
         }
 
         $('#sisa_waktu').text(duration_text);
+        $('#sisa_waktu_2').text(duration_text);
 
     },interval);
 
@@ -761,11 +782,27 @@ $(document).on('click','input[type="radio"]',function(){
     }
 });
 
+$('#lembar_ujian').on('scroll', function() {
+    let docViewTop = $('#lembar_ujian').scrollTop();
+    let hel = $('#ujian_card_header').height();
+
+    if(docViewTop <= hel){
+        $('#fixed_panel').hide();
+    }else{
+        $('#fixed_panel').show();
+    }
+});
+
 </script>
 <!-- END PAGE LEVEL JS-->
 @endpush
 
 @section('content')
+<div id="fixed_panel" style="display: none">
+    <div id="sisa_waktu_2">
+        0:0:0
+    </div>
+</div>
 <section id="lembar_ujian" class="card card-fullscreen">
     <div class="row">
         <div class="col-12">

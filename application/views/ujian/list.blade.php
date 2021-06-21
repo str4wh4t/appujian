@@ -269,7 +269,6 @@
                                                             <div class="card-footer border-top-blue-grey border-top-lighten-5 text-muted">
                                                                 
                                                                 @if(empty($mhs_ujian->h_ujian))
-
                                                                     @if (($status_ujian == 'active')||($status_ujian == 'upcoming'))
                                                                         <a class="btn btn-sm btn-success" href="{{ url('ujian/token/' . uuid_create_from_integer($mhs_ujian->m_ujian->id_ujian)) }}">
                                                                             <i class="fa fa-pencil"></i> Masuk
@@ -281,35 +280,31 @@
                                                                     @else
                                                                         
                                                                     @endif
-
                                                                 @else
-                                                                    @if ($mhs_ujian->m_ujian->tampilkan_hasil)
-                                                                        <a class="btn btn-sm btn-primary" href="{{ url('hasilujian/detail/' . uuid_create_from_integer($mhs_ujian->m_ujian->id_ujian)) }}">
-                                                                            <i class="fa fa-check-square"></i> Hasil Ujian
-                                                                        </a>
-                                                                    @else
-                                                                        @if (($status_ujian == 'active')||($status_ujian == 'upcoming'))
-                                                                            <a class="btn btn-sm btn-success" href="{{ url('ujian/token/' . uuid_create_from_integer($mhs_ujian->m_ujian->id_ujian)) }}">
-                                                                                <i class="fa fa-pencil"></i> Masuk
+                                                                    @if($mhs_ujian->h_ujian->ujian_selesai == 'Y')
+                                                                        @if ($mhs_ujian->m_ujian->tampilkan_hasil)
+                                                                            <a class="btn btn-sm btn-primary" href="{{ url('hasilujian/detail/' . uuid_create_from_integer($mhs_ujian->m_ujian->id_ujian)) }}">
+                                                                                <i class="fa fa-check-square"></i> Hasil Ujian
                                                                             </a>
                                                                         @else
                                                                             <button type="button" class="btn btn-sm btn-warning">
                                                                                 <i class="fa fa-exclamation-circle"></i> Sudah Ujian
                                                                             </button>
                                                                         @endif
-                                                                    @endif
 
-                                                                    @if($mhs_ujian->m_ujian->repeatable) 
-
-                                                                        @if (($status_ujian == 'active')||($status_ujian == 'upcoming'))
-                                                                            <button class="btn btn-sm btn-outline-danger float-right btn_ulangi_ujian" data-hid="{{ uuid_create_from_integer($mhs_ujian->h_ujian->id) }}" data-mid="{{ uuid_create_from_integer($mhs_ujian->m_ujian->id_ujian) }}">
-                                                                                <i class="fa fa-refresh"></i> Ulangi Ujian
-                                                                            </button>
+                                                                        @if($mhs_ujian->m_ujian->repeatable) 
+                                                                            @if (($status_ujian == 'active')||($status_ujian == 'upcoming'))
+                                                                                <button class="btn btn-sm btn-outline-danger float-right btn_ulangi_ujian" data-hid="{{ uuid_create_from_integer($mhs_ujian->h_ujian->id) }}" data-mid="{{ uuid_create_from_integer($mhs_ujian->m_ujian->id_ujian) }}">
+                                                                                    <i class="fa fa-refresh"></i> Ulangi Ujian
+                                                                                </button>
+                                                                            @endif
                                                                         @endif
-                                                                    
+                                                                    @else
+                                                                        <a class="btn btn-sm btn-success" href="{{ url('ujian/token/' . uuid_create_from_integer($mhs_ujian->m_ujian->id_ujian)) }}">
+                                                                            <i class="fa fa-pencil"></i> Masuk
+                                                                        </a>
                                                                     @endif
                                                                 @endif
-
                                                             </div>
                                                         </div>
                                                     </div>

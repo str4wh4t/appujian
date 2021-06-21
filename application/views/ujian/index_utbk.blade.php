@@ -180,12 +180,12 @@ legend{
 }
 
 #q_n_a{
-    max-height: 700px; /* OVERIDED LATER */
+    /* max-height: 700px; OVERIDED LATER */
     overflow-y: scroll;
 }
 
 #panel_user{
-    max-height: 750px; /* OVERIDED LATER */
+    /* max-height: 750px; OVERIDED LATER */
     overflow-y: scroll;
 }
 
@@ -202,24 +202,44 @@ legend{
     border-top: 1px solid grey;
 }
 
+#fixed_panel{
+    width: 250px;
+    height: 63px;
+    position: fixed;
+    top: 0;
+    background-color: #ffc;
+    border-left: 1px solid #F00;
+    border-bottom: 1px solid #f00;
+    border-radius: 0 0 0 10px;
+    z-index: 9996 !important;
+    right: 0;
+}
+
+#sisa_waktu_2{
+    margin: 10px auto;
+    width: 100px;
+    text-align: center;
+    font-size: 2rem;
+}
+
 </style>
 @endpush
 
 @push('page_vendor_level_js')
 <!-- BEGIN PAGE VENDOR JS-->
-{{--    <script src="{{ asset('assets/template/robust/app-assets/vendors/js/tables/datatable/datatables.min.js') }}"></script>--}}
-{{--<script src="{{ asset('assets/template/robust/app-assets/vendors/js/tables/jquery.dataTables.min.js') }}"></script>--}}
-{{--<script src="{{ asset('assets/template/robust/app-assets/vendors/js/tables/datatable/dataTables.bootstrap4.min.js') }}"></script>--}}
-{{--<script src="{{ asset('assets/template/robust/app-assets/vendors/js/tables/datatable/dataTables.responsive.min.js') }}"></script>--}}
-{{--<script src="{{ asset('assets/template/robust/app-assets/vendors/js/tables/datatable/dataTables.rowReorder.min.js') }}"></script>--}}
+{{-- <script src="{{ asset('assets/template/robust/app-assets/vendors/js/tables/datatable/datatables.min.js') }}"></script>--}}
+{{-- <script src="{{ asset('assets/template/robust/app-assets/vendors/js/tables/jquery.dataTables.min.js') }}"></script>--}}
+{{-- <script src="{{ asset('assets/template/robust/app-assets/vendors/js/tables/datatable/dataTables.bootstrap4.min.js') }}"></script>--}}
+{{-- <script src="{{ asset('assets/template/robust/app-assets/vendors/js/tables/datatable/dataTables.responsive.min.js') }}"></script>--}}
+{{-- <script src="{{ asset('assets/template/robust/app-assets/vendors/js/tables/datatable/dataTables.rowReorder.min.js') }}"></script>--}}
 <script src="{{ asset('assets/yarn/node_modules/moment/min/moment.min.js') }}"></script>
-{{--    <script src="https://momentjs.com/downloads/moment-with-locales.js"></script>--}}
+{{-- <script src="https://momentjs.com/downloads/moment-with-locales.js"></script>--}}
 <script src="{{ asset('assets/yarn/node_modules/moment/min/moment-with-locales.min.js') }}"></script>
-{{--     <script src="https://cdnjs.cloudflare.com/ajax/libs/screenfull.js/5.0.2/screenfull.min.js"></script>--}}
-{{--<script src="https://cdnjs.cloudflare.com/ajax/libs/kineticjs/5.2.0/kinetic.js"></script>--}}
-<script src="{{ asset('assets/yarn/node_modules/kinetic/kinetic.min.js') }}"></script>
-{{--<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-scrollTo/2.1.2/jquery.scrollTo.min.js"></script>--}}
-<script src="{{ asset('assets/yarn/node_modules/jquery.scrollto/jquery.scrollTo.min.js') }}"></script>
+{{-- <script src="https://cdnjs.cloudflare.com/ajax/libs/screenfull.js/5.0.2/screenfull.min.js"></script>--}}
+{{-- <script src="https://cdnjs.cloudflare.com/ajax/libs/kineticjs/5.2.0/kinetic.js"></script>--}}
+{{-- <script src="{{ asset('assets/yarn/node_modules/kinetic/kinetic.min.js') }}"></script> --}}
+{{-- <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-scrollTo/2.1.2/jquery.scrollTo.min.js"></script>--}}
+{{-- <script src="{{ asset('assets/yarn/node_modules/jquery.scrollto/jquery.scrollTo.min.js') }}"></script> --}}
 <!-- END PAGE VENDOR JS -->
 @endpush
 
@@ -385,6 +405,7 @@ const update_time = () => {
                 }
 
                 $('#sisa_waktu').text(duration_text);
+                $('#sisa_waktu_2').text(duration_text);
 
             },interval);
 
@@ -462,15 +483,16 @@ function init_page_level(){
     // $('body').bind('copy paste cut drag drop', function (e) {
     //   e.preventDefault();
     // });
-    document.addEventListener('contextmenu', event => event.preventDefault());
 
-    let width = $(window).width();
+    // document.addEventListener('contextmenu', event => event.preventDefault());
 
-    let height = $(window).height();
+    // let width = $(window).width();
+
+    // let height = $(window).height();
     
-    $('#q_n_a').css('max-height', (height - (87.85 + 68.5)));
-    $('#q_n_a').css('min-height', (height - (87.85 + 68.5)));
-    $('#panel_user').css('max-height', (height - (87.85)));
+    // $('#q_n_a').css('max-height', (height - (87.85 + 68.5)));
+    // $('#q_n_a').css('min-height', (height - (87.85 + 68.5)));
+    // $('#panel_user').css('max-height', (height - (87.85)));
 
 }
 
@@ -613,12 +635,28 @@ function selesai(ended_by = '') {
 }
 /** [END] FUNGSI SELESAI UJIAN */
 
+$('#lembar_ujian').on('scroll', function() {
+    let docViewTop = $('#lembar_ujian').scrollTop();
+    let hel = $('#ujian_card_header').height();
+
+    if(docViewTop <= hel){
+        $('#fixed_panel').hide();
+    }else{
+        $('#fixed_panel').show();
+    }
+});
+
 </script>
 <script src="{{ asset('assets/dist/js/app/ujian/index.js') }}"></script>
 <!-- END PAGE LEVEL JS-->
 @endpush
 
 @section('content')
+<div id="fixed_panel" style="display: none">
+    <div id="sisa_waktu_2">
+        0:0:0
+    </div>
+</div>
 <section id="lembar_ujian" class="card card-fullscreen">
 <div class="row">
     <div class="col-12">

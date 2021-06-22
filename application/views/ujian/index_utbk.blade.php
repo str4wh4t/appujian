@@ -222,6 +222,17 @@ legend{
     font-size: 2rem;
 }
 
+#watermark {
+    position: fixed;
+    right: 25%;
+    top: 40%;
+    opacity: 0.25;
+    z-index: 9997 !important;
+    font-size: 75px;
+    -ms-transform: rotate(45deg);
+    transform: rotate(45deg);
+}
+
 </style>
 @endpush
 
@@ -656,6 +667,9 @@ $('#lembar_ujian').on('scroll', function() {
     <div id="sisa_waktu_2">
         0:0:0
     </div>
+</div>
+<div id="watermark">
+    {{ $h_ujian->mhs->nim }}
 </div>
 <section id="lembar_ujian" class="card card-fullscreen">
 <div class="row">

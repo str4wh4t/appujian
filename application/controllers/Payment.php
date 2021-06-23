@@ -339,7 +339,7 @@ class Payment extends MY_Controller
             }
             
             if($notif->status != 'ok'){
-                show_error('Kesalahan data pada srv udid', 500, 'Perhatian');
+                show_error('SERVER UDID ERROR 1', 500, 'Perhatian');
             }
             
             $additional_cost = $notif->payload->additional_cost ;
@@ -392,37 +392,86 @@ class Payment extends MY_Controller
                 $notif = json_decode($result);
     
                 if($notif->status != 'ok'){
-                    throw new Exception('SERVER UDID ERROR');
+                    throw new Exception('SERVER UDID ERROR 2');
                 }
 
             }catch (Exception $e) {
                 show_error($e->getMessage(), 500, 'Perhatian');
             }
-            
 
-            // [order_id] => CKPWG8DQY00019MY60O7Q0YGY
-            // [serialized_id] => CKPWG8DQY00019MY60O7Q0YGY.1623665022
-            // [va_code] => 12345667
-            // [nominal] => 202500
 
-            // vdebug($notif);
+            // SET EXPIRE FOR TRX_PAYMENT 
 
-            $notif_payment = (object)[
-                'order_id' => $order_number,
-                'transaction_status' => $notif->payload->status,
-                'transaction_time' => $notif->payload->transaction_time,
-                'gross_amount' => $notif->payload->nominal,
-                'nett_amount' => $nett_amount,
-                'order_id_udid' => $notif->payload->order_id,
-            ];
-            
-            $this->load->model('payment_model');
-            $return = $this->payment_model->exec_payment($notif_payment, 'udid_api');
-
-            if($return != 'SUCCESS'){
-                $status = 'ko';
-                $msg = $return;
+            $info = explode('-', $order_number);
+			$username = $info[0] ; // 
+            $term = null ;
+            if(substr($info[1], 0, 1) == 'M'){
+                // SET EXPIRE UNTUK TRX MIDTRANS PENDING SEBELUMNYA JIKA TRX TSB UNTUK MEMBERSHIP APAPUN
+                $term = substr($order_number, 0, 14); // SAMPE HURUF M, contoh : 210423223442-M
             }
+                
+            if(substr($info[1], 0, 1) == 'P'){
+                // SET EXPIRE UNTUK TRX MIDTRANS PENDING SEBELUMNYA JIKA TRX TSB UNTUK PAKET YANG SAMA
+                $term = $username . '-' . $info[1]; // SETALAH PAKET ID, contoh : 210423223442-P2
+            }
+
+            /**
+             * PAYMENT BEFORE DI EXPIRE KAN PADA METHOD INI KARENA BISA DIPAKAI OLEH LOGIC DIBAWAHNYA
+             */
+
+            $trx_payment_before = Trx_payment_orm::where('stts', PAYMENT_ORDER_BELUM_DIPROSES)
+                                                    ->where('order_number', 'like', $term . '%')
+                                                    ->where('order_number', '!=', $order_number)
+                                                    ->get();
+
+            if($trx_payment_before->isNotEMpty()){
+
+                foreach($trx_payment_before as $trx){
+
+                    // LANJUTAN DARI LOGIC APP_UDID DIATAS
+                    try {
+                        $result = $this->sso_udid_adapter->request([
+                                    'method'      => 'POST',
+                                    'endpoint'    => APP_UDID_API . '/api-payment/api/cancel_payment',
+                                    'body_params' => [
+                                            'form_params' => [
+                                            'order_id' => $trx->order_id_udid,
+                                        ],
+                                    ],
+                                    'header_params' => [
+                                        //			'Content-Type' => 'application/json',
+                                        'Accept'       => 'application/json',
+                                    ]
+                        ], $token);
+
+                        $notif = json_decode($result);
+
+                        if($notif->status != 'ok'){
+                            throw new Exception('SERVER UDID ERROR 3');
+                        }
+
+                    }catch (Exception $e) {
+                        show_error($e->getMessage(), 500, 'Perhatian');
+                    }
+                }
+            }
+
+            // $notif_payment = (object)[
+            //     'order_id' => $order_number,
+            //     'transaction_status' => $notif->payload->status,
+            //     'transaction_time' => $notif->payload->transaction_time,
+            //     'gross_amount' => $notif->payload->nominal,
+            //     'nett_amount' => $nett_amount,
+            //     'order_id_udid' => $notif->payload->order_id,
+            // ];
+            
+            // $this->load->model('payment_model');
+            // $return = $this->payment_model->exec_payment($notif_payment, 'udid_api');
+
+            // if($return != 'SUCCESS'){
+            //     $status = 'ko';
+            //     $msg = $return;
+            // }
 
         }else{
 

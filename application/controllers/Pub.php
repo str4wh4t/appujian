@@ -581,22 +581,25 @@ class Pub extends MY_Controller {
 
 		$log_status = $this->payment_model->exec_payment($notif, 'midtrans') ;
 
-		$trx_midtrans = new Trx_midtrans_orm();
-		
-		$trx_midtrans->transaction_id = $notif->transaction_id;
-		$trx_midtrans->transaction_status = $notif->transaction_status;
-		$trx_midtrans->transaction_time = $notif->transaction_time;
-		$trx_midtrans->status_code = $notif->status_code;
-		$trx_midtrans->payment_type = $notif->payment_type;
-		$trx_midtrans->order_id = $notif->order_id;
-		$trx_midtrans->fraud_status = $notif->fraud_status;
-		$trx_midtrans->gross_amount = $notif->gross_amount;
-		$trx_midtrans->signature_key = $notif->signature_key;
-		$trx_midtrans->is_settlement_processed = $notif->transaction_status == 'settlement' ? 1 : 0;
+		if(in_array($notif->transaction_status, ['pending', 'settlement'])){
 
-		$trx_midtrans->log_status = $log_status ;
+			$trx_midtrans = new Trx_midtrans_orm();
+			
+			$trx_midtrans->transaction_id = $notif->transaction_id;
+			$trx_midtrans->transaction_status = $notif->transaction_status;
+			$trx_midtrans->transaction_time = $notif->transaction_time;
+			$trx_midtrans->status_code = $notif->status_code;
+			$trx_midtrans->payment_type = $notif->payment_type;
+			$trx_midtrans->order_id = $notif->order_id;
+			$trx_midtrans->fraud_status = $notif->fraud_status;
+			$trx_midtrans->gross_amount = $notif->gross_amount;
+			$trx_midtrans->signature_key = $notif->signature_key;
+			$trx_midtrans->is_settlement_processed = $notif->transaction_status == 'settlement' ? 1 : 0;
 
-        $trx_midtrans->save();
+			$trx_midtrans->log_status = $log_status ;
+
+			$trx_midtrans->save();
+		}
 
 	}
 
@@ -608,14 +611,13 @@ class Pub extends MY_Controller {
 			show_404();
 
 		$notif = (object)$notif;
-		$nett_amount = 0;
 
 		$notif_payment = (object)[
 			'order_id' => $notif->invoice_code,
 			'transaction_status' => $notif->status,
 			'transaction_time' => $notif->transaction_time,
 			'gross_amount' => $notif->nominal,
-			'nett_amount' => $nett_amount,
+			'nett_amount' => $notif->transaction_detail[0]['nominal'],
 			'order_id_udid' => $notif->order_id,
 			'bank' => $notif->va_provider,
 			'va_number' => $notif->va_code,
@@ -623,7 +625,9 @@ class Pub extends MY_Controller {
 		];
 		
 		$this->load->model('payment_model');
-		$this->payment_model->exec_payment($notif_payment, 'udid_api');
+		$log_status = $this->payment_model->exec_payment($notif_payment, 'udid_api');
+		if($log_status != "SUCCESS")
+			show_error('NOTIFY GAGAL', 500, "Perhatian");
 
 	}
 

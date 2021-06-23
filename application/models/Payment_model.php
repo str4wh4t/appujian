@@ -26,6 +26,8 @@ class Payment_model extends CI_Model {
          * $notif->transaction_status == settlement
         */
 
+        $log_status = "FAIL";
+
         try{
 			begin_db_trx();
 
@@ -75,7 +77,10 @@ class Payment_model extends CI_Model {
                     $trx_payment->trx_by = $trx_by;
                     $trx_payment->order_id_udid = $notif->order_id_udid;
 
-					$trx_payment->save();
+					if($trx_payment->save()){
+                        $log_status = "SUCCESS";
+                    }
+
 				}
 
                 //[START] LOGIC UNTUK EXPIRE KAN ORDER SEBELUMNYA
@@ -88,7 +93,7 @@ class Payment_model extends CI_Model {
 					
 				if(substr($info[1], 0, 1) == 'P'){
                     // SET EXPIRE UNTUK TRX MIDTRANS PENDING SEBELUMNYA JIKA TRX TSB UNTUK PAKET YANG SAMA
-					$term = $info[0] . '-' . $info[1]; // SETALAH PAKET ID, contoh : 210423223442-P2
+					$term = $username . '-' . $info[1]; // SETALAH PAKET ID, contoh : 210423223442-P2
 				}
 
                 
@@ -113,78 +118,27 @@ class Payment_model extends CI_Model {
                     }
                 }
 
-                
+                // if(!APP_UDID){
+                    /**
+                     * JIKA INI BUKAN APLIKASI UDID , KARENA JIKA APLIKASI UDID 
+                     * PAYMENT BEFORE DI EXPIRE KAN PADA METHOD payment/_snap
+                     * SILAHKAN DICEK PADA METHOD TERSEBUT
+                     */
+                    // $trx_payment_before = Trx_payment_orm::where('stts', PAYMENT_ORDER_BELUM_DIPROSES)
+                    //                                     ->where('order_number', 'like', $term . '%')
+                    //                                     ->where('order_number', '!=', $notif->order_id)
+                    //                                     ->get();
 
-                // SET EXPIRE FOR TRX_PAYMENT 
+                    // if($trx_payment_before->isNotEMpty()){
 
-                $trx_payment_before = Trx_payment_orm::where('stts', PAYMENT_ORDER_BELUM_DIPROSES)
-                                                        ->where('order_number', 'like', $term . '%')
-                                                        ->where('order_number', '!=', $notif->order_id)
-                                                        ->get();
-                
-                if($trx_payment_before->isNotEMpty()){
+                    //     foreach($trx_payment_before as $trx){
+                    //         $trx->stts = PAYMENT_ORDER_EXPIRED;
+                    //         $trx->save();
 
-                    if(APP_UDID){
-                        // JIKA APP_UDID
-    
-                        $this->load->library('verification_jwt');
-                        $this->load->library('sso_udid_adapter', [
-                            'property' => [
-                                'client_id'         => APP_UDID_ID,
-                                'client_secret'     => APP_UDID_SECRET,
-                                'redirect_uri'      => url('auth/cek_login_udid'),
-                                'scope'             => 'User.Read User.Payment.Read User.Payment.Write',
-                                'authorization_url' => 'https://login.undip.id/oauth2/authorize/login',
-                                'access_token_url'  => 'https://login.undip.id/oauth2/authorize/access_token',
-                            ],
-                            'settings' => [
-                        //		'verify' => false, /*default*/
-                            ],
-                            'debug' => [
-                                'exception' => true, /*debug all exception*/
-                                'token'     => false, /*debug token request*/
-                                'response'  => false, /*debug all response non token*/
-                            ],
-                        ]);
+                    //     }
                         
-                        $token = $this->session->userdata('token_udid');
-    
-    
-                    }
-
-                    foreach($trx_payment_before as $trx){
-                        $trx->stts = PAYMENT_ORDER_EXPIRED;
-						$trx->save();
-
-                        if(APP_UDID){
-                            // LANJUTAN DARI LOGIC APP_UDID DIATAS
-                            try {
-                                $result = $this->sso_udid_adapter->request([
-                                    'method'      => 'POST',
-                                    'endpoint'    => APP_UDID_API . '/api-payment/api/cancel_payment',
-                                    'body_params' => [
-                                        'form_params' => [
-                                            'order_id' => $trx->order_id_udid,
-                                        ],
-                                    ],
-                                    'header_params' => [
-                            //			'Content-Type' => 'application/json',
-                                        'Accept'       => 'application/json',
-                                    ]
-                                ], $token);
-
-                                $notif = json_decode($result);
-
-                                if($notif->status != 'ok'){
-                                    throw new Exception('SERVER UDID ERROR');
-                                }
-                    
-                            }catch (Exception $e) {
-                                show_error($e->getMessage(), 500, 'Perhatian');
-                            }
-                        }
-                    }
-                }
+                    // }
+                // }
 
                 //[END] LOGIC UNTUK EXPIRE KAN ORDER SEBELUMNYA
 
@@ -576,17 +530,29 @@ class Payment_model extends CI_Model {
                     $trx_payment->paket_history_id = $paket_history_id;
                     $trx_payment->tgl_bayar = $notif->transaction_time;
                     $trx_payment->trx_by = $trx_by;
-                    $trx_payment->save();
 
+                    if($trx_payment->save()){
+                        $log_status = "SUCCESS";
+                    }
+                    
                     //[END] JIKA ORDER BELUM DIPROSES
 
                 }
 
-
 			}
 
+            if ($notif->transaction_status == 'expire'){
+                $trx_payment_before = Trx_payment_orm::where('order_number', $notif->order_id)
+                                                    ->first();
+
+                $trx_payment_before->stts = PAYMENT_ORDER_EXPIRED;
+                if($trx_payment_before->save()){
+                    $log_status = "SUCCESS";
+                }
+            }
+
 			commit_db_trx();
-			$log_status = "SUCCESS";
+			
 
 		}catch(Exception $e){
 			rollback_db_trx();

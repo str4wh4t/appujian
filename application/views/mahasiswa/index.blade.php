@@ -72,7 +72,7 @@ $(document).on('click','#btn_proses_sync_mhs',function(){
                             data: $('#form_sync_mhs').serialize() +'&'+ $.param({ 'data_impor_tambah': data_impor_tambah, 'data_impor_hapus': data_impor_hapus }),
                             type: "POST",
                             success: function (respon) {
-                                if (respon.status) {
+                                if (respon.status == 'ok') {
                                     Swal.fire({
                                         title: "Berhasil",
                                         text: "Data berhasil di-sync",
@@ -81,7 +81,7 @@ $(document).on('click','#btn_proses_sync_mhs',function(){
                                 } else {
                                     Swal.fire({
                                         title: "Gagal",
-                                        text: "Tidak ada data yg di sync",
+                                        text: "Terjadi kesalahan : " + respon.msg,
                                         icon: "error"
                                     });
                                 }

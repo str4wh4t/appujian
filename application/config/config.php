@@ -461,7 +461,7 @@ $config['csrf_protection'] = TRUE;
 // $config['csrf_cookie_name'] = 'ujianundip_localhost_cookie';
 $config['csrf_expire'] = 7200;
 $config['csrf_regenerate'] = FALSE;
-$config['csrf_exclude_uris'] = ['pub/notify_midtrans'];
+$config['csrf_exclude_uris'] = ['pub/notify_midtrans', 'pub/notify_udid'];
 
 /*
 |--------------------------------------------------------------------------

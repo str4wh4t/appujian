@@ -602,23 +602,24 @@ class Pub extends MY_Controller {
 
 	public function notify_udid(){
 
-		$input = file_get_contents('php://input');
-		if(empty($input))
+		// $input = file_get_contents('php://input');
+		$notif = $this->input->post();
+		if(empty($notif))
 			show_404();
 
-		$notif = (object)[];
+		$notif = (object)$notif;
 		$nett_amount = 0;
 
 		$notif_payment = (object)[
-			'order_id' => $notif->payload->invoice_code,
-			'transaction_status' => $notif->payload->status,
-			'transaction_time' => $notif->payload->transaction_time,
-			'gross_amount' => $notif->payload->nominal,
+			'order_id' => $notif->invoice_code,
+			'transaction_status' => $notif->status,
+			'transaction_time' => $notif->transaction_time,
+			'gross_amount' => $notif->nominal,
 			'nett_amount' => $nett_amount,
-			'order_id_udid' => $notif->payload->order_id,
-			'bank' => $notif->payload->va_provider,
-			'va_number' => $notif->payload->va_code,
-			'payment_type' => $notif->payload->transaction_type,
+			'order_id_udid' => $notif->order_id,
+			'bank' => $notif->va_provider,
+			'va_number' => $notif->va_code,
+			'payment_type' => $notif->transaction_type,
 		];
 		
 		$this->load->model('payment_model');
@@ -1135,6 +1136,8 @@ class Pub extends MY_Controller {
 			}
 
 			/////////
+
+			
 
 			$html = $soal->penjelasan;
 			if(!empty($html)){

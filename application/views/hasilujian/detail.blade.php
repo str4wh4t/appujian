@@ -192,11 +192,11 @@ $(document).on('click','#btn_ulangi_ujian',function(){
             </tr>
             <tr>
                 <th>Jadwal Mulai Ujian</th>
-                <td><?=strftime('%A, %d %B %Y', strtotime($ujian->tgl_mulai))?></td>
+                <td><?=strftime('%A, %d %B %Y %H:%M:%S', strtotime($ujian->tgl_mulai))?></td>
             </tr>
             <tr>
                 <th>Jadwal Selesai Ujian</th>
-                <td>{!! empty($ujian->terlambat) ? '&infin;' : strftime('%A, %d %B %Y', strtotime($ujian->terlambat)) !!}</td>
+                <td>{!! empty($ujian->terlambat) ? '&infin;' : strftime('%A, %d %B %Y %H:%M:%S', strtotime($ujian->terlambat)) !!}</td>
             </tr>
         </table>
     </div>

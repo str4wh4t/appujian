@@ -34,7 +34,7 @@ function init_page_level(){
 }
 
 $(document).on('click','img.featherlight-image',function(){
-    window.location = "https://sso.undip.id";
+    window.location = "{{ get_banner_ads_link() }}";
 });
 
 </script>

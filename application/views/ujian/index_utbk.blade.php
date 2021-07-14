@@ -1,12 +1,14 @@
 @extends('template.main')
 
 @push('page_level_css')
-<!-- BEGIN PAGE LEVEL JS-->
+<!-- BEGIN PAGE LEVEL CSS-->
 {{--<link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/vendors/css/tables/datatable/datatables.min.css') }}">--}}
 {{--<link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/vendors/css/tables/datatable/dataTables.bootstrap4.min.css') }}">--}}
 {{--<link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/vendors/css/tables/extensions/rowReorder.dataTables.min.css') }}">--}}
 {{--<link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/vendors/css/tables/extensions/responsive.dataTables.min.css') }}">--}}
-<!-- END PAGE LEVEL JS-->
+<link href="{{ asset('assets/yarn/node_modules/summernote/dist/summernote-bs4.min.css') }}" rel="stylesheet">
+<link href="{{ asset('assets/plugins/summernote_plugins/summernote-audio.css') }}" rel="stylesheet">
+<!-- END PAGE LEVEL CSS-->
 @endpush
 
 @push('page_custom_css')
@@ -182,6 +184,7 @@ legend{
 #q_n_a{
     /* max-height: 700px; OVERIDED LATER */
     overflow-y: scroll;
+    min-height: 550px;
 }
 
 #panel_user{
@@ -191,7 +194,7 @@ legend{
 
 #lembar_ujian{
     background-color: #fff; 
-    overflow-x: hidden;
+    overflow-x: hidden; /* UNTUK SUMBU X NYA BIAR TIDAK NYEKROLL */
 }
 
 #ujian_card_header{
@@ -251,6 +254,8 @@ legend{
 {{-- <script src="{{ asset('assets/yarn/node_modules/kinetic/kinetic.min.js') }}"></script> --}}
 {{-- <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-scrollTo/2.1.2/jquery.scrollTo.min.js"></script>--}}
 {{-- <script src="{{ asset('assets/yarn/node_modules/jquery.scrollto/jquery.scrollTo.min.js') }}"></script> --}}
+<script src="{{ asset('assets/yarn/node_modules/summernote/dist/summernote-bs4.min.js') }}"></script>
+<script src="{{ asset('assets/plugins/summernote_plugins/summernote-cleaner.js') }}"></script>
 <!-- END PAGE VENDOR JS -->
 @endpush
 
@@ -260,6 +265,9 @@ legend{
 
 let id_ujian = '{{  uuid_create_from_integer($h_ujian->id) }}';
 let key = '{{ $one_time_token }}';
+let tipe_soal_mcsa = {{ TIPE_SOAL_MCSA }};
+let tipe_soal_mcma = {{ TIPE_SOAL_MCMA }};
+let tipe_soal_essay = {{ TIPE_SOAL_ESSAY }};
 
 let topik = [];
 let topik_nama = [];
@@ -486,9 +494,33 @@ const setting_up_view = () => {
     });
 };
 
+const check_isian_essay = () => {
+    if($('input[name="tipe_soal_'+ nomer_soal_dibuka +'"]').val() == tipe_soal_essay){
+        let jawaban_essay_before = $('input[name="jawaban_essay_before_'+ nomer_soal_dibuka +'"]').val();
+        let jawaban_essay_now = $('textarea[name="opsi_'+ nomer_soal_dibuka +'"]').val();
+        // console.log('nomer_soal_dibuka', nomer_soal_dibuka);
+        // console.log('jawaban_essay', jawaban_essay_before);
+        // console.log('jawaban_essay', jawaban_essay_now);
+        // console.log('cek', jawaban_essay_before == jawaban_essay_now);
+        if(jawaban_essay_before == jawaban_essay_now){
+            $('#label_essay_belum_disimpan_'+ nomer_soal_dibuka).hide();
+        }else{
+            $('#label_essay_belum_disimpan_'+ nomer_soal_dibuka).show();
+        }
+    }
+};
+
+const loop_check_isian_essay = () => {
+    setInterval(function() {
+        check_isian_essay();
+    },30000);
+};
+
 function init_page_level(){
+    ajaxcsrf();
     setting_up_view();
     update_status_ujian();
+    loop_check_isian_essay();
     // ofs = $('#q_n_a').offset();
     // console.log('ofs',ofs);
     // $('body').bind('copy paste cut drag drop', function (e) {
@@ -504,6 +536,45 @@ function init_page_level(){
     // $('#q_n_a').css('max-height', (height - (87.85 + 68.5)));
     // $('#q_n_a').css('min-height', (height - (87.85 + 68.5)));
     // $('#panel_user').css('max-height', (height - (87.85)));
+
+    $('.summernote_editor').summernote({
+        toolbar: [
+            // [groupName, [list of button]]
+            // ['cleaner',['cleaner']],
+            ['style', ['bold', 'italic', 'underline', 'clear']],
+            ['font', ['strikethrough', 'superscript', 'subscript']],
+            ['fontsize', ['fontsize']],
+            ['color', ['color']],
+            ['table', ['table']],
+            ['para', ['ul', 'ol', 'paragraph']],
+            ['height', ['height']],
+            // ['view', ['codeview']],
+            // ['insert', ['audio']],
+        ],
+        cleaner:{
+              action: 'both', // both|button|paste 'button' only cleans via toolbar button, 'paste' only clean when pasting content, both does both options.
+              // newline: '<br>', // Summernote's default is to use '<p><br></p>'
+              notStyle: 'position:absolute;top:0;left:0;right:0', // Position of Notification
+              icon: '<i class="note-icon">Clean Format</i>',
+              keepHtml: false, // Remove all Html formats
+              keepOnlyTags: ['<p>', '<br>', '<ul>', '<li>', '<b>', '<strong>','<i>', '<a>'], // If keepHtml is true, remove all tags except these
+              keepClasses: false, // Remove Classes
+              badTags: ['style', 'script', 'applet', 'embed', 'noframes', 'noscript', 'html'], // Remove full tags with contents
+              badAttributes: ['style', 'start'], // Remove attributes from remaining tags
+              limitChars: false, // 0/false|# 0/false disables option
+              limitDisplay: 'both', // text|html|both
+              limitStop: false // true/false
+        },
+        placeholder: 'Ketik disini ...',
+        followingToolbar: false,
+        height: 200,
+        callbacks: {
+            onImageUpload: function (data) { // PREVENT ON UPLOADING IMAGE
+                data.pop();
+            }
+        }
+    });
+    $('.note-btn').attr('title', '').attr('data-original-title', ''); // DISABLED SUMMERNOTE TOOLTIP
 
 }
 
@@ -592,7 +663,7 @@ function selesai(ended_by = '') {
     if(ended_by == ''){
         ended_by = '{{ get_logged_user()->username }}';
     }
-    ajaxcsrf();
+    
     ajx_overlay(true);
     $.ajax({
         type: "POST",
@@ -667,9 +738,6 @@ $('#lembar_ujian').on('scroll', function() {
     <div id="sisa_waktu_2">
         0:0:0
     </div>
-</div>
-<div id="watermark">
-    {{ $h_ujian->mhs->nim }}
 </div>
 <section id="lembar_ujian" class="card card-fullscreen">
 <div class="row">
@@ -785,4 +853,7 @@ $('#lembar_ujian').on('scroll', function() {
 {!! form_close() !!}
 <!---- --->
 </section>
+<div id="watermark">
+    {{ $h_ujian->mhs->nim }}
+</div>
 @endsection

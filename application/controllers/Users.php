@@ -60,13 +60,17 @@ class Users extends MY_Controller {
 		$level = $this->ion_auth->get_users_groups($id)->result();
 		$user_login = $this->ion_auth->user()->row();
 		$user_cari = $this->ion_auth->user($id)->row();
+
+		$identity = $this->config->item('identity', 'ion_auth');
+
 		$data = [
 			'user_login' 		=> $user_login,
 			'judul'		=> 'User Management',
 			'subjudul'	=> 'Edit Data User',
 			'user_cari' 	=> $user_cari,
 			'groups'	=> $this->ion_auth->groups()->result(),
-			'level'		=> $level[0]
+			'level'		=> $level[0],
+			'is_locked_user_cari'	=> $this->ion_auth->is_max_login_attempts_exceeded($user_cari->$identity),
 		];
 		
 //		vdebug($data);
@@ -115,8 +119,6 @@ class Users extends MY_Controller {
 				'email' => form_error('email'),
 			];
 		}else{
-			
-			
 			
 			try {
 				begin_db_trx();
@@ -167,7 +169,7 @@ class Users extends MY_Controller {
 
 	public function edit_status()
 	{
-		$this->_akses_admin();
+		$this->_akses_admin_dan_koord_pengawas();
 		$this->form_validation->set_rules('id', 'Id User', 'required');
 		$this->form_validation->set_rules('status', 'Status', 'required');
 		
@@ -278,16 +280,58 @@ class Users extends MY_Controller {
 		$this->_json($data);
 	}
 
+	public function unlock(){
+
+		$this->_akses_admin_dan_koord_pengawas();
+
+		$this->form_validation->set_rules('id', 'Id User', 'required');
+
+		$status = true ;
+		$msg = '';
+		
+		if($this->form_validation->run()===FALSE){
+			$status = false ;
+			$msg = form_error('id');
+		}else{
+			$id = $this->input->post('id', true);
+			$users = Users_orm::findOrFail($id);
+
+			$identity = $this->config->item('identity', 'ion_auth');
+
+			$this->ion_auth->clear_login_attempts($users->$identity);
+
+		}
+		$this->_json(['status' => $status, 'msg' => $msg]);
+	}
+
 	public function delete($id)
 	{
 		$this->_akses_admin_dan_koord_pengawas();
+
+		$allow = true;
 
 		$user = $this->ion_auth->user()->row();
 
 		if($id == $user->id) show_404(); // JIKA YG DIDELETE ADALAH DIRI SENDIRI
 
-		$data['status'] = $this->ion_auth->delete_user($id) ? true : false;
-		$this->_json($data);
+		$level = $this->ion_auth->get_users_groups($id)->result();
+		if(in_group(KOORD_PENGAWAS_GROUP_ID)){
+			if($level[0]->id != PENGAWAS_GROUP_ID){
+				// JIKA KOORDINATOR PENGAWAS HANYA BOLEH MENGHAPUS PENGAWAS SAJA SELAIN ITU TIDAK BOLEH
+				$allow = false;
+			}
+		}
+
+		$msg = '';
+
+		if($allow)
+			$status = $this->ion_auth->delete_user($id) ? true : false;
+		else{
+			$status = false;
+			$msg = 'Aksi tdk diperbolehkan';
+		}
+
+		$this->_json(['status' => $status, 'msg' => $msg]);
 	}
 	
 	protected function _cari_pegawai(){

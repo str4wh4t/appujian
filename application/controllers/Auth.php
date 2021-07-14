@@ -106,7 +106,9 @@ class Auth extends MY_Controller
 
 		if ($this->form_validation->run() === true)	{
 			$remember = (bool)$this->input->post('remember');
-			if ($this->ion_auth->login($this->input->post('identity'), $this->input->post('password'), $remember)){
+			$identity = $this->input->post('identity', true);
+			$password = $this->input->post('password', true);
+			if ($this->ion_auth->login($identity, $password, $remember)){
 				$user = $this->ion_auth->user()->row();
 				$login_as = $this->ion_auth->get_users_groups($user->id)->result()[0];
 
@@ -138,7 +140,13 @@ class Auth extends MY_Controller
 //					redirect('not_valid_login', 'refresh');
 //				}
 			}else {
-				$this->session->set_flashdata('error_login_msg', 'Login salah / login akun anda tidak aktif.');
+
+				if ($this->ion_auth->is_max_login_attempts_exceeded($identity)){
+					$this->session->set_flashdata('error_login_msg', 'Login anda terkunci, silahkan hub pengawas.');
+				}else{
+					$this->session->set_flashdata('error_login_msg', 'Login salah / login akun anda tidak aktif.');
+				}
+
 				redirect('/', 'refresh');
 			}
 		}else{

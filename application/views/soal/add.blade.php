@@ -136,9 +136,19 @@ function init_page_level(){
         placeholder: "Pilih bundle soal"
     });
 
+    $('#topik_id').select2({
+        placeholder: "Pilih topik"
+    });
+
     $('#section_id').select2({
         placeholder: "Pilih seksi soal"
     });
+
+     
+    
+    $('#bobot_soal_id').select2({
+        placeholder: "Pilih bobot soal"
+    }); 
 
     let options = {};
     cascadLoading = new Select2Cascade($('#matkul_id'), $('#topik_id'), '{{ site_url('soal/ajax/get_topic_by_matkul/') }}?id=:parentId:', options);
@@ -173,13 +183,32 @@ function init_page_level(){
         $('select[name="matkul_id"]').trigger('change');
     @endif
 
-    @if(!empty(set_value('jawaban')))
-        $('select[name="jawaban"]').val("{{ set_value('jawaban') }}");
+    @if($tipe_soal_selected == TIPE_SOAL_MCSA || $tipe_soal_selected == TIPE_SOAL_MCMA)
+        $('select[name="jawaban"]').select2({
+            placeholder: "Pilih kunci jawaban"
+        }); 
+        @if(!empty(set_value('jawaban')))
+            $('select[name="jawaban"]').val("{{ set_value('jawaban') }}");
+            $('select[name="jawaban"]').trigger('change');
+        @endif
+
     @endif
 
     @if(!empty(set_value('bobot_soal_id')))
         $('select[name="bobot_soal_id"]').val("{{ set_value('bobot_soal_id') }}");
+        $('select[name="bobot_soal_id"]').trigger('change');
     @endif
+
+    @if(!empty(set_value('section_id')))
+        $('select[name="section_id"]').val("{{ set_value('section_id') }}");
+        $('select[name="section_id"]').trigger('change');
+    @endif
+
+    /////
+
+    @if(!empty(form_error('tipe_soal')))
+        $('#tipe_soal').parent('.form-group').addClass('has-error');
+     @endif
 
     @if(!empty(form_error('matkul_id')))
         $('#matkul_id').parent('.form-group').addClass('has-error');
@@ -193,13 +222,8 @@ function init_page_level(){
         $('#jawaban').parent('.form-group').addClass('has-error');
     @endif
 
-     @if(!empty(form_error('bobot_soal_id')))
+    @if(!empty(form_error('bobot_soal_id')))
         $('#bobot_soal_id').parent('.form-group').addClass('has-error');
-     @endif
-
-     @if(!empty(set_value('section_id')))
-        $('select[name="section_id"]').val("{{ set_value('section_id') }}");
-        $('select[name="section_id"]').trigger('change');
     @endif
 
 // {{-- @if(!empty(form_error('bobot'))) --}}
@@ -388,6 +412,11 @@ $(document).on('change','#section_id',function(e){
     });
 });
 
+$(document).on('change','#tipe_soal',function(e){
+    let tipe_soal = $(this).val();
+    location.href = "{{ url('soal/add') }}" + "/" + tipe_soal;
+});
+
 </script>
 <!-- END PAGE LEVEL JS -->
 @endpush
@@ -407,6 +436,22 @@ $(document).on('change','#section_id',function(e){
                     <div class="row">
                         <div class="col-lg-12">
                             <?=form_open_multipart('soal/save', array('id'=>'formsoal'), array('method' => 'post', 'aksi' => 'add'));?>
+                            
+                            <div class="form-group">
+                                <label for="tipe_soal" class="control-label">
+                                    <span>Tipe Soal</span>
+                                    <small class="help-block text-info"><span class="text-danger"><b>***</b> Pilih tipe soal yang akan dibuat</span></small>
+                                </label>
+                                <select name="tipe_soal" id="tipe_soal" class="form-control select2"
+                                    style="width:100%!important">
+                                    @foreach(TIPE_SOAL as $tipe_soal_id => $tipe_soal_text)
+                                    <option value="{{ $tipe_soal_id }}" {{ $tipe_soal_selected == $tipe_soal_id ? 'selected' : '' }}>{{ $tipe_soal_text }}</option>
+                                    @endforeach
+                                </select>
+                                <small class="help-block"
+                                    style="color: #dc3545"><?=form_error('tipe_soal')?></small>
+                            </div>
+
                             <fieldset class="form-group" style="padding: 10px; border: 1px solid #ccc;">
                                 <legend class="col-form-label col-lg-2 col-sm-12" style="border: 1px solid #ccc; background-color: #d4fdff;">Cluster Soal</legend>
                                 <div class="form-group">
@@ -456,24 +501,25 @@ $(document).on('change','#section_id',function(e){
                                 </div>
                             </fieldset>
                             @endif
-                            <label>Materi Ujian</label>
                             <div class="form-group">
-                                <select name="matkul_id" id="matkul_id" class="select2 form-group"
+                                <label for="matkul_id" class="control-label">Materi Ujian</label>
+                                <select name="matkul_id" id="matkul_id" class="form-group"
                                     style="width:100% !important">
-                                    <option value="" disabled selected>Pilih Materi Ujian</option>
+                                    <option value="" disabled selected>Pilih materi ujian</option> {{-- PLACEHOLDER NYA HARUS DI SET BEGINI KRN SELECT2CASCADE --}}
                                     <?php foreach ($matkul as $d) : ?>
                                     <option value="<?=$d->id_matkul?>"><?=$d->nama_matkul?></option>
                                     <?php endforeach; ?>
                                 </select> <small class="help-block"
                                     style="color: #dc3545"><?=form_error('matkul_id')?></small>
                             </div>
-                            <label>
-                                <span>Topik</span>
-                                <small class="help-block text-info"><span class="text-danger"><b>***</b> Sebelum
-                                    memilih topik, silahkan pilih matkul dahulu</span></small>
-                            </label>
+
                             <div class="form-group">
-                                <select name="topik_id" id="topik_id" class="select2 form-group"
+                                <label for="topik_id" class="control-label">
+                                    <span>Topik</span>
+                                    <small class="help-block text-info"><span class="text-danger"><b>***</b> Sebelum
+                                        memilih topik, silahkan pilih matkul dahulu</span></small>
+                                </label>
+                                <select name="topik_id" id="topik_id" class="form-group"
                                     style="width:100% !important">
                                 </select> <small class="help-block"
                                     style="color: #dc3545"><?=form_error('topik_id')?></small>
@@ -490,7 +536,7 @@ $(document).on('change','#section_id',function(e){
                             <div class="row">
                                 <div class="col-lg-10">
                                     <div class="form-group">
-                                        <select name="section_id" id="section_id" class="select2 form-group"
+                                        <select name="section_id" id="section_id" class="form-group"
                                             style="width:100% !important">
                                             <option></option>
                                             @foreach ($section_avail as $section)
@@ -517,6 +563,8 @@ $(document).on('change','#section_id',function(e){
                             <div class="alert bg-danger mb-2" role="alert">
                                 <strong>Jawaban</strong>
                             </div>
+
+                            @if($tipe_soal_selected == TIPE_SOAL_MCSA || $tipe_soal_selected == TIPE_SOAL_MCMA)
                             {{-- Membuat perulangan A-E --}}
                             <?php  
                             foreach (OPSI_SOAL as $abj) :
@@ -540,14 +588,12 @@ $(document).on('change','#section_id',function(e){
 
                             <div class="form-group">
                                 <label for="jawaban" class="control-label">Kunci Jawaban</label>
-                                <select name="jawaban" id="jawaban" class="form-control select2"
+                                <select name="jawaban" id="jawaban" class="form-control"
                                     style="width:100%!important">
-                                    <option value="" disabled selected>Pilih Kunci Jawaban</option>
-                                    <option value="A">A</option>
-                                    <option value="B">B</option>
-                                    <option value="C">C</option>
-                                    <option value="D">D</option>
-                                    <option value="E">E</option>
+                                    <option></option>
+                                    @foreach(OPSI_SOAL as $opsi_soal)
+                                    <option value="{{ strtoupper($opsi_soal) }}">{{ strtoupper($opsi_soal) }}</option>
+                                    @endforeach
                                 </select>
                                 <small class="help-block" style="color: #dc3545"><?=form_error('jawaban')?></small>
                             </div>
@@ -559,13 +605,20 @@ $(document).on('change','#section_id',function(e){
                             {{--                    <small class="help-block" style="color: #dc3545"><?=form_error('bobot')?></small>--}}
                             {{--                </div>--}}
 
+                            @elseif($tipe_soal_selected == TIPE_SOAL_ESSAY)
+                            <div class="form-group">
+                                <textarea name="jawaban" id="jawaban" class="form-control froala-editor summernote_editor">{!! set_value('jawaban') !!}</textarea>
+                                <small class="help-block" style="color: #dc3545"><?=form_error('jawaban')?></small>
+                            </div>
+                            @endif
+
                             <div class="form-group">
                                 <label for="bobot_soal_id" class="control-label">Bobot Soal</label>
-                                <select name="bobot_soal_id" id="bobot_soal_id" class="form-control select2"
+                                <select name="bobot_soal_id" id="bobot_soal_id" class="form-control"
                                     style="width:100%!important">
-                                    <option value="" disabled selected>Pilih Bobot</option>
+                                    <option></option>
                                     @forelse($bobot_soal as $d)
-                                    <option value="{{ $d->id }}">{{ $d->bobot }}</option>
+                                        <option value="{{ $d->id }}">{{ $d->bobot }}</option>
                                     @empty
 
                                     @endforelse

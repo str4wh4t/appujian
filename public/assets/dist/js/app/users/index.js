@@ -1,4 +1,4 @@
-var table;
+let table;
 let id;
 
 $(document).ready(function() {
@@ -78,10 +78,14 @@ $(document).ready(function() {
                 title: "Status",
                 data: "active",
                 render: function(data, type, row, meta) {
-                    if (data === "1") {
+                    if (data == "1") {
                         return `<span class="badge bg-green">Active</span>`;
                     } else {
-                        return `<span class="badge bg-red">Not Active</span>`;
+                        if (data == locked_user_id) {
+                            return `<span class="badge bg-primary">Locked</span>`;
+                        }else{
+                            return `<span class="badge bg-red">Inactive</span>`;
+                        }
                     }
                 }
             },
@@ -182,9 +186,7 @@ function hapus(id) {
             $.getJSON(base_url + "users/delete/" + id, function(data) {
                 Swal.fire({
                     title: data.status ? "Berhasil" : "Gagal",
-                    text: data.status
-                        ? "User berhasil dihapus"
-                        : "User gagal dihapus",
+                    text: data.status ? "User berhasil dihapus" : data.msg,
                     icon: data.status ? "success" : "error"
                 });
                 reload_ajax();

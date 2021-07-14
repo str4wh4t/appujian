@@ -72,6 +72,7 @@
                                 <div class="col-md-6 offset-md-3">
                                     <div class="alert bg-info">
                                         <ul class="">
+                                            <li>Soal yang dapat di import adalah tipe soal MCSA</li>
                                             <li>Silahkan import data dari excel, menggunakan format yang sudah
                                                 disediakan</li>
                                             <li>Data tidak boleh ada yang kosong, harus terisi semua.</li>
@@ -100,7 +101,7 @@
                                         <button name="preview" type="submit" class="btn btn-sm btn-success"><i
                                                 class="fa fa-th"></i> Preview</button>
                                         <a href="{{ site_url('soal') }}" class="btn btn-sm btn-warning"><i
-                                                class="fa fa-arrow-left"></i> Batal</a>
+                                                class="fa fa-arrow-left"></i> Kembali</a>
                                         <?= form_close(); ?>
                                     </div>
                                 </div>

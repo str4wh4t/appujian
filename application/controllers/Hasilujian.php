@@ -7,6 +7,7 @@ use Orm\Mujian_orm;
 use Orm\Topik_orm;
 use Orm\Hujian_deleted_orm;
 use Orm\Jawaban_ujian_deleted_orm;
+use Orm\Jawaban_ujian_orm;
 use Orm\Mhs_orm;
 use Orm\Mhs_ujian_orm;
 use Illuminate\Database\Capsule\Manager as DB;
@@ -297,6 +298,7 @@ class HasilUjian extends MY_Controller {
 				'nilai_bobot_benar' => $hasil->nilai_bobot_benar,
 				'detail_bobot_benar' => $return,
 				'absensi' => empty($hasil->absen_by) ? 'BELUM' : 'SUDAH',
+				'absensi_oleh' => empty($hasil->absen_by_username) ? '-' : "'". $hasil->absen_by_username,
 				'is_terlihat_pada_layar' => empty($hasil->is_terlihat_pada_layar) ? '-' : ($hasil->is_terlihat_pada_layar ? 'YA' : '-'),
 				'is_perjokian' => empty($hasil->is_perjokian) ? '-' : ($hasil->is_perjokian ? 'YA' : '-'),
 				'is_sering_buka_page_lain' => empty($hasil->is_sering_buka_page_lain) ? '-' : ($hasil->is_sering_buka_page_lain ? 'YA' : '-'),
@@ -454,8 +456,14 @@ class HasilUjian extends MY_Controller {
 		
 		$mhs_ujian = Mhs_ujian_orm::findOrFail($mahasiswa_ujian_id);
 
+		// if(in_group('mahasiswa')){
+		// 	if(!($mhs_ujian->m_ujian->tampilkan_hasil && $mhs_ujian->m_ujian->tampilkan_jawaban)){ // CHECK JIKA BOLEH MENAMPILKAN HASIL DAN JAWABAN
+		// 		show_404();
+		// 	}
+		// }
+
 		if(in_group('mahasiswa')){
-			if(!($mhs_ujian->m_ujian->tampilkan_hasil && $mhs_ujian->m_ujian->tampilkan_jawaban)){ // CHECK JIKA BOLEH MENAMPILKAN HASIL DAN JAWABAN
+			if(!$mhs_ujian->m_ujian->tampilkan_hasil){ // CHECK JIKA BOLEH MENAMPILKAN HASIL
 				show_404();
 			}
 		}
@@ -498,6 +506,88 @@ class HasilUjian extends MY_Controller {
 		/**[START] PREPARE DATA FOR CHART*/
 
 		view('hasilujian/history', $data);
+
+	}
+
+	protected function _submit_nilai_essay(){
+		$this->_akses_admin_dan_dosen();
+
+		$id = $this->input->post('id');
+		$nilai = $this->input->post('nilai');
+
+		$user = $this->ion_auth->user()->row();
+
+		$jawaban_ujian = Jawaban_ujian_orm::findOrFail($id);
+		if($jawaban_ujian->soal->tipe_soal != TIPE_SOAL_ESSAY){
+			show_error('Jenis soal tidak valid', 500, 'Perhatian');
+		}
+		try{
+			begin_db_trx();
+			$jawaban_ujian->nilai_essay = $nilai;
+			$jawaban_ujian->penilai_essay = $user->username;
+			$jawaban_ujian->waktu_menilai_essay = date('Y-m-d H:i:s');
+			$jawaban_ujian->save();
+
+			$h_ujian = $jawaban_ujian->h_ujian;
+
+			if ($h_ujian->ujian_selesai != 'Y') {
+				throw new Exception('Ujian belum diakhiri');
+			}
+	
+			$jumlah_benar = 0;
+			$jumlah_salah = 0;
+			$total_bobot  = 0;
+			$total_bobot_benar  = 0;
+			$jumlah_soal  = $h_ujian->jawaban_ujian->count();
+	
+			$topik_ujian_nilai_bobot = [];
+	
+			foreach ($h_ujian->jawaban_ujian as $jwb) {
+				if (!isset($topik_ujian_nilai_bobot[$jwb->soal->topik_id])) {
+					$topik_ujian_nilai_bobot[$jwb->soal->topik_id] = 0;
+				}
+	
+				if($jwb->soal->tipe_soal == TIPE_SOAL_MCSA){
+					// INI HANYA UNTUK JENIS MCSA
+					$total_bobot = $total_bobot + ($jwb->soal->bobot_soal->nilai * $jwb->soal->topik->poin_topik);
+					if ($jwb->jawaban == $jwb->soal->jawaban) {
+						$jumlah_benar++;
+						$bobot_poin = ($jwb->soal->bobot_soal->nilai * $jwb->soal->topik->poin_topik);
+						$total_bobot_benar = $total_bobot_benar + $bobot_poin;
+						$topik_ujian_nilai_bobot[$jwb->soal->topik_id] = $topik_ujian_nilai_bobot[$jwb->soal->topik_id] + $bobot_poin;
+					} else {
+						$jumlah_salah++;
+					}
+				}elseif($jwb->soal->tipe_soal == TIPE_SOAL_ESSAY){
+					// DI ESSAY SEMUA NILAI DIANGGAP BENAR
+					$jumlah_benar++;
+					// $bobot_poin = ($jwb->nilai_essay * $jwb->soal->topik->poin_topik); // BELUM TAHU BAIKNYA DI KALI KAN DENGAN BOBOT TOPIK ATAU TIDAK
+					$bobot_poin = $jwb->nilai_essay ;
+					$total_bobot_benar = $total_bobot_benar + $bobot_poin;
+					$topik_ujian_nilai_bobot[$jwb->soal->topik_id] = $topik_ujian_nilai_bobot[$jwb->soal->topik_id] + $bobot_poin;
+				}
+			}
+			$nilai       = ($jumlah_benar / $jumlah_soal) * 100;
+			$nilai_bobot_benar = $total_bobot_benar;
+
+			$h_ujian->jml_benar =  $jumlah_benar;
+			$h_ujian->jml_salah =  $jumlah_salah;
+			$h_ujian->jml_soal =  $jumlah_soal;
+			$h_ujian->nilai     =  round($nilai, 2);
+			$h_ujian->nilai_bobot = 0;
+			$h_ujian->nilai_bobot_benar     =  round($nilai_bobot_benar, 2);
+			$h_ujian->total_bobot     =  round($total_bobot, 2);
+			$h_ujian->detail_bobot_benar     =  json_encode($topik_ujian_nilai_bobot);
+			$h_ujian->save();
+
+			commit_db_trx();
+
+			$this->_json(['status' => 'ok']);
+
+		}catch(Exception $e){
+			rollback_db_trx();
+			show_error($e->getMessage(), 500, 'Perhatian');
+		}
 
 	}
 	

@@ -73,7 +73,7 @@ use Illuminate\Database\Capsule\Manager as DB;
 				$.ajax({
 					url: '{{ url('ujian/ajax/prepare_ujian_ulang') }}',
 					type: 'post',
-					data: {'id' : '{{ !empty($h_ujian) ? uuid_create_from_integer($h_ujian->id) : 0 }}'},
+					data: {'id' : '{{ !empty($h_ujian) ? uuid_create_from_integer($h_ujian->id) : '' }}'},
 					dataType: 'json',
 					success: function (data) {
 						if (data.status == 'ok') {
@@ -242,7 +242,17 @@ use Illuminate\Database\Capsule\Manager as DB;
 
                                 <td>{{ $waktu_mengerjakan }}</td>
                                 <td>{{ $data->peringkat }}/{{ $data->jml_peserta }}</td>
-                                <td class="text-center"><a href="{{ url('hasilujian/jawaban/' . uuid_create_from_integer($data->id)) }}" class="btn btn-sm btn-info"><i class="fa fa-eye"></i></a></td>
+                                <td class="text-center">
+                                    @if(is_admin())
+                                        <a href="{{ url('hasilujian/jawaban/' . uuid_create_from_integer($data->id)) }}" class="btn btn-sm btn-info"><i class="fa fa-eye"></i></a>
+                                    @else
+                                        @if($m_ujian->tampilkan_jawaban)
+                                        <a href="{{ url('hasilujian/jawaban/' . uuid_create_from_integer($data->id)) }}" class="btn btn-sm btn-info"><i class="fa fa-eye"></i></a>
+                                        @else
+                                        -
+                                        @endif
+                                    @endif
+                                </td>
                             </tr>
                             <?php $i++ ?>
                             @empty
@@ -287,7 +297,17 @@ use Illuminate\Database\Capsule\Manager as DB;
                                 ?>
 
                                 <td>{{ $peringkat }}/{{ $jml_peserta }}</td>
-                                <td class="text-center"><a href="{{ url('hasilujian/jawaban/' . uuid_create_from_integer($h_ujian->id)) }}" class="btn btn-sm btn-info"><i class="fa fa-eye"></i></a></td>
+                                <td class="text-center">
+                                    @if(is_admin())
+                                        <a href="{{ url('hasilujian/jawaban/' . uuid_create_from_integer($h_ujian->id)) }}" class="btn btn-sm btn-info"><i class="fa fa-eye"></i></a>
+                                    @else
+                                        @if($m_ujian->tampilkan_jawaban)
+                                        <a href="{{ url('hasilujian/jawaban/' . uuid_create_from_integer($h_ujian->id)) }}" class="btn btn-sm btn-info"><i class="fa fa-eye"></i></a>
+                                        @else
+                                        -
+                                        @endif
+                                    @endif
+                                </td>
                             </tr>
 
                             @endif

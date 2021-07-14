@@ -287,12 +287,12 @@ class Ujian_model extends CI_Model {
         return $this->db->get()->result();
     }
 
-    public function ambilSoal($pc_urut_soal1, $pc_urut_soal_arr)
+    public function ambilSoal($jawaban, $id_soal)
     {
-        $this->db->select("a.*, {$pc_urut_soal1} AS jawaban, b.*");
+        $this->db->select("a.*, {$jawaban} AS jawaban, b.*");
         $this->db->from('tb_soal as a');
         $this->db->join('section as b', 'a.section_id = b.id', 'left');
-        $this->db->where('id_soal', $pc_urut_soal_arr);
+        $this->db->where('id_soal', $id_soal);
         return $this->db->get()->row();
     }
 
@@ -330,7 +330,7 @@ class Ujian_model extends CI_Model {
     public function HslUjianById($id, $dt=false)
     {
     	
-    	$this->db->select('d.id, a.nim, a.nama, d.detail_bobot_benar, d.nilai, d.nilai_bobot_benar, b.masa_berlaku_sert, b.tampilkan_jawaban, TIMESTAMPDIFF(SECOND, d.tgl_mulai, d.tgl_selesai) AS lama_pengerjaan, d.mahasiswa_ujian_id, c.absen_by, c.is_terlihat_pada_layar, c.is_perjokian, c.is_sering_buka_page_lain, c.catatan_pengawas');
+    	$this->db->select('d.id, a.nim, a.nama, d.detail_bobot_benar, d.nilai, d.nilai_bobot_benar, b.masa_berlaku_sert, b.tampilkan_jawaban, TIMESTAMPDIFF(SECOND, d.tgl_mulai, d.tgl_selesai) AS lama_pengerjaan, d.mahasiswa_ujian_id, c.absen_by, c.absen_by_username, c.is_terlihat_pada_layar, c.is_perjokian, c.is_sering_buka_page_lain, c.catatan_pengawas');
         $this->db->from('h_ujian d');
 		$this->db->join('mahasiswa a', 'a.id_mahasiswa = d.mahasiswa_id');
 		$this->db->join('m_ujian b', 'd.ujian_id = b.id_ujian');

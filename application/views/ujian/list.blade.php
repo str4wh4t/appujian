@@ -238,7 +238,7 @@
                                                 @endphp
 
                                                 <div class="col-md-4 col-sm-12">
-                                                    <div class="card box-shadow-0 border-primary" style="background-color: {{ (($status_ujian == 'active')||($status_ujian == 'upcoming')) ? '#fff' : '#ffcacf' }};">
+                                                    <div class="card box-shadow-0 border-primary" style="background-color: {{ (($status_ujian == 'active')||($status_ujian == 'upcoming')) ? '#fff' : '#e4e4e4' }};">
                                                         {{-- <div class="card-header"></div> --}}
                                                         <div class="card-header " style="min-height: 85px;">
                                                             <h6><b>{{ $mhs_ujian->m_ujian->nama_ujian }}</b></h6>
@@ -280,6 +280,14 @@
                                                                     @else
                                                                         
                                                                     @endif
+
+                                                                    @if($mhs_ujian->h_ujian_history->isNotEmpty())
+                                                                        @if ($mhs_ujian->m_ujian->tampilkan_hasil)
+                                                                            <a class="btn btn-sm btn-outline-primary float-right" href="{{ url('hasilujian/history/' . uuid_create_from_integer($mhs_ujian->id)) }}">
+                                                                                <i class="ft-eye"></i> History Ujian
+                                                                            </a>
+                                                                        @endif
+                                                                    @endif
                                                                 @else
                                                                     @if($mhs_ujian->h_ujian->ujian_selesai == 'Y')
                                                                         @if ($mhs_ujian->m_ujian->tampilkan_hasil)
@@ -303,6 +311,14 @@
                                                                         <a class="btn btn-sm btn-success" href="{{ url('ujian/token/' . uuid_create_from_integer($mhs_ujian->m_ujian->id_ujian)) }}">
                                                                             <i class="fa fa-pencil"></i> Masuk
                                                                         </a>
+
+                                                                        @if($mhs_ujian->h_ujian_history->isNotEmpty())
+                                                                            @if ($mhs_ujian->m_ujian->tampilkan_hasil)
+                                                                                <a class="btn btn-sm btn-outline-primary float-right" href="{{ url('hasilujian/history/' . uuid_create_from_integer($mhs_ujian->id)) }}">
+                                                                                    <i class="ft-eye"></i> History Ujian
+                                                                                </a>
+                                                                            @endif
+                                                                        @endif
                                                                     @endif
                                                                 @endif
                                                             </div>

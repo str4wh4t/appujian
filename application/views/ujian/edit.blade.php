@@ -71,14 +71,14 @@ function init_page_level(){
     ajaxcsrf();
     $('.select2').select2();
     $('#matkul_id').select2();
-    $('#topik_id').select2({placeholder : '- Pilih topik -'});
-    $('#bundle').select2({placeholder : '- Pilih bundle soal -'});
-    // $('#mhs_matkul').select2({placeholder : '- Pilih matkul terkait mhs -'});
+    $('#topik_id').select2({placeholder : 'Pilih topik'});
+    $('#bundle').select2({placeholder : 'Pilih bundle soal'});
+    // $('#mhs_matkul').select2({placeholder : 'Pilih matkul terkait mhs'});
 
-    $('#prodi').select2({placeholder : '- Pilih prodi -'});
-    $('#jalur').select2({placeholder : '- Pilih jalur -'});
-    $('#gel_mhs').select2({placeholder : '- Pilih gelombang -'});
-    $('#smt_mhs').select2({placeholder : '- Pilih semester -'});
+    $('#prodi').select2({placeholder : 'Pilih prodi'});
+    $('#jalur').select2({placeholder : 'Pilih jalur'});
+    $('#gel_mhs').select2({placeholder : 'Pilih gelombang'});
+    $('#smt_mhs').select2({placeholder : 'Pilih semester'});
 
     $('.icheck').iCheck({
         checkboxClass: 'icheckbox_square-red',
@@ -518,11 +518,14 @@ const init_peserta_table = (response_mhs, response_mhs_ujian) => {
             mhs_ujian_existing.push(item);
         });
     }
+    // console.log('mhs_ujian_existing', mhs_ujian_existing);
+    let mhs_ujian_eligible = [];
     if(!$.isEmptyObject(response_mhs)) {
         $.each(response_mhs, function (i, item) {
             let chkbox = $('<input>').attr('class', 'chkbox_pilih_peserta').attr('type', 'checkbox').attr('name', 'peserta[]').attr('value', item.id_mahasiswa);
             if(mhs_ujian_existing.includes(item.id_mahasiswa)){
                 chkbox.prop('checked', true);
+                mhs_ujian_eligible.push(item.id_mahasiswa);
             }
 
             @if(APP_TYPE == 'tryout')
@@ -546,15 +549,18 @@ const init_peserta_table = (response_mhs, response_mhs_ujian) => {
             ).appendTo('#tbody_tb_peserta');
     }
     
-    $('#chkbox_pilih_semua_peserta').prop('checked', false);
+    // $('#chkbox_pilih_semua_peserta').prop('checked', false);
+    // $('.chkbox_pilih_peserta').trigger('change');
+
     $('.search_pes').val('');
-    $('#span_total_peserta').text(mhs_ujian_existing.length);
+    $('#span_total_peserta').text(mhs_ujian_eligible.length);
 
     @if(APP_TYPE == 'tryout')
-    mhs_ujian_existing = []; // EMPTYING THE ARRAY 
+    mhs_ujian_eligible = []; // EMPTYING THE ARRAY 
     @endif
-
-    $('#peserta_hidden').val(JSON.stringify(mhs_ujian_existing));
+    
+    $('#peserta_hidden').val(JSON.stringify(mhs_ujian_eligible));
+    $('#panel_submit_ujian').hide();
 
 };
 
@@ -784,6 +790,7 @@ $(document).on('click','#btn_refine_peserta', function(){
     ajx_overlay(true);
     init_peserta_table_value(bundle_id_list).then(function(){
         ajx_overlay(false);
+        $('#panel_submit_ujian').show();
     });
 });
 
@@ -1203,7 +1210,7 @@ $(document).on('click','#btn_refine_peserta', function(){
                      <small class="help-block"></small>
                      <div class="alert border-danger text-center text-danger"><i class="icon-info"></i> Total peserta dipilih : <b><span id="span_total_peserta">0</span></b></div>
                 </div>
-                <div class="form-group text-center">
+                <div class="form-group text-center" id="panel_submit_ujian" style="display: none">
                     <a href="{{ site_url('ujian/master') }}" class="btn btn-flat btn-warning">
                         <i class="fa fa-arrow-left"></i> Kembali
                     </a>

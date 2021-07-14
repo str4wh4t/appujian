@@ -13,6 +13,7 @@ use Orm\Soal_orm;
 use Orm\Jawaban_ujian_orm;
 use Orm\Trx_midtrans_orm;
 use Orm\Data_daerah_orm;
+use Orm\Daftar_hadir_orm;
 use GuzzleHttp\Client;
 use Carbon\Carbon;
 
@@ -396,8 +397,8 @@ class Pub extends MY_Controller {
 
 				// if ($now >= $date_end){
 				if ($now->greaterThan($date_end)){
-					echo $h_ujian->id . "\n";
-					echo $h_ujian->mhs->nama . "\n";
+					echo $h_ujian->id . " ==> ";
+					echo $h_ujian->mhs->nama . " ==> ";
 					if($this->submit_ujian($h_ujian)){
 //						$ws = new Chat();
 //						$ws->send_msg_stop_ujian($h_ujian->mhs->nim, $app_id . '.undip.ac.id');
@@ -405,9 +406,9 @@ class Pub extends MY_Controller {
 //						exec($cmd);
 						$cmd = '{"cmd":"MHS_STOP_UJIAN","nim":"'. $h_ujian->mhs->nim .'","app_id":"'. APP_ID .'"}';
 						$this->socket->notif_ws($cmd);
-						echo "DONE" ;
+						echo "DONE" . "\n";
 					}else{
-						echo "SKIP" ;
+						echo "SKIP" . "\n";
 					}
 				}
 			}
@@ -422,34 +423,34 @@ class Pub extends MY_Controller {
 		$this->load->model('Master_model', 'master');
 		// $id_h_ujian = $h_ujian->id;
 		
-		// Get Jawaban
-		// $list_jawaban = $this->ujian->getJawaban($id_h_ujian);
-		
-		// Pecah Jawaban
-		$pc_jawaban = $h_ujian->jawaban_ujian;
-		
 		$jumlah_benar = 0;
 		$jumlah_salah = 0;
 //			$jumlah_ragu  = 0;
 //			$nilai_bobot  = 0;
 		$total_bobot  = 0;
 		$total_bobot_benar  = 0;
-		$jumlah_soal  = count($pc_jawaban);
+		$jumlah_soal  = count($h_ujian->jawaban_ujian);
 		
 		$topik_ujian_nilai_bobot = [];
 		
-		foreach ($pc_jawaban as $jwb) {
+		foreach ($h_ujian->jawaban_ujian as $jwb) {
 			if(!isset($topik_ujian_nilai_bobot[$jwb->soal->topik_id])){
 				$topik_ujian_nilai_bobot[$jwb->soal->topik_id] = 0 ;
 			}
-			$total_bobot = $total_bobot + ($jwb->soal->bobot_soal->nilai * $jwb->soal->topik->poin_topik);
-			if($jwb->jawaban == $jwb->soal->jawaban){
+
+			if($jwb->soal->tipe_soal == TIPE_SOAL_MCSA){
+				$total_bobot = $total_bobot + ($jwb->soal->bobot_soal->nilai * $jwb->soal->topik->poin_topik);
+				if($jwb->jawaban == $jwb->soal->jawaban){
+					$jumlah_benar++;
+					$bobot_poin = ($jwb->soal->bobot_soal->nilai * $jwb->soal->topik->poin_topik);
+					$total_bobot_benar = $total_bobot_benar + $bobot_poin;
+					$topik_ujian_nilai_bobot[$jwb->soal->topik_id] = $topik_ujian_nilai_bobot[$jwb->soal->topik_id] + $bobot_poin;
+				}else{
+					$jumlah_salah++;
+				}
+			}elseif($jwb->soal->tipe_soal == TIPE_SOAL_ESSAY){
+				// DI ESSAY SEMUA NILAI DIANGGAP BENAR
 				$jumlah_benar++;
-				$bobot_poin = ($jwb->soal->bobot_soal->nilai * $jwb->soal->topik->poin_topik);
-				$total_bobot_benar = $total_bobot_benar + $bobot_poin;
-				$topik_ujian_nilai_bobot[$jwb->soal->topik_id] = $topik_ujian_nilai_bobot[$jwb->soal->topik_id] + $bobot_poin;
-			}else{
-				$jumlah_salah++;
 			}
 		}
 		
@@ -1217,5 +1218,22 @@ class Pub extends MY_Controller {
 			echo $e->getMessage();
 		}
 	}
-	
+
+	public function fix_absensi_in_daftar_hadir(){
+		$daftar_hadir_list = Daftar_hadir_orm::all();
+		if($daftar_hadir_list->isNotEmpty()){
+			foreach($daftar_hadir_list as $dh){
+				if(empty($dh->absen_by_username)){
+					echo $dh->id . " => " . $dh->pengawas->users->username . ' => ';
+					$dh->absen_by_username = $dh->pengawas->users->username;
+					$res = $dh->save();
+					if($res)
+						echo 'DONE' . "\n";
+					else
+						echo 'FAIL' . "\n";
+				}
+			}
+		}
+	}
+
 }

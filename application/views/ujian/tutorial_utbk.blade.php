@@ -193,6 +193,7 @@ legend {
 #q_n_a{
     /* max-height: 700px; OVERIDED LATER */
     overflow-y: scroll;
+    min-height: 550px;
 }
 
 #panel_user{
@@ -202,7 +203,7 @@ legend {
 
 #lembar_ujian{
     background-color: #fff; 
-    overflow-x: hidden;
+    overflow-x: hidden; /* UNTUK SUMBU X NYA BIAR TIDAK NYEKROLL */
 }
 
 #ujian_card_header{
@@ -511,13 +512,13 @@ function init_page_level(){
     $("#widget_1").show();
     $("#widget_jawaban_1").show();
 
-    let width = $(window).width();
+    // let width = $(window).width();
 
-    let height = $(window).height();
+    // let height = $(window).height();
     
-    $('#q_n_a').css('max-height', (height - (87.85 + 68.5)));
-    $('#q_n_a').css('min-height', (height - (87.85 + 68.5)));
-    $('#panel_user').css('max-height', (height - (87.85)));
+    // $('#q_n_a').css('max-height', (height - (87.85 + 68.5)));
+    // $('#q_n_a').css('min-height', (height - (87.85 + 68.5)));
+    // $('#panel_user').css('max-height', (height - (87.85)));
 }
 
 function buka(id_widget) {

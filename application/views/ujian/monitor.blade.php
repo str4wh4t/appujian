@@ -157,8 +157,14 @@ body {
                     "searchable": false,
                     "width": "10%"
                 },
+                // {
+                //     "data": 'absen_by',
+                //     "orderable": false,
+                //     "searchable": false,
+                //     "width": "5%"
+                // },
                 {
-                    "data": 'absen_by',
+                    "data": 'absen_by_username',
                     "orderable": false,
                     "searchable": false,
                     "width": "5%"
@@ -271,12 +277,12 @@ body {
                     // });
                     // $('#jml_mhs_absen').text(list_absensi.length);
 
-                    {{--if (data.user_id == '{{ get_logged_user()->id }}') {--}}
-                    {{--    $.each(data.absensi_by_self, function (index, nim) {--}}
-                    {{--        push_absensi_by_self(nim);--}}
-                    {{--    });--}}
-                    {{--    $('#jml_mhs_absen_by_self').text(list_absensi_by_self.length);--}}
-                    {{--}--}}
+                    // if (data.user_id == '{{ get_logged_user()->id }}') { 
+                    //     $.each(data.absensi_by_self, function (index, nim) { 
+                    //         push_absensi_by_self(nim); 
+                    //     }); 
+                    //     $('#jml_mhs_absen_by_self').text(list_absensi_by_self.length); 
+                    // } 
 
                     $.each(data.mhs_online, function (index, code) {
                         let nim = index;
@@ -303,12 +309,12 @@ body {
                 } else if (data.cmd == 'DO_ABSENSI') {
                     if (data.ok) {
 
-                        {{--push_absensi(data.nim);--}}
-                        {{--$('#jml_mhs_absen').text(list_absensi.length);--}}
-                        {{--if (data.user_id == '{{ get_logged_user()->id }}') {--}}
-                        {{--    push_absensi_by_self(data.nim);--}}
-                        {{--    $('#jml_mhs_absen_by_self').text(list_absensi_by_self.length);--}}
-                        {{--}--}}
+                        // push_absensi(data.nim);
+                        // $('#jml_mhs_absen').text(list_absensi.length);
+                        // if (data.user_id == '{{ get_logged_user()->id }}') {
+                        //     push_absensi_by_self(data.nim);
+                        //     $('#jml_mhs_absen_by_self').text(list_absensi_by_self.length);
+                        // }
 
                         $('#jml_mhs_absen').text(++jml_daftar_hadir);
                         if (data.user_id == '{{ get_logged_user()->id }}') {
@@ -322,12 +328,12 @@ body {
                 } else if (data.cmd == 'DO_ABSENSI_BATAL') {
                     if (data.ok) {
 
-                        {{--pop_absensi(data.nim);--}}
-                        {{--$('#jml_mhs_absen').text(list_absensi.length);--}}
-                        {{--if (data.user_id == '{{ get_logged_user()->id }}') {--}}
-                        {{--    pop_absensi_by_self(data.nim);--}}
-                        {{--    $('#jml_mhs_absen_by_self').text(list_absensi_by_self.length);--}}
-                        {{--}--}}
+                        // pop_absensi(data.nim);
+                        // $('#jml_mhs_absen').text(list_absensi.length);
+                        // if (data.user_id == '{{ get_logged_user()->id }}') {
+                        //     pop_absensi_by_self(data.nim);
+                        //     $('#jml_mhs_absen_by_self').text(list_absensi_by_self.length);
+                        // }
 
                         $('#jml_mhs_absen').text(--jml_daftar_hadir);
                         if (data.user_id == '{{ get_logged_user()->id }}') {
@@ -402,7 +408,7 @@ body {
                         'latency': '-' ,
                     }));
                 }
-            },{{ PING_INTERVAL }});
+            },{{ get_ping_interval() }});
         }
     }
 
@@ -423,11 +429,22 @@ body {
                     'cmd': 'DO_ABSENSI',
                     'app_id': '{{ APP_ID }}',
                 }));
+            }else{
+                Swal.fire({
+                    title: "Terjadi Kesalahan",
+                    text: res.msg,
+                    icon: "warning"
+                });
             }
+        }).fail(function(){
+            Swal.fire({
+                title: "Perhatian",
+                text: "Terjadi kesalahan",
+                icon: "warning"
+            });
         }).always(function() {
             ajx_overlay(false);
         });
-
     });
 
     $(document).on('click','.btn_absensi_batal',function(){
@@ -447,6 +464,13 @@ body {
                 $.post('{{ url('ujian/ajax/absen_pengawas') }}', {'mahasiswa_ujian_id' : mahasiswa_ujian_id, 'nim' : nim, 'aksi' : 'batal'}, function (res){
                     if(res.ok) {
                         $('#badge_absensi_' + nim).text('BELUM').removeClass('success').removeClass('border-success').addClass('border-danger').addClass('danger');
+                        $('#bapu_catatan_' + nim).removeClass('text-danger').addClass('text-success');
+                        trigger_by_user = false;
+                        $('#checkbox_is_terlihat_pada_layar_' + nim).iCheck('uncheck');
+                        $('#checkbox_is_perjokian_' + nim).iCheck('uncheck');
+                        $('#checkbox_is_sering_buka_page_lain_' + nim).iCheck('uncheck');
+                        trigger_by_user = true;
+
                         sendmsg(JSON.stringify({
                             'mahasiswa_ujian_id': mahasiswa_ujian_id,
                             'user_id': '{{ get_logged_user()->id }}',
@@ -457,16 +481,20 @@ body {
                         }));
                     }else{
                         Swal.fire({
-                            title: "Perhatian",
-                            text: "Anda bukan yg mengabsenkan / Belum diabsenkan",
+                            title: "Terjadi Kesalahan",
+                            text: res.msg,
                             icon: "warning"
                         });
                     }
+                }).fail(function(){
+                    Swal.fire({
+                        title: "Perhatian",
+                        text: "Terjadi kesalahan",
+                        icon: "warning"
+                    });
                 }).always(function() {
                     ajx_overlay(false);
-            });
-
-
+                });
             }
         });
     });
@@ -600,7 +628,6 @@ body {
                                 text: "Ujian peserta tsb telah diakhiri",
                                 icon: "success"
                             });
-
                         }
                     },
                     error: function () {
@@ -751,7 +778,7 @@ $(document).on('click','.div_catatan',function(){
     }).fail(function() {
         Swal.fire({
             title: "Perhatian",
-            text: "Anda bukan yg mengabsenkan / Belum diabsenkan",
+            text: "Terjadi kesalahan / Belum diabsenkan",
             icon: "warning"
         });
     }).always(function() {
@@ -764,17 +791,32 @@ $(document).on('click','#btn_submit_catatan',function(){
     let mahasiswa_ujian_id = $(this).data('id');
     let nim = $(this).data('nim');
     let catatan_pengawas = $('#catatan_pengawas').val();
-    $.post('{{ url('ujian/ajax/set_catatan_pengawas') }}',{'mahasiswa_ujian_id': mahasiswa_ujian_id, 'catatan_pengawas': catatan_pengawas}, function(data){
+    $.post('{{ url('ujian/ajax/set_catatan_pengawas') }}',{'mahasiswa_ujian_id': mahasiswa_ujian_id, 'catatan_pengawas': catatan_pengawas}, function(res){
+        if(res.ok){
+            Swal.fire({
+                title: "Perhatian",
+                text: "Catatan berhasil disimpan",
+                icon: "success"
+            });
+            if(catatan_pengawas.length)
+                $('#bapu_catatan_' + nim).removeClass('text-success').addClass('text-danger');
+            else
+                $('#bapu_catatan_' + nim).removeClass('text-danger').addClass('text-success');
+            $('#modal_catatan_peserta').modal('hide');
+        }else{
+            Swal.fire({
+                title: "Terjadi Kesalahan",
+                text: res.msg,
+                icon: "warning"
+            });
+        }
+    }).fail(function() {
         Swal.fire({
             title: "Perhatian",
-            text: "Catatan berhasil disimpan",
-            icon: "success"
+            text: "Terjadi kesalahan",
+            icon: "warning"
         });
-        if(catatan_pengawas.length)
-            $('#bapu_catatan_' + nim).removeClass('text-success').addClass('text-danger');
-        else
-            $('#bapu_catatan_' + nim).removeClass('text-danger').addClass('text-success');
-        $('#modal_catatan_peserta').modal('hide');
+    }).always(function() {
         ajx_overlay(false);
     });
 });
@@ -918,12 +960,14 @@ $(document).on('click','#btn_submit_catatan',function(){
             </div>
             <div class="modal-body">
                 <label>Catatan Pengawas</label>
-                <textarea id="catatan_pengawas" rows="10" class="form_input w-100"></textarea>
+                <textarea id="catatan_pengawas" rows="10" class="form_input w-100" {{ (!in_group(PENGAWAS_GROUP_ID) ? 'disabled="disabled"' : '') }}></textarea>
             </div>
             <div class="modal-footer">
+                @if(in_group(PENGAWAS_GROUP_ID))
                 <button type="button"
                         class="btn btn-info" id="btn_submit_catatan">Submit
                 </button>
+                @endif
                 <button type="button"
                         class="btn grey btn-outline-secondary"
                         data-dismiss="modal">Tutup

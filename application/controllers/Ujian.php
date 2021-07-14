@@ -22,6 +22,7 @@ use Orm\Paket_orm;
 use Orm\Paket_ujian_orm;
 use Orm\Paket_history_orm;
 use Orm\Users_groups_orm;
+use Orm\Users_orm;
 use Orm\Daftar_hadir_orm;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Capsule\Manager as DB;
@@ -33,7 +34,7 @@ use Carbon\Carbon;
 class Ujian extends MY_Controller
 {
 
-	public $mhs, $user;
+	// public $mhs, $user;
 
 	public function __construct()
 	{
@@ -48,8 +49,8 @@ class Ujian extends MY_Controller
 		$this->load->model('Ujian_model', 'ujian');
 		$this->form_validation->set_error_delimiters('', '');
 
-		$this->user = $this->ion_auth->user()->row();
-		$this->mhs 	= $this->ujian->getIdMahasiswa($this->user->username);
+		// $this->user = $this->ion_auth->user()->row();
+		// $this->mhs 	= $this->ujian->getIdMahasiswa($this->user->username);
 	}
 
 	protected function _data()
@@ -57,15 +58,11 @@ class Ujian extends MY_Controller
 
 		$this->_akses_selain_mahasiswa_dan_penyusun_soal();
 
-		//		if (empty($id)) {
-		//			$dosen = Dosen_orm::where('nip', $this->ion_auth->user()->row()->username)->firstOrFail();
-		//			$id    = $dosen->id_dosen;
-		//		}
 		$id = null;
 		$username = null;
 
 		if (in_group(DOSEN_GROUP_ID)) {
-			$username = $this->ion_auth->user()->row()->username;
+			$username = get_logged_user()->username;
 		}
 
 		$status_ujian = empty($this->input->post('status_ujian')) ? 'active' : $this->input->post('status_ujian');
@@ -78,7 +75,7 @@ class Ujian extends MY_Controller
 	{
 		$this->_akses_selain_mahasiswa_dan_penyusun_soal();
 
-		$user = $this->ion_auth->user()->row();
+		$user = get_logged_user();
 		$data = [
 			'user' => $user,
 			'judul'	=> 'Ujian',
@@ -111,8 +108,7 @@ class Ujian extends MY_Controller
 		];
 
 		if (in_group(DOSEN_GROUP_ID)) {
-			$user = $this->ion_auth->user()->row();
-			$data['matkul'] = Dosen_orm::where('nip', $user->username)->firstOrFail()->matkul;
+			$data['matkul'] = Dosen_orm::where('nip', get_logged_user()->username)->firstOrFail()->matkul;
 		}
 
 		$matkul_id = $this->input->get('m');
@@ -149,7 +145,7 @@ class Ujian extends MY_Controller
 		$this->_akses_admin_dan_dosen();
 
 		$ujian = Mujian_orm::findOrFail($id);
-		$user = $this->ion_auth->user()->row();
+		$user = get_logged_user();
 
 		$data = [
 			'judul'		=> 'Ujian',
@@ -266,7 +262,7 @@ class Ujian extends MY_Controller
 		//		$this->_akses_dosen();
 		
 		//		vdebug($this->input->post('jumlah_soal'));
-		//		$user 	= $this->ion_auth->user()->row();
+		//		$user 	= get_logged_user();
 		//		$dosen 	= $this->ujian->getIdDosen($user->username);
 		//		$jml 	= $this->ujian->getJumlahSoal($dosen->id_dosen)->jml_soal;
 		//		$jml_a 	= $jml + 1; // Jika tidak mengerti, silahkan baca user_guide codeigniter tentang form_validation pada bagian less_than
@@ -760,7 +756,7 @@ class Ujian extends MY_Controller
 			}
 
 		} else {
-			$user = $this->ion_auth->user()->row();
+			$user = get_logged_user();
 
 			$method 		= $this->input->post('method', true);
 			$matkul_id 		= $this->input->post('matkul_id', true);
@@ -1187,13 +1183,11 @@ class Ujian extends MY_Controller
 		if (!$chk) {
 			$this->_json(['status' => false]);
 		} else {
-
-			$user = $this->ion_auth->user()->row();
 			if (!$this->ion_auth->is_admin()) {
 				$allow = true;
 				foreach ($chk  as $c) {
 					$ujian = Mujian_orm::findOrFail($c);
-					if ($ujian->created_by != $user->username) {
+					if ($ujian->created_by != get_logged_user()->username) {
 						$allow = false;
 						break;
 					}
@@ -1219,10 +1213,9 @@ class Ujian extends MY_Controller
 
 		$id = $this->input->post('id');
 		$ujian = Mujian_orm::findOrFail($id);
-		$user = $this->ion_auth->user()->row();
 
 		if (!$this->ion_auth->is_admin()) {
-			if ($ujian->created_by != $user->username) {
+			if ($ujian->created_by != get_logged_user()->username) {
 				$data['status'] = false;
 				$this->_json($data);
 				return;
@@ -1244,8 +1237,7 @@ class Ujian extends MY_Controller
 	{
 		$this->_akses_mahasiswa();
 
-		$user = $this->ion_auth->user()->row();
-		$mhs_orm = Mhs_orm::where('nim', $user->username)->firstOrFail();
+		$mhs_orm = Mhs_orm::where('nim', get_logged_user()->username)->firstOrFail();
 		$list = $this->ujian->getListUjian($mhs_orm);
 		$this->_json($list, false);
 	}
@@ -1258,7 +1250,7 @@ class Ujian extends MY_Controller
 			redirect('ujian/latihan_soal');
 
 
-		$user = $this->ion_auth->user()->row();
+		$user = get_logged_user();
 
 		$data = [
 			'user' 		=> $user,
@@ -1270,7 +1262,6 @@ class Ujian extends MY_Controller
 		//		$this->load->view('ujian/list');
 		//		$this->load->view('_templates/dashboard/_footer.php');
 
-		$user = $this->ion_auth->user()->row();
 		$mhs_orm = Mhs_orm::where('nim', $user->username)->firstOrFail();
 
 		// $mhs_ujian_aktif = Mhs_ujian_orm::where('mahasiswa_id', $mhs_orm->id_mahasiswa)
@@ -1325,7 +1316,7 @@ class Ujian extends MY_Controller
 		if(APP_TYPE == 'ujian')
 			redirect('ujian/list');
 
-		$user = $this->ion_auth->user()->row();
+		$user = get_logged_user();
 
 		$data = [
 			'user' 		=> $user,
@@ -1334,7 +1325,6 @@ class Ujian extends MY_Controller
 			'mhs' 		=> $this->ujian->getIdMahasiswa($user->username),
 		];
 
-		$user = $this->ion_auth->user()->row();
 		$mhs_orm = Mhs_orm::where('nim', $user->username)->firstOrFail();
 
 		// $mhs_ujian_aktif = Mhs_ujian_orm::where('mahasiswa_id', $mhs_orm->id_mahasiswa)
@@ -1392,7 +1382,7 @@ class Ujian extends MY_Controller
 
 		$this->_akses_mahasiswa();
 
-		$user = $this->ion_auth->user()->row();
+		$user = get_logged_user();
 
 		$data = [
 			'user' 		=> $user,
@@ -1401,7 +1391,6 @@ class Ujian extends MY_Controller
 			'mhs' 		=> $this->ujian->getIdMahasiswa($user->username),
 		];
 
-		$user = $this->ion_auth->user()->row();
 		$mhs_orm = Mhs_orm::where('nim', $user->username)->firstOrFail();
 
 		// $mhs_ujian_aktif = Mhs_ujian_orm::where('mahasiswa_id', $mhs_orm->id_mahasiswa)
@@ -1458,7 +1447,7 @@ class Ujian extends MY_Controller
 
 		$id = integer_read_from_uuid($id);
 		
-		$user = $this->ion_auth->user()->row();
+		$user = get_logged_user();
 
 		$mhs_orm = Mhs_orm::where('nim', $user->username)->firstOrFail();
 		
@@ -1741,7 +1730,7 @@ class Ujian extends MY_Controller
 			show_404();
 		}
 
-		$user = $this->ion_auth->user()->row();		
+		$user = get_logged_user();		
 		$mhs		= Mhs_orm::where('nim', $user->username)->firstOrFail();
 		$h_ujian 	= Hujian_orm::where('ujian_id', $ujian->id_ujian)->where('mahasiswa_id', $mhs->id_mahasiswa)->first();
 
@@ -1796,6 +1785,7 @@ class Ujian extends MY_Controller
 										->where('is_reported', NON_REPORTED_SOAL);
 
 				if($ujian->sumber_ujian == 'bundle'){
+					// JIKA UJIAN DARI BUNDLE MAKA SOAL_AVAIL AKAN DIOVERRIDE
 					$bundle_ids = $ujian->bundle()->pluck('bundle.id')->toArray();
 					$soal_avail = $soal_avail->whereHas(
 						'bundle_soal', function(Builder $query) use($bundle_ids){
@@ -1943,6 +1933,7 @@ class Ujian extends MY_Controller
 						$jawaban_ujian_orm           = new Jawaban_ujian_orm();
 						$jawaban_ujian_orm->ujian_id = $h_ujian->id;
 						$jawaban_ujian_orm->soal_id  = $d->id_soal;
+						$jawaban_ujian_orm->nilai_essay  = 0;
 						$jawaban_ujian_orm->save();
 					}
 				}
@@ -2033,87 +2024,129 @@ class Ujian extends MY_Controller
 		 * [STOP] LOGIK URUTAN TOPIK
 		 */
 
-		$list_jawaban = '';
-		foreach ($jawaban_ujian as $jwb) {
-			$list_jawaban .= $jwb->soal_id . ":" . $jwb->jawaban . ":" . $jwb->status_jawaban . ",";
-		}
-		$list_jawaban 	= substr($list_jawaban, 0, -1);
+		// vdebug($jawaban_ujian);
 
-		$urut_soal 		= explode(",", $list_jawaban);
-		$soal_urut_ok	= [];
-		// vdebug($urut_soal); // contoh ; urut_soal = [[0] => 4583::, [1] => 4578::]
-		for ($i = 0; $i < sizeof($urut_soal); $i++) {
-			$pc_urut_soal	= explode(":", $urut_soal[$i]);
-			// $pc_urut_soal[0] ==> adalah id soal nya
-			// $pc_urut_soal[1] ==> adalah abjad jawaban nya
-			$pc_urut_soal1 	= empty($pc_urut_soal[1]) ? "''" : "'{$pc_urut_soal[1]}'";
-			$ambil_soal 	= $this->ujian->ambilSoal($pc_urut_soal1, $pc_urut_soal[0]);
-			$soal_urut_ok[] = $ambil_soal;
-		}
+		// $list_jawaban = '';
+		// foreach ($jawaban_ujian as $jwb) {
+		// 	$list_jawaban .= $jwb->soal_id . ":" . $jwb->jawaban . ":" . $jwb->status_jawaban . ":" . $jwb->jawaban_essay . ",";
+		// }
+		// $list_jawaban 	= substr($list_jawaban, 0, -1);
+
+		// vdebug($list_jawaban);
+
+		// $urut_soal 		= explode(",", $list_jawaban);
+		// vdebug($urut_soal); // contoh ; urut_soal = [[0] => 4583:::, [1] => 4578:::]
+		// $soal_urut_ok	= [];
+		// for ($i = 0; $i < sizeof($urut_soal); $i++) {
+		// 	$pc_urut_soal	= explode(":", $urut_soal[$i]);
+		// 	// $pc_urut_soal[0] ==> adalah id soal nya
+		// 	// $pc_urut_soal[1] ==> adalah abjad jawaban nya
+		// 	$id_soal 		= $pc_urut_soal[0];
+		// 	$jawaban 		= empty($pc_urut_soal[1]) ? "''" : "'{$pc_urut_soal[1]}'";
+		// 	$ambil_soal 	= $this->ujian->ambilSoal($jawaban, $id_soal);
+		// 	$soal_urut_ok[] = $ambil_soal;
+		// }
 
 		// vdebug($soal_urut_ok);
 
-		$pc_list_jawaban = explode(",", $list_jawaban);
-		$arr_jawab = array();
-		foreach ($pc_list_jawaban as $v) {
-			$pc_v 	= explode(":", $v);
-			$idx 	= $pc_v[0];
-			$val 	= $pc_v[1];
-			$rg 	= $pc_v[2];
+		$arr_jawab = [];
+		$soal_urut_ok	= [];
+		foreach ($jawaban_ujian as $jwb) {
+			$id_soal 	= $jwb->soal_id;
+			$jawaban 	= $jwb->jawaban;
+			$ragu_value = $jwb->status_jawaban;
+			$j_essay 	= $jwb->jawaban_essay;
 
-			$arr_jawab[$idx] = array("j" => $val, "r" => $rg);
+			$arr_jawab[$id_soal] = ['j' => $jawaban, 'r' => $ragu_value, 'j_essay' => $j_essay]; // $j_essay SCR OTOMATIS MEN-DECODE htmlentities
+
+			$jawaban_abjad 		= empty($jawaban) ? "''" : "'". $jawaban ."'";
+			$ambil_soal 	= $this->ujian->ambilSoal($jawaban_abjad, $id_soal);
+			$soal_urut_ok[] = $ambil_soal;
 		}
 
-		$arr_opsi = array("a", "b", "c", "d", "e");
 		$html = '';
 		$html_pertanyaan = '';
 		$no = 1;
+		$nomer_soal = 1;
 		if (!empty($soal_urut_ok)) {
-			foreach ($soal_urut_ok as $s) {
+			foreach ($soal_urut_ok as $soal) {
 				$path = 'uploads/bank_soal/';
-				$vrg = $arr_jawab[$s->id_soal]["r"] == "" ? "N" : $arr_jawab[$s->id_soal]["r"];
-				$html .= '<input type="hidden" name="id_soal_'. $no .'" value="'. $s->id_soal .'">';
+				$vrg = $arr_jawab[$soal->id_soal]['r'] == "" ? "N" : $arr_jawab[$soal->id_soal]['r'];
+				$html .= '<input type="hidden" name="nomer_soal_'. $soal->id_soal .'" value="'. $no .'">';
+				$html .= '<input type="hidden" name="id_soal_'. $no .'" value="'. $soal->id_soal .'">';
 				$html .= '<input type="hidden" name="rg_'. $no .'" id="rg_'. $no .'" value="'. $vrg .'">';
-				$html .= '<input type="hidden" name="topik_id_'. $no .'" id="topik_id_'. $no .'" value="'. $s->topik_id .'">';
+				$html .= '<input type="hidden" name="topik_id_'. $no .'" id="topik_id_'. $no .'" value="'. $soal->topik_id .'">';
+				$html .= '<input type="hidden" name="tipe_soal_'. $no .'" value="'. $soal->tipe_soal .'">';
 
 				$html_section = '';
-				if(!empty($s->section_id)){
-					$html_section = '<div id="preview_section" class="alert text-muted border border-info" style="">'. $s->konten .'</div><br />';
+				if(!empty($soal->section_id)){
+					$html_section = '<div id="preview_section" class="alert text-muted border border-info" style="">'. $soal->konten .'</div><br />';
 				}
 
 				$html_pertanyaan .= '<div class="step step_pertanyaan" id="widget_'. $no .'">
 										<div class="pertanyaan">
 											'. $html_section .'
-											<div class="media-pertanyaan">'. tampil_media($path . $s->file) .'</div>
-											<div>'. $s->soal .'</div>
+											<div class="media-pertanyaan">'. tampil_media($path . $soal->file) .'</div>
+											<div>'. $soal->soal .'</div>
 										</div>
 									</div>';
 
 				$html .= '<div class="step" id="widget_jawaban_' . $no . '">';
-				$html .= '<div class="funkyradio">';
 
-				$urutan_jawaban = [0, 1, 2, 3, 4];
-				$urutan_jawaban_huruf = ['A', 'B', 'C', 'D', 'E'];
-				$ujian->jenis_jawaban == 'acak' ? shuffle($urutan_jawaban) : null;
+				if($soal->tipe_soal == TIPE_SOAL_MCSA || $soal->tipe_soal == TIPE_SOAL_MCMA){
+					$html .= '<div class="funkyradio">';
 
-				// for ($j = 0; $j < $this->config->item('jml_opsi'); $j++) {
-				$i = 0;
-				foreach ($urutan_jawaban as $j) {
-					$opsi 			= "opsi_" . $arr_opsi[$j];
-					$file 			= "file_" . $arr_opsi[$j];
-					$checked 		= $arr_jawab[$s->id_soal]["j"] == strtoupper($arr_opsi[$j]) ? "checked" : "";
-					$pilihan_opsi 	= !empty($s->$opsi) ? $s->$opsi : "";
-					$tampil_media_opsi = (is_file(base_url() . $path . $s->$file) || $s->$file != "") ? tampil_media($path . $s->$file) : "";
+					// $urutan_jawaban = [0, 1, 2, 3, 4];
+					// $urutan_jawaban_huruf = ['A', 'B', 'C', 'D', 'E'];
 
-					$html .= '<div class="funkyradio-success">
-						<input type="radio" id="opsi_' . strtolower($arr_opsi[$j]) . '_' . $s->id_soal . '" name="opsi_' . $no . '" data-sid="' . $s->id_soal . '" value="' . strtoupper($arr_opsi[$j]) . '" rel="' . $no . '" ' . $checked . '>
-						<label for="opsi_' . strtolower($arr_opsi[$j]) . '_' . $s->id_soal . '" class="label_pilihan">
-							<div class="huruf_opsi"><b>' . $urutan_jawaban_huruf[$i] . '</b></div> <div>' . $pilihan_opsi . '</div><div class="w-25">' . $tampil_media_opsi . '</div>
-						</label></div>';
-					$i++;
+					$urutan_jawaban = [];
+					$urutan_jawaban_huruf = [];
+
+					$urutan_abjad = 0;
+					foreach(OPSI_SOAL as $abjad_soal){
+						$urutan_jawaban[] = $urutan_abjad;
+						$urutan_jawaban_huruf[] = strtoupper($abjad_soal);
+						$urutan_abjad++;
+					}
+					$ujian->jenis_jawaban == 'acak' ? shuffle($urutan_jawaban) : null;
+
+					// for ($j = 0; $j < $this->config->item('jml_opsi'); $j++) {
+					$i = 0;
+					foreach ($urutan_jawaban as $j) {
+						$opsi 			= "opsi_" . OPSI_SOAL[$j];
+						$file 			= "file_" . OPSI_SOAL[$j];
+						$checked 		= $arr_jawab[$soal->id_soal]['j'] == strtoupper(OPSI_SOAL[$j]) ? "checked" : "";
+						$pilihan_opsi 	= !empty($soal->$opsi) ? $soal->$opsi : "";
+						$tampil_media_opsi = (is_file(base_url() . $path . $soal->$file) || $soal->$file != "") ? tampil_media($path . $soal->$file) : "";
+
+						$html .= '<div class="funkyradio-success">
+							<input type="radio" id="opsi_' . strtolower(OPSI_SOAL[$j]) . '_' . $soal->id_soal . '" name="opsi_' . $no . '" data-sid="' . $soal->id_soal . '" value="' . strtoupper(OPSI_SOAL[$j]) . '" rel="' . $no . '" ' . $checked . '>
+							<label for="opsi_' . strtolower(OPSI_SOAL[$j]) . '_' . $soal->id_soal . '" class="label_pilihan">
+								<div class="huruf_opsi"><b>' . $urutan_jawaban_huruf[$i] . '</b></div> <div>' . $pilihan_opsi . '</div><div class="w-25">' . $tampil_media_opsi . '</div>
+							</label></div>';
+						$i++;
+					}
+
+					$html .= '</div>';
+
+				}elseif($soal->tipe_soal == TIPE_SOAL_ESSAY){
+					$html .= '<div class="form-group" id="div_essay">';
+					// $html .= '<div class="alert bg-info">Jangan lupa untuk menyimpan jawaban essay anda</div>';
+					$html .= '<label for="opsi_a_'. $soal->id_soal .'" id="label_essay_belum_disimpan_'. $no .'" class="control-label" style="width: 100%; display: none;">
+                                    <small class="help-block bg-yellow pl-1"><span class="text-danger"><b>Perhatian, isian essay anda belum disimpan</b></span></small>
+                                </label>';
+					$html .= '<input type="hidden" name="jawaban_essay_before_'. $no .'" value="'. $arr_jawab[$soal->id_soal]['j_essay'] .'">'; 
+					$html .= '<textarea class="summernote_editor" id="opsi_a_'. $soal->id_soal .'" name="opsi_' . $no . '" data-sid="' . $soal->id_soal . '" rel="' . $no . '">'. $arr_jawab[$soal->id_soal]['j_essay'] .'</textarea>';
+					$html .= '<label for="opsi_a_'. $soal->id_soal .'" class="control-label">
+                                    <small class="help-block"><span class="text-danger"><b>***</b></span> Jangan lupa untuk selalu menyimpan jawaban anda</small>
+                                </label><br/>';
+					$html .= '<button type="button" data-sid="' . $soal->id_soal . '" rel="' . $no . '" id="btn_simpan_essay_'. $soal->id_soal .'" class="btn btn-sm btn-success btn_simpan_essay"><i class="ft-save"></i> Simpan</button> ';
+					$html .= '<button type="button" data-sid="' . $soal->id_soal . '" rel="' . $no . '" id="btn_clear_essay_'. $soal->id_soal .'" class="btn btn-sm btn-danger btn_clear_essay"><i class="ft-x-circle"></i> Hapus</button> ';
+					$html .= '<button type="button" data-sid="' . $soal->id_soal . '" rel="' . $no . '" id="btn_revert_essay_'. $soal->id_soal .'" class="btn btn-sm btn-primary btn_revert_essay"><i class="ft-rotate-ccw"></i> Revert</button>';
+					// $html .= '<input type="hidden" name="flag_check_jawaban_essay_'. $no .'" value="'. (empty($arr_jawab[$soal->id_soal]['j_essay']) ? 'N' : 'Y') .'">'; // JIKA N BERARTI ISIAN MASIH KOSONG
+					$html .= '</div>';
 				}
-
-				$html .= '</div></div>';
+				$html .= '</div>';
 				$no++;
 			}
 		}
@@ -2285,7 +2318,7 @@ class Ujian extends MY_Controller
 	//			$val 	= $pc_v[1];
 	//			$rg 	= $pc_v[2];
 	//
-	//			$arr_jawab[$idx] = array("j"=>$val,"r"=>$rg);
+	//			$arr_jawab[$idx] = arra'j'=>$val,"r"=>$rg);
 	//		}
 	//
 	//		$arr_opsi = array("a","b","c","d","e");
@@ -2414,7 +2447,13 @@ class Ujian extends MY_Controller
 		}
 
 		$jawaban_ujian = Jawaban_ujian_orm::where('ujian_id', $h_ujian->id)->where('soal_id', $sid)->firstOrFail();
-		$jawaban_ujian->jawaban = $answer;
+
+		if($jawaban_ujian->soal->tipe_soal == TIPE_SOAL_MCSA){
+			$jawaban_ujian->jawaban = $answer;
+		}elseif($jawaban_ujian->soal->tipe_soal == TIPE_SOAL_ESSAY){
+			$jawaban_ujian->jawaban_essay = htmlentities($answer);
+		}
+
 		$jawaban_ujian->status_jawaban = $ragu;
 		$jawaban_ujian->waktu_buka_soal = $waktu_buka_soal == 'null' ? null : $waktu_buka_soal;
 		$jawaban_ujian->waktu_jawab_soal = $waktu_jawab_soal;
@@ -2488,22 +2527,23 @@ class Ujian extends MY_Controller
 
 		if (!$allow) {
 			show_error('Token akhiri salah.', 500, 'Perhatian');
-		} else {
-			$ended_by = $this->input->post('ended_by', true);
-			// Decrypt Id
-			$id = $this->input->post('id', true);
-			$id_h_ujian = integer_read_from_uuid($id);
+		} 
 
-			$action = $this->_akhiri_ujian($id_h_ujian, $ended_by);
+		$ended_by = $this->input->post('ended_by', true);
+		// Decrypt Id
+		$id = $this->input->post('id', true);
+		$id_h_ujian = integer_read_from_uuid($id);
 
-			$message_rootpage = [
-				'header' => 'Perhatian',
-				'content' => 'Ujian telah selesai.',
-				'type' => 'success'
-			];
-			$this->session->set_flashdata('message_rootpage', $message_rootpage);
-			$this->_json(['status' => $action]);
-		}
+		$action = $this->_akhiri_ujian($id_h_ujian, $ended_by);
+
+		$message_rootpage = [
+			'header' => 'Perhatian',
+			'content' => 'Ujian telah selesai.',
+			'type' => 'success'
+		];
+		$this->session->set_flashdata('message_rootpage', $message_rootpage);
+		$this->_json(['status' => $action]);
+		
 	}
 
 	protected function _force_close_ujian()
@@ -2529,34 +2569,36 @@ class Ujian extends MY_Controller
 			show_error('Ujian sudah diakhiri.', 500, 'Perhatian');
 		}
 
-		// Get Jawaban
-		// $list_jawaban = $this->ujian->getJawaban($id_h_ujian);
-
-		// Pecah Jawaban
-		$pc_jawaban = $h_ujian->jawaban_ujian;
-
 		$jumlah_benar = 0;
 		$jumlah_salah = 0;
 		//			$jumlah_ragu  = 0;
 		//			$nilai_bobot  = 0;
 		$total_bobot  = 0;
 		$total_bobot_benar  = 0;
-		$jumlah_soal  = count($pc_jawaban);
+		// $jumlah_soal  = count($h_ujian->jawaban_ujian);
+		$jumlah_soal  = $h_ujian->jawaban_ujian->count();
 
 		$topik_ujian_nilai_bobot = [];
 
-		foreach ($pc_jawaban as $jwb) {
+		foreach ($h_ujian->jawaban_ujian as $jwb) {
 			if (!isset($topik_ujian_nilai_bobot[$jwb->soal->topik_id])) {
 				$topik_ujian_nilai_bobot[$jwb->soal->topik_id] = 0;
 			}
-			$total_bobot = $total_bobot + ($jwb->soal->bobot_soal->nilai * $jwb->soal->topik->poin_topik);
-			if ($jwb->jawaban == $jwb->soal->jawaban) {
+
+			if($jwb->soal->tipe_soal == TIPE_SOAL_MCSA){
+				// INI HANYA UNTUK JENIS MCSA
+				$total_bobot = $total_bobot + ($jwb->soal->bobot_soal->nilai * $jwb->soal->topik->poin_topik);
+				if ($jwb->jawaban == $jwb->soal->jawaban) {
+					$jumlah_benar++;
+					$bobot_poin = ($jwb->soal->bobot_soal->nilai * $jwb->soal->topik->poin_topik);
+					$total_bobot_benar = $total_bobot_benar + $bobot_poin;
+					$topik_ujian_nilai_bobot[$jwb->soal->topik_id] = $topik_ujian_nilai_bobot[$jwb->soal->topik_id] + $bobot_poin;
+				} else {
+					$jumlah_salah++;
+				}
+			}elseif($jwb->soal->tipe_soal == TIPE_SOAL_ESSAY){
+				// DI ESSAY SEMUA NILAI DIANGGAP BENAR
 				$jumlah_benar++;
-				$bobot_poin = ($jwb->soal->bobot_soal->nilai * $jwb->soal->topik->poin_topik);
-				$total_bobot_benar = $total_bobot_benar + $bobot_poin;
-				$topik_ujian_nilai_bobot[$jwb->soal->topik_id] = $topik_ujian_nilai_bobot[$jwb->soal->topik_id] + $bobot_poin;
-			} else {
-				$jumlah_salah++;
 			}
 		}
 
@@ -2618,17 +2660,28 @@ class Ujian extends MY_Controller
 		$jml_daftar_hadir = 0;
 		$jml_daftar_hadir_by_pengawas = 0;
 		if (in_group(PENGAWAS_GROUP_ID)) {
-			$users_groups = Users_groups_orm::where([
-				'user_id'  => get_logged_user()->id,
-				'group_id' => PENGAWAS_GROUP_ID
-			])->firstOrFail();
+
+			// $users_groups = Users_groups_orm::where([
+			// 	'user_id'  => get_logged_user()->id,
+			// 	'group_id' => PENGAWAS_GROUP_ID
+			// ])->firstOrFail();
+
+			// $jml_daftar_hadir_by_pengawas = Mhs_ujian_orm::where('ujian_id', $m_ujian->id_ujian)
+			// ->whereHas('daftar_hadir', function (Builder $query) use ($users_groups) {
+			// 	$query->where('absen_by', $users_groups->id);
+			// })
+			// ->get()
+			// ->count();
+
+			$user = get_logged_user();
 
 			$jml_daftar_hadir_by_pengawas = Mhs_ujian_orm::where('ujian_id', $m_ujian->id_ujian)
-				->whereHas('daftar_hadir', function (Builder $query) use ($users_groups) {
-					$query->where('absen_by', $users_groups->id);
-				})
-				->get()
-				->count();
+			->whereHas('daftar_hadir', function (Builder $query) use ($user) {
+				$query->where('absen_by_username', $user->username);
+			})
+			->get()
+			->count();
+
 		}
 
 		$jml_daftar_hadir = Mhs_ujian_orm::where('ujian_id', $m_ujian->id_ujian)
@@ -2650,17 +2703,27 @@ class Ujian extends MY_Controller
 		$id = $this->input->post('id');
 		$as = $this->input->post('as');
 
-		$pengawas_id = 'ALL';
+		// $pengawas_id = 'ALL';
+
+		// if ($as == 'pengawas') {
+		// 	$user_id = $this->input->post('user_id');
+		// 	if ($user_id != 'ALL') {
+		// 		$users_groups    = Users_groups_orm::where([
+		// 			'user_id'  => $user_id,
+		// 			'group_id' => PENGAWAS_GROUP_ID
+		// 		])->firstOrFail();
+
+		// 		$pengawas_id = $users_groups->id;
+		// 	}
+		// }
+
+		$pengawas_username = 'ALL';
 
 		if ($as == 'pengawas') {
 			$user_id = $this->input->post('user_id');
 			if ($user_id != 'ALL') {
-				$users_groups    = Users_groups_orm::where([
-					'user_id'  => $user_id,
-					'group_id' => PENGAWAS_GROUP_ID
-				])->firstOrFail();
-
-				$pengawas_id = $users_groups->id;
+				$users = Users_orm::findOrFail($user_id);
+				$pengawas_username = $users->username;
 			}
 		}
 
@@ -2677,24 +2740,30 @@ class Ujian extends MY_Controller
 
 		$dt = new Datatables(new CodeigniterAdapter);
 
-		$this->db->select('a.id, c.nim, c.nama, c.nik, c.jenis_kelamin, c.tgl_lahir, c.prodi, d.absen_by, d.is_terlihat_pada_layar, d.is_perjokian, d.is_sering_buka_page_lain, d.catatan_pengawas, e.ujian_selesai AS status');
+		$this->db->select('a.id, c.nim, c.nama, c.nik, c.jenis_kelamin, c.tgl_lahir, c.prodi, d.absen_by, d.absen_by_username, d.is_terlihat_pada_layar, d.is_perjokian, d.is_sering_buka_page_lain, d.catatan_pengawas, e.ujian_selesai AS status');
 		$this->db->from('mahasiswa_ujian AS a');
 		$this->db->join('mahasiswa AS c', 'a.mahasiswa_id = c.id_mahasiswa');
 		$this->db->join('daftar_hadir AS d', 'a.id = d.mahasiswa_ujian_id', 'left');
 		$this->db->join('h_ujian AS e', 'a.id = e.mahasiswa_ujian_id', 'left');
 		$this->db->where(['a.ujian_id' => $m_ujian->id_ujian]);
+
+		// if ($as == 'pengawas') {
+		// 	if ($pengawas_id != 'ALL')
+		// 		$this->db->where('d.absen_by', $pengawas_id);
+		// 	else
+		// 		$this->db->where('d.absen_by IS NOT NULL', null, false);
+		// }
+
 		if ($as == 'pengawas') {
-			if ($pengawas_id != 'ALL')
-				$this->db->where('d.absen_by', $pengawas_id);
+			if ($pengawas_username != 'ALL')
+				$this->db->where('d.absen_by_username', $pengawas_username);
 			else
-				$this->db->where('d.absen_by IS NOT NULL', null, false);
+				$this->db->where('d.absen_by_username IS NOT NULL', null, false);
 		}
+
 		$this->db->group_by('a.id');
-		// $this->db->order_by('c.nim');
 
 		$query = $this->db->get_compiled_select(); // GET QUERY PRODUCED BY ACTIVE RECORD WITHOUT RUNNING I
-
-		// echo $query ; die;
 
 		$dt->query($query);
 
@@ -2757,7 +2826,6 @@ class Ujian extends MY_Controller
 							</div>
 						</div>';
 			} else {
-				// return '<button type="button" class="btn btn-sm btn-success btn_open" data-id="' . $data['id'] . '" data-nim="' . $data['nim'] . '"><i class="fa fa-folder-open"></i> Lihat</button>';
 				return '<div class="text-center">
 							<div class="btn-group">
 							<button type="button" title="check absen" class="btn btn-sm btn-secondary btn_absensi_check" data-id="' . $data['id'] . '" data-nim="' . $data['nim'] . '"><i class="fa fa-question"></i></button>
@@ -2766,10 +2834,17 @@ class Ujian extends MY_Controller
 			}
 		});
 
-		$dt->edit('absen_by', function ($data) {
-			//	            return number_format($data['nilai_bobot_benar'] / 3,2,'.', '') ;
+		// $dt->edit('absen_by', function ($data) {
+		// 	$return = '<span class="badge border-danger danger round badge-border" id="badge_absensi_' . $data['nim'] . '">BELUM</span>';
+		// 	if (!empty($data['absen_by'])) {
+		// 		$return = '<span class="badge border-success success round badge-border" id="badge_absensi_' . $data['nim'] . '">SUDAH</span>';
+		// 	}
+		// 	return  $return;
+		// });
+
+		$dt->edit('absen_by_username', function ($data) {
 			$return = '<span class="badge border-danger danger round badge-border" id="badge_absensi_' . $data['nim'] . '">BELUM</span>';
-			if (!empty($data['absen_by'])) {
+			if (!empty($data['absen_by_username'])) {
 				$return = '<span class="badge border-success success round badge-border" id="badge_absensi_' . $data['nim'] . '">SUDAH</span>';
 			}
 			return  $return;
@@ -2792,11 +2867,23 @@ class Ujian extends MY_Controller
 			return '<span class="badge bg-' . $status_badge . '" id="badge_status_' . $data['nim'] . '">' . $status . '</span>
 					<span class="badge bg-warning" id="badge_focus_' . $data['nim'] . '" style="display: none">BUKA PAGE LAIN</span>';
 		});
-
-		// vdebug($dt->getQuery());
-
 		$this->_json($dt->generate(), false);
 	}
+
+	// protected function _check_pengabsen()
+	// {
+	// 	$mahasiswa_ujian_id = $this->input->post('mahasiswa_ujian_id');
+
+	// 	$daftar_hadir = Daftar_hadir_orm::where([
+	// 		'mahasiswa_ujian_id' => $mahasiswa_ujian_id,
+	// 	])->first();
+
+	// 	$data['nama_pengabsen'] = null;
+	// 	if (!empty($daftar_hadir)) {
+	// 		$data['nama_pengabsen'] = $daftar_hadir->pengawas->users->full_name;
+	// 	}
+	// 	$this->_json($data);
+	// }
 
 	protected function _check_pengabsen()
 	{
@@ -2808,11 +2895,13 @@ class Ujian extends MY_Controller
 
 		$data['nama_pengabsen'] = null;
 		if (!empty($daftar_hadir)) {
-			$data['nama_pengabsen'] = $daftar_hadir->pengawas->users->full_name;
+			$username = $daftar_hadir->absen_by_username;
+			$users = Users_orm::where('username', $username)->firstOrFail();
+			$data['nama_pengabsen'] = $users->full_name;
 		}
-
 		$this->_json($data);
 	}
+
 
 	protected function _get_foto_url()
 	{
@@ -2821,67 +2910,126 @@ class Ujian extends MY_Controller
 		$this->_json(['src_img' => $mhs->foto]);
 	}
 
+	// protected function _absen_pengawas()
+	// {
+	// 	$this->_akses_pengawas();
+
+	// 	$mahasiswa_ujian_id = $this->input->post('mahasiswa_ujian_id');
+	// 	$aksi = $this->input->post('aksi');
+
+	// 	$users_groups = Users_groups_orm::where([
+	// 		'user_id'  => get_logged_user()->id,
+	// 		'group_id' => PENGAWAS_GROUP_ID
+	// 	])->firstOrFail();
+
+	// 	$daftar_hadir = Daftar_hadir_orm::where([
+	// 		'mahasiswa_ujian_id' => $mahasiswa_ujian_id,
+	// 	])->first();
+
+	// 	$ok = false;
+	// 	$msg = '';
+	// 	if ($aksi == 'batal') {
+	// 		if (!empty($daftar_hadir)) {
+	// 			if($daftar_hadir->absen_by != $users_groups->id)
+	// 				$msg = 'Anda bukan yang mengabsenkan';
+	// 			else
+	// 				$ok = $daftar_hadir->delete();
+	// 		}else{
+	// 			$msg = 'Mhs tsb belum diabsenkan';
+	// 		}
+	// 	} else {
+	// 		if (empty($daftar_hadir)) {
+	// 			$daftar_hadir                     = new Daftar_hadir_orm();
+	// 			$daftar_hadir->mahasiswa_ujian_id = $mahasiswa_ujian_id;
+	// 			$daftar_hadir->absen_by           = $users_groups->id;
+	// 			$ok                               = $daftar_hadir->save();
+	// 		}else{
+	// 			$msg = 'Mhs tsb sudah diabsenkan';
+	// 		}
+	// 	}
+	// 	$this->_json(['ok' => $ok, 'msg' => $msg]);
+	// }
+
 	protected function _absen_pengawas()
 	{
 		$this->_akses_pengawas();
 
-		$user_id = get_logged_user()->id;
 		$mahasiswa_ujian_id = $this->input->post('mahasiswa_ujian_id');
 		$aksi = $this->input->post('aksi');
 
-		$users_groups = Users_groups_orm::where([
-			'user_id'  => $user_id,
-			'group_id' => PENGAWAS_GROUP_ID
-		])->firstOrFail();
+		$user = get_logged_user();
+
+		$daftar_hadir = Daftar_hadir_orm::where([
+			'mahasiswa_ujian_id' => $mahasiswa_ujian_id,
+		])->first();
 
 		$ok = false;
+		$msg = '';
 		if ($aksi == 'batal') {
-			// JIKA MEMBATALKAN ABSEN
-			$daftar_hadir = Daftar_hadir_orm::where([
-				'mahasiswa_ujian_id' => $mahasiswa_ujian_id,
-				'absen_by'           => $users_groups->id,
-			])->first();
-
-
 			if (!empty($daftar_hadir)) {
-				$ok = $daftar_hadir->delete();
+				if($daftar_hadir->absen_by_username != $user->username)
+					$msg = 'Anda bukan yang mengabsenkan';
+				else
+					$ok = $daftar_hadir->delete();
+			}else{
+				$msg = 'Mhs tsb belum diabsenkan';
 			}
 		} else {
-			// JIKA MENGISI ABSEN
-			$daftar_hadir = Daftar_hadir_orm::where([
-				'mahasiswa_ujian_id' => $mahasiswa_ujian_id,
-			])->first();
-
 			if (empty($daftar_hadir)) {
 				$daftar_hadir                     = new Daftar_hadir_orm();
 				$daftar_hadir->mahasiswa_ujian_id = $mahasiswa_ujian_id;
-				$daftar_hadir->absen_by           = $users_groups->id;
+				$daftar_hadir->absen_by_username	= $user->username;
 				$ok                               = $daftar_hadir->save();
+			}else{
+				$msg = 'Mhs tsb sudah diabsenkan';
 			}
 		}
-
-		$this->_json(['ok' => $ok]);
+		$this->_json(['ok' => $ok, 'msg' => $msg]);
 	}
+
+	// protected function _bapu_pengawas()
+	// {
+	// 	$this->_akses_pengawas();
+
+	// 	$user_id = get_logged_user()->id;
+	// 	$mahasiswa_ujian_id = $this->input->post('mahasiswa_ujian_id');
+	// 	$bapu = $this->input->post('bapu');
+
+	// 	$users_groups = Users_groups_orm::where([
+	// 		'user_id'  => $user_id,
+	// 		'group_id' => PENGAWAS_GROUP_ID
+	// 	])->firstOrFail();
+
+	// 	$ok = false;
+
+	// 	$daftar_hadir = Daftar_hadir_orm::where([
+	// 		'mahasiswa_ujian_id' => $mahasiswa_ujian_id,
+	// 		'absen_by' => $users_groups->id,
+	// 	])->first();
+
+	// 	if(!empty($daftar_hadir)){
+	// 		$daftar_hadir->mahasiswa_ujian_id = $mahasiswa_ujian_id;
+	// 		$daftar_hadir->is_terlihat_pada_layar           = $bapu['is_terlihat_pada_layar'];
+	// 		$daftar_hadir->is_perjokian           = $bapu['is_perjokian'];
+	// 		$daftar_hadir->is_sering_buka_page_lain           = $bapu['is_sering_buka_page_lain'];
+	// 		$ok                               = $daftar_hadir->save();
+	// 	}
+
+	// 	$this->_json(['ok' => $ok]);
+	// }
 
 	protected function _bapu_pengawas()
 	{
 		$this->_akses_pengawas();
 
-		$user_id = get_logged_user()->id;
 		$mahasiswa_ujian_id = $this->input->post('mahasiswa_ujian_id');
 		$bapu = $this->input->post('bapu');
 
-		$users_groups = Users_groups_orm::where([
-			'user_id'  => $user_id,
-			'group_id' => PENGAWAS_GROUP_ID
-		])->firstOrFail();
-
 		$ok = false;
 
-		// JIKA MENGISI ABSEN
 		$daftar_hadir = Daftar_hadir_orm::where([
 			'mahasiswa_ujian_id' => $mahasiswa_ujian_id,
-			'absen_by' => $users_groups->id,
+			'absen_by_username' => get_logged_user()->username,
 		])->first();
 
 		if(!empty($daftar_hadir)){
@@ -2900,6 +3048,11 @@ class Ujian extends MY_Controller
 		$this->_akses_mahasiswa();
 
 		$h_ujian_id_uuid = $this->input->post('id');
+
+		if(empty($h_ujian_id_uuid)){ // ID SALAH
+			show_404();
+		}
+
 		$h_ujian_id = integer_read_from_uuid($h_ujian_id_uuid);
 		$h_ujian = Hujian_orm::findOrFail($h_ujian_id);
 
@@ -2908,7 +3061,7 @@ class Ujian extends MY_Controller
 		}
 
 		if(APP_TYPE == 'tryout'){
-			$user = $this->ion_auth->user()->row();
+			$user = get_logged_user();
 			$mhs = Mhs_orm::where('nim', $user->username)->firstOrFail();
 			// $mhs_aktif_membership = get_mhs_aktif_membership($h_ujian->mhs);
 
@@ -2998,7 +3151,7 @@ class Ujian extends MY_Controller
 			show_404();
 		}
 
-		if(empty($h_ujian->jawaban_ujian()->count())){ // JIKA BELUM PERNAH UJIAN SEBELUMNYA
+		if(empty($h_ujian->jawaban_ujian->count())){ // JIKA BELUM PERNAH UJIAN SEBELUMNYA
 			show_404();
 		}
 
@@ -3062,6 +3215,10 @@ class Ujian extends MY_Controller
 				$jawaban_ujian_history->status_jawaban = $jawaban_ujian->status_jawaban;
 				$jawaban_ujian_history->waktu_buka_soal = $jawaban_ujian->waktu_buka_soal;
 				$jawaban_ujian_history->waktu_jawab_soal = $jawaban_ujian->waktu_jawab_soal;
+				$jawaban_ujian_history->jawaban_essay = $jawaban_ujian->jawaban_essay;
+				$jawaban_ujian_history->nilai_essay = $jawaban_ujian->nilai_essay;
+				$jawaban_ujian_history->penilai_essay = $jawaban_ujian->penilai_essay;
+				$jawaban_ujian_history->waktu_menilai_essay = empty($jawaban_ujian->waktu_menilai_essay) ? null : $jawaban_ujian->waktu_menilai_essay;
 				$jawaban_ujian_history->save();
 
 			}
@@ -3084,7 +3241,7 @@ class Ujian extends MY_Controller
 
 		$this->_akses_mahasiswa();
 
-		$user = $this->ion_auth->user()->row();
+		$user = get_logged_user();
 		$data['user'] = $user;
 
 		view('ujian/tutorial_' . TEMPLATE_LEMBAR_UJIAN, $data);
@@ -3368,26 +3525,53 @@ class Ujian extends MY_Controller
 	}
 
 	protected function _get_catatan_pengawas(){
+		$this->_akses_selain_mahasiswa_dan_penyusun_soal();
+
 		$mahasiswa_ujian_id = $this->input->post('mahasiswa_ujian_id');
-		$users_groups = Users_groups_orm::where([
-			'user_id'  => get_logged_user()->id,
-			'group_id' => PENGAWAS_GROUP_ID
-		])->firstOrFail();
-		$daftar_hadir = Daftar_hadir_orm::where(['mahasiswa_ujian_id' => $mahasiswa_ujian_id, 'absen_by' => $users_groups->id ])->firstOrFail();
+
+		// $users_groups = Users_groups_orm::where([
+		// 	'user_id'  => get_logged_user()->id,
+		// 	'group_id' => PENGAWAS_GROUP_ID
+		// ])->firstOrFail();
+		// $daftar_hadir = Daftar_hadir_orm::where(['mahasiswa_ujian_id' => $mahasiswa_ujian_id, 'absen_by' => $users_groups->id ])->firstOrFail();
+
+		$daftar_hadir = Daftar_hadir_orm::where(['mahasiswa_ujian_id' => $mahasiswa_ujian_id])->firstOrFail();
+
 		$this->_json(['catatan_pengawas' => $daftar_hadir->catatan_pengawas]);
 	}
+
+	// protected function _set_catatan_pengawas(){
+	// 	$mahasiswa_ujian_id = $this->input->post('mahasiswa_ujian_id');
+	// 	$catatan_pengawas = $this->input->post('catatan_pengawas');
+	// 	$users_groups = Users_groups_orm::where([
+	// 		'user_id'  => get_logged_user()->id,
+	// 		'group_id' => PENGAWAS_GROUP_ID
+	// 	])->firstOrFail();
+	// 	$ok = false;
+	// 	$msg = '';
+	// 	$daftar_hadir = Daftar_hadir_orm::where(['mahasiswa_ujian_id' => $mahasiswa_ujian_id])->firstOrFail();
+	// 	if($daftar_hadir->absen_by == $users_groups->id){
+	// 		$daftar_hadir->catatan_pengawas = $catatan_pengawas;
+	// 		$ok = $daftar_hadir->save();
+	// 	}else{
+	// 		$msg = 'Anda bukan yang mengabsen mhs tsb';
+	// 	}
+	// 	$this->_json(['ok' => $ok, 'msg' => $msg]);
+	// }
 
 	protected function _set_catatan_pengawas(){
 		$mahasiswa_ujian_id = $this->input->post('mahasiswa_ujian_id');
 		$catatan_pengawas = $this->input->post('catatan_pengawas');
-		$users_groups = Users_groups_orm::where([
-			'user_id'  => get_logged_user()->id,
-			'group_id' => PENGAWAS_GROUP_ID
-		])->firstOrFail();
-		$daftar_hadir = Daftar_hadir_orm::where(['mahasiswa_ujian_id' => $mahasiswa_ujian_id, 'absen_by' => $users_groups->id ])->firstOrFail();
-		$daftar_hadir->catatan_pengawas = $catatan_pengawas;
-		$daftar_hadir->save();
-		$this->_json(['stts' => 'ok']);
+		$ok = false;
+		$msg = '';
+		$daftar_hadir = Daftar_hadir_orm::where(['mahasiswa_ujian_id' => $mahasiswa_ujian_id])->firstOrFail();
+		if($daftar_hadir->absen_by_username == get_logged_user()->username){
+			$daftar_hadir->catatan_pengawas = $catatan_pengawas;
+			$ok = $daftar_hadir->save();
+		}else{
+			$msg = 'Anda bukan yang mengabsen mhs tsb';
+		}
+		$this->_json(['ok' => $ok, 'msg' => $msg]);
 	}
 
 	//	function c(){

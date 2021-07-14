@@ -1,4 +1,6 @@
 let waktu_buka_soal = null;
+let nomer_soal_before = 1; // DI INIT NOMER PERTAMA DULU
+let nomer_soal_dibuka = 1; // DI INIT NOMER PERTAMA DULU
 
 $(document).ready(function () {
     ajaxcsrf();
@@ -31,16 +33,31 @@ function getFormData($form) {
 }
 
 function buka(id_widget) {
+    nomer_soal_dibuka = id_widget;
+
     $(".next").attr('rel', (id_widget + 1));
     $(".back").attr('rel', (id_widget - 1));
     $(".ragu_ragu").attr('rel', (id_widget));
 
-    if($('input[type="radio"][rel="'+ id_widget +'"]:checked').length > 0){
-        // $(".ragu_ragu").removeAttr('disabled');
-        $('.ragu_ragu').show();
-    }else{
-        // $(".ragu_ragu").attr('disabled','disabled');
-        $('.ragu_ragu').hide();
+    // if($('input[name="tipe_soal_'+ nomer_soal_before +'"]').val() == tipe_soal_essay){
+    //     let flag_check_jawaban_essay = $('input[name="flag_check_jawaban_essay_'+ nomer_soal_before +'"]').val();
+    //     if(flag_check_jawaban_essay == 'N'){
+    //         $('textarea[name="opsi_' + nomer_soal_before + '"]').summernote('code', '');
+    //     }
+    // }
+
+    if($('input[name="tipe_soal_'+ id_widget +'"]').val() == tipe_soal_mcsa){
+        if($('input[type="radio"][rel="'+ id_widget +'"]:checked').length > 0){
+            $('.ragu_ragu').show();
+        }else{
+            $('.ragu_ragu').hide();
+        }
+    }else if($('input[name="tipe_soal_'+ id_widget +'"]').val() == tipe_soal_essay){
+        if(!$('textarea[name="opsi_' + id_widget + '"]').summernote('isEmpty')){
+            $('.ragu_ragu').show();
+        }else{
+            $('.ragu_ragu').hide();
+        }
     }
 
     cek_status_ragu(id_widget);
@@ -56,17 +73,23 @@ function buka(id_widget) {
     $("#widget_" + id_widget).show();
     $("#widget_jawaban_" + id_widget).show();
 
+    simpan_view();
+
     let sid = $('input[name="id_soal_'+ id_widget +'"]').val();
     // waktu_buka_soal[sid] = waktu_buka_soal[sid] ? waktu_buka_soal[sid] : moment().format("YYYY-MM-DD HH:mm:ss");
     waktu_buka_soal = moment().format("YYYY-MM-DD HH:mm:ss");
     // console.log('buka', waktu_buka_soal);
     $('#q_n_a').scrollTop(0);
+
+    nomer_soal_before = id_widget;
 }
 
 function next() {
-    var berikutnya = $(".next").attr('rel');
+    let berikutnya = $(".next").attr('rel');
     berikutnya = parseInt(berikutnya);
     berikutnya = berikutnya > total_widget ? total_widget : berikutnya;
+
+    nomer_soal_dibuka = berikutnya;
 
     let topik_id_next = $('#topik_id_' + berikutnya).val();
     if(is_sekuen_topik){
@@ -90,12 +113,25 @@ function next() {
     $(".back").attr('rel', (berikutnya - 1));
     $(".ragu_ragu").attr('rel', (berikutnya));
 
-    if($('input[type="radio"][rel="'+ berikutnya +'"]:checked').length > 0){
-        // $(".ragu_ragu").removeAttr('disabled');
-        $('.ragu_ragu').show();
-    }else{
-        // $(".ragu_ragu").attr('disabled','disabled');
-        $('.ragu_ragu').hide();
+    // if($('input[name="tipe_soal_'+ nomer_soal_before +'"]').val() == tipe_soal_essay){
+    //     let flag_check_jawaban_essay = $('input[name="flag_check_jawaban_essay_'+ nomer_soal_before +'"]').val();
+    //     if(flag_check_jawaban_essay == 'N'){
+    //         $('textarea[name="opsi_' + nomer_soal_before + '"]').summernote('code', '');
+    //     }
+    // }
+
+    if($('input[name="tipe_soal_'+ berikutnya +'"]').val() == tipe_soal_mcsa){
+        if($('input[type="radio"][rel="'+ berikutnya +'"]:checked').length > 0){
+            $('.ragu_ragu').show();
+        }else{
+            $('.ragu_ragu').hide();
+        }
+    }else if($('input[name="tipe_soal_'+ berikutnya +'"]').val() == tipe_soal_essay){
+        if(!$('textarea[name="opsi_' + berikutnya + '"]').summernote('isEmpty')){
+            $('.ragu_ragu').show();
+        }else{
+            $('.ragu_ragu').hide();
+        }
     }
 
     cek_status_ragu(berikutnya);
@@ -123,12 +159,15 @@ function next() {
     // console.log('next', waktu_buka_soal);
     $('#q_n_a').scrollTop(0);
 
+    nomer_soal_before = berikutnya;
 }
 
 function back() {
-    var back = $(".back").attr('rel');
+    let back = $(".back").attr('rel');
     back = parseInt(back);
     back = back < 1 ? 1 : back;
+
+    nomer_soal_dibuka = back;
 
     let topik_id_back = $('#topik_id_' + back).val();
     if(is_sekuen_topik){
@@ -148,17 +187,29 @@ function back() {
     let topik_id_buka = $('#topik_id_' + back).val();
     $('#text_info_topik').text(topik_nama[topik_id_buka]);
 
-
     $(".back").attr('rel', (back - 1));
     $(".next").attr('rel', (back + 1));
     $(".ragu_ragu").attr('rel', (back));
 
-    if($('input[type="radio"][rel="'+ back +'"]:checked').length > 0){
-        // $(".ragu_ragu").removeAttr('disabled');
-        $('.ragu_ragu').show();
-    }else{
-        // $(".ragu_ragu").attr('disabled','disabled');
-        $('.ragu_ragu').hide();
+    // if($('input[name="tipe_soal_'+ nomer_soal_before +'"]').val() == tipe_soal_essay){
+    //     let flag_check_jawaban_essay = $('input[name="flag_check_jawaban_essay_'+ nomer_soal_before +'"]').val();
+    //     if(flag_check_jawaban_essay == 'N'){
+    //         $('textarea[name="opsi_' + nomer_soal_before + '"]').summernote('code', '');
+    //     }
+    // }
+
+    if($('input[name="tipe_soal_'+ back +'"]').val() == tipe_soal_mcsa){
+        if($('input[type="radio"][rel="'+ back +'"]:checked').length > 0){
+            $('.ragu_ragu').show();
+        }else{
+            $('.ragu_ragu').hide();
+        }
+    }else if($('input[name="tipe_soal_'+ back +'"]').val() == tipe_soal_essay){
+        if(!$('textarea[name="opsi_' + back + '"]').summernote('isEmpty')){
+            $('.ragu_ragu').show();
+        }else{
+            $('.ragu_ragu').hide();
+        }
     }
 
     cek_status_ragu(back);
@@ -185,14 +236,21 @@ function back() {
     // console.log('buka', waktu_buka_soal);
     $('#q_n_a').scrollTop(0);
 
+    nomer_soal_before = back;
 }
 
 function tidak_jawab() {
 
     var id_step = $(".ragu_ragu").attr('rel');
 
-    if(!$('input[name="opsi_'+ id_step +'"]').is(':checked')) {
-        return false;
+    if($('input[name="tipe_soal_'+ id_step +'"]').val() == tipe_soal_mcsa){
+        if(!$('input[name="opsi_'+ id_step +'"]').is(':checked')) {
+            return false;
+        }
+    }else if($('input[name="tipe_soal_'+ id_step +'"]').val() == tipe_soal_essay){
+        if($('textarea[name="opsi_' + id_step + '"]').summernote('isEmpty')){
+            return false;
+        }
     }
 
     var status_ragu = $("#rg_" + id_step).val();
@@ -214,12 +272,19 @@ function tidak_jawab() {
     cek_status_ragu(id_step);
 
     let sid = $('input[name="id_soal_'+ id_step +'"]').val();
-    let answer = $('input[name="opsi_'+ id_step +'"]:checked').val();
+    let answer = '';
+
+    if($('input[name="tipe_soal_'+ id_step +'"]').val() == tipe_soal_mcsa){
+        answer = $('input[name="opsi_'+ id_step +'"]:checked').val();
+    }else if($('input[name="tipe_soal_'+ id_step +'"]').val() == tipe_soal_essay){
+        answer = $('textarea[name="opsi_' + id_step + '"]').val();
+    }
+
     simpan_jawaban_satu(sid, answer, ragu, false);
 }
 
-function cek_status_ragu(id_soal) {
-    var status_ragu = $("#rg_" + id_soal).val();
+function cek_status_ragu(nomer_soal) {
+    var status_ragu = $("#rg_" + nomer_soal).val();
 
     if (status_ragu == "N") {
         $(".ragu_ragu > span").html('Ragu');
@@ -250,31 +315,35 @@ function cek_terakhir(id_soal) {
 }
 
 function simpan_view() {
-    var f_asal = $("#ujian");
-    var form = getFormData(f_asal);
+
+    check_isian_essay();
+
+    let f_asal = $("#ujian");
+    let form = getFormData(f_asal);
     //form = JSON.stringify(form);
-    var jml_soal = form.jml_soal;
+    let jml_soal = form.jml_soal;
     jml_soal = parseInt(jml_soal);
 
-    // var hasil_jawaban = '<div class="btn-group" role="group" aria-label="">';
-    var hasil_jawaban = '<div >';
+    // let hasil_jawaban = '<div class="btn-group" role="group" aria-label="">';
+    let hasil_jawaban = '<div >';
     let count_jml_soal_per_topik = [];
     let label_soal = 1 ;
-    for (var i = 1; i < jml_soal; i++) {
-        var idx = 'opsi_' + i;
-        var idx2 = 'rg_' + i;
-        var idx3 = 'topik_id_' + i;
+    for (let i = 1; i < jml_soal; i++) {
 
-        var jawab = form[idx];
-        var ragu = form[idx2];
-        var topik_id = form[idx3];
+        let ragu = form['rg_' + i];
+        let topik_id = form['topik_id_' + i];
+        let tipe_soal = form['tipe_soal_' + i];
+        
+        let jawab = null;
+        if(tipe_soal ==  tipe_soal_mcsa){
+            jawab = form['opsi_' + i];
+        }else if(tipe_soal ==  tipe_soal_essay){
+            jawab = form['jawaban_essay_before_' + i];
+        }
 
 
         // count_jml_soal_per_topik[topik_id] = count_jml_soal_per_topik[topik_id] ? count_jml_soal_per_topik[topik_id] : 0 ;
         // count_jml_soal_per_topik[topik_id] = count_jml_soal_per_topik[topik_id] + 1;
-
-        
-
         
         // if (jawab != undefined) {
         //     if (ragu == "Y") {
@@ -294,15 +363,18 @@ function simpan_view() {
         //     hasil_jawaban += '<button type="button" id="btn_soal_' + (i) + '" class="btn btn-outline-primary mr-1 mb-1 btn_soal" style="border-radius: 0; border-color: #967adc !important" onclick="return buka(' + (i) + ');">' + (i) + ". -</button>";
         // }
 
+        // console.log('jawab, i : ', i, jawab);
+        // console.log('ragu, i : ', i, ragu);
+
         if (jawab != undefined) {
             if (ragu == "Y") {
-                if (jawab == "-") {
+                if (jawab == "-" || jawab == "") {
                     hasil_jawaban += '<button type="button" id="btn_soal_' + (i) + '" class="class_topik_id_' + topik_id + ' btn btn-outline-primary btn_soal" style="padding: 5px; font-size:10px; margin-right:5px; margin-bottom: 8px; border-radius: 0; border-color: #967adc !important" onclick="return buka(' + (i) + ');">' + (label_soal) + "</button>";
                 } else {
                     hasil_jawaban += '<button type="button" id="btn_soal_' + (i) + '" class="class_topik_id_' + topik_id + ' btn btn-warning btn_soal" style="padding: 5px; font-size:10px; margin-right:5px; margin-bottom: 8px; border-radius: 0; border-color: #967adc !important" onclick="return buka(' + (i) + ');">' + (label_soal) + "</button>";
                 }
             } else {
-                if (jawab == "-") {
+                if (jawab == "-" || jawab == "") {
                     hasil_jawaban += '<button type="button" id="btn_soal_' + (i) + '" class="class_topik_id_' + topik_id + ' btn btn-outline-primary btn_soal" style="padding: 5px; font-size:10px; margin-right:5px; margin-bottom: 8px; border-radius: 0; border-color: #967adc !important" onclick="return buka(' + (i) + ');">' + (label_soal) + "</button>";
                 } else {
                     hasil_jawaban += '<button type="button" id="btn_soal_' + (i) + '" class="class_topik_id_' + topik_id + ' btn btn-success btn_soal" style="padding: 5px; font-size:10px; margin-right:5px; margin-bottom: 8px; border-radius: 0; border-color: #967adc !important" onclick="return buka(' + (i) + ');">' + (label_soal) + "</button>";
@@ -440,12 +512,81 @@ function simpan_akhir() {
 
 $(document).on('click','input[type="radio"]',function(){
     if($(this).prop("checked", true)){
-        simpan_view();
         let sid = $(this).data('sid');
         let answer = $(this).val();
         let id_step = $(this).attr('rel');
         let ragu = $("#rg_" + id_step).val() ;
         simpan_jawaban_satu(sid, answer, ragu);
         $('.ragu_ragu').show();
+        simpan_view();
     }
+});
+
+$(document).on('click','.btn_simpan_essay',function(){
+    let sid = $(this).data('sid');
+    let nomer_soal = $(this).attr('rel');
+    if(!$('#opsi_a_' + sid).summernote('isEmpty')){
+        let answer = $('#opsi_a_' + sid).val();
+        let id_step = $(this).attr('rel');
+        let ragu = $("#rg_" + id_step).val() ;
+        simpan_jawaban_satu(sid, answer, ragu);
+        // $('input[name="flag_check_jawaban_essay_'+ nomer_soal +'"]').val('Y');
+        $('input[name="jawaban_essay_before_'+ nomer_soal +'"]').val(answer);
+        $('#label_essay_belum_disimpan_'+ nomer_soal).hide();
+        $('.ragu_ragu').show();
+        simpan_view();
+    }else{
+        $('#opsi_a_' + sid).summernote('code', '');
+    }
+});
+
+$(document).on('click','.btn_clear_essay',function(){
+    let sid = $(this).data('sid');
+    let nomer_soal = $(this).attr('rel');
+    if(!$('#opsi_a_' + sid).summernote('isEmpty')){
+        Swal.fire({
+            title: "Hapus isian",
+            text: "Isian yang dihapus tdk dapat dikembalikan",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#37bc9b",
+            cancelButtonColor: "#f6bb42",
+            confirmButtonText: "Hapus"
+        }).then(result => {
+            if (result.value) {
+                $('#opsi_a_' + sid).summernote('code', '');
+                $('#opsi_a_' + sid).val('');
+                let answer = '';
+                // let ragu = $("#rg_" + nomer_soal).val() ;
+                simpan_jawaban_satu(sid, '', 'N');
+                $("#rg_" + nomer_soal).val('N');
+                // $('input[name="flag_check_jawaban_essay_'+ nomer_soal +'"]').val('N');
+                $('input[name="jawaban_essay_before_'+ nomer_soal +'"]').val(answer);
+                $('#label_essay_belum_disimpan_'+ nomer_soal).hide();
+                $('.ragu_ragu').hide();
+                cek_status_ragu(nomer_soal);
+                simpan_view();
+            }
+        });
+    }
+});
+
+$(document).on('click','.btn_revert_essay',function(){
+    let sid = $(this).data('sid');
+    let nomer_soal = $(this).attr('rel');
+    Swal.fire({
+        title: "Revert isian",
+        text: "Isian yang diubah tdk dapat dikembalikan",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#37bc9b",
+        cancelButtonColor: "#f6bb42",
+        confirmButtonText: "Revert"
+    }).then(result => {
+        if (result.value) {
+            let jawaban_essay_before = $('input[name="jawaban_essay_before_'+ nomer_soal +'"]').val();
+            $('#opsi_a_' + sid).summernote('code', jawaban_essay_before);
+            check_isian_essay();
+        }
+    });
 });

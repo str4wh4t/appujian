@@ -245,7 +245,7 @@ function go_ujian(token){
                             <li>Peserta tidak boleh melakukan perjokian, tindakan tidak jujur dan bentuk kecurangan lainnya, antara lain </li>
                             <ul>
                                 <li>Membuka halaman lain diluar aplikasi ujian dan zoom</li>
-                                <li>Mengoperasikan gawai/perangkat elektronik telekomunikasi lain (HP, Tab, Smartwactch, Kalkliator)</li>
+                                <li>Mengoperasikan gawai/perangkat elektronik telekomunikasi lain (HP, Tab, Smartwactch, Kalkulator)</li>
                                 <li>Selama waktu ujian peserta <b>tidak boleh berkomunikasi dengan orang lain </b>dalam bentuk apapun. Menggerakkan bibir berbicara, 
                                     menengok kanan kiri adalah termasuk sinyal komunikasi</li>
                                 <li>Menggandakan atau menyadur dengan mengambil gambar menggunakan kamera maupun mengcopy paste soal</li>
@@ -253,7 +253,7 @@ function go_ujian(token){
                             <li>Peserta hanya mengerjakan soal berdasarkan <b>waktu dan alokasi waktu </b>yang ditetapkan pada aplikasi ujian</li>
                             <li>Peserta wajib memiliki koneksi jaringan internet yang baik (disarankan menggunakan jaringan kabel). Apabila ada permasalahan 
                                 putusnya jaringan peserta, bukan tanggung jawab dari {{ strtoupper(APP_AUTHOR) }}. 
-                                <b>Tidak ada pengulangan atau tambahan waktu bagi peserta yang menemui kendalan ini</b></li>
+                                <b>Tidak ada pengulangan atau tambahan waktu bagi peserta yang menemui kendala ini</b></li>
                         </ol>
                     </p>
                 </div>
@@ -464,7 +464,7 @@ function go_ujian(token){
                             <li>Peserta tidak boleh melakukan perjokian, tindakan tidak jujur dan bentuk kecurangan lainnya, antara lain </li>
                             <ul>
                                 <li>Membuka halaman lain diluar aplikasi ujian dan zoom</li>
-                                <li>Mengoperasikan gawai/perangkat elektronik telekomunikasi lain (HP, Tab, Smartwactch, Kalkliator)</li>
+                                <li>Mengoperasikan gawai/perangkat elektronik telekomunikasi lain (HP, Tab, Smartwactch, Kalkulator)</li>
                                 <li>Selama waktu ujian peserta <b>tidak boleh berkomunikasi dengan orang lain </b>dalam bentuk apapun. Menggerakkan bibir berbicara, 
                                     menengok kanan kiri adalah termasuk sinyal komunikasi</li>
                                 <li>Menggandakan atau menyadur dengan mengambil gambar menggunakan kamera maupun mengcopy paste soal</li>
@@ -472,7 +472,7 @@ function go_ujian(token){
                             <li>Peserta hanya mengerjakan soal berdasarkan <b>waktu dan alokasi waktu </b>yang ditetapkan pada aplikasi ujian</li>
                             <li>Peserta wajib memiliki koneksi jaringan internet yang baik (disarankan menggunakan jaringan kabel). Apabila ada permasalahan 
                                 putusnya jaringan peserta, bukan tanggung jawab dari {{ strtoupper(APP_AUTHOR) }}. 
-                                <b>Tidak ada pengulangan atau tambahan waktu bagi peserta yang menemui kendalan ini</b></li>
+                                <b>Tidak ada pengulangan atau tambahan waktu bagi peserta yang menemui kendala ini</b></li>
                         </ol>
                 </p>
                 <div class="alert" id="div_setuju_tata_tertib" style="border: 1px solid #f00;background-color: #ffff9a;">

@@ -45,11 +45,10 @@ $('form#form_reset_password_by_admin').on('submit', function (e) {
     }).then(result => {
         if (result.value) {
             let btn = $('#btn-reset-password-by-admin');
-            btn.attr('disabled', 'disabled').text('Process...');
+            btn.attr('disabled', 'disabled').text('Process..');
 
             url = $(this).attr('action');
             data = $(this).serialize();
-            msg = "Password berhasil direset";
             $.ajax({
                 url: url,
                 data: data,
@@ -58,7 +57,7 @@ $('form#form_reset_password_by_admin').on('submit', function (e) {
                     if (response.status) {
                         Swal.fire({
                             title: "Berhasil",
-                            text: msg,
+                            text: "Password berhasil direset",
                             icon: "success"
                         });
                     } else {
@@ -71,6 +70,44 @@ $('form#form_reset_password_by_admin').on('submit', function (e) {
                         }
                     }
                     btn.removeAttr('disabled').text('Reset Password');
+                }
+            });
+        }
+    });
+});
+
+$(document).on('click','#btn-unlock',function(){
+    Swal.fire({
+        title: "Anda yakin?",
+        text: "User tsb akan di-unlock!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Unlock!"
+    }).then(result => {
+        if (result.value) {
+            ajaxcsrf();
+            $.ajax({
+                url: "{{ url('users/unlock') }}",
+                data: {'id' : '{{ $user_cari->id }}'},
+                type: 'POST',
+                success: function (response) {
+                    if (response.status) {
+                        Swal.fire({
+                            title: "Berhasil",
+                            text: "User tsb berhasil di-unlock",
+                            icon: "success"
+                        }).then(result => {
+                            location.reload(); 
+                        });
+                    } else {
+                        Swal.fire({
+                            title: "Gagal",
+                            text: response.msg,
+                            icon: "error"
+                        });
+                    }
                 }
             });
         }
@@ -109,7 +146,7 @@ $('form#form_reset_password_by_admin').on('submit', function (e) {
         </div>
        <div class="row">
 
-            @if(is_admin())
+            @if(is_admin() || in_group(KOORD_PENGAWAS_GROUP_ID))
             <div class="col-md-4">
                 <div class="row">
                     <div class="col-md-12">
@@ -120,10 +157,17 @@ $('form#form_reset_password_by_admin').on('submit', function (e) {
                                 <h3 class="box-title">Status</h3>
                                 <hr>
                             </div>
-                            <div class="alert " style="border: 1px solid #ff0000; background-color: #ffeded;">
-                                <b><span class="text-danger">**</span></b>  User tidak aktif tidak dapat login
-                            </div>
                             <div class="box-body pb-0">
+                                @if($is_locked_user_cari)
+                                <div class="form-group">
+                                    <div class="alert " style="border: 1px solid #ff0000; background-color: #ffeded;">
+                                        <b><span class="text-danger">Perhatian : </span></b><hr>User tsb sedang terkunci
+                                    </div>
+                                </div>
+                                @else
+                                <div class="alert " style="border: 1px solid #ff0000; background-color: #ffeded;">
+                                    <b><span class="text-danger">**</span></b>  User tidak aktif tidak dapat login
+                                </div>
                                 <div class="form-group">
                                     <select id="status" name="status" class="form-control select2" style="width: 100%!important">
                                         @php($status_list = ["0" => "Non Aktif", "1" => "Aktif"])
@@ -133,9 +177,14 @@ $('form#form_reset_password_by_admin').on('submit', function (e) {
                                     </select>
                                     <small class="help-block"></small>
                                 </div>
+                                @endif
                             </div>
                             <div class="box-footer">
+                                @if($is_locked_user_cari)
+                                <button type="button" id="btn-unlock" class="btn btn-primary"><i class="ft-unlock"></i> Unlock</button>
+                                @else
                                 <button type="submit" id="btn-status" class="btn btn-success">Simpan</button>
+                                @endif
                             </div>
                         </div>
                         <?=form_close()?>

@@ -77,6 +77,9 @@ function init_page_level(){
     <div class="col-sm-12">
         <table class="table table-bordered">
             <tr>
+                <td>Tipe Soal</td><td>{{ TIPE_SOAL[$soal->tipe_soal] }}</td>
+            </tr>
+            <tr>
                 <td>Matkul</td><td>{{ $soal->topik->matkul->nama_matkul }}</td>
             </tr>
             <tr>
@@ -120,6 +123,9 @@ function init_page_level(){
         <div class="alert bg-danger mb-2 mt-2" role="alert">
             <strong>Jawaban</strong>
         </div>
+
+        @if($soal->tipe_soal == TIPE_SOAL_MCSA || $soal->tipe_soal == TIPE_SOAL_MCMA)
+
         <?php
         $abjad = ['a', 'b', 'c', 'd', 'e'];
 
@@ -144,6 +150,12 @@ function init_page_level(){
             <?php endif;?>
 
         <?php endforeach;?>
+
+        @elseif($soal->tipe_soal == TIPE_SOAL_ESSAY)
+        <div class="alert border-success rounded-0" style="">
+            {!! !empty($soal->jawaban) ? $soal->jawaban : 'Belum ada jawaban' !!}
+        </div>
+        @endif
         <div class="alert bg-warning mb-2" role="alert">
             <strong>Penjelasan</strong>
         </div>

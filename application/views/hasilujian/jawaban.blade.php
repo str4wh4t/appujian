@@ -17,6 +17,7 @@ use Illuminate\Database\Eloquent\Builder;
 <script src="{{ asset('assets/template/robust/app-assets/vendors/js/charts/raphael-min.js') }}"></script>
 <script src="{{ asset('assets/template/robust/app-assets/vendors/js/charts/morris.min.js') }}"></script>
 <script src="{{ asset('assets/yarn/node_modules/featherlight/release/featherlight.min.js') }}"></script>
+<script src="{{ asset('assets/yarn/node_modules/inputmask/dist/jquery.inputmask.min.js') }}"></script>
 <!-- END PAGE VENDOR JS-->
 @endpush
 
@@ -81,6 +82,17 @@ function init_page_level(){
 	});
 	/**[STOP] CHART */
 
+	$(".inp_decimal").inputmask("decimal",{
+        digits: 2,
+        digitsOptional: false,
+        radixPoint: ".",
+        groupSeparator: ",",
+        allowPlus: false,
+        allowMinus: false,
+        rightAlign: false,
+        autoUnmask: true,
+    });
+
 	if(is_show_banner_ads){
 		setTimeout(function () {
 			$.featherlight('{{ asset('assets/imgs/tryout_udid_banner.png') }}');
@@ -97,7 +109,43 @@ $(document).on('click','.btn_penjelasan',function(){
 
 
 $(document).on('click','img.featherlight-image',function(){
-    window.location = "https://sso.undip.id";
+    window.location = "{{ get_banner_ads_link() }}";
+});
+
+$(document).on('click','.btn_submit_nilai_essay',function(){
+	let id = $(this).data('id');
+	let nilai = $('#input_nilai_essay_' + id).val();
+	$.ajax({
+        url: "{{ site_url('hasilujian/ajax/submit_nilai_essay') }}",
+        data: { 'id' : id, 'nilai' : nilai },
+        type: 'POST',
+        success: function (response) {
+			Swal.fire({
+				title: "Nilai Berhasil Disimpan",
+				text: "Reload untuk melihat perubahan, atau lanjutkan dahulu",
+				icon: "success",
+				confirmButtonText: "Reload",
+				cancelButtonText: "Lanjut",
+				showCancelButton: true,
+				allowOutsideClick: false,
+				allowEscapeKey: false,
+				confirmButtonColor: "#37bc9b",
+        		cancelButtonColor: "#f6bb42",
+			}).then(result => {
+				if (result.value) {
+					location.reload();
+				}
+			});
+             
+        },
+		error: function(){
+			Swal.fire({
+				title: "Perhatian",
+				text: "Terjadi kesalahan",
+				icon: "warning"
+			});
+		}
+    });
 });
 	
 </script>
@@ -231,15 +279,15 @@ $(document).on('click','img.featherlight-image',function(){
 
 					@foreach ($jawaban_ujian_list as $jawaban_ujian)
 						<div class="row">
-							<div class="col-md-8 col-sm-12">
+							<div class="col-md-12 col-sm-12">
 								<div class="card border-top-danger box-shadow-0 border-bottom-danger">
 									{{-- <div class="card-header">
 												</div> --}}
 									<div class="card-content">
-										<div class="card-body">
+										<div class="card-body pl-1 pr-1">
 											<h4 class="card-title" data-id="{{ $jawaban_ujian->soal->id_soal }}">Pertanyaan : <div class="badge badge-danger round">{{ $i }}</div> <span class="float-right">( Poin
 													Soal : {{ $jawaban_ujian->soal->bobot_soal->nilai }} )</span></h4>
-											<div class="">
+											<div class="pb-2">
 												@if(!empty($jawaban_ujian->soal->section_id))
 												<div id="preview_section" class="alert text-muted border border-info" style="">
 													{!! $jawaban_ujian->soal->section->konten !!}
@@ -248,67 +296,34 @@ $(document).on('click','img.featherlight-image',function(){
 												@endif
 												{!! $jawaban_ujian->soal->soal !!}
 											</div>
-											<?php $text_color = ('A' == $jawaban_ujian->jawaban) ? 'success' : (('A' == $jawaban_ujian->soal->jawaban) ? 'danger' : 'grey');  ?>
-											<div
-												class="alert alert-light text-{{ $text_color }} {{ ('A' == $jawaban_ujian->jawaban) ? 'border-success border-2' : (('A' == $jawaban_ujian->soal->jawaban) ? 'border-danger border-2' : 'border-grey')}}">
-												<span style="font-size: 1.5rem"
-													class="float-left mr-1">A. </span>{!!
-												$jawaban_ujian->soal->opsi_a !!}
+
+											@if($jawaban_ujian->soal->tipe_soal == TIPE_SOAL_MCSA)
+											<div class="panel_jawaban">
+
+												@foreach(OPSI_SOAL as $opsi_soal)
+												<?php $text_color = (strtoupper($opsi_soal) == $jawaban_ujian->jawaban) ? 'success' : ((strtoupper($opsi_soal) == $jawaban_ujian->soal->jawaban) ? 'danger' : 'grey');  ?>
+												<div
+													class="alert alert-light text-{{ $text_color }} {{ (strtoupper($opsi_soal) == $jawaban_ujian->jawaban) ? 'border-success border-3' : ((strtoupper($opsi_soal) == $jawaban_ujian->soal->jawaban) ? 'border-danger border-3' : 'border-grey')}}">
+													<span style="font-size: 1.5rem"
+														class="float-left mr-1">{{ strtoupper($opsi_soal) }}. </span>
+														<?php $opsi = 'opsi_' . $opsi_soal ?>
+														{!! $jawaban_ujian->soal->$opsi !!}
+												</div>
+												@endforeach
+
 											</div>
-											<?php $text_color = ('B' == $jawaban_ujian->jawaban) ? 'success' : (('B' == $jawaban_ujian->soal->jawaban) ? 'danger' : 'grey');  ?>
-											<div
-												class="alert alert-light text-{{ $text_color }} {{ ('B' == $jawaban_ujian->jawaban) ? 'border-success border-2' : (('B' == $jawaban_ujian->soal->jawaban) ? 'border-danger border-2' : 'border-grey')}}">
-												<span style="font-size: 1.5rem"
-													class="float-left mr-1">B. </span>{!!
-												$jawaban_ujian->soal->opsi_b !!}
-											</div>
-											<?php $text_color = ('C' == $jawaban_ujian->jawaban) ? 'success' : (('C' == $jawaban_ujian->soal->jawaban) ? 'danger' : 'grey');  ?>
-											<div
-												class="alert alert-light text-{{ $text_color }} {{ ('C' == $jawaban_ujian->jawaban) ? 'border-success border-2' : (('C' == $jawaban_ujian->soal->jawaban) ? 'border-danger border-2' : 'border-grey')}}">
-												<span style="font-size: 1.5rem"
-													class="float-left mr-1 ">C. </span>{!!
-												$jawaban_ujian->soal->opsi_c !!}
-											</div>
-											<?php $text_color = ('D' == $jawaban_ujian->jawaban) ? 'success' : (('D' == $jawaban_ujian->soal->jawaban) ? 'danger' : 'grey');  ?>
-											<div
-												class="alert alert-light text-{{ $text_color }} {{ ('D' == $jawaban_ujian->jawaban) ? 'border-success border-2' : (('D' == $jawaban_ujian->soal->jawaban) ? 'border-danger border-2' : 'border-grey')}}">
-												<span style="font-size: 1.5rem"
-													class="float-left mr-1 text-{{ $text_color }}">D. </span>{!!
-												$jawaban_ujian->soal->opsi_d !!}
-											</div>
-											<?php $text_color = ('E' == $jawaban_ujian->jawaban) ? 'success' : (('E' == $jawaban_ujian->soal->jawaban) ? 'danger' : 'grey');  ?>
-											<div
-												class="alert alert-light text-{{ $text_color }} {{ ('E' == $jawaban_ujian->jawaban) ? 'border-success border-2' : (('E' == $jawaban_ujian->soal->jawaban) ? 'border-danger border-2' : 'border-grey')}}">
-												<span style="font-size: 1.5rem"
-													class="float-left mr-1">E. </span>{!!
-												$jawaban_ujian->soal->opsi_e !!}
-											</div>
+											@endif
 										</div>
 									</div>
 								</div>
 							</div>
-							<div class="col-md-4 col-sm-12">
+							<div class="col-md-12 col-sm-12">
 								<div class="card box-shadow-0 border-blue bg-transparent">
 									{{-- <div class="card-header">
 													</div> --}}
 									<div class="card-content">
 										<div class="card-body">
-											<?php 
-															$badge_benar = '<div class="badge badge-success round">Benar</span></div>';    
-															$badge_salah = '<div class="badge badge-danger round">Salah</span></div>';    
-															$badge_ragu = '<div class="badge badge-warning round">Ragu</span></div>';    
-															?>
-											<h4 class="card-title">
-												@if (!empty($jawaban_ujian->jawaban))
-												Anda Menjawab : {{ $jawaban_ujian->jawaban }}
-												@else
-												Anda Tidak Menjawab
-												@endif
-												{!! ($jawaban_ujian->jawaban == $jawaban_ujian->soal->jawaban) ?
-												$badge_benar : $badge_salah !!}
-												{!! ($jawaban_ujian->status_jawaban == 'Y') ?
-													$badge_ragu : '' !!}
-											</h4>
+
 											@if (!empty($jawaban_ujian->waktu_jawab_soal))
 											<h4 class="card-title">
 												<?php
@@ -321,19 +336,73 @@ $(document).on('click','img.featherlight-image',function(){
 												Waktu Menjawab : {{ $waktu_menjawab }}
 											</h4>
 											@endif
+
+											<?php 
+											$badge_benar = '<div class="badge badge-success round">Benar</span></div>';    
+											$badge_salah = '<div class="badge badge-danger round">Salah</span></div>';    
+											$badge_ragu = '<div class="badge badge-warning round">Ragu</span></div>';    
+											?>
+
+											@if($jawaban_ujian->soal->tipe_soal == TIPE_SOAL_MCSA)
+											
+												<h4 class="card-title">
+													@if (!empty($jawaban_ujian->jawaban))
+													Anda Menjawab : {{ $jawaban_ujian->jawaban }}
+													@else
+													Anda Tidak Menjawab
+													@endif
+													{!! ($jawaban_ujian->jawaban == $jawaban_ujian->soal->jawaban) ?
+													$badge_benar : $badge_salah !!}
+													{!! ($jawaban_ujian->status_jawaban == 'Y') ?
+														$badge_ragu : '' !!}
+												</h4>
+												
+
+											@elseif($jawaban_ujian->soal->tipe_soal == TIPE_SOAL_ESSAY)
+
+												<h4 class="card-title">Anda Menjawab : {!! ($jawaban_ujian->status_jawaban == 'Y') ? $badge_ragu : '' !!}</h4>
+												<div class="pb-2">
+												{!! html_entity_decode($jawaban_ujian->jawaban_essay, ENT_QUOTES, 'UTF-8') !!}
+												</div>
+											@endif
+
 										</div>
 									</div>
 									<div class="card-footer border-top-blue-grey border-top-lighten-5 text-muted">
-										<h4 class="card-title">
-											Jawaban : {{ $jawaban_ujian->soal->jawaban }} <span class="float-right">( Poin :
-												{!! ($jawaban_ujian->jawaban == $jawaban_ujian->soal->jawaban) ? '<div
-													class="badge badge-success round">'.
-													number_format($jawaban_ujian->soal->bobot_soal->nilai * $topik->poin_topik,2,'.', '') .'</div>' :
-												'<div class="badge badge-danger round">'. 0 .'</div>' !!} )</span>
-										</h4>
-										{{-- <button class="btn btn-info btn-block btn_penjelasan"
-											data-id="{{ $jawaban_ujian->soal->id_soal }}">Minta Penjelasan
-										</button> --}}
+										@if($jawaban_ujian->soal->tipe_soal == TIPE_SOAL_MCSA)
+
+											<h4 class="card-title">
+												Jawaban : {{ $jawaban_ujian->soal->jawaban }} <span class="float-right">( Poin :
+													{!! ($jawaban_ujian->jawaban == $jawaban_ujian->soal->jawaban) ? '<div
+														class="badge badge-success round">'.
+														number_format($jawaban_ujian->soal->bobot_soal->nilai * $topik->poin_topik,2,'.', '') .'</div>' :
+													'<div class="badge badge-danger round">'. 0 .'</div>' !!} )</span>
+											</h4>
+											{{-- <button class="btn btn-info btn-block btn_penjelasan"
+												data-id="{{ $jawaban_ujian->soal->id_soal }}">Minta Penjelasan
+											</button> --}} 
+
+										@elseif($jawaban_ujian->soal->tipe_soal == TIPE_SOAL_ESSAY)
+
+											<h4 class="card-title">Jawaban : 
+												@if(is_admin())
+												<span class="float-right">
+													Point : 
+													<div class="input-group">
+														<input type="text" class="form-control input_nilai_essay inp_decimal" id="input_nilai_essay_{{ $jawaban_ujian->id }}" placeholder="" aria-describedby="btn_submit_nilai_essay_{{ $jawaban_ujian->id }}" value="{{ $jawaban_ujian->nilai_essay }}">
+														<div class="input-group-append">
+															<button class="btn btn-success btn_submit_nilai_essay" data-id="{{ $jawaban_ujian->id }}" type="button" id="btn_submit_nilai_essay_{{ $jawaban_ujian->id }}"><i class="ft-check-circle"></i></button>
+														</div>
+													</div>
+												</span>
+												@else
+												<span class="float-right">( Poin : <div class="badge badge-success round">{{ number_format($jawaban_ujian->nilai_essay, 2,'.', '') }}</div> )</span>
+												@endif
+											</h4>
+											<div class="pb-2">
+											{!! html_entity_decode($jawaban_ujian->soal->jawaban, ENT_QUOTES, 'UTF-8') !!}
+											</div>
+										@endif
 									</div>
 								</div>
 							</div>
@@ -344,7 +413,7 @@ $(document).on('click','img.featherlight-image',function(){
 									<div class="card-content">
 										<div class="card-body">
 											<h4 class="card-title">Penjelasan :</h4>
-											<div class="">
+											<div class="pb-2">
 												@if (empty($jawaban_ujian->soal->penjelasan))
 												<p>Maaf, belum ada penjelasan mengenai soal ini.</p>
 												@else

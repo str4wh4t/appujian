@@ -139,7 +139,7 @@ class Soal extends MY_Controller
 		view('soal/detail', $data);
 	}
 
-	public function add(array $data = [])
+	public function add($tipe_soal_selected = TIPE_SOAL_MCSA, array $data = [])
 	{
 		$user = $this->ion_auth->user()->row();
 
@@ -168,6 +168,7 @@ class Soal extends MY_Controller
 		$data['bundle_selected'] = $data['bundle_selected'] ?? [];
 
 		$data['section_avail'] = Section_orm::all();
+		$data['tipe_soal_selected'] = $tipe_soal_selected;
 
 		//		$this->load->view('_templates/dashboard/_header.php', $data);
 		//		$this->load->view('soal/add');
@@ -175,7 +176,7 @@ class Soal extends MY_Controller
 		view('soal/add', $data);
 	}
 
-	public function edit($id, array $data = [])
+	public function edit($id, $tipe_soal_selected = null, array $data = [])
 	{
 		//		$user = $this->ion_auth->user()->row();
 		$soal = Soal_orm::findOrFail($id);
@@ -220,6 +221,7 @@ class Soal extends MY_Controller
 		$data['bundle_selected'] = $data['bundle_selected'] ?? $soal->bundle()->pluck('bundle.id')->toArray();
 
 		$data['section_avail'] = Section_orm::all();
+		$data['tipe_soal_selected'] = empty($tipe_soal_selected) ? $soal->tipe_soal : $tipe_soal_selected;
 
 		//		$this->load->view('_templates/dashboard/_header.php', $data);
 		//		$this->load->view('soal/edit');
@@ -247,14 +249,37 @@ class Soal extends MY_Controller
 
 	private function _validasi()
 	{
+		$this->form_validation->set_rules(
+			'tipe_soal',
+			'Tipe Soal',
+			[
+				'required',
+				[
+					'is_valid_tipe_soal',
+					function ($tipe_soal) {
+						return in_array($tipe_soal, array_keys(TIPE_SOAL));
+					}
+				]
+			],
+			[
+				'is_valid_tipe_soal' => 'Tipe soal yg dimasukan salah',
+			]
+		);
+
 		$this->form_validation->set_rules('matkul_id', 'Matkul', 'required');
 		$this->form_validation->set_rules('topik_id', 'Topik', 'required');
 		$this->form_validation->set_rules('soal', 'Soal', 'required|trim');
-		$this->form_validation->set_rules('jawaban_a', 'Jawaban A', 'required|trim');
-		$this->form_validation->set_rules('jawaban_b', 'Jawaban B', 'required|trim');
-		$this->form_validation->set_rules('jawaban_c', 'Jawaban C', 'required|trim');
-		$this->form_validation->set_rules('jawaban_d', 'Jawaban D', 'required|trim');
-		$this->form_validation->set_rules('jawaban_e', 'Jawaban E', 'required|trim');
+
+		$tipe_soal = $this->input->post('tipe_soal', true);
+
+		if($tipe_soal == TIPE_SOAL_MCSA || $tipe_soal == TIPE_SOAL_MCMA){
+			$this->form_validation->set_rules('jawaban_a', 'Jawaban A', 'required|trim');
+			$this->form_validation->set_rules('jawaban_b', 'Jawaban B', 'required|trim');
+			$this->form_validation->set_rules('jawaban_c', 'Jawaban C', 'required|trim');
+			$this->form_validation->set_rules('jawaban_d', 'Jawaban D', 'required|trim');
+			$this->form_validation->set_rules('jawaban_e', 'Jawaban E', 'required|trim');
+		}
+
 		$this->form_validation->set_rules('jawaban', 'Kunci Jawaban', 'required');
 		$this->form_validation->set_rules('bobot_soal_id', 'Bobot Soal', 'required|is_natural_no_zero');
 		$this->form_validation->set_rules('penjelasan', 'Penjelasan', 'trim');
@@ -367,6 +392,8 @@ class Soal extends MY_Controller
 
 		$aksi = $this->input->post('aksi', true);
 		$id_soal = $this->input->post('id_soal', true);
+		$tipe_soal = $this->input->post('tipe_soal', true);
+
 		$this->_validasi();
 		// $this->_file_config();
 
@@ -378,12 +405,12 @@ class Soal extends MY_Controller
 				'bundle_selected' => $bundle_selected,
 				'stts' => $stts,
 			];
-			$aksi === 'add' ? $this->add($data) : $this->edit($id_soal, $data);
+			$aksi === 'add' ? $this->add($tipe_soal, $data) : $this->edit($id_soal, $tipe_soal, $data);
 		} else {
 			// VALIDASI BENAR
 			$data = [
 				'soal'      => $this->input->post('soal'),
-				'jawaban'   => $this->input->post('jawaban', true),
+				'jawaban'   => $this->input->post('jawaban'),
 				// 'bobot'     => $this->input->post('bobot', true),
 				'bobot_soal_id'     => $this->input->post('bobot_soal_id', true),
 				'gel'     => $this->input->post('gel', true),
@@ -489,7 +516,6 @@ class Soal extends MY_Controller
 
 					$soal = new Soal_orm();
 					// $soal->soal = $data['soal'];
-					$soal->jawaban = $data['jawaban'];
 					$soal->bobot_soal_id = $data['bobot_soal_id'];
 					$soal->gel = $data['gel'];
 					$soal->smt = $data['smt'];
@@ -504,6 +530,8 @@ class Soal extends MY_Controller
 					$soal->created_by = $this->ion_auth->user()->row()->username;
 					$soal->no_urut = $no_urut ;
 					$soal->section_id = empty($data['section_id']) ? null : $data['section_id'];
+					$soal->tipe_soal = $tipe_soal;
+					// $soal->jawaban = $data['jawaban']; // UNTUK JAWABAN ISIAN TERGANTUNG TIPE SOAL
 					$soal->save();
 
 					$soal_temp = Soal_orm::findOrFail($soal->id_soal);
@@ -540,41 +568,82 @@ class Soal extends MY_Controller
 
 					$soal_temp->soal = $body;
 
-					foreach (OPSI_SOAL as $abj) {
-						$opsi = 'opsi_' . $abj ;
-						// $html = $soal_temp->$opsi;
-						$html = $this->input->post('jawaban_' . $abj);
-						// $doc = new DOMDocument('1.0', 'UTF-8');
-						// $doc->loadHTML($html);
-						$doc = new DOMDocument();
-						$doc->loadHTML(mb_convert_encoding($html, 'HTML-ENTITIES', 'UTF-8'));
-						$i = 0 ;
-						foreach ($doc->getElementsByTagName('img') as $img_node) {
-							$src = $img_node->getAttribute('src') ;
-							if(strpos($src, 'data:image/png;base64,') !== false){
-								$img = str_replace('data:image/png;base64,', '', $src);
-								$img = str_replace(' ', '+', $img);
-								$img_64 = base64_decode($img);
-								$file_name = $soal_temp->id_soal .'_jawaban_'. $opsi .'_'. mt_rand()  .'.png';
-								$file = UPLOAD_DIR . 'img_soal/' . $file_name;
-								$success = file_put_contents($file, $img_64);
-								if($success){
-									$img_node->setAttribute('src', asset('uploads/img_soal/' . $file_name)) ;
-									$doc->saveHTML($img_node);
+					if($tipe_soal == TIPE_SOAL_MCSA || $tipe_soal == TIPE_SOAL_MCMA){
+
+						$soal_temp->jawaban = $data['jawaban'];
+
+						foreach (OPSI_SOAL as $abj) {
+							$opsi = 'opsi_' . $abj ;
+							// $html = $soal_temp->$opsi;
+							$html = $this->input->post('jawaban_' . $abj);
+							// $doc = new DOMDocument('1.0', 'UTF-8');
+							// $doc->loadHTML($html);
+							$doc = new DOMDocument();
+							$doc->loadHTML(mb_convert_encoding($html, 'HTML-ENTITIES', 'UTF-8'));
+							$i = 0 ;
+							foreach ($doc->getElementsByTagName('img') as $img_node) {
+								$src = $img_node->getAttribute('src') ;
+								if(strpos($src, 'data:image/png;base64,') !== false){
+									$img = str_replace('data:image/png;base64,', '', $src);
+									$img = str_replace(' ', '+', $img);
+									$img_64 = base64_decode($img);
+									$file_name = $soal_temp->id_soal .'_jawaban_'. $opsi .'_'. mt_rand()  .'.png';
+									$file = UPLOAD_DIR . 'img_soal/' . $file_name;
+									$success = file_put_contents($file, $img_64);
+									if($success){
+										$img_node->setAttribute('src', asset('uploads/img_soal/' . $file_name)) ;
+										$doc->saveHTML($img_node);
+									}
+									$i++;
 								}
-								$i++;
 							}
+							
+							$xpath = new DOMXPath($doc);
+
+							$body = '';
+							foreach ($xpath->evaluate('//body/node()') as $node) {
+								$body .= $doc->saveHtml($node);
+							}
+
+							$soal_temp->$opsi = $body;
+
 						}
-						
-						$xpath = new DOMXPath($doc);
 
-						$body = '';
-						foreach ($xpath->evaluate('//body/node()') as $node) {
-							$body .= $doc->saveHtml($node);
+					}elseif($tipe_soal == TIPE_SOAL_ESSAY){
+
+						$html = $data['jawaban'];
+						if(!empty($html)){
+							// $doc = new DOMDocument('1.0', 'UTF-8');
+							// $doc->loadHTML($html);
+							$doc = new DOMDocument();
+							$doc->loadHTML(mb_convert_encoding($html, 'HTML-ENTITIES', 'UTF-8'));
+							$i = 0 ;
+							foreach ($doc->getElementsByTagName('img') as $img_node) {
+								$src = $img_node->getAttribute('src') ;
+								if(strpos($src, 'data:image/png;base64,') !== false){
+									$img = str_replace('data:image/png;base64,', '', $src);
+									$img = str_replace(' ', '+', $img);
+									$img_64 = base64_decode($img);
+									$file_name = $soal_temp->id_soal .'_jawaban_'. mt_rand()  .'.png';
+									$file = UPLOAD_DIR . 'img_soal/' . $file_name;
+									$success = file_put_contents($file, $img_64);
+									if($success){
+										$img_node->setAttribute('src', asset('uploads/img_soal/' . $file_name)) ;
+										$doc->saveHTML($img_node);
+									}
+									$i++;
+								}
+							}
+							
+							$xpath = new DOMXPath($doc);
+
+							$body = '';
+							foreach ($xpath->evaluate('//body/node()') as $node) {
+								$body .= $doc->saveHtml($node);
+							}
+
+							$soal_temp->jawaban = $body;
 						}
-
-						$soal_temp->$opsi = $body;
-
 					}
 
 					/////////////
@@ -668,6 +737,7 @@ class Soal extends MY_Controller
 					// $soal->penjelasan = $data['penjelasan'];
 					$soal->created_by = $this->ion_auth->user()->row()->username;
 					$soal->section_id = empty($data['section_id']) ? null : $data['section_id'];
+					$soal->tipe_soal = $tipe_soal;
 					// $soal->save();
 
 					// $soal_temp = Soal_orm::findOrFail($id_soal);
@@ -707,42 +777,81 @@ class Soal extends MY_Controller
 					// $soal_temp->soal = $body;
 					$soal->soal = $body;
 
-					foreach (OPSI_SOAL as $abj) {
-						$opsi = 'opsi_' . $abj ;
-						// $html = $soal_temp->$opsi;
-						$html = $this->input->post('jawaban_' . $abj);
-						// $doc = new DOMDocument('1.0', 'UTF-8');
-						// $doc->loadHTML($html);
-						$doc = new DOMDocument();
-						$doc->loadHTML(mb_convert_encoding($html, 'HTML-ENTITIES', 'UTF-8'));
-						$i = 0 ;
-						foreach ($doc->getElementsByTagName('img') as $img_node) {
-							$src = $img_node->getAttribute('src') ;
-							if(strpos($src, 'data:image/png;base64,') !== false){
-								$img = str_replace('data:image/png;base64,', '', $src);
-								$img = str_replace(' ', '+', $img);
-								$img_64 = base64_decode($img);
-								// $file_name = $soal_temp->id_soal . '_jawaban_'. $opsi .'.png';
-								$file_name = $id_soal .'_jawaban_'. $opsi .'_'. mt_rand()  .'.png';
-								$file = UPLOAD_DIR . 'img_soal/' . $file_name;
-								$success = file_put_contents($file, $img_64);
-								if($success){
-									$img_node->setAttribute('src', asset('uploads/img_soal/' . $file_name)) ;
-									$doc->saveHTML($img_node);
+					if($tipe_soal == TIPE_SOAL_MCSA || $tipe_soal == TIPE_SOAL_MCMA){
+
+						foreach (OPSI_SOAL as $abj) {
+							$opsi = 'opsi_' . $abj ;
+							// $html = $soal_temp->$opsi;
+							$html = $this->input->post('jawaban_' . $abj);
+							// $doc = new DOMDocument('1.0', 'UTF-8');
+							// $doc->loadHTML($html);
+							$doc = new DOMDocument();
+							$doc->loadHTML(mb_convert_encoding($html, 'HTML-ENTITIES', 'UTF-8'));
+							$i = 0 ;
+							foreach ($doc->getElementsByTagName('img') as $img_node) {
+								$src = $img_node->getAttribute('src') ;
+								if(strpos($src, 'data:image/png;base64,') !== false){
+									$img = str_replace('data:image/png;base64,', '', $src);
+									$img = str_replace(' ', '+', $img);
+									$img_64 = base64_decode($img);
+									// $file_name = $soal_temp->id_soal . '_jawaban_'. $opsi .'.png';
+									$file_name = $id_soal .'_jawaban_'. $opsi .'_'. mt_rand()  .'.png';
+									$file = UPLOAD_DIR . 'img_soal/' . $file_name;
+									$success = file_put_contents($file, $img_64);
+									if($success){
+										$img_node->setAttribute('src', asset('uploads/img_soal/' . $file_name)) ;
+										$doc->saveHTML($img_node);
+									}
+									$i++;
 								}
-								$i++;
 							}
-						}
-						
-						$xpath = new DOMXPath($doc);
+							
+							$xpath = new DOMXPath($doc);
 
-						$body = '';
-						foreach ($xpath->evaluate('//body/node()') as $node) {
-							$body .= $doc->saveHtml($node);
-						}
+							$body = '';
+							foreach ($xpath->evaluate('//body/node()') as $node) {
+								$body .= $doc->saveHtml($node);
+							}
 
-						// $soal_temp->$opsi = $body;
-						$soal->$opsi = $body;
+							// $soal_temp->$opsi = $body;
+							$soal->$opsi = $body;
+
+						}
+					}elseif($tipe_soal == TIPE_SOAL_ESSAY){
+
+						$html = $data['jawaban'];
+						if(!empty($html)){
+							// $doc = new DOMDocument('1.0', 'UTF-8');
+							// $doc->loadHTML($html);
+							$doc = new DOMDocument();
+							$doc->loadHTML(mb_convert_encoding($html, 'HTML-ENTITIES', 'UTF-8'));
+							$i = 0 ;
+							foreach ($doc->getElementsByTagName('img') as $img_node) {
+								$src = $img_node->getAttribute('src') ;
+								if(strpos($src, 'data:image/png;base64,') !== false){
+									$img = str_replace('data:image/png;base64,', '', $src);
+									$img = str_replace(' ', '+', $img);
+									$img_64 = base64_decode($img);
+									$file_name = $id_soal .'_jawaban_'. mt_rand()  .'.png';
+									$file = UPLOAD_DIR . 'img_soal/' . $file_name;
+									$success = file_put_contents($file, $img_64);
+									if($success){
+										$img_node->setAttribute('src', asset('uploads/img_soal/' . $file_name)) ;
+										$doc->saveHTML($img_node);
+									}
+									$i++;
+								}
+							}
+							
+							$xpath = new DOMXPath($doc);
+
+							$body = '';
+							foreach ($xpath->evaluate('//body/node()') as $node) {
+								$body .= $doc->saveHtml($node);
+							}
+
+							$soal->jawaban = $body;
+						}
 
 					}
 

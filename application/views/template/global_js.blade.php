@@ -21,19 +21,15 @@
 <script src="{{ asset('assets/template/robust/app-assets/js/core/app.min.js') }}"></script>
 <!-- END ROBUST JS-->
 
-<!-- BEGIN PAGE LEVEL JS (PAGE LEVEL)-->
-@stack('page_level_js')
-<!-- END PAGE LEVEL JS (PAGE LEVEL)-->
-
-
 <script type="text/javascript">
 
 let base_url = '{{ site_url('/') }}';
 let conn ;
-let enable_ping = {{ PING_INTERVAL > 0 ? 'true' : 'false' }};
+let enable_ping = {{ get_ping_interval() > 0 ? 'true' : 'false' }};
 let stop_ping = false ;
-let socket_enable = {{ SOCKET_ENABLE ? 'true' : 'false' }};
-let is_show_banner_ads = {{ IS_SHOW_BANNER_ads ? (in_group(MHS_GROUP_ID) ? 'true' : 'false') : 'false' }};
+let socket_enable = {{ is_enable_socket() ? 'true' : 'false' }};
+let is_show_banner_ads = {{ is_show_banner_ads() ? (in_group(MHS_GROUP_ID) ? 'true' : 'false') : 'false' }};
+let locked_user_id = {{ LOCKED_USER_ID }};
 
 function print_page(data) {
     let mywindow = window.open('', 'new div', 'height=600,width=600');
@@ -251,7 +247,7 @@ $(document).ready(function(){
                     toastr.info('', 'latency : ' + latency + 'ms', {positionClass: 'toast-bottom-right', containerId: 'toast-bottom-right', timeOut: 0});
                 });
             }
-        },{{ PING_INTERVAL }});
+        },{{ get_ping_interval() }});
     }
 
 
@@ -282,7 +278,7 @@ $(document).ready(function(){
                     toastr.info('', 'latency : ' + latency + 'ms', {positionClass: 'toast-bottom-right', containerId: 'toast-bottom-right', timeOut: 0});
                 });
             }
-        },{{ PING_INTERVAL }});
+        },{{ get_ping_interval() }});
     }
 
     @endif
@@ -290,9 +286,8 @@ $(document).ready(function(){
     
 });
 
-
-
-
-
-
 </script>
+
+<!-- BEGIN PAGE LEVEL JS (PAGE LEVEL)-->
+@stack('page_level_js')
+<!-- END PAGE LEVEL JS (PAGE LEVEL)-->

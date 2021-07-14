@@ -65,7 +65,7 @@ class Socket
     }
 
     public function notif_ws($msg = ''){
-		if(SOCKET_ENABLE){
+		if(is_enable_socket()){
 			Client\connect(ws_url())->then(function($conn) use ($msg){
 				$conn->on('message', function($msg) use ($conn) {
 					// echo "Received: {$msg}\n";

@@ -184,7 +184,7 @@
 
     <script type="text/javascript">
         
-        let enable_ping = {{ PING_INTERVAL > 0 ? 'true' : 'false' }};
+        let enable_ping = {{ get_ping_interval() > 0 ? 'true' : 'false' }};
 
         function init_login_super(){
 
@@ -219,7 +219,7 @@
                             $('#latency').addClass('text-danger').removeClass('text-success');
                         }
                     });
-                },{{ PING_INTERVAL }});
+                },{{ get_ping_interval() }});
             }
 
         }

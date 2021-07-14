@@ -121,9 +121,17 @@ function init_page_level(){
         placeholder: "Pilih bundle soal"
     });
 
+    $('#topik_id').select2({
+        placeholder: "Pilih topik"
+    });
+
     $('#section_id').select2({
         placeholder: "Pilih seksi soal"
-    });
+    }); 
+    
+    $('#bobot_soal_id').select2({
+        placeholder: "Pilih bobot soal"
+    }); 
 
     let options = {};
     cascadLoading = new Select2Cascade($('#matkul_id'), $('#topik_id'), '{{ site_url('soal/ajax/get_topic_by_matkul/') }}?id=:parentId:', options);
@@ -139,20 +147,41 @@ function init_page_level(){
         @endif
     });
 
-    $('select[name="matkul_id"]').trigger('change');
-
     @if(!empty(set_value('matkul_id')))
         $('select[name="matkul_id"]').val("{{ set_value('matkul_id') }}");
-        $('select[name="matkul_id"]').trigger('change');
     @endif
+    $('select[name="matkul_id"]').trigger('change');
 
-    @if(!empty(set_value('jawaban')))
-        $('select[name="jawaban"]').val("{{ set_value('jawaban') }}");
+    @if($tipe_soal_selected == TIPE_SOAL_MCSA || $tipe_soal_selected == TIPE_SOAL_MCMA)
+        $('select[name="jawaban"]').select2({
+            placeholder: "Pilih kunci jawaban"
+        }); 
+        @if(!empty(set_value('jawaban')))
+            $('select[name="jawaban"]').val("{{ set_value('jawaban') }}");
+        @else
+            $('select[name="jawaban"]').val("{{ $soal->jawaban }}");
+        @endif
+        $('select[name="jawaban"]').trigger('change');
     @endif
 
     @if(!empty(set_value('bobot_soal_id')))
         $('select[name="bobot_soal_id"]').val("{{ set_value('bobot_soal_id') }}");
+    @else
+        $('select[name="bobot_soal_id"]').val("{{ $soal->bobot_soal_id }}");
     @endif
+    $('select[name="bobot_soal_id"]').trigger('change');
+
+    @if(!empty(set_value('section_id')))
+        $('select[name="section_id"]').val("{{ set_value('section_id') }}");
+        $('select[name="section_id"]').trigger('change');
+    @else
+        @if(!empty($soal->section_id))
+        $('select[name="section_id"]').val("{{ $soal->section_id }}");
+        $('select[name="section_id"]').trigger('change');
+        @endif
+    @endif
+
+    /////
 
     @if(!empty(form_error('matkul_id')))
         $('#matkul_id').parent('.form-group').addClass('has-error');
@@ -170,15 +199,7 @@ function init_page_level(){
         $('#bobot_soal_id').parent('.form-group').addClass('has-error');
      @endif
 
-    @if(!empty(set_value('section_id')))
-        $('select[name="section_id"]').val("{{ set_value('section_id') }}");
-        $('select[name="section_id"]').trigger('change');
-    @else
-        @if(!empty($soal->section_id))
-        $('select[name="section_id"]').val("{{ $soal->section_id }}");
-        $('select[name="section_id"]').trigger('change');
-        @endif
-    @endif
+    
 
 // {{--    @if(!empty(form_error('bobot')))  --}}
 // {{--        $('#bobot').parent('.form-group').addClass('has-error');  --}}
@@ -366,6 +387,11 @@ $(document).on('change','#section_id',function(e){
     });
 });
 
+$(document).on('change','#tipe_soal',function(e){
+    let tipe_soal = $(this).val();
+    location.href = "{{ url('soal/edit/' . $soal->id_soal) }}" + "/" + tipe_soal;
+});
+
 </script>
 <!-- END PAGE LEVEL JS-->
 @endpush
@@ -387,6 +413,22 @@ $(document).on('change','#section_id',function(e){
 <div class="row">
         <div class="col-lg-12">
         <?=form_open_multipart('soal/save', array('id'=>'formsoal'), array('method' => 'post', 'aksi' => 'edit' , 'id_soal' => $soal->id_soal));?>
+
+        <div class="form-group">
+            <label for="tipe_soal" class="control-label">
+                <span>Tipe Soal</span>
+                <small class="help-block text-info"><span class="text-danger"><b>***</b> Pilih tipe soal yang akan dibuat</span></small>
+            </label>
+            <select name="tipe_soal" id="tipe_soal" class="form-control select2"
+                style="width:100%!important">
+                @foreach(TIPE_SOAL as $tipe_soal_id => $tipe_soal_text)
+                <option value="{{ $tipe_soal_id }}" {{ $tipe_soal_selected == $tipe_soal_id ? 'selected' : '' }}>{{ $tipe_soal_text }}</option>
+                @endforeach
+            </select>
+            <small class="help-block"
+                style="color: #dc3545"><?=form_error('tipe_soal')?></small>
+        </div>
+
         <fieldset class="form-group" style="padding: 10px; border: 1px solid #ccc;">
             <legend class="col-form-label col-lg-2 col-sm-12" style="border: 1px solid #ccc; background-color: #d4fdff;">Cluster Soal</legend>
             <div class="form-group">
@@ -394,7 +436,7 @@ $(document).on('change','#section_id',function(e){
                 <select name="gel" id="gel" class="form-control select2"
                     style="width:100%!important">
                     @foreach (GEL_AVAIL as $gel)
-                    <option value="{{ $gel }}" {{ $gel == (set_value('gel') != null ? set_value('gel') : $soal->gel) ? "selected" : "" }}>GEL-{{ $gel }}</option>    
+                    <option value="{{ $gel }}" {{ $gel == (!empty(set_value('gel')) ? set_value('gel') : $soal->gel) ? "selected" : "" }}>GEL-{{ $gel }}</option>    
                     @endforeach
                 </select>
                 <small class="help-block" style="color: #dc3545"><?=form_error('gel')?></small>
@@ -404,7 +446,7 @@ $(document).on('change','#section_id',function(e){
                 <select name="smt" id="smt" class="form-control select2"
                     style="width:100%!important">
                     @foreach (SMT_AVAIL as $smt)
-                    <option value="{{ $smt }}" {{ $smt == (set_value('smt') != null ? set_value('smt') : $soal->smt) ? "selected" : "" }}>SMT-{{ $smt }}</option>    
+                    <option value="{{ $smt }}" {{ $smt == (!empty(set_value('smt')) ? set_value('smt') : $soal->smt) ? "selected" : "" }}>SMT-{{ $smt }}</option>    
                     @endforeach
                 </select>
                 <small class="help-block" style="color: #dc3545"><?=form_error('smt')?></small>
@@ -414,12 +456,13 @@ $(document).on('change','#section_id',function(e){
                 <select name="tahun" id="tahun" class="form-control select2"
                     style="width:100%!important">
                     @foreach ($tahun_avail as $tahun)
-                    <option value="{{ $tahun }}" {{ $tahun == (set_value('tahun') != null ? set_value('tahun') : $soal->tahun) ? "selected" : "" }}>{{ $tahun }}</option>    
+                    <option value="{{ $tahun }}" {{ $tahun == (!empty(set_value('tahun')) ? set_value('tahun') : $soal->tahun) ? "selected" : "" }}>{{ $tahun }}</option>    
                     @endforeach
                 </select>
                 <small class="help-block" style="color: #dc3545"><?=form_error('tahun')?></small>
             </div>
         </fieldset>
+
         @if(is_admin())
         <fieldset class="form-group" style="padding: 10px; border: 1px solid #ccc;">
             <legend class="col-form-label col-lg-2 col-sm-12" style="border: 1px solid #ccc; background-color: #d4ffd7;">Bundle Soal</legend>
@@ -436,24 +479,24 @@ $(document).on('change','#section_id',function(e){
             </div>
         </fieldset>
         @endif
-            <label>Materi Ujian</label>
-            <div class="form-group">
-                <select name="matkul_id" id="matkul_id" class="select2 form-group" style="width:100% !important">
-                    <option value="" disabled selected>Pilih Materi Ujian</option>
-                    <?php foreach ($matkul as $d) : ?>
-                    <option <?= $soal->topik->matkul_id == $d->id_matkul ?"selected":""; ?> value="<?=$d->id_matkul?>"><?=$d->nama_matkul?></option>
-                    <?php endforeach; ?>
-                </select> <small class="help-block" style="color: #dc3545"><?=form_error('matkul_id')?></small>
-            </div>
-            <label>
+
+        <div class="form-group">
+            <label for="matkul_id" class="control-label">Materi Ujian</label>
+            <select name="matkul_id" id="matkul_id" class="form-group" style="width:100% !important">
+                <?php foreach ($matkul as $d) : ?>
+                <option {{ $soal->topik->matkul_id == $d->id_matkul ? "selected" : "" }} value="{{ $d->id_matkul }}">{{ $d->nama_matkul }}</option>
+                <?php endforeach; ?>
+            </select> <small class="help-block" style="color: #dc3545"><?=form_error('matkul_id')?></small>
+        </div>
+
+        <div class="form-group">
+            <label for="topik_id" class="control-label">
                 <span>Topik</span>
                 <small class="help-block text-info"><span class="text-danger"><b>***</b> Sebelum memilih topik, silahkan pilih matkul dahulu</span></small>
             </label>
-            <div class="form-group">
-                <select name="topik_id" id="topik_id" class="select2 form-group" style="width:100% !important">
-                    <option value="" disabled selected>Pilih Topik</option>
-                </select> <small class="help-block" style="color: #dc3545"><?=form_error('topik_id')?></small>
-            </div>
+            <select name="topik_id" id="topik_id" class="form-group" style="width:100% !important">
+            </select> <small class="help-block" style="color: #dc3545"><?=form_error('topik_id')?></small>
+        </div>
 
         <div class="alert bg-info mb-2" role="alert">
             <strong>Pertanyaan</strong>
@@ -469,11 +512,11 @@ $(document).on('change','#section_id',function(e){
         <div class="row">
             <div class="col-lg-10">
                 <div class="form-group">
-                    <select name="section_id" id="section_id" class="select2 form-group"
+                    <select name="section_id" id="section_id" class="form-group"
                         style="width:100% !important">
                         <option></option>
                         @foreach ($section_avail as $section)
-                        <option value="{{ $section->id }}"  {{ $section->id == (set_value('section_id') != null ? set_value('section_id') : $soal->section_id) ? "selected" : "" }} >{{ $section->keterangan }}</option>    
+                        <option value="{{ $section->id }}" >{{ $section->keterangan }}</option>    
                         @endforeach
                     </select> <small class="help-block"
                         style="color: #dc3545"><?=form_error('section_id')?></small>
@@ -488,13 +531,15 @@ $(document).on('change','#section_id',function(e){
         </div>
 
         <div class="form-group">
-            <textarea name="soal" id="soal" class="form-control froala-editor summernote_editor">{!! $soal->soal !!}</textarea>
+            <textarea name="soal" id="soal" class="form-control froala-editor summernote_editor">{!! !empty(set_value('soal')) ? set_value('soal') : $soal->soal !!}</textarea>
             <small class="help-block" style="color: #dc3545"><?=form_error('soal')?></small>
         </div>
 
         <div class="alert bg-danger mb-2" role="alert">
             <strong>Jawaban</strong>
         </div>
+
+        @if($tipe_soal_selected == TIPE_SOAL_MCSA || $tipe_soal_selected == TIPE_SOAL_MCMA)
 
         <!--
             Membuat perulangan A-E
@@ -515,7 +560,7 @@ $(document).on('change','#section_id',function(e){
 {{--                                        <?php endif;?>--}}
 {{--                                    </div>--}}
                 <div class="form-group">
-                    <textarea name="jawaban_<?= $abj; ?>" id="jawaban_<?= $abj; ?>" class="form-control froala-editor summernote_editor">{!! $soal->$opsi !!}</textarea>
+                    <textarea name="jawaban_{{ $abj }}" id="jawaban_{{ $abj }}" class="form-control froala-editor summernote_editor">{!! !empty(set_value('jawaban_' . $abj)) ? set_value('jawaban_' . $abj) : $soal->$opsi !!}</textarea>
                     <small class="help-block" style="color: #dc3545"><?=form_error('jawaban_'.$abj)?></small>
                 </div>
 
@@ -523,12 +568,11 @@ $(document).on('change','#section_id',function(e){
 
         <div class="form-group">
             <label for="jawaban" class="control-label">Kunci Jawaban</label>
-            <select required="required" name="jawaban" id="jawaban" class="form-control select2" style="width:100%!important">
-                <option <?=$soal->jawaban==="A"?"selected":""?> value="A">A</option>
-                <option <?=$soal->jawaban==="B"?"selected":""?> value="B">B</option>
-                <option <?=$soal->jawaban==="C"?"selected":""?> value="C">C</option>
-                <option <?=$soal->jawaban==="D"?"selected":""?> value="D">D</option>
-                <option <?=$soal->jawaban==="E"?"selected":""?> value="E">E</option>
+            <select name="jawaban" id="jawaban" class="form-control" style="width:100%!important">
+                <option></option>
+                @foreach(OPSI_SOAL as $opsi_soal)
+                <option value="{{ strtoupper($opsi_soal) }}">{{ strtoupper($opsi_soal) }}</option>
+                @endforeach
             </select>
             <small class="help-block" style="color: #dc3545"><?=form_error('jawaban')?></small>
         </div>
@@ -539,11 +583,19 @@ $(document).on('change','#section_id',function(e){
 {{--            <small class="help-block" style="color: #dc3545"><?=form_error('bobot')?></small>--}}
 {{--        </div>--}}
 
+        @elseif($tipe_soal_selected == TIPE_SOAL_ESSAY)
+        <div class="form-group">
+            <textarea name="jawaban" id="jawaban" class="form-control froala-editor summernote_editor">{!! !empty(set_value('jawaban')) ? set_value('jawaban') : $soal->jawaban !!}</textarea>
+            <small class="help-block" style="color: #dc3545"><?=form_error('jawaban')?></small>
+        </div>
+        @endif
+
         <div class="form-group" >
             <label for="bobot_soal_id" class="control-label">Bobot Soal</label>
             <select name="bobot_soal_id" id="bobot_soal_id" class="form-control select2" style="width:100%!important">
+                <option></option>
                 @forelse($bobot_soal as $d)
-                    <option {{ $soal->bobot_soal_id === $d->id ? "selected" : "" }} value="{{ $d->id }}">{{ $d->bobot }}</option>
+                    <option value="{{ $d->id }}">{{ $d->bobot }}</option>
                 @empty
 
                 @endforelse
@@ -555,7 +607,7 @@ $(document).on('change','#section_id',function(e){
             <legend class="col-form-label col-lg-2 col-sm-12" style="border: 1px solid #ccc; background-color: #f6ffd4;">Penjelasan</legend>
             <label for="penjelasan"><small class="help-block text-info"><span class="text-danger"><b>***</b> Penjelasan mengenai jawaban pada soal yang tertera</span></small></label>
             <div class="form-group">
-                <textarea name="penjelasan" id="penjelasan" class="form-control froala-editor summernote_editor">{!! $soal->penjelasan !!}</textarea>
+                <textarea name="penjelasan" id="penjelasan" class="form-control froala-editor summernote_editor">{!! !empty(set_value('penjelasan')) ? set_value('penjelasan') : $soal->penjelasan !!}</textarea>
                 <small class="help-block" style="color: #dc3545"><?=form_error('penjelasan')?></small>
             </div>
         </fieldset>

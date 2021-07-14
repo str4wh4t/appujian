@@ -51,6 +51,7 @@ $rata_rata_ujian = number_format($nilai->avg_nilai,2,'.', '') ;
         <td rowspan="2" ><b>No Peserta</b></td>
         <td rowspan="2" ><b>Nama</b></td>
         <td rowspan="2" ><b>Kehadiran</b></td>
+        <td rowspan="2" ><b>Absen Oleh</b></td>
         <td colspan="4" ><b>Bapu</b></td>
         <?php if(SHOW_DETAIL_HASIL): ?>
         <?php foreach($ujian->topik AS $topik): ?>
@@ -59,8 +60,6 @@ $rata_rata_ujian = number_format($nilai->avg_nilai,2,'.', '') ;
         <?php endif; ?>
         <td rowspan="2" ><b>Bobot</b></td>
         <td rowspan="2" ><b>Nilai</b></td>
-        
-        
     </tr>
     <tr>
         <td ><b>Terlihat Pada Layar</b></td>
@@ -81,6 +80,7 @@ $rata_rata_ujian = number_format($nilai->avg_nilai,2,'.', '') ;
         <td style='mso-number-format:"\@"'><?= $row['nim'] ?></td>
         <td ><?= $row['nama'] ?></td>
         <td ><?= $row['absensi'] ?></td>
+        <td ><?= $row['absensi_oleh'] ?></td>
         <td ><?= $row['is_terlihat_pada_layar'] ?></td>
         <td ><?= $row['is_perjokian'] ?></td>
         <td ><?= $row['is_sering_buka_page_lain'] ?></td>

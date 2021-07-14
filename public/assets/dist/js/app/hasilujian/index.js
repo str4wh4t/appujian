@@ -66,7 +66,7 @@ $(document).ready(function() {
         }
       }
     ],
-    order: [[1, "asc"]],
+    order: [[4, "desc"]],
     rowId: function(a) {
       return a;
     },

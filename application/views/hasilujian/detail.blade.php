@@ -57,7 +57,7 @@ $(document).on('click','.btn_reset_hasil',function(){
                     }else{
                         table.ajax.reload();
                         $.post('{{ url('hasilujian/ajax/get_stat_nilai') }}', {'id' : data.mujian_id}, function(data){
-                            console.log(data.nilai_terendah);
+                            // console.log(data.nilai_terendah);
                             $('#nilai_terendah').text(data.nilai_terendah);
                             $('#nilai_tertinggi').text(data.nilai_tertinggi);
                             $('#nilai_rata_rata').text(data.nilai_rata_rata);
@@ -91,8 +91,59 @@ function init_page_level(){
 }
 
 $(document).on('click','img.featherlight-image',function(){
-    window.location = "https://sso.undip.id";
+    window.location = "{{ get_banner_ads_link() }}";
 });
+
+@if(in_group('mahasiswa'))
+
+<?php 
+$h_ujian = $ujian->h_ujian()->where(['mahasiswa_id' => $mhs->id_mahasiswa, 'ujian_selesai' => 'Y'])->first();
+?>
+
+$(document).on('click','#btn_ulangi_ujian',function(){
+    Swal.fire({
+        title: "Ulangi Ujian",
+        text: "Yakin akan mengulang ujian.",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#37bc9b",
+        cancelButtonColor: "#f6bb42",
+        confirmButtonText: "Mulai"
+    }).then(result => {
+        if (result.value) {
+            ajx_overlay(true);
+            $.ajax({
+                url: '{{ url('ujian/ajax/prepare_ujian_ulang') }}',
+                type: 'post',
+                data: {'id' : '{{ !empty($h_ujian) ? uuid_create_from_integer($h_ujian->id) : '' }}'},
+                dataType: 'json',
+                success: function (data) {
+                    if (data.status == 'ok') {
+                        location.href = '{{ url('ujian/token/' . uuid_create_from_integer($ujian->id_ujian) ) }}' ;
+                    }else{
+                        Swal.fire({
+                            title: "Perhatian",
+                            text: "Terjadi kesalahan.",
+                            icon: "warning"
+                        });
+                    }
+                },
+                error: function (data){
+                    Swal.fire({
+                        title: "Error",
+                        text: "Terjadi kesalahan.",
+                        icon: "warning"
+                    });
+                },
+                complete: function (){
+                    ajx_overlay(false);
+                }
+            });
+        }
+    });
+});
+
+@endif
 
 </script>
 <script src="{{ asset('assets/dist/js/app/hasilujian/detail.js') }}"></script>
@@ -184,20 +235,50 @@ $(document).on('click','img.featherlight-image',function(){
 {{--        <a class="btn btn-info btn_cetak_hasil" target="_blank" href="{{ url('pub/cetak_sertifikat/' . $user->username . '/' . uuid_create_from_integer($ujian->id_ujian)) }}" title="Cetak hasil"><i class="fa fa-print"></i> Cetak Sertifikat</a>--}}
 {{--    </div>--}}
 
-        @if($ujian->tampilkan_jawaban)
-            <?php 
-            $h_ujian = $ujian->h_ujian()->where('mahasiswa_id', $mhs->id_mahasiswa)->first();
-            ?>
-            @if(!empty($h_ujian))
-            <div class="col-md-12 mt-2" style="text-align: center">
-                <a class="btn btn-danger btn-lg" href="{{ url('hasilujian/history/' . uuid_create_from_integer($h_ujian->mahasiswa_ujian_id)) }}" title="Lihat Jawaban">
-                    <i class="fa fa-list-alt"></i> Jawaban Ujian
-                </a>
-            </div>
+        <?php 
+        $set_view = false;
+        if($ujian->tampilkan_hasil || $ujian->repeatable){
+            $set_view = true;
+        }
+        ?>
+
+        @if($set_view)
+        <div class="col-md-12 mt-2" style="text-align: center">
+
+            @if($ujian->tampilkan_hasil)
+                <?php 
+                $h_ujian_history = $ujian->h_ujian_history()->where('mahasiswa_id', $mhs->id_mahasiswa)->first();
+                ?>
+                @if(!empty($h_ujian) || !empty($h_ujian_history))
+                    <?php 
+                    $mhs_ujian = $mhs->mhs_ujian()->where(['mahasiswa_id' => $mhs->id_mahasiswa, 'ujian_id' => $ujian->id_ujian])->first();
+                    ?>
+                    <a class="btn btn-primary btn-lg" href="{{ url('hasilujian/history/' . uuid_create_from_integer($mhs_ujian->id)) }}" title="Lihat Jawaban">
+                        <i class="ft-eye"></i> History Ujian
+                    </a>
+                @endif
             @endif
+            @if($ujian->repeatable)
+                <?php 
+                $today = date('Y-m-d H:i:s');
+                //echo $paymentDate; // echos today!
+                $date_start = date('Y-m-d H:i:s', strtotime($ujian->tgl_mulai));
+                if(!empty($ujian->terlambat))
+                    $date_end = date('Y-m-d H:i:s', strtotime($ujian->terlambat));
+                else 
+                    $date_end = date('Y-m-d H:i:s', strtotime('+1 days'));
+                ?>
+
+                @if(($today >= $date_start) && ($today < $date_end)) 
+                    @if (!empty($h_ujian))
+                        <button class="btn btn-outline-danger btn-lg" id="btn_ulangi_ujian">
+                            <i class="fa fa-refresh"></i> Ulangi Ujian
+                        </button>
+                    @endif
+                @endif
+            @endif
+        </div>
         @endif
-        
-        
     @endif
 
     <div class="col-md-12 mt-2">

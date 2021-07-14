@@ -39,6 +39,8 @@ let filter = {
 };
 
 function init_page_level(){
+    ajaxcsrf();
+    
     $('.select2').select2({
         width: '100%',
     });

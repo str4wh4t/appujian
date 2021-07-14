@@ -131,4 +131,11 @@ defined('PAYMENT_ORDER_EXPIRED')      OR define('PAYMENT_ORDER_EXPIRED', 3);
 
 defined('NON_REPORTED_SOAL')      OR define('NON_REPORTED_SOAL', 0);
 defined('REPORTED_SOAL')      OR define('REPORTED_SOAL', 1);
+defined('LOCKED_USER_ID')      OR define('LOCKED_USER_ID', 99);
+defined('TIPE_SOAL_MCSA')      OR define('TIPE_SOAL_MCSA', 1);
+defined('TIPE_SOAL_MCMA')      OR define('TIPE_SOAL_MCMA', 2);
+defined('TIPE_SOAL_ESSAY')      OR define('TIPE_SOAL_ESSAY', 3);
+defined('TIPE_SOAL')      OR define('TIPE_SOAL', [TIPE_SOAL_MCSA => 'MULTIPLE CHOICE SINGLE ANSWER (MCSA)', 
+                                                    TIPE_SOAL_MCMA => 'MULTIPLE CHOICE MULTIPLE ANSWER (MCMA)',
+                                                    TIPE_SOAL_ESSAY => 'ESSAY']);
 

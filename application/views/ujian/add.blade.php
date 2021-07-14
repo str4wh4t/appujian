@@ -69,14 +69,14 @@ function init_page_level(){
     ajaxcsrf();
     $('.select2').select2();
     $('#matkul_id').select2();
-    $('#topik_id').select2({placeholder : '- Pilih topik -'});
-    $('#bundle').select2({placeholder : '- Pilih bundle soal -'});
-    // $('#mhs_matkul').select2({placeholder : '- Pilih matkul terkait mhs -'});
+    $('#topik_id').select2({placeholder : 'Pilih topik'});
+    $('#bundle').select2({placeholder : 'Pilih bundle soal'});
+    // $('#mhs_matkul').select2({placeholder : 'Pilih matkul terkait mhs'});
 
-    $('#prodi').select2({placeholder : '- Pilih prodi -'});
-    $('#jalur').select2({placeholder : '- Pilih jalur -'});
-    $('#gel_mhs').select2({placeholder : '- Pilih gelombang -'});
-    $('#smt_mhs').select2({placeholder : '- Pilih semester -'});
+    $('#prodi').select2({placeholder : 'Pilih prodi'});
+    $('#jalur').select2({placeholder : 'Pilih jalur'});
+    $('#gel_mhs').select2({placeholder : 'Pilih gelombang'});
+    $('#smt_mhs').select2({placeholder : 'Pilih semester'});
 
     $('.icheck').iCheck({
         checkboxClass: 'icheckbox_square-red',
@@ -461,7 +461,11 @@ const init_peserta_table = (response_mhs) => {
             ).appendTo('#tbody_tb_peserta');
     }
     $('#chkbox_pilih_semua_peserta').prop('checked', false);
+    $('#chkbox_pilih_semua_peserta').trigger('change');
+    
     $('.search_pes').val('');
+
+    $('#panel_submit_ujian').hide();
 };
 
 $(document).on('change','#chkbox_pilih_semua_peserta',function () {
@@ -674,6 +678,7 @@ $(document).on('click','#btn_refine_peserta', function(){
     ajx_overlay(true);
     init_peserta_table_value(bundle_id_list).then(function(){
         ajx_overlay(false);
+        $('#panel_submit_ujian').show();
     });
 });
 
@@ -738,7 +743,7 @@ $(document).on('click','#btn_refine_peserta', function(){
                     <div class="form-group">
                         <label>Materi Ujian</label>
                         <select name="matkul_id" id="matkul_id" class="form-control" style="width:100% !important">
-                            <option value="" disabled selected>- Pilih materi ujian -</option>
+                            <option value="" disabled selected>Pilih materi ujian</option>
                             @foreach($matkul as $d)
                                 <option value="{{ $d->id_matkul }}">{{ $d->nama_matkul }}</option>
                             @endforeach
@@ -1073,7 +1078,7 @@ $(document).on('click','#btn_refine_peserta', function(){
                 <input type="hidden" name="tahun_mhs" value="null">
                 <hr />
                 @endif
-                <div class="form-group text-center">
+                <div class="form-group text-center" id="panel_submit_ujian" style="display: none">
                     <a href="{{ site_url('ujian/master') }}" class="btn btn-flat btn-warning">
                         <i class="fa fa-arrow-left"></i> Kembali
                     </a>

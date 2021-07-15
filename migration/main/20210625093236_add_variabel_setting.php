@@ -9,7 +9,7 @@ class AddVariabelSetting extends AbstractMigration
         $this->insert('setting', [
             [
                 'variabel' => 'is_show_banner_ads',
-                'nilai' => '1',
+                'nilai' => '0',
                 'flag' => '1',
                 'created_at' => date("Y-m-d H:i:s"),
             ],
@@ -21,7 +21,7 @@ class AddVariabelSetting extends AbstractMigration
             ],
             [
                 'variabel' => 'is_enable_socket',
-                'nilai' => '1',
+                'nilai' => '0',
                 'flag' => '1',
                 'created_at' => date("Y-m-d H:i:s"),
             ],

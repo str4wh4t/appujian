@@ -38,3 +38,21 @@ function get_ping_interval() {
     
     return $ping_interval ;
 }
+
+function get_api_auth_username() {
+    $ping_interval = 0;
+    $setting = Setting::where(['variabel' => 'api_auth_username', 'flag' => '1'])->first();
+    if(!empty($setting))
+        $api_auth_username = $setting->nilai;
+    
+    return $api_auth_username ;
+}
+
+function get_api_auth_password() {
+    $ping_interval = 0;
+    $setting = Setting::where(['variabel' => 'api_auth_password', 'flag' => '1'])->first();
+    if(!empty($setting))
+        $api_auth_password = $setting->nilai;
+    
+    return $api_auth_password ;
+}

@@ -89,6 +89,8 @@ $tgl_ujian_format = strftime("%A, %d %B %Y", $dt->getTimestamp());
 
 $hasil_akhir = number_format($hasil['nilai_bobot_benar'],2,'.', '') ;
 
+$nama_ujian = strtoupper($ujian->nama_ujian);
+
 // create some HTML content
 $html = <<<EOD
 <p style="text-align: center">
@@ -112,7 +114,7 @@ $html = <<<EOD
     </tr>
 </table>
 <p style="text-align: center">
-Telah mengikuti {$ujian->matkul->nama_matkul} Universitas Diponegoro pada tanggal {$tgl_ujian_format} dengan hasil sebagai berikut :
+Telah mengikuti {$nama_ujian} Universitas Diponegoro pada tanggal {$tgl_ujian_format} dengan hasil sebagai berikut :
 </p>
 <table style="width: 900px;">
     <tr style="height: 30px">

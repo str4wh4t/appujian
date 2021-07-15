@@ -478,94 +478,81 @@ class Pub extends MY_Controller {
 		return $action;
 		
 	}
-	
-	public function fix_nilai(){
-		if(!is_cli()) show_404();
 
-		die; // FITUR DISABLED
-		
-		$h_ujian_list = new Hujian_orm();
-		
-		// if($app_id == 'ujian')
-	    //     $h_ujian_list->setConnection('ujian');
-        // else
-	    //     $h_ujian_list->setConnection('cat');
+	public function register_peserta_from_pendaftaran(){
 
-		$h_ujian_list = $h_ujian_list->where('ujian_selesai', 'Y')->where('fixed_nilai', '0')->orderBy('id')->get();
-		
-		if($h_ujian_list->isNotEmpty()) {
-			foreach ($h_ujian_list as $h_ujian) {
-			
-//				if( $h_ujian->id != '47'){
-//					continue;
-//				}
-				
-				echo $h_ujian->id ;
-//				echo $h_ujian->mhs->nama . "\n";
-				
-				$this->load->model('Ujian_model', 'ujian');
-				$this->load->model('Master_model', 'master');
-				// $id_h_ujian = $h_ujian->id;
-				
-				// Get Jawaban
-				// $list_jawaban = $this->ujian->getJawaban($id_h_ujian);
-				
-				// Pecah Jawaban
-				$pc_jawaban = $h_ujian->jawaban_ujian;
-				
-				$jumlah_benar = 0;
-				$jumlah_salah = 0;
-				//			$jumlah_ragu  = 0;
-				//			$nilai_bobot  = 0;
-				$total_bobot       = 0;
-				$total_bobot_benar = 0;
-				$jumlah_soal       = count($pc_jawaban);
-				
-				$topik_ujian_nilai_bobot = [];
-				
-				foreach ($pc_jawaban as $jwb) {
-					if (!isset($topik_ujian_nilai_bobot[$jwb->soal->topik_id])) {
-						$topik_ujian_nilai_bobot[$jwb->soal->topik_id] = 0;
-					}
-					$total_bobot = $total_bobot + ($jwb->soal->bobot_soal->nilai * $jwb->soal->topik->poin_topik);
-					if ($jwb->jawaban == $jwb->soal->jawaban) {
-						$jumlah_benar++;
-						$bobot_poin                                    = ($jwb->soal->bobot_soal->nilai * $jwb->soal->topik->poin_topik);
-						$total_bobot_benar                             = $total_bobot_benar + $bobot_poin;
-						$topik_ujian_nilai_bobot[$jwb->soal->topik_id] = $topik_ujian_nilai_bobot[$jwb->soal->topik_id] + $bobot_poin;
-					} else {
-						$jumlah_salah++;
-					}
-				}
-				
-				$nilai             = ($jumlah_benar / $jumlah_soal) * 100;
-				$nilai_bobot_benar = $total_bobot_benar;
-				//			$total_bobot_benar = $total_bobot;
-				$nilai_bobot = ($total_bobot / $jumlah_soal) * 100;
-				
-				
-				$h_ujian->jml_benar = $jumlah_benar;
-				$h_ujian->jml_salah = $jumlah_salah;
-				$h_ujian->jml_soal  = $jumlah_soal;
-				//		$h_ujian->nilai     =  number_format(floor($nilai), 0);
-				$h_ujian->nilai = round($nilai, 2);
-				//		$h_ujian->nilai_bobot = $nilai_bobot;
-				$h_ujian->nilai_bobot        = 0;
-				$h_ujian->nilai_bobot_benar  = round($nilai_bobot_benar, 2);
-				$h_ujian->total_bobot        = round($total_bobot, 2);
-				$h_ujian->detail_bobot_benar = json_encode($topik_ujian_nilai_bobot);
-//				$h_ujian->tgl_selesai        = date('Y-m-d H:i:s');
-//				$h_ujian->ujian_selesai      = 'Y';
-//				$h_ujian->ended_by           = 'cron';
-				$h_ujian->fixed_nilai        = 1;
-				$action                      = $h_ujian->save();
-				
-				echo 'done' . "\n";
-				
-				// return $action;
-			}
+		if (!isset($_SERVER['PHP_AUTH_USER'])) {
+			header('WWW-Authenticate: Basic realm="My Realm"');
+			header('HTTP/1.0 401 Unauthorized');
+			exit;
 		}
-		
+
+		$username = $_SERVER['PHP_AUTH_USER'];
+		$password = $_SERVER['PHP_AUTH_PW'];
+
+		if(!($username == get_api_auth_username() && $password == get_api_auth_password())){
+			header('WWW-Authenticate: Basic realm="The Realm"');
+			header('HTTP/1.0 401 Unauthorized');
+			exit;
+		}
+
+		$post = $this->input->post();
+
+		try {
+			begin_db_trx();
+
+			if(empty($post))
+				throw new Exception('Data tidak valid');
+
+			$mhs = new Mhs_orm;
+			$mhs->id_mahasiswa = $post['id_mahasiswa'];
+			$mhs->nim = $post['nim'];
+			$mhs->nama = $post['nama'];
+			$mhs->nik = $post['nik'];
+			$mhs->tmp_lahir = $post['tmp_lahir'];
+			$mhs->tgl_lahir = $post['tgl_lahir'];
+			$mhs->email = $post['email'];
+			// https://pendaftaran.undip.ac.id/assets/berkas_nfs/fotoprofile/fotoprofile-1.jpg
+			$foto_path = str_replace("https://pendaftaran.undip.ac.id/assets/berkas_nfs/fotoprofile", asset('foto'), $post['foto']);
+			$mhs->foto = $foto_path;
+			$mhs->jenis_kelamin = $post['jenis_kelamin'];
+			$mhs->no_billkey = $post['no_billkey'];
+			$mhs->kodeps = $post['kodeps'];
+			$mhs->prodi = $post['prodi'];
+			$mhs->gel = $post['gel'];
+			$mhs->smt = $post['smt'];
+			$mhs->jalur = $post['jalur'];
+			$mhs->tahun = $post['tahun'];
+			$mhs->kelompok_ujian = $post['kelompok_ujian'];
+			$mhs->tgl_ujian = empty($post['tgl_ujian']) ? null : $post['tgl_ujian'];
+			$mhs->save();
+
+			// MENDAFTARKAN SBG USER
+			$nama       = explode(' ', $mhs->nama, 2);
+			$first_name = $nama[0];
+			$last_name  = end($nama);
+			$full_name  = $mhs->nama;
+
+			$username        = $mhs->nim;
+			$password        = $mhs->no_billkey;
+			$email           = $mhs->email;
+			$additional_data = [
+				'first_name' => $first_name,
+				'last_name'  => $last_name,
+				'full_name'  => $full_name,
+				'no_billkey'  => $mhs->no_billkey,
+				'created_at'  => date('Y-m-d H:i:s'),
+			];
+			$group           = [MHS_GROUP_ID]; // Sets user to mhs.
+			$return = $this->ion_auth->register($username, $password, $email, $additional_data, $group);
+
+			$this->_json(['status' => $return]);
+
+			commit_db_trx();
+		} catch (\Illuminate\Database\QueryException $e) {
+			rollback_db_trx();
+			show_error($e->getMessage(), 500, 'Perhatian');
+		}
 	}
 
 	public function notify_midtrans(){
@@ -988,6 +975,94 @@ class Pub extends MY_Controller {
 	// 	// echo __FILE__ ;
 	// }
 
+	public function fix_nilai(){
+		if(!is_cli()) show_404();
+
+		die; // FITUR DISABLED
+		
+		$h_ujian_list = new Hujian_orm();
+		
+		// if($app_id == 'ujian')
+	    //     $h_ujian_list->setConnection('ujian');
+        // else
+	    //     $h_ujian_list->setConnection('cat');
+
+		$h_ujian_list = $h_ujian_list->where('ujian_selesai', 'Y')->where('fixed_nilai', '0')->orderBy('id')->get();
+		
+		if($h_ujian_list->isNotEmpty()) {
+			foreach ($h_ujian_list as $h_ujian) {
+			
+//				if( $h_ujian->id != '47'){
+//					continue;
+//				}
+				
+				echo $h_ujian->id ;
+//				echo $h_ujian->mhs->nama . "\n";
+				
+				$this->load->model('Ujian_model', 'ujian');
+				$this->load->model('Master_model', 'master');
+				// $id_h_ujian = $h_ujian->id;
+				
+				// Get Jawaban
+				// $list_jawaban = $this->ujian->getJawaban($id_h_ujian);
+				
+				// Pecah Jawaban
+				$pc_jawaban = $h_ujian->jawaban_ujian;
+				
+				$jumlah_benar = 0;
+				$jumlah_salah = 0;
+				//			$jumlah_ragu  = 0;
+				//			$nilai_bobot  = 0;
+				$total_bobot       = 0;
+				$total_bobot_benar = 0;
+				$jumlah_soal       = count($pc_jawaban);
+				
+				$topik_ujian_nilai_bobot = [];
+				
+				foreach ($pc_jawaban as $jwb) {
+					if (!isset($topik_ujian_nilai_bobot[$jwb->soal->topik_id])) {
+						$topik_ujian_nilai_bobot[$jwb->soal->topik_id] = 0;
+					}
+					$total_bobot = $total_bobot + ($jwb->soal->bobot_soal->nilai * $jwb->soal->topik->poin_topik);
+					if ($jwb->jawaban == $jwb->soal->jawaban) {
+						$jumlah_benar++;
+						$bobot_poin                                    = ($jwb->soal->bobot_soal->nilai * $jwb->soal->topik->poin_topik);
+						$total_bobot_benar                             = $total_bobot_benar + $bobot_poin;
+						$topik_ujian_nilai_bobot[$jwb->soal->topik_id] = $topik_ujian_nilai_bobot[$jwb->soal->topik_id] + $bobot_poin;
+					} else {
+						$jumlah_salah++;
+					}
+				}
+				
+				$nilai             = ($jumlah_benar / $jumlah_soal) * 100;
+				$nilai_bobot_benar = $total_bobot_benar;
+				//			$total_bobot_benar = $total_bobot;
+				$nilai_bobot = ($total_bobot / $jumlah_soal) * 100;
+				
+				
+				$h_ujian->jml_benar = $jumlah_benar;
+				$h_ujian->jml_salah = $jumlah_salah;
+				$h_ujian->jml_soal  = $jumlah_soal;
+				//		$h_ujian->nilai     =  number_format(floor($nilai), 0);
+				$h_ujian->nilai = round($nilai, 2);
+				//		$h_ujian->nilai_bobot = $nilai_bobot;
+				$h_ujian->nilai_bobot        = 0;
+				$h_ujian->nilai_bobot_benar  = round($nilai_bobot_benar, 2);
+				$h_ujian->total_bobot        = round($total_bobot, 2);
+				$h_ujian->detail_bobot_benar = json_encode($topik_ujian_nilai_bobot);
+//				$h_ujian->tgl_selesai        = date('Y-m-d H:i:s');
+//				$h_ujian->ujian_selesai      = 'Y';
+//				$h_ujian->ended_by           = 'cron';
+				$h_ujian->fixed_nilai        = 1;
+				$action                      = $h_ujian->save();
+				
+				echo 'done' . "\n";
+				
+				// return $action;
+			}
+		}
+		
+	}
 
 	public function generate_data_daerah(){
 		$api_url_provinsi = 'https://dev.farizdotid.com/api/daerahindonesia/provinsi' ;

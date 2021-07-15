@@ -172,6 +172,8 @@ legend{
 }
 .card.card-fullscreen{
     z-index: 9995 !important;
+    -webkit-user-select: initial;
+user-select: initial;
 }
 .swal2-container{
     z-index: 9997 !important;
@@ -318,7 +320,10 @@ let topik_aktif;
 let last_topik_id = 0;
 let waktu_selesai = '{{ date('Y-m-d H:i:s', strtotime($h_ujian->tgl_selesai)) }}';
 
+let ujian_selesai ;
+let duration ;
 let refreshIntervalId ;
+let lastTime;
 
 const set_urutan_topik = () => {
     // let topik_waktu = [];
@@ -356,36 +361,64 @@ const update_time = () => {
             curr_date = moment(date_ajax, "YYYY-MM-DD HH:mm:ss");
 
             // console.log('srv_date', curr_date);
-            
-            $.each(urutan_topik, function(i, v){
-                let akhir_topik = moment(topik_waktu[v], "YYYY-MM-DD HH:mm:ss");
-                if(akhir_topik.isAfter(curr_date)){
-                    topik_aktif  = v;
-                    return false;
-                }
+            // console.log('curr_date', curr_date);
+
+            // console.log('urutan_topik', urutan_topik);
+            // console.log('topik_waktu', topik_waktu);
+
+            let topik_waktu_moment_list = [];
+            $.each(topik_waktu, function(i, v){
+                topik_waktu_moment_list.push(moment(v, "YYYY-MM-DD HH:mm:ss"));
             });
+
+            let max_waktu_ujian = moment.max(topik_waktu_moment_list);
+            // console.log('max_waktu_ujian', max_waktu_ujian);
+
+            if(curr_date.isBefore(max_waktu_ujian)){ // JIKA WAKTU SEKARANG MELEBIHI MAX_WAKTU_UJIAN
+                $.each(urutan_topik, function(i, v){
+                    let akhir_topik = moment(topik_waktu[v], "YYYY-MM-DD HH:mm:ss");
+                    if(akhir_topik.isAfter(curr_date)){
+                        topik_aktif  = v;
+                        return false;
+                    }
+                });
+            }else{
+                $.each(topik_waktu, function(i, v){
+                    if(v == max_waktu_ujian.format("YYYY-MM-DD HH:mm:ss")){
+                        topik_aktif = i;
+                        return false;
+                    }
+                });
+            }
 
             $.each(urutan_topik, function(i, v){
                 last_topik_id = v ;
             });
 
             let interval = 1000;
-            let ujian_selesai ;
+            ujian_selesai ;
             if(is_sekuen_topik)
                 ujian_selesai = moment(topik_waktu[topik_aktif], "YYYY-MM-DD HH:mm:ss");
             else
                 ujian_selesai = moment(waktu_selesai, "YYYY-MM-DD HH:mm:ss");
+
             let diffTime = ujian_selesai.unix() - curr_date.unix();
 
-            let duration = moment.duration(diffTime*1000, 'milliseconds');
+            duration = moment.duration(diffTime*1000, 'milliseconds');
             let duration_text = '';
 
+            lastTime = moment();
+
             refreshIntervalId = setInterval(function(){
+
+                // console.log('curr_date 1 : ', curr_date);
 
                 curr_date.add(1, 'second');
                 // datetime_el.html(curr_date.format('dddd, Do MMMM YYYY, HH:mm:ss'));
 
                 duration = moment.duration(duration - interval, 'milliseconds');
+
+                
                 if(duration.as('milliseconds') > 0){
                     duration_text = Math.floor(duration.as('hours')) + ":" + duration.minutes() + ":" + duration.seconds() ;
                     if(duration.as('milliseconds') == 599000){
@@ -399,8 +432,11 @@ const update_time = () => {
                     }
                 }else{
                     duration_text = "0:0:0";
-                   
+
+                    
                     if(is_sekuen_topik){
+                        console.log('last_topik_id', last_topik_id);
+                        console.log('topik_aktif', topik_aktif);
                         if(last_topik_id == topik_aktif)
                             selesai();
                         else{
@@ -516,11 +552,36 @@ const loop_check_isian_essay = () => {
     },30000);
 };
 
+// const sync_the_time = () => {
+//     clearInterval(refreshIntervalId);
+//     update_time();
+// };
+
+const loop_update_time = () => {
+    setInterval(function() {
+        $.ajaxSetup({
+            url: '<?= site_url('get_server_time') ?>',
+            global: false,
+            type: "GET"
+        });
+        $.ajax({
+            success: function (date_ajax) {
+                curr_date = moment(date_ajax, "YYYY-MM-DD HH:mm:ss");
+                let diffTime = ujian_selesai.unix() - curr_date.unix();
+
+                duration = moment.duration(diffTime*1000, 'milliseconds');
+                // console.log('curr_date 2 : ', curr_date);
+            }
+        });
+    },10000);
+};
+
 function init_page_level(){
     ajaxcsrf();
     setting_up_view();
     update_status_ujian();
     loop_check_isian_essay();
+    loop_update_time();
     // ofs = $('#q_n_a').offset();
     // console.log('ofs',ofs);
     // $('body').bind('copy paste cut drag drop', function (e) {

@@ -27,7 +27,7 @@ class Chat implements MessageComponentInterface {
 
 		foreach($this->data_clients_mhs as $app_id => $array) {
 	        foreach ($array as $nim => $resourceId) {
-				$msg = 'nim : ' . $nim . ', rid : ' . $resourceId ;
+				$msg = 'nim : ' . $nim . ', resourceId : ' . $resourceId ;
 				$this->_debug_msg($msg);
 			}
 		}
@@ -73,7 +73,7 @@ class Chat implements MessageComponentInterface {
 			    // }
 				
 				$msg = json_encode($res);
-				$this->msg_to_admin($msg);
+				$this->_msg_to_admin($msg);
 
 		    }else if($req->as == 'admin') {
 
@@ -95,7 +95,7 @@ class Chat implements MessageComponentInterface {
 			    // }
 				
 				$msg = json_encode($res);
-				$this->msg_to_admin($msg);
+				$this->_msg_to_admin($msg);
 
 		    }
 	    }elseif($req->cmd == 'DO_ABSENSI'){
@@ -115,7 +115,7 @@ class Chat implements MessageComponentInterface {
 			    // }
 				
 				$msg = json_encode($res);
-				$this->msg_to_admin($msg);
+				$this->_msg_to_admin($msg);
 
 		    }
 	    }elseif($req->cmd == 'DO_ABSENSI_BATAL'){
@@ -135,7 +135,7 @@ class Chat implements MessageComponentInterface {
 			    // }
 				
 				$msg = json_encode($res);
-				$this->msg_to_admin($msg);
+				$this->_msg_to_admin($msg);
 
 		    }
 	    }elseif($req->cmd == 'DO_BAPU'){
@@ -156,7 +156,7 @@ class Chat implements MessageComponentInterface {
 			    // }
 				
 				$msg = json_encode($res);
-				$this->msg_to_admin($msg);
+				$this->_msg_to_admin($msg);
 
 		    }
 	    }elseif($req->cmd == 'MHS_ONLINE'){
@@ -182,7 +182,9 @@ class Chat implements MessageComponentInterface {
 		    // }
 
 			$msg = json_encode($res);
-			$this->msg_to_admin($msg);
+
+			$this->_msg_to_all($msg);
+			// $this->_msg_to_admin($msg);
 
 	    }elseif($req->cmd == 'MHS_LOST_FOCUS'){
 	    	$res = [
@@ -196,7 +198,7 @@ class Chat implements MessageComponentInterface {
 		    // }
 
 			$msg = json_encode($res);
-			$this->msg_to_admin($msg);
+			$this->_msg_to_admin($msg);
 
 	    }elseif($req->cmd == 'MHS_GET_FOCUS'){
 	    	$res = [
@@ -210,7 +212,7 @@ class Chat implements MessageComponentInterface {
 		    // }
 
 			$msg = json_encode($res);
-			$this->msg_to_admin($msg);
+			$this->_msg_to_admin($msg);
 
 	    }elseif($req->cmd == 'DO_KICK'){
 			if(($req->as == 'pengawas') || $req->as == 'admin'){
@@ -221,12 +223,14 @@ class Chat implements MessageComponentInterface {
 					'app_id'      => $req->app_id,
 				];
 
-				foreach ($this->clients as $conn_id => $conn) {
-					$conn->send(json_encode($res));
-				}
+				// foreach ($this->clients as $conn_id => $conn) {
+				// 	$conn->send(json_encode($res));
+				// }
 
-				// $msg = json_encode($res);
-				// $this->msg_to_admin($msg);
+				$msg = json_encode($res);
+				
+				$this->_msg_to_all($msg);
+				// $this->_msg_to_admin($msg);
 
 			}
 	    }elseif($req->cmd == 'MHS_START_UJIAN'){
@@ -241,7 +245,7 @@ class Chat implements MessageComponentInterface {
 		    // }
 
 			$msg = json_encode($res);
-			$this->msg_to_admin($msg);
+			$this->_msg_to_admin($msg);
 
 	    }elseif($req->cmd == 'MHS_STOP_UJIAN'){
 	    	$res = [
@@ -255,7 +259,7 @@ class Chat implements MessageComponentInterface {
 		    // }
 
 			$msg = json_encode($res);
-			$this->msg_to_admin($msg);
+			$this->_msg_to_admin($msg);
 
 	    }elseif($req->cmd == 'PING'){
 	    	$res = [
@@ -272,7 +276,7 @@ class Chat implements MessageComponentInterface {
 		    // }
 
 			$msg = json_encode($res);
-			$this->msg_to_admin($msg);
+			$this->_msg_to_admin($msg);
 
 	    }elseif($req->cmd == 'UPDATE_TIME'){
 			if(($req->as == 'pengawas') || $req->as == 'admin'){
@@ -282,12 +286,14 @@ class Chat implements MessageComponentInterface {
 					'app_id'      => $req->app_id,
 				];
 
-				foreach ($this->clients as $conn_id => $conn) {
-					$conn->send(json_encode($res));
-				}
+				// foreach ($this->clients as $conn_id => $conn) {
+				// 	$conn->send(json_encode($res));
+				// }
 
-				// $msg = json_encode($res);
-				// $this->msg_to_admin($msg);
+				$msg = json_encode($res);
+
+				$this->_msg_to_all($msg);
+				// $this->_msg_to_admin($msg);
 
 			}
 	    }
@@ -318,7 +324,7 @@ class Chat implements MessageComponentInterface {
 					    //     $conn->send(json_encode($msg));
 				        // }
 						$msg = json_encode($msg);
-						$this->msg_to_admin($msg);
+						$this->_msg_to_admin($msg);
 						return;
 				        // break;
 				        // break;
@@ -353,23 +359,27 @@ class Chat implements MessageComponentInterface {
         $conn->close();
     }
     
-//    private function _send_msg(){
-//    	foreach ($this->clients as $conn) {
-//            if ($from !== $client) {
-//                // The sender is not the receiver, send to each client connected
-//                $client->send(json_encode($this->data_clients));
-//            }
-//        }
-//	}
+   	private function _msg_to_all($msg){
+   		// foreach ($this->clients as $conn) {
+        //    if ($from !== $client) {
+        //        // The sender is not the receiver, send to each client connected
+        //        $client->send(json_encode($this->data_clients));
+        //    }
+       	// }
 
-	private function msg_to_admin($msg){
+		foreach ($this->clients as $client_conn_id => $conn) {
+			$this->clients[$client_conn_id]->send($msg);
+		}
+		$this->_debug_msg('msg : '. $msg .', send to all');
+	}
+
+	private function _msg_to_admin($msg){
 		foreach($this->admins as $admin_conn_id){
 			if(isset($this->clients[$admin_conn_id])){
 				$this->clients[$admin_conn_id]->send($msg);
 				$this->_debug_msg('msg : '. $msg .', send to admin : ' . $admin_conn_id);
 			}
 		}
-
 	}
 	
 	private function _debug_msg($msg){

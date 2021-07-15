@@ -2132,9 +2132,10 @@ class Ujian extends MY_Controller
 				}elseif($soal->tipe_soal == TIPE_SOAL_ESSAY){
 					$html .= '<div class="form-group" id="div_essay">';
 					// $html .= '<div class="alert bg-info">Jangan lupa untuk menyimpan jawaban essay anda</div>';
-					$html .= '<label for="opsi_a_'. $soal->id_soal .'" id="label_essay_belum_disimpan_'. $no .'" class="control-label" style="width: 100%; display: none;">
-                                    <small class="help-block bg-yellow pl-1"><span class="text-danger"><b>Perhatian, isian essay anda belum disimpan</b></span></small>
-                                </label>';
+					// $html .= '<label for="opsi_a_'. $soal->id_soal .'" id="label_essay_belum_disimpan_'. $no .'" class="control-label" style="width: 100%; display: none;">
+                    //                 <small class="help-block bg-yellow pl-1"><span class="text-danger"><b>Perhatian, isian essay anda belum disimpan</b></span></small>
+                    //             </label>';
+					$html .= '<div class="alert bg-yellow text-danger border-red" id="label_essay_belum_disimpan_'. $no .'" style="display: none;"><b>Perhatian, isian essay anda belum disimpan</b></div>';
 					$html .= '<input type="hidden" name="jawaban_essay_before_'. $no .'" value="'. $arr_jawab[$soal->id_soal]['j_essay'] .'">'; 
 					$html .= '<textarea class="summernote_editor" id="opsi_a_'. $soal->id_soal .'" name="opsi_' . $no . '" data-sid="' . $soal->id_soal . '" rel="' . $no . '">'. $arr_jawab[$soal->id_soal]['j_essay'] .'</textarea>';
 					$html .= '<label for="opsi_a_'. $soal->id_soal .'" class="control-label">

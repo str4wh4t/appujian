@@ -323,6 +323,12 @@ body {
 
                         if (data.user_id != '{{ get_logged_user()->id }}') {
                             $('#badge_absensi_' + data.nim).text('SUDAH').removeClass('danger').removeClass('border-danger').addClass('border-success').addClass('success');
+                            trigger_by_user = false;
+                            $('#bapu_catatan_' + data.nim).removeClass('text-danger').addClass('text-success');
+                            $('#checkbox_is_terlihat_pada_layar_' + data.nim).iCheck('uncheck');
+                            $('#checkbox_is_perjokian_' + data.nim).iCheck('uncheck');
+                            $('#checkbox_is_sering_buka_page_lain_' + data.nim).iCheck('uncheck');
+                            trigger_by_user = true;
                         }
                     }
                 } else if (data.cmd == 'DO_ABSENSI_BATAL') {
@@ -342,6 +348,12 @@ body {
                         
                         if (data.user_id != '{{ get_logged_user()->id }}') {
                             $('#badge_absensi_' + data.nim).text('BELUM').removeClass('success').removeClass('border-success').addClass('border-danger').addClass('danger');
+                            trigger_by_user = false;
+                            $('#bapu_catatan_' + data.nim).removeClass('text-danger').addClass('text-success');
+                            $('#checkbox_is_terlihat_pada_layar_' + data.nim).iCheck('uncheck');
+                            $('#checkbox_is_perjokian_' + data.nim).iCheck('uncheck');
+                            $('#checkbox_is_sering_buka_page_lain_' + data.nim).iCheck('uncheck');
+                            trigger_by_user = true;
                         }
                     }
                 } else if (data.cmd == 'DO_BAPU') {
@@ -362,6 +374,11 @@ body {
                                 $('#checkbox_is_sering_buka_page_lain_' + data.nim).iCheck('check');
                             else
                                 $('#checkbox_is_sering_buka_page_lain_' + data.nim).iCheck('uncheck');
+
+                            if(data.bapu.catatan_pengawas)
+                                $('#bapu_catatan_' + data.nim).removeClass('text-success').addClass('text-danger');
+                            else
+                                $('#bapu_catatan_' + data.nim).removeClass('text-danger').addClass('text-success');
                         }
                         trigger_by_user = true ;
                     }
@@ -421,6 +438,12 @@ body {
         $.post('{{ url('ujian/ajax/absen_pengawas') }}', {'mahasiswa_ujian_id' : mahasiswa_ujian_id, 'nim' : nim}, function (res){
             if(res.ok) {
                 $('#badge_absensi_' + nim).text('SUDAH').removeClass('danger').removeClass('border-danger').addClass('border-success').addClass('success');
+                trigger_by_user = false;
+                $('#bapu_catatan_' + nim).removeClass('text-danger').addClass('text-success');
+                $('#checkbox_is_terlihat_pada_layar_' + nim).iCheck('uncheck');
+                $('#checkbox_is_perjokian_' + nim).iCheck('uncheck');
+                $('#checkbox_is_sering_buka_page_lain_' + nim).iCheck('uncheck');
+                trigger_by_user = true;
                 sendmsg(JSON.stringify({
                     'mahasiswa_ujian_id': mahasiswa_ujian_id,
                     'user_id': '{{ get_logged_user()->id }}',
@@ -464,8 +487,8 @@ body {
                 $.post('{{ url('ujian/ajax/absen_pengawas') }}', {'mahasiswa_ujian_id' : mahasiswa_ujian_id, 'nim' : nim, 'aksi' : 'batal'}, function (res){
                     if(res.ok) {
                         $('#badge_absensi_' + nim).text('BELUM').removeClass('success').removeClass('border-success').addClass('border-danger').addClass('danger');
-                        $('#bapu_catatan_' + nim).removeClass('text-danger').addClass('text-success');
                         trigger_by_user = false;
+                        $('#bapu_catatan_' + nim).removeClass('text-danger').addClass('text-success');
                         $('#checkbox_is_terlihat_pada_layar_' + nim).iCheck('uncheck');
                         $('#checkbox_is_perjokian_' + nim).iCheck('uncheck');
                         $('#checkbox_is_sering_buka_page_lain_' + nim).iCheck('uncheck');
@@ -726,6 +749,7 @@ $(document).on('ifChanged','.checkbox_bapu',function(){
             'is_terlihat_pada_layar': $('#checkbox_is_terlihat_pada_layar_' + nim).is(':checked') ? 1 : 0,
             'is_perjokian': $('#checkbox_is_perjokian_' + nim).is(':checked') ? 1 : 0,
             'is_sering_buka_page_lain': $('#checkbox_is_sering_buka_page_lain_' + nim).is(':checked') ? 1 : 0,
+            'catatan_pengawas': $('#bapu_catatan_' + nim).hasClass('text-danger') ? 1 : 0,
         };
 
         ajx_overlay(true);
@@ -756,13 +780,70 @@ $(document).on('ifChanged','.checkbox_bapu',function(){
                 else
                     el.iCheck('check');
                 trigger_by_user = true;
-                
             }
         }).always(function() {
             ajx_overlay(false);
         });
     }
+});
 
+$(document).on('click','#btn_submit_catatan',function(){
+    if(trigger_by_user){
+        let mahasiswa_ujian_id = $(this).data('id');
+        let nim = $(this).data('nim');
+        let catatan_pengawas = $('#catatan_pengawas').val();
+
+        let bapu = {
+            'is_terlihat_pada_layar': $('#checkbox_is_terlihat_pada_layar_' + nim).is(':checked') ? 1 : 0,
+            'is_perjokian': $('#checkbox_is_perjokian_' + nim).is(':checked') ? 1 : 0,
+            'is_sering_buka_page_lain': $('#checkbox_is_sering_buka_page_lain_' + nim).is(':checked') ? 1 : 0,
+            'catatan_pengawas': catatan_pengawas.length ? 1 : 0,
+        };
+
+        ajx_overlay(true);
+        $.post('{{ url('ujian/ajax/set_catatan_pengawas') }}',{'mahasiswa_ujian_id': mahasiswa_ujian_id, 'catatan_pengawas': catatan_pengawas}, function(res){
+            if(res.ok){
+
+                sendmsg(JSON.stringify({
+                    'mahasiswa_ujian_id': mahasiswa_ujian_id,
+                    'user_id': '{{ get_logged_user()->id }}',
+                    'as': '{{ get_selected_role()->name }}',
+                    'nim': nim,
+                    'cmd': 'DO_BAPU',
+                    'bapu': bapu,
+                    'app_id': '{{ APP_ID }}',
+                }));
+
+                Swal.fire({
+                    title: "Perhatian",
+                    text: "Catatan berhasil disimpan",
+                    icon: "success"
+                });
+
+                trigger_by_user = false;
+                if(catatan_pengawas.length)
+                    $('#bapu_catatan_' + nim).removeClass('text-success').addClass('text-danger');
+                else
+                    $('#bapu_catatan_' + nim).removeClass('text-danger').addClass('text-success');
+                trigger_by_user = true;
+                $('#modal_catatan_peserta').modal('hide');
+            }else{
+                Swal.fire({
+                    title: "Terjadi Kesalahan",
+                    text: res.msg,
+                    icon: "warning"
+                });
+            }
+        }).fail(function() {
+            Swal.fire({
+                title: "Perhatian",
+                text: "Terjadi kesalahan",
+                icon: "warning"
+            });
+        }).always(function() {
+            ajx_overlay(false);
+        });
+    }
 });
 
 $(document).on('click','.div_catatan',function(){
@@ -779,41 +860,6 @@ $(document).on('click','.div_catatan',function(){
         Swal.fire({
             title: "Perhatian",
             text: "Terjadi kesalahan / Belum diabsenkan",
-            icon: "warning"
-        });
-    }).always(function() {
-        ajx_overlay(false);
-    });
-});
-
-$(document).on('click','#btn_submit_catatan',function(){
-    ajx_overlay(true);
-    let mahasiswa_ujian_id = $(this).data('id');
-    let nim = $(this).data('nim');
-    let catatan_pengawas = $('#catatan_pengawas').val();
-    $.post('{{ url('ujian/ajax/set_catatan_pengawas') }}',{'mahasiswa_ujian_id': mahasiswa_ujian_id, 'catatan_pengawas': catatan_pengawas}, function(res){
-        if(res.ok){
-            Swal.fire({
-                title: "Perhatian",
-                text: "Catatan berhasil disimpan",
-                icon: "success"
-            });
-            if(catatan_pengawas.length)
-                $('#bapu_catatan_' + nim).removeClass('text-success').addClass('text-danger');
-            else
-                $('#bapu_catatan_' + nim).removeClass('text-danger').addClass('text-success');
-            $('#modal_catatan_peserta').modal('hide');
-        }else{
-            Swal.fire({
-                title: "Terjadi Kesalahan",
-                text: res.msg,
-                icon: "warning"
-            });
-        }
-    }).fail(function() {
-        Swal.fire({
-            title: "Perhatian",
-            text: "Terjadi kesalahan",
             icon: "warning"
         });
     }).always(function() {

@@ -42,7 +42,7 @@ class Socket
 				$loop
 			);
 
-			$wsServer->enableKeepAlive($server->loop, 30);
+			$wsServer->enableKeepAlive($server->loop, 10);
 
 			// $loop->run();
 			$server->run();
@@ -57,7 +57,7 @@ class Socket
 				$port
 			);
 			
-			$wsServer->enableKeepAlive($server->loop, 30);
+			$wsServer->enableKeepAlive($server->loop, 10);
 			
 			$server->run();
 		}

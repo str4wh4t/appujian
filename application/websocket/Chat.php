@@ -5,9 +5,11 @@ use Ratchet\MessageComponentInterface;
 use Ratchet\ConnectionInterface;
 
 class Chat implements MessageComponentInterface {
+
     protected $clients;
     protected $data_clients_mhs;
     protected $data_clients_mhs_ips;
+	protected $mhs_online_counter;
 
     public function __construct() {
         // $this->clients = new \SplObjectStorage;
@@ -16,6 +18,7 @@ class Chat implements MessageComponentInterface {
 		$this->admins = [];
 		$this->data_clients_mhs = [];
         $this->data_clients_mhs_ips = [];
+		$this->mhs_online_counter = 0;
         
     }
 
@@ -52,16 +55,19 @@ class Chat implements MessageComponentInterface {
 		if(!isset($this->data_clients_mhs_ips[$req->app_id]))
 			$this->data_clients_mhs_ips = [$req->app_id => []];
 
-	    if($req->cmd == 'OPEN'){
-		    if($req->as == 'pengawas') {
+	    if($req->cmd == 'OPEN'){ // INI SEPERTI MHS_ONLINE DI MHS TP UNTUK USER SELAIN MHS
+		    if(($req->as == 'admin') || ($req->as == 'pengawas') || ($req->as == 'kood_pengawas') || ($req->as == 'dosen')) {
 
 				if(!isset($this->admins[$from->resourceId]))
 					$this->admins[] = $from->resourceId;
 
 			    $res = [
 				    'cmd'             => $req->cmd,
-				    'mhs_online' => $this->data_clients_mhs[$req->app_id],
-				    'mhs_online_ips' => $this->data_clients_mhs_ips[$req->app_id],
+				    // 'mhs_online' => $this->data_clients_mhs[$req->app_id],
+				    // 'mhs_online_ips' => $this->data_clients_mhs_ips[$req->app_id],
+					'mhs_online' => [],
+				    'mhs_online_ips' => [],
+					'mhs_online_counter' => $this->mhs_online_counter,
 				    'absensi'         => $absensi,
 				    'absensi_by_self' => $absensi_by_self,
 				    'user_id'     => $req->user_id,
@@ -74,30 +80,25 @@ class Chat implements MessageComponentInterface {
 				
 				$msg = json_encode($res);
 				$this->_msg_to_admin($msg);
+			}
+		    // }else if($req->as == 'admin') {
 
-		    }else if($req->as == 'admin') {
+			// 	if(!isset($this->admins[$from->resourceId]))
+			// 		$this->admins[] = $from->resourceId;
 
-				if(!isset($this->admins[$from->resourceId]))
-					$this->admins[] = $from->resourceId;
-
-		    	$res = [
-				    'cmd'             => $req->cmd,
-				    'mhs_online' => $this->data_clients_mhs[$req->app_id],
-				    'mhs_online_ips' => $this->data_clients_mhs_ips[$req->app_id],
-				    'absensi'         => $absensi,
-				    'absensi_by_self' => [],
-				    'user_id'     => $req->user_id,
-				    'app_id'      => $req->app_id,
-			    ];
-			    
-			    // foreach ($this->clients as $conn_id => $conn) {
-				//     $conn->send(json_encode($res));
-			    // }
+		    // 	$res = [
+			// 	    'cmd'             => $req->cmd,
+			// 	    'mhs_online' => $this->data_clients_mhs[$req->app_id],
+			// 	    'mhs_online_ips' => $this->data_clients_mhs_ips[$req->app_id],
+			// 	    'absensi'         => $absensi,
+			// 	    'absensi_by_self' => [],
+			// 	    'user_id'     => $req->user_id,
+			// 	    'app_id'      => $req->app_id,
+			//     ];
 				
-				$msg = json_encode($res);
-				$this->_msg_to_admin($msg);
-
-		    }
+			// 	$msg = json_encode($res);
+			// 	$this->_msg_to_admin($msg);
+		    // }
 	    }elseif($req->cmd == 'DO_ABSENSI'){
 		    if($req->as == 'pengawas') {
 
@@ -109,14 +110,9 @@ class Chat implements MessageComponentInterface {
 				    'ok'      => $ok,
 				    'app_id'  => $req->app_id,
 			    ];
-
-			    // foreach ($this->clients as $conn_id => $conn) {
-				//     $conn->send(json_encode($res));
-			    // }
 				
 				$msg = json_encode($res);
 				$this->_msg_to_admin($msg);
-
 		    }
 	    }elseif($req->cmd == 'DO_ABSENSI_BATAL'){
 	    	if($req->as == 'pengawas') {
@@ -129,14 +125,9 @@ class Chat implements MessageComponentInterface {
 				    'ok'      => $ok,
 				    'app_id'  => $req->app_id,
 			    ];
-
-			    // foreach ($this->clients as $conn_id => $conn) {
-				//     $conn->send(json_encode($res));
-			    // }
 				
 				$msg = json_encode($res);
 				$this->_msg_to_admin($msg);
-
 		    }
 	    }elseif($req->cmd == 'DO_BAPU'){
 		    if($req->as == 'pengawas') {
@@ -150,18 +141,16 @@ class Chat implements MessageComponentInterface {
 				    'ok'      => $ok,
 				    'app_id'  => $req->app_id,
 			    ];
-
-			    // foreach ($this->clients as $conn_id => $conn) {
-				//     $conn->send(json_encode($res));
-			    // }
 				
 				$msg = json_encode($res);
 				$this->_msg_to_admin($msg);
-
 		    }
 	    }elseif($req->cmd == 'MHS_ONLINE'){
             $this->data_clients_mhs[$req->app_id][$req->nim] = $from->resourceId;
             $this->data_clients_mhs_ips[$req->app_id][$req->nim] = $req->ip;
+
+			$this->mhs_online_counter++;
+
 //            $users = Users_orm::where('username', $req->nim)->first();
             $ok = true ;
 //	        if(!empty($users)){
@@ -175,11 +164,8 @@ class Chat implements MessageComponentInterface {
 		        'identifier'  => $req->identifier,
 			    'ok'          => $ok,
 		        'app_id'      => $req->app_id,
+				'mhs_online_counter' => $this->mhs_online_counter,
 		    ];
-
-	        // foreach ($this->clients as $conn_id => $conn) {
-			//     $conn->send(json_encode($res));
-		    // }
 
 			$msg = json_encode($res);
 
@@ -215,7 +201,7 @@ class Chat implements MessageComponentInterface {
 			$this->_msg_to_admin($msg);
 
 	    }elseif($req->cmd == 'DO_KICK'){
-			if(($req->as == 'pengawas') || $req->as == 'admin'){
+			if(($req->as == 'admin') || ($req->as == 'pengawas') || ($req->as == 'koord_pengawas') || ($req->as == 'dosen')){
 				$res = [
 					'cmd'         => $req->cmd,
 					'nim'         => $req->nim,
@@ -231,7 +217,6 @@ class Chat implements MessageComponentInterface {
 				
 				$this->_msg_to_all($msg);
 				// $this->_msg_to_admin($msg);
-
 			}
 	    }elseif($req->cmd == 'MHS_START_UJIAN'){
 		    $res = [
@@ -266,6 +251,7 @@ class Chat implements MessageComponentInterface {
 			    'cmd'             => $req->cmd,
 			    'nim'             => $req->nim,
 			    'app_id'      => $req->app_id,
+				'mhs_online_counter' => $this->mhs_online_counter,
 			    'ip'             => $req->ip,
 //			    'latency'     => round((round(microtime(true), 3) * 1000 - intval($req->mctime)) / 1000),
 			    'latency' => $req->latency,
@@ -316,9 +302,14 @@ class Chat implements MessageComponentInterface {
 		        	if(isset($this->data_clients_mhs[$app_id][$nim])) {
 				        unset($this->data_clients_mhs[$app_id][$nim]);
 				        unset($this->data_clients_mhs_ips[$app_id][$nim]);
+
+						$this->mhs_online_counter--;
+
 				        $msg = [
 					        'cmd' => 'MHS_OFFLINE',
 					        'nim' => $nim,
+							'mhs_online_counter' => $this->mhs_online_counter,
+							'app_id'      => $app_id,
 				        ];
 				        // foreach ($this->clients as $conn_id => $conn) {
 					    //     $conn->send(json_encode($msg));

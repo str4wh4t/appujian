@@ -63,7 +63,7 @@ body {
     let table ;
     // let list_online = [];
     let list_mhs_online = [];
-    let list_mhs_online_ips = {};
+    let list_mhs_online_ips = {}; // KARENA ARRAY DI JS TIDAK BISA DI ISI KEY NYA SCR TEXT JD PAKAI OBJECT
     let list_absensi = [];
     let list_absensi_by_self = [];
     let jml_daftar_hadir = {{ $jml_daftar_hadir }};
@@ -77,6 +77,8 @@ body {
 
         $('#jml_mhs_absen').text(jml_daftar_hadir);
         $('#jml_mhs_absen_by_self').text(jml_daftar_hadir_by_pengawas);
+
+        $('#counter_mhs_online').text(0);
 
         $('.icheck').iCheck({
             checkboxClass: 'icheckbox_square-red',
@@ -284,20 +286,24 @@ body {
                     //     $('#jml_mhs_absen_by_self').text(list_absensi_by_self.length); 
                     // } 
 
-                    $.each(data.mhs_online, function (index, code) {
-                        let nim = index;
-                        push_mhs_online(nim);
-                        $('#badge_koneksi_' + nim).text('ONLINE').removeClass('bg-danger').removeClass('bg-warning').addClass('bg-success');
-                        // push_mhs_online_ips(nim, data.mhs_online_ips[nim]);
-                        // $('#badge_ip_' + nim).text(data.mhs_online_ips[nim]).show();
-                    });
-                    $('#jml_mhs_online').text(list_mhs_online.length);
+                    // $.each(data.mhs_online, function (index, code) {
+                    //     let nim = index;
+                    //     push_mhs_online(nim);
+                    //     $('#badge_koneksi_' + nim).text('ONLINE').removeClass('bg-danger').removeClass('bg-warning').addClass('bg-success');
+                    //     // push_mhs_online_ips(nim, data.mhs_online_ips[nim]);
+                    //     // $('#badge_ip_' + nim).text(data.mhs_online_ips[nim]).show();
+                    // });
+                    // $('#jml_mhs_online').text(list_mhs_online.length);
+
+                    $('#counter_mhs_online').text(data.mhs_online_counter);
                     // console.log('list_mhs_online', list_mhs_online);
                 } else if (data.cmd == 'MHS_ONLINE') {
-                    push_mhs_online(data.nim);
+                    // push_mhs_online(data.nim);
                     $('#badge_koneksi_' + data.nim).text('ONLINE').removeClass('bg-danger').removeClass('bg-warning').addClass('bg-success');
                     // $('#badge_ip_' + data.nim).text(data.ip).show();
-                    $('#jml_mhs_online').text(list_mhs_online.length);
+                    // $('#jml_mhs_online').text(list_mhs_online.length);
+
+                    $('#counter_mhs_online').text(data.mhs_online_counter);
                 } else if (data.cmd == 'MHS_LOST_FOCUS') {
                     $('#badge_focus_' + data.nim).show();
                 } else if (data.cmd == 'MHS_GET_FOCUS') {
@@ -390,14 +396,21 @@ body {
                         $('#badge_latency_' + data.nim).removeClass('bg-success').addClass('bg-danger');
                     else
                         $('#badge_latency_' + data.nim).removeClass('bg-danger').addClass('bg-success');
+
+                    $('#counter_mhs_online').text(data.mhs_online_counter);
+
+                } else if (data.cmd == 'MHS_OFFLINE') {
+                    // pop_mhs_online(data.nim);
+                    $('#badge_koneksi_' + data.nim).text('OFFLINE').removeClass('bg-success').removeClass('bg-warning').addClass('bg-danger');
+                    // $('#badge_ip_' + data.nim).hide();
+                    $('#badge_latency_' + data.nim).text('0ms').removeClass('bg-success').removeClass('bg-danger').addClass('bg-grey');
+                    // $('#jml_mhs_online').text(list_mhs_online.length);
+
+                    $('#counter_mhs_online').text(data.mhs_online_counter);
                 }
-            }else if (data.cmd == 'MHS_OFFLINE') {
-                pop_mhs_online(data.nim);
-                $('#badge_koneksi_' + data.nim).text('OFFLINE').removeClass('bg-success').removeClass('bg-warning').addClass('bg-danger');
-                // $('#badge_ip_' + data.nim).hide();
-                $('#badge_latency_' + data.nim).text('0ms').removeClass('bg-success').removeClass('bg-danger').addClass('bg-grey');
-                $('#jml_mhs_online').text(list_mhs_online.length);
             }
+
+            
         };
 
         conn.onclose = function(e) {
@@ -891,8 +904,12 @@ $(document).on('click','.div_catatan',function(){
                 <a href="{{ site_url('ujian/master') }}" class="btn btn-warning btn-flat"><i class="fa fa-arrow-left"></i> Kembali</a>
 {{--                <button type="button" onclick="reload_ajax()" class="btn btn-outline-secondary btn-glow"><i class="fa fa-refresh"></i> Reload</button>--}}
 
-                <button type="button" class="btn btn-outline-success btn-glow">
+                {{-- <button type="button" class="btn btn-outline-success btn-glow">
                     JUMLAH MHS ONLINE : <span id="jml_mhs_online">0</span>
+                </button> --}}
+
+                <button type="button" id="btn_mhs_online" class="btn btn-outline-success btn-glow">
+                    JUMLAH MHS ONLINE : <span id="counter_mhs_online">0</span>
                 </button>
 
                 @if(in_group(PENGAWAS_GROUP_ID))

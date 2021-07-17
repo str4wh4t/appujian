@@ -297,7 +297,7 @@ class HasilUjian extends MY_Controller {
 				'nilai' => $hasil->nilai,
 				'nilai_bobot_benar' => $hasil->nilai_bobot_benar,
 				'detail_bobot_benar' => $return,
-				'absensi' => empty($hasil->absen_by) ? 'BELUM' : 'SUDAH',
+				'absensi' => empty($hasil->absen_by_username) ? 'BELUM' : 'SUDAH',
 				'absensi_oleh' => empty($hasil->absen_by_username) ? '-' : "'". $hasil->absen_by_username,
 				'is_terlihat_pada_layar' => empty($hasil->is_terlihat_pada_layar) ? '-' : ($hasil->is_terlihat_pada_layar ? 'YA' : '-'),
 				'is_perjokian' => empty($hasil->is_perjokian) ? '-' : ($hasil->is_perjokian ? 'YA' : '-'),

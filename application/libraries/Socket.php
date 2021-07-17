@@ -68,10 +68,12 @@ class Socket
 		if(is_enable_socket()){
 			Client\connect(ws_url())->then(function($conn) use ($msg){
 				$conn->on('message', function($msg) use ($conn) {
+					// THIS FUNCTION WORK WHEN RECIEVE MSG
 					// echo "Received: {$msg}\n";
-					$conn->close(); // <== KONEKSI DI CLOSE SETELAH KIRIM PESAN
+					// $conn->close(); 
 				});
 				$conn->send($msg);
+				$conn->close(); // <== KONEKSI DI CLOSE SETELAH KIRIM PESAN
 			}, function ($e) {
 				echo "Could not connect: {$e->getMessage()}\n";
 			});

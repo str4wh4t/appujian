@@ -407,6 +407,10 @@ body {
                     // $('#jml_mhs_online').text(list_mhs_online.length);
 
                     $('#counter_mhs_online').text(data.mhs_online_counter);
+                    
+                }else if (data.cmd == 'DO_KICK') {
+                    $('#badge_status_' + data.nim).text('SUDAH UJIAN').removeClass('bg-secondary').removeClass('bg-danger').addClass('bg-success');
+                    $('#badge_focus_' + data.nim).hide();
                 }
             }
 

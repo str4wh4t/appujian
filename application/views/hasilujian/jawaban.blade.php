@@ -351,16 +351,22 @@ $(document).on('click','.btn_submit_nilai_essay',function(){
 													@else
 													Anda Tidak Menjawab
 													@endif
-													{!! ($jawaban_ujian->jawaban == $jawaban_ujian->soal->jawaban) ?
-													$badge_benar : $badge_salah !!}
-													{!! ($jawaban_ujian->status_jawaban == 'Y') ?
-														$badge_ragu : '' !!}
+													{!! ($jawaban_ujian->jawaban == $jawaban_ujian->soal->jawaban) ? $badge_benar : $badge_salah !!}
+													{!! ($jawaban_ujian->status_jawaban == 'Y') ? $badge_ragu : '' !!}
 												</h4>
 												
 
 											@elseif($jawaban_ujian->soal->tipe_soal == TIPE_SOAL_ESSAY)
 
-												<h4 class="card-title">Anda Menjawab : {!! ($jawaban_ujian->status_jawaban == 'Y') ? $badge_ragu : '' !!}</h4>
+												<h4 class="card-title">
+													@if (!empty($jawaban_ujian->jawaban_essay))
+													Anda Menjawab : 
+													@else
+													Anda Tidak Menjawab
+													@endif
+													{!! empty($jawaban_ujian->jawaban_essay) ? $badge_salah : '' !!}
+													{!! ($jawaban_ujian->status_jawaban == 'Y') ? $badge_ragu : '' !!}
+												</h4>
 												<div class="pb-2">
 												{!! html_entity_decode($jawaban_ujian->jawaban_essay, ENT_QUOTES, 'UTF-8') !!}
 												</div>

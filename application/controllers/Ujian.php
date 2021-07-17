@@ -2598,8 +2598,10 @@ class Ujian extends MY_Controller
 					$jumlah_salah++;
 				}
 			}elseif($jwb->soal->tipe_soal == TIPE_SOAL_ESSAY){
-				// DI ESSAY SEMUA NILAI DIANGGAP BENAR
-				$jumlah_benar++;
+				if(!empty($jwb->jawaban_essay))
+					$jumlah_benar++;
+				else
+					$jumlah_salah++;
 			}
 		}
 

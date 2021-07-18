@@ -191,7 +191,7 @@ user-select: initial;
 
 #panel_user{
     /* max-height: 750px; OVERIDED LATER */
-    overflow-y: scroll;
+    /* overflow-y: scroll; */
 }
 
 #lembar_ujian{

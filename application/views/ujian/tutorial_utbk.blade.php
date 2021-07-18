@@ -198,7 +198,7 @@ legend {
 
 #panel_user{
     /* max-height: 750px; OVERIDED LATER */
-    overflow-y: scroll;
+    /* overflow-y: scroll; */
 }
 
 #lembar_ujian{
@@ -888,7 +888,7 @@ $('#lembar_ujian').on('scroll', function() {
                                         <div class="step step_pertanyaan" id="widget_2">
                                             <div class="pertanyaan">
                                                 <div class="media-pertanyaan"></div>
-                                                <p>Provinsi di pulau sumatera adalah<br></p>
+                                                <p>Salah satu provinsi di pulau sumatera adalah<br></p>
                                             </div>
                                         </div>
                                         <div class="step step_pertanyaan" id="widget_3">
@@ -935,7 +935,7 @@ $('#lembar_ujian').on('scroll', function() {
                                                     <label for="opsi_c_120" class="label_pilihan">
                                                         <div class="huruf_opsi">c</div>
                                                         <div>
-                                                            <p>Ganjar Pranowo<br></p>
+                                                            <p>Sukristiyono<br></p>
                                                         </div>
                                                         <div class="w-25"></div>
                                                     </label></div>

@@ -882,7 +882,7 @@ $('#lembar_ujian').on('scroll', function() {
                                         <div class="step step_pertanyaan" id="widget_1">
                                             <div class="pertanyaan">
                                                 <div class="media-pertanyaan"></div>
-                                                <p>Yang bukan presiden Indonesia adalah<br></p>
+                                                <p>Dibawah ini yang bukan merupakan jenderal berpangkat bintang lima adalah<br></p>
                                             </div>
                                         </div>
                                         <div class="step step_pertanyaan" id="widget_2">
@@ -917,7 +917,7 @@ $('#lembar_ujian').on('scroll', function() {
                                                     <label for="opsi_a_120" class="label_pilihan">
                                                         <div class="huruf_opsi">a</div>
                                                         <div>
-                                                            <p>Mega Wati<br></p>
+                                                            <p>Jenderal Besar Soedirman<br></p>
                                                         </div>
                                                         <div class="w-25"></div>
                                                     </label></div>
@@ -926,7 +926,7 @@ $('#lembar_ujian').on('scroll', function() {
                                                     <label for="opsi_b_120" class="label_pilihan">
                                                         <div class="huruf_opsi">b</div>
                                                         <div>
-                                                            <p>Joko Widodo<br></p>
+                                                            <p>Jenderal Besar Soeharto<br></p>
                                                         </div>
                                                         <div class="w-25"></div>
                                                     </label></div>
@@ -944,7 +944,7 @@ $('#lembar_ujian').on('scroll', function() {
                                                     <label for="opsi_d_120" class="label_pilihan">
                                                         <div class="huruf_opsi">d</div>
                                                         <div>
-                                                            <p>Soeharto<br></p>
+                                                            <p>Douglas MacArthur<br></p>
                                                         </div>
                                                         <div class="w-25"></div>
                                                     </label></div>
@@ -953,7 +953,7 @@ $('#lembar_ujian').on('scroll', function() {
                                                     <label for="opsi_e_120" class="label_pilihan">
                                                         <div class="huruf_opsi">e</div>
                                                         <div>
-                                                            <p>Soekarno<br></p>
+                                                            <p>Jenderal Besar A.H Nasution<br></p>
                                                         </div>
                                                         <div class="w-25"></div>
                                                     </label></div>

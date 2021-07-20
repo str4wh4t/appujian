@@ -1210,12 +1210,21 @@ $(document).on('click','#btn_refine_peserta', function(){
                      <small class="help-block"></small>
                      <div class="alert border-danger text-center text-danger"><i class="icon-info"></i> Total peserta dipilih : <b><span id="span_total_peserta">0</span></b></div>
                 </div>
+                @if(APP_TYPE == 'ujian')
                 <div class="form-group text-center" id="panel_submit_ujian" style="display: none">
                     <a href="{{ site_url('ujian/master') }}" class="btn btn-flat btn-warning">
                         <i class="fa fa-arrow-left"></i> Kembali
                     </a>
                     <button id="submit" type="button" class="btn btn-flat btn-primary"><i class="fa fa-save"></i> Simpan</button>
                 </div>
+                @else
+                <div class="form-group text-center" id="panel_submit_ujian">
+                    <a href="{{ site_url('ujian/master') }}" class="btn btn-flat btn-warning">
+                        <i class="fa fa-arrow-left"></i> Kembali
+                    </a>
+                    <button id="submit" type="button" class="btn btn-flat btn-primary"><i class="fa fa-save"></i> Simpan</button>
+                </div> 
+                @endif
                 <?=form_close()?>
             </div>
         </div>

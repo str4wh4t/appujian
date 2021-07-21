@@ -149,14 +149,6 @@ EOD;
 // output the HTML content
 $pdf->writeHTML($html, true, 0, true, 0);
 
-$foto = 'assets/imgs/no_profile_120_150.jpg'; 
-if(!empty($mhs->foto)){
-    $foto = str_replace(url("/"), "", $mhs->foto); // MENGHILANGKAN PATH APLIKASI JIKA ADA
-}
-
-$image_foto = FCPATH . $foto;
-$pdf->Image($image_foto, 80, 120, 40, '', 'JPG', '', 'T', false, 300, '', false, false, 0, false, false, false);
-
 $style = array(
     'border' => 1,
     'vpadding' => 2,
@@ -166,7 +158,17 @@ $style = array(
     'module_width' => 1, // width of a single module in points
     'module_height' => 1 // height of a single module in points
 );
-$pdf->write2DBarcode($link, 'QRCODE,Q', 175, 127, 40, 40, $style, 'N');
+
+// $foto = 'assets/imgs/no_profile_120_150.jpg'; 
+if(!empty($mhs->foto)){
+    $foto = str_replace(url("/"), "", $mhs->foto); // MENGHILANGKAN PATH APLIKASI JIKA ADA
+    $image_foto = FCPATH . $foto;
+    $pdf->Image($image_foto, 80, 120, 40, '', 'JPG', '', 'T', false, 300, '', false, false, 0, false, false, false);
+    $pdf->write2DBarcode($link, 'QRCODE,Q', 175, 127, 40, 40, $style, 'N');
+}else{
+    $pdf->write2DBarcode($link, 'QRCODE,Q', 130, 127, 40, 40, $style, 'N');
+}
+
 
 // reset pointer to the last page
 $pdf->lastPage();

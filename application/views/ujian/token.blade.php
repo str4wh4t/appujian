@@ -252,7 +252,7 @@ function go_ujian(token){
                             </ul>
                             <li>Peserta hanya mengerjakan soal berdasarkan <b>waktu dan alokasi waktu </b>yang ditetapkan pada aplikasi ujian</li>
                             <li>Peserta wajib memiliki koneksi jaringan internet yang baik (disarankan menggunakan jaringan kabel). Apabila ada permasalahan 
-                                putusnya jaringan peserta, bukan tanggung jawab dari {{ strtoupper(APP_AUTHOR) }}. 
+                                putusnya jaringan peserta, bukan tanggung jawab dari {{ strtoupper(get_app_author()) }}. 
                                 <b>Tidak ada pengulangan atau tambahan waktu bagi peserta yang menemui kendala ini</b></li>
                         </ol>
                     </p>
@@ -452,7 +452,7 @@ function go_ujian(token){
             </div>
             <div class="modal-body">
                 <h5 style="text-align: center; border: 1px solid #333; padding: 5px; font-weight: bold;">
-                    TATA TERTIB BAGI PESERTA UJIAN <br>{{ strtoupper(APP_AUTHOR) }}</h5>
+                    TATA TERTIB BAGI PESERTA UJIAN <br>{{ strtoupper(get_app_author()) }}</h5>
                 <p>
 
 
@@ -471,13 +471,13 @@ function go_ujian(token){
                             </ul>
                             <li>Peserta hanya mengerjakan soal berdasarkan <b>waktu dan alokasi waktu </b>yang ditetapkan pada aplikasi ujian</li>
                             <li>Peserta wajib memiliki koneksi jaringan internet yang baik (disarankan menggunakan jaringan kabel). Apabila ada permasalahan 
-                                putusnya jaringan peserta, bukan tanggung jawab dari {{ strtoupper(APP_AUTHOR) }}. 
+                                putusnya jaringan peserta, bukan tanggung jawab dari {{ strtoupper(get_app_author()) }}. 
                                 <b>Tidak ada pengulangan atau tambahan waktu bagi peserta yang menemui kendala ini</b></li>
                         </ol>
                 </p>
                 <div class="alert" id="div_setuju_tata_tertib" style="border: 1px solid #f00;background-color: #ffff9a;">
                     <fieldset>
-                    <input type="checkbox" class="inp" value="setuju" id="chk_setuju_tata_tertib"> <label for="chk_setuju_tata_tertib" style="display: inline">Saya menyetujui untuk mengikuti seleksi Ujian Mandiri ini sesuai ketentuan yang berlaku di {{ strtoupper(APP_AUTHOR) }}</label>
+                    <input type="checkbox" class="inp" value="setuju" id="chk_setuju_tata_tertib"> <label for="chk_setuju_tata_tertib" style="display: inline">Saya menyetujui untuk mengikuti seleksi Ujian Mandiri ini sesuai ketentuan yang berlaku di {{ strtoupper(get_app_author()) }}</label>
                     </fieldset>
                 </div>
             </div>

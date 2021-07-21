@@ -45,7 +45,12 @@ class Pub extends MY_Controller {
 			$nm_topik = strtoupper(Topik_orm::findOrFail($topik_id)->nama_topik);
 			$detail_ujian[$nm_topik] = $nilai ;
 		}
-//		vdebug($detail_ujian);
+		// vdebug($detail_ujian);
+
+		// $image_file = FCPATH . 'uploads/img_app/logo_undip.png';
+		// vdebug($image_file);
+
+		// vdebug(url("/"));
 
 		$data = [
 			'ujian' => $ujian,

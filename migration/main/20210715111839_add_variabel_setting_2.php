@@ -18,6 +18,24 @@ class AddVariabelSetting2 extends AbstractMigration
                 'nilai' => 'mypassword',
                 'flag' => '1',
                 'created_at' => date("Y-m-d H:i:s"),
+            ],
+            [
+                'variabel' => 'app_author',
+                'nilai' => '',
+                'flag' => '1',
+                'created_at' => date("Y-m-d H:i:s"),
+            ],
+            [
+                'variabel' => 'app_author_desc',
+                'nilai' => '',
+                'flag' => '1',
+                'created_at' => date("Y-m-d H:i:s"),
+            ],
+            [
+                'variabel' => 'app_logo_cert',
+                'nilai' => '',
+                'flag' => '1',
+                'created_at' => date("Y-m-d H:i:s"),
             ]
         ]);
     }
@@ -26,5 +44,8 @@ class AddVariabelSetting2 extends AbstractMigration
     {
         $this->delete('setting', ['variabel' => 'api_auth_username']);
         $this->delete('setting', ['variabel' => 'api_auth_password']);
+        $this->delete('setting', ['variabel' => 'app_author']);
+        $this->delete('setting', ['variabel' => 'app_author_desc']);
+        $this->delete('setting', ['variabel' => 'app_logo_cert']);
     }
 }

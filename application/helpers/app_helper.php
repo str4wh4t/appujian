@@ -56,3 +56,30 @@ function get_api_auth_password() {
     
     return $api_auth_password ;
 }
+
+function get_app_author() {
+    $ping_interval = 0;
+    $setting = Setting::where(['variabel' => 'app_author', 'flag' => '1'])->first();
+    if(!empty($setting))
+        $app_author = $setting->nilai;
+    
+    return $app_author ;
+}
+
+function get_app_author_desc() {
+    $ping_interval = 0;
+    $setting = Setting::where(['variabel' => 'app_author_desc', 'flag' => '1'])->first();
+    if(!empty($setting))
+        $app_author_desc = $setting->nilai;
+    
+    return $app_author_desc ;
+}
+
+function get_app_logo_cert() {
+    $ping_interval = 0;
+    $setting = Setting::where(['variabel' => 'app_logo_cert', 'flag' => '1'])->first();
+    if(!empty($setting))
+        $app_logo_cert = $setting->nilai;
+    
+    return $app_logo_cert ;
+}

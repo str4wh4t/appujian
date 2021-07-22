@@ -249,7 +249,7 @@ $(document).on('click','#btn_ulangi_ujian',function(){
                     <i class="ft-eye"></i> History Ujian
                 </a>
             @endif
-            
+
             @if($ujian->repeatable)
                 <?php 
                 $today = date('Y-m-d H:i:s');
@@ -272,7 +272,7 @@ $(document).on('click','#btn_ulangi_ujian',function(){
 
             @if(!empty($h_ujian))
             @if($ujian->masa_berlaku_sert > 0)
-            <a class="btn btn-info btn-lg" href="{{ url("pub/cetak_sertifikat/" . uuid_create_from_integer($mhs->nim) . "/" . uuid_create_from_integer($ujian->id_ujian)) }}">
+            <a class="btn btn-info btn-lg" href="{{ url("c/" . uuid_create_from_integer($mhs->nim) . "/" . uuid_create_from_integer($ujian->id_ujian)) }}">
                 <i class="fa fa-print"></i> Sertifikat
             </a>
             @endif

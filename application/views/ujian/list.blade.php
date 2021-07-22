@@ -296,7 +296,7 @@
                                                                             </a>
                                                                         @else
                                                                             @if ($mhs_ujian->m_ujian->masa_berlaku_sert > 0)
-                                                                            <a class="btn btn-info btn-sm" href="{{ url("pub/cetak_sertifikat/" . uuid_create_from_integer($mhs->nim) . "/" . uuid_create_from_integer($mhs_ujian->ujian_id)) }}">
+                                                                            <a class="btn btn-info btn-sm" href="{{ url("c/" . uuid_create_from_integer($mhs->nim) . "/" . uuid_create_from_integer($mhs_ujian->ujian_id)) }}">
                                                                                 <i class="fa fa-print"></i> Sertifikat
                                                                             </a>
                                                                             @else

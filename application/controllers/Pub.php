@@ -494,6 +494,9 @@ class Pub extends MY_Controller {
 
 	public function register_peserta_from_pendaftaran(){
 
+		// vdebug($_SERVER['HTTP_AUTHORIZATION']);
+		list($_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW']) = explode(':', base64_decode(substr($_SERVER['HTTP_AUTHORIZATION'], 6)));
+
 		if (!isset($_SERVER['PHP_AUTH_USER'])) {
 			header('WWW-Authenticate: Basic realm="My Realm"');
 			header('HTTP/1.0 401 Unauthorized');

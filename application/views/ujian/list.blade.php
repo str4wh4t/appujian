@@ -148,7 +148,7 @@
 {{--                            </div>--}}
                             <div class="col-md-6 col-sm-12">
                                 <div class="alert bg-info">
-                                    <span style="font-size: 24px"><i class="fa fa-calendar"></i> &nbsp;&nbsp;&nbsp;<?=strftime('%A, %d %B %Y')?></span>
+                                    <span style="font-size: 24px"><i class="fa fa-calendar"></i> &nbsp;&nbsp;&nbsp;<?=indo_date(strftime('%A, %d %B %Y'))?></span>
                                 </div>
                             </div>
                             <div class="col-md-6 col-sm-12">
@@ -270,7 +270,7 @@
                                                                 
                                                                 @if(empty($mhs_ujian->h_ujian))
                                                                     @if (($status_ujian == 'active')||($status_ujian == 'upcoming'))
-                                                                        <a class="btn btn-sm btn-success" href="{{ url('ujian/token/' . uuid_create_from_integer($mhs_ujian->m_ujian->id_ujian)) }}">
+                                                                        <a class="btn btn-sm btn-success" href="{{ url('ujian/token/' . uuid_create_from_integer($mhs_ujian->ujian_id)) }}">
                                                                             <i class="fa fa-pencil"></i> Masuk
                                                                         </a>
                                                                     @elseif ($status_ujian == 'expired')
@@ -291,24 +291,31 @@
                                                                 @else
                                                                     @if($mhs_ujian->h_ujian->ujian_selesai == 'Y')
                                                                         @if ($mhs_ujian->m_ujian->tampilkan_hasil)
-                                                                            <a class="btn btn-sm btn-primary" href="{{ url('hasilujian/detail/' . uuid_create_from_integer($mhs_ujian->m_ujian->id_ujian)) }}">
+                                                                            <a class="btn btn-sm btn-primary" href="{{ url('hasilujian/detail/' . uuid_create_from_integer($mhs_ujian->ujian_id)) }}">
                                                                                 <i class="fa fa-check-square"></i> Hasil Ujian
                                                                             </a>
                                                                         @else
+                                                                            @if ($mhs_ujian->m_ujian->masa_berlaku_sert > 0)
+                                                                            <a class="btn btn-info btn-sm" href="{{ url("pub/cetak_sertifikat/" . uuid_create_from_integer($mhs->nim) . "/" . uuid_create_from_integer($mhs_ujian->ujian_id)) }}">
+                                                                                <i class="fa fa-print"></i> Sertifikat
+                                                                            </a>
+                                                                            @else
                                                                             <button type="button" class="btn btn-sm btn-warning">
                                                                                 <i class="fa fa-exclamation-circle"></i> Sudah Ujian
                                                                             </button>
+                                                                                
+                                                                            @endif
                                                                         @endif
 
                                                                         @if($mhs_ujian->m_ujian->repeatable) 
                                                                             @if (($status_ujian == 'active')||($status_ujian == 'upcoming'))
-                                                                                <button class="btn btn-sm btn-outline-danger float-right btn_ulangi_ujian" data-hid="{{ uuid_create_from_integer($mhs_ujian->h_ujian->id) }}" data-mid="{{ uuid_create_from_integer($mhs_ujian->m_ujian->id_ujian) }}">
+                                                                                <button class="btn btn-sm btn-outline-danger float-right btn_ulangi_ujian" data-hid="{{ uuid_create_from_integer($mhs_ujian->h_ujian->id) }}" data-mid="{{ uuid_create_from_integer($mhs_ujian->ujian_id) }}">
                                                                                     <i class="fa fa-refresh"></i> Ulangi Ujian
                                                                                 </button>
                                                                             @endif
                                                                         @endif
                                                                     @else
-                                                                        <a class="btn btn-sm btn-success" href="{{ url('ujian/token/' . uuid_create_from_integer($mhs_ujian->m_ujian->id_ujian)) }}">
+                                                                        <a class="btn btn-sm btn-success" href="{{ url('ujian/token/' . uuid_create_from_integer($mhs_ujian->ujian_id)) }}">
                                                                             <i class="fa fa-pencil"></i> Masuk
                                                                         </a>
 

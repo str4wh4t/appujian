@@ -192,11 +192,13 @@ $(document).on('click','#btn_ulangi_ujian',function(){
             </tr>
             <tr>
                 <th>Jadwal Mulai Ujian</th>
-                <td><?=strftime('%A, %d %B %Y %H:%M:%S', strtotime($ujian->tgl_mulai))?></td>
+                <td>
+                    <?=indo_date(strftime('%A, %d %B %Y %H:%M:%S', strtotime($ujian->tgl_mulai)))?>
+                </td>
             </tr>
             <tr>
                 <th>Jadwal Selesai Ujian</th>
-                <td>{!! empty($ujian->terlambat) ? '&infin;' : strftime('%A, %d %B %Y %H:%M:%S', strtotime($ujian->terlambat)) !!}</td>
+                <td>{!! empty($ujian->terlambat) ? '&infin;' : indo_date(strftime('%A, %d %B %Y %H:%M:%S', strtotime($ujian->terlambat))) !!}</td>
             </tr>
         </table>
     </div>
@@ -235,29 +237,19 @@ $(document).on('click','#btn_ulangi_ujian',function(){
 {{--        <a class="btn btn-info btn_cetak_hasil" target="_blank" href="{{ url('pub/cetak_sertifikat/' . $user->username . '/' . uuid_create_from_integer($ujian->id_ujian)) }}" title="Cetak hasil"><i class="fa fa-print"></i> Cetak Sertifikat</a>--}}
 {{--    </div>--}}
 
-        <?php 
-        $set_view = false;
-        if($ujian->tampilkan_hasil || $ujian->repeatable){
-            $set_view = true;
-        }
-        ?>
-
-        @if($set_view)
         <div class="col-md-12 mt-2" style="text-align: center">
-
-            @if($ujian->tampilkan_hasil)
+            <?php 
+            $h_ujian_history = $ujian->h_ujian_history()->where('mahasiswa_id', $mhs->id_mahasiswa)->first();
+            ?>
+            @if(!empty($h_ujian) || !empty($h_ujian_history))
                 <?php 
-                $h_ujian_history = $ujian->h_ujian_history()->where('mahasiswa_id', $mhs->id_mahasiswa)->first();
+                $mhs_ujian = $mhs->mhs_ujian()->where(['mahasiswa_id' => $mhs->id_mahasiswa, 'ujian_id' => $ujian->id_ujian])->first();
                 ?>
-                @if(!empty($h_ujian) || !empty($h_ujian_history))
-                    <?php 
-                    $mhs_ujian = $mhs->mhs_ujian()->where(['mahasiswa_id' => $mhs->id_mahasiswa, 'ujian_id' => $ujian->id_ujian])->first();
-                    ?>
-                    <a class="btn btn-primary btn-lg" href="{{ url('hasilujian/history/' . uuid_create_from_integer($mhs_ujian->id)) }}" title="Lihat Jawaban">
-                        <i class="ft-eye"></i> History Ujian
-                    </a>
-                @endif
+                <a class="btn btn-primary btn-lg" href="{{ url('hasilujian/history/' . uuid_create_from_integer($mhs_ujian->id)) }}" title="Lihat Jawaban">
+                    <i class="ft-eye"></i> History Ujian
+                </a>
             @endif
+            
             @if($ujian->repeatable)
                 <?php 
                 $today = date('Y-m-d H:i:s');
@@ -277,8 +269,15 @@ $(document).on('click','#btn_ulangi_ujian',function(){
                     @endif
                 @endif
             @endif
+
+            @if(!empty($h_ujian))
+            @if($ujian->masa_berlaku_sert > 0)
+            <a class="btn btn-info btn-lg" href="{{ url("pub/cetak_sertifikat/" . uuid_create_from_integer($mhs->nim) . "/" . uuid_create_from_integer($ujian->id_ujian)) }}">
+                <i class="fa fa-print"></i> Sertifikat
+            </a>
+            @endif
+            @endif
         </div>
-        @endif
     @endif
 
     <div class="col-md-12 mt-2">

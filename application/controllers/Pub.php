@@ -30,14 +30,20 @@ class Pub extends MY_Controller {
 	}
 	
 	// 12020070007-d7d657c0-5db1-3bd0-90b8-a6a929ba9dd0
-	public function cetak_sertifikat($nim, $ujian_id_uuid)
+	public function cetak_sertifikat($nim_uuid, $ujian_id_uuid)
 	{
+		$nim = integer_read_from_uuid($nim_uuid);
 		$mhs = Mhs_orm::where('nim', $nim)->firstOrFail();
 		$ujian_id = integer_read_from_uuid($ujian_id_uuid);
 		$hasil = Hujian_orm::where(['mahasiswa_id' => $mhs->id_mahasiswa, 'ujian_id' => $ujian_id])->firstOrFail();
+		$ujian 	= $hasil->m_ujian;
+
+		if(empty($ujian->masa_berlaku_sert)){
+			show_404();
+		}
+
 		$mhs 	= $hasil->mhs;
 //		$hasil 	= $ujian;
-		$ujian 	= $hasil->m_ujian;
 		
 		$detail_bobot_benar = json_decode($hasil->detail_bobot_benar);
 		$detail_ujian = [];

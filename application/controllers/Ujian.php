@@ -3063,6 +3063,10 @@ class Ujian extends MY_Controller
 			show_404();
 		}
 
+		if(!$h_ujian->m_ujian->repeatable){ // JIKA TIDAK REPEATABLE
+			show_404();
+		}
+
 		if(APP_TYPE == 'tryout'){
 			$user = get_logged_user();
 			$mhs = Mhs_orm::where('nim', $user->username)->firstOrFail();
@@ -3148,14 +3152,6 @@ class Ujian extends MY_Controller
 			if (!$today->between($date_start, $date_end)) { // JIKA BUKAN MASA UJIAN
 				show_404(); 
 			}
-		}
-
-		if(!$h_ujian->m_ujian->repeatable){ // JIKA TIDAK REPEATABLE
-			show_404();
-		}
-
-		if(empty($h_ujian->jawaban_ujian->count())){ // JIKA BELUM PERNAH UJIAN SEBELUMNYA
-			show_404();
 		}
 
 		$ujian_ke = Hujian_history_orm::where('mahasiswa_ujian_id', $h_ujian->mahasiswa_ujian_id)->max('ujian_ke');

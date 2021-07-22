@@ -393,7 +393,7 @@ class Ujian_model extends CI_Model {
 	        	    $return = '<div class="btn-group">';
 	        	    $return .= '<button class="btn btn-sm btn-danger btn_reset_hasil" type="button" title="Reset ujian" data-id="'. $data['id'] .'"><i class="fa fa-times-circle"></i></button>';
                     if($data['masa_berlaku_sert'] > 0)
-                        $return .= '<a class="btn btn-sm btn-info btn_cetak_hasil" target="_blank" href="'. url('pub/cetak_sertifikat/' . $data['nim'] . '/' . uuid_create_from_integer($id)) .'" title="Cetak hasil"><i class="fa fa-print"></i></a>';
+                        $return .= '<a class="btn btn-sm btn-info btn_cetak_hasil" target="_blank" href="'. url('pub/cetak_sertifikat/' . uuid_create_from_integer($data['nim']) . '/' . uuid_create_from_integer($id)) .'" title="Cetak hasil"><i class="fa fa-print"></i></a>';
                     $mahasiswa_ujian_id = $data['mahasiswa_ujian_id'];
                     if(in_group('mahasiswa'))
                         $mahasiswa_ujian_id = uuid_create_from_integer($data['mahasiswa_ujian_id']);

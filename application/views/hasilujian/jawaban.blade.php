@@ -201,7 +201,7 @@ $(document).on('click','.btn_submit_nilai_essay',function(){
 								</tr>
 								<tr>
 									<th>Tgl Ujian</th>
-									<td>{{ strftime('%A, %d %B %Y', strtotime($h_ujian->tgl_mulai)) }}</td>
+									<td>{{ indo_date(strftime('%A, %d %B %Y', strtotime($h_ujian->tgl_mulai))) }}</td>
 								</tr>
 								<tr>
 									<th>Waktu Ujian</th>

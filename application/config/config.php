@@ -1,7 +1,7 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
-date_default_timezone_set('Asia/Jakarta');
-setlocale(LC_ALL, 'id_ID.utf8');
+// date_default_timezone_set('Asia/Jakarta');
+// setlocale(LC_ALL, 'id_ID.utf8');
 
 /*
 |--------------------------------------------------------------------------

@@ -348,14 +348,13 @@ function go_ujian(token){
                     <tr>
                         <th>Jadwal Mulai</th>
                         <td>
-                            <?=strftime('%d %B %Y', strtotime($ujian->tgl_mulai))?>
-                            <?=date('H:i:s', strtotime($ujian->tgl_mulai))?>
+                            {{ indo_date(strftime('%d %B %Y %H:%M:%S', strtotime($ujian->tgl_mulai))) }}
                         </td>
                     </tr>
                     <tr>
                         <th>Jadwal Selesai</th>
                         <td>
-                            {!! empty($ujian->terlambat) ? '&infin;' : strftime('%d %B %Y %H:%M:%S', strtotime($ujian->terlambat)) !!}
+                            {!! empty($ujian->terlambat) ? '&infin;' : indo_date(strftime('%d %B %Y %H:%M:%S', strtotime($ujian->terlambat))) !!}
                         </td>
                     </tr>
                     <tr>
@@ -387,15 +386,13 @@ function go_ujian(token){
                         <tr>
                             <th>Mulai Ujian</th>
                             <td>
-                                <?=strftime('%d %B %Y', strtotime($h_ujian->tgl_mulai))?>
-                                <?=date('H:i:s', strtotime($h_ujian->tgl_mulai))?>
+                                {{ indo_date(strftime('%d %B %Y %H:%M:%S', strtotime($h_ujian->tgl_mulai))) }}
                              </td>
                         </tr>
                         <tr>
                             <th>Selesai Ujian</th>
                             <td>
-                                <?=strftime('%d %B %Y', strtotime($h_ujian->tgl_selesai))?>
-                                <?=date('H:i:s', strtotime($h_ujian->tgl_selesai))?>
+                                {{ indo_date(strftime('%d %B %Y %H:%M:%S', strtotime($h_ujian->tgl_selesai))) }}
                              </td>
                         </tr>
                         <tr>

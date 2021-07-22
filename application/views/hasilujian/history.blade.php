@@ -137,7 +137,7 @@ use Illuminate\Database\Capsule\Manager as DB;
                                 </tr>
                                 <tr>
                                     <th>Tgl Awal Ujian</th>
-                                    <td>{{ strftime('%A, %d %B %Y %H:%M:%S', strtotime($m_ujian->tgl_mulai)) }}</td>
+                                    <td>{{ indo_date(strftime('%A, %d %B %Y %H:%M:%S', strtotime($m_ujian->tgl_mulai))) }}</td>
                                 </tr>
                             </table>
                         </div>
@@ -145,7 +145,7 @@ use Illuminate\Database\Capsule\Manager as DB;
                             <table class="table w-100">
                                 <tr>
                                     <th>Tgl Akhir Ujian</th>
-                                    <td>{!! empty($ujian->terlambat) ? '&infin;' : strftime('%A, %d %B %Y %H:%M:%S', strtotime($m_ujian->terlambat)) !!}</td>
+                                    <td>{!! empty($ujian->terlambat) ? '&infin;' : indo_date(strftime('%A, %d %B %Y %H:%M:%S', strtotime($m_ujian->terlambat))) !!}</td>
                                 </tr>
                                 <tr>
                                     <th>Topik</th>

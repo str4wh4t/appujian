@@ -81,11 +81,13 @@ $d = $mhs->tgl_lahir;
 $dt = DateTime::createFromFormat('Y-m-d', $d);
 //$tgl_lahir_format = $dt->format('d F Y');
 $tgl_lahir_format = strftime("%d %B %Y", $dt->getTimestamp());
+$tgl_lahir_format = indo_date($tgl_lahir_format);
 
 $d = $hasil->tgl_mulai;
 $dt = DateTime::createFromFormat('Y-m-d H:i:s', $d);
 // $tgl_ujian_format = $dt->format('l, d F Y');
 $tgl_ujian_format = strftime("%A, %d %B %Y", $dt->getTimestamp());
+$tgl_ujian_format = indo_date($tgl_ujian_format);
 
 $hasil_akhir = number_format($hasil['nilai_bobot_benar'],2,'.', '') ;
 
@@ -128,7 +130,7 @@ foreach ($detail_ujian as $topik => $nilai){
 	$txt_nilai .= '<td style="text-align: center; border:1px solid #000000;">' . $nilai . '</td>';
 }
 
-$link = url('c/' . $mhs->nim . '/' . uuid_create_from_integer($hasil->ujian_id) );
+$link = url('c/' . uuid_create_from_integer($mhs->nim) . '/' . uuid_create_from_integer($hasil->ujian_id) );
 
 $base_url = $_SERVER['HTTP_HOST'];
 

@@ -112,3 +112,58 @@ function show_logo_va_udid($va_bank_name){
 		return '<img style="width: 75px" src="'. asset('assets/imgs/logo_bni_245_125.png') .'" />';
 	}
 }
+
+/** DATE INDONESIA */
+function indo_date($str_date, $long_month = true){
+	if($long_month){
+		$bulan = [
+			'January' => 'Januari',
+			'February' => 'Februari',
+			'March' => 'Maret',
+			'April' => 'April',
+			'May' => 'Mei',
+			'June' => 'Juni',
+			'July' => 'Juli',
+			'August' => 'Agustus',
+			'September' => 'September',
+			'October' => 'Oktober',
+			'November' => 'November',
+			'December' => 'Desember'
+		];
+	}else{
+		$bulan = [
+			'Jan' => 'Jan',
+			'Feb' => 'Feb',
+			'Mar' => 'Mar',
+			'Apr' => 'Apr',
+			'May' => 'Mei',
+			'Jun' => 'Jun',
+			'Jul' => 'Jul',
+			'Aug' => 'Agu',
+			'Sep' => 'Sep',
+			'Oct' => 'Okt',
+			'Nov' => 'Nov',
+			'Dec' => 'Des'
+		];
+	}
+
+	foreach($bulan as $bulan_ing => $bulan_indo){
+		$str_date = str_replace($bulan_ing, $bulan_indo, $str_date);
+	}
+
+	$hari = [
+		'Monday' => 'Senin',
+		'Tuesday' => 'Selasa',
+		'Wednesday' => 'Rabu',
+		'Thursday' => 'Kamis',
+		'Friday' => 'Jumat',
+		'Saturday' => 'Sabtu',
+		'Sunday' => 'Minggu',
+	];
+
+	foreach($hari as $hari_ing => $hari_indo){
+		$str_date = str_replace($hari_ing, $hari_indo, $str_date);
+	}
+
+	return $str_date;
+}

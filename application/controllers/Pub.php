@@ -503,19 +503,23 @@ class Pub extends MY_Controller {
 			exit;
 		}
 
+		
 		$username = $_SERVER['PHP_AUTH_USER'];
 		$password = $_SERVER['PHP_AUTH_PW'];
-
+		
 		if(!($username == get_api_auth_username() && $password == get_api_auth_password())){
 			header('WWW-Authenticate: Basic realm="The Realm"');
 			header('HTTP/1.0 401 Unauthorized');
 			exit;
 		}
-
+		
 		$input = $this->input->post();
-
+		
 		try {
 			begin_db_trx();
+			
+			// $this->_json($input, true, 201);
+			// return;
 
 			if(empty($input))
 				throw new Exception('Data tidak valid');
@@ -540,12 +544,15 @@ class Pub extends MY_Controller {
 			$post['kelompok_ujian'] = null;
 			$post['tgl_ujian'] = null;
 
+
 			foreach($post as $key => $value){
 				if(!isset($input[$key]))
 					throw new Exception('Isian data tidak valid');
 					
 				$post[$key] = $input[$key];
 			}
+
+			
 
 			$mhs = new Mhs_orm;
 			$mhs->id_mahasiswa = $post['id_mahasiswa'];
@@ -594,7 +601,7 @@ class Pub extends MY_Controller {
 			commit_db_trx();
 		} catch (\Illuminate\Database\QueryException $e) {
 			rollback_db_trx();
-			show_error($e->getMessage(), 500, 'Perhatian');
+			$this->_json(['msg' => $e->getMessage()], true, 201);
 		}
 	}
 

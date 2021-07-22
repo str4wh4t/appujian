@@ -26,10 +26,10 @@ class MY_Controller extends CI_Controller {
 		}
 	}
 	
-	protected function _json($data, $encode = true)
+	protected function _json($data, $encode = true, $status_header = 200)
 	{
 		if ($encode) $data = json_encode($data);
-		$this->output->set_content_type('application/json')->set_output($data);
+		$this->output->set_content_type('application/json')->set_output($data)->set_status_header($status_header);
 	}
 	
 	protected function _akses_admin()

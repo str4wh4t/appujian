@@ -509,13 +509,40 @@ class Pub extends MY_Controller {
 			exit;
 		}
 
-		$post = $this->input->post();
+		$input = $this->input->post();
 
 		try {
 			begin_db_trx();
 
-			if(empty($post))
+			if(empty($input))
 				throw new Exception('Data tidak valid');
+
+			$post = [];
+			$post['id_mahasiswa'] = null;
+			$post['nim'] = null;
+			$post['nama'] = null;
+			$post['nik'] = null;
+			$post['tmp_lahir'] = null;
+			$post['tgl_lahir'] = null;
+			$post['email'] = null;
+			$post['foto'] = null;
+			$post['jenis_kelamin'] = null;
+			$post['no_billkey'] = null;
+			$post['kodeps'] = null;
+			$post['prodi'] = null;
+			$post['gel'] = null;
+			$post['smt'] = null;
+			$post['jalur'] = null;
+			$post['tahun'] = null;
+			$post['kelompok_ujian'] = null;
+			$post['tgl_ujian'] = null;
+
+			foreach($post as $key => $value){
+				if(!isset($input[$key]))
+					throw new Exception('Isian data tidak valid');
+					
+				$post[$key] = $input[$key];
+			}
 
 			$mhs = new Mhs_orm;
 			$mhs->id_mahasiswa = $post['id_mahasiswa'];

@@ -57,4 +57,4 @@ $route['logout'] = 'auth/logout';
 $route['not_valid_login'] = 'auth/not_valid_login';
 $route['expired_page'] = 'auth/expired_page';
 $route['get_server_time'] = 'auth/get_server_time';
-$route['c/(:num)/(:any)'] = 'pub/cetak_sertifikat/$1/$2';
+$route['c/(:any)/(:any)'] = 'pub/cetak_sertifikat/$1/$2';

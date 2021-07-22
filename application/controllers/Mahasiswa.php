@@ -1519,7 +1519,7 @@ class Mahasiswa extends MY_Controller
 		$mhs_ids_delete = array_diff($mhs_ids_before, $mhs_ids);
 
 		$msg = null ;
-		$action = true;
+		$status = 'ok';
 
 		// $mhs_ids_insert = $data_impor_tambah;
 		// $mhs_ids_delete = $data_impor_hapus;
@@ -1587,7 +1587,7 @@ class Mahasiswa extends MY_Controller
 								];
 								$group           = [MHS_GROUP_ID]; // Sets user to mhs.
 								$this->ion_auth->register($username, $password, $email, $additional_data, $group);
-								$action = true;
+								$status = 'ok';
 
 								commit_db_trx();
 
@@ -1595,7 +1595,7 @@ class Mahasiswa extends MY_Controller
 							} catch (\Illuminate\Database\QueryException $e) {
 								rollback_db_trx();
 								$msg = $e->getMessage() ;
-								$action = false;
+								$status = 'ko';
 								
 								continue;
 
@@ -1658,19 +1658,19 @@ class Mahasiswa extends MY_Controller
 
 						// $part++;
 
-						// $action = true;
+						// $status = 'ok';
 
 				// }
 			}
 			
-			// $action = true;
+			// $status = 'ok';
 
 		// } catch (\Illuminate\Database\QueryException $e) {
 		// 	rollback_db_trx();
 		// 	show_error($e->getMessage(), 500, 'Perhatian');
-		// 	$action = false;
+		// 	$status = 'ko';
 		// }
 
-		$this->_json(['status' => $action, 'msg' => $msg]);
+		$this->_json(['status' => $status, 'msg' => $msg]);
 	}
 }

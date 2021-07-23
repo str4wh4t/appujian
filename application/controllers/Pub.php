@@ -338,7 +338,7 @@ class Pub extends MY_Controller {
 					$h_ujian_orm->ujian_selesai = 'N'; 
 					$h_ujian_orm->save();
 
-					echo 'MHS ID : ' . $mu->mahasiswa_id . " ==> STARTED " . "\n";
+					echo date('Y-m-d H:i:s') . ' => MHS ID : ' . $mu->mahasiswa_id . " ==> STARTED " . "\n";
 					// echo 'today : ' . $today . "\n";
 					// echo 'date_end : ' . $date_end . "\n";
 	
@@ -409,8 +409,9 @@ class Pub extends MY_Controller {
 
 				// if ($now >= $date_end){
 				if ($now->greaterThan($date_end)){
-					echo $h_ujian->id . " ==> ";
-					echo $h_ujian->mhs->nama . " ==> ";
+					echo date('Y-m-d H:i:s') . " => ";
+					echo $h_ujian->id . " => ";
+					echo $h_ujian->mhs->nama . " => ";
 					if($this->submit_ujian($h_ujian)){
 //						$ws = new Chat();
 //						$ws->send_msg_stop_ujian($h_ujian->mhs->nim, $app_id . '.undip.ac.id');

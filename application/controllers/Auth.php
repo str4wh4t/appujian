@@ -475,18 +475,18 @@ class Auth extends MY_Controller
 
 	}
 
-	public function cron_auto_registrasi($users_temp = null){
+	public function cron_auto_registrasi($users_temp_sso = null){
 
 		/** JIKA $users_temp_list BUKAN null BERATI USER DI DAFTAR KAN LANGSUNG OLEH SSO */
 
-		if(empty($users_temp)){
+		if(empty($users_temp_sso)){
 			if(!is_cli()) show_404();
 	
 			$users_temp_list = Users_temp_orm::where('is_processed', 0)->orderBy('created_at')->get();
 
 		}else{
 			$users_temp_list = collect();
-			$users_temp_list->push($users_temp);
+			$users_temp_list->push($users_temp_sso);
 		}
 		
 		if($users_temp_list->isNotEmpty()) {
@@ -496,14 +496,14 @@ class Auth extends MY_Controller
 
 				$today = date('Y-m-d H:i:s');
 
-				if(empty($users_temp)){
+				if(empty($users_temp_sso)){
 					if($today > $cron_end){
 						die('Waktu cron habis');
 					}
 				}
 
-				if(empty($users_temp)){
-					echo 'Nama : '. strtoupper($users_temp->full_name) ." ===> ";
+				if(empty($users_temp_sso)){
+					echo date('Y-m-d H:i:s') ." => Nama : ". strtoupper($users_temp->full_name) ." => ";
 				}
 
 				// MENDAFTARKAN SBG USER

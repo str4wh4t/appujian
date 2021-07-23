@@ -335,7 +335,7 @@ class Pub extends MY_Controller {
 					$h_ujian_orm->nilai_bobot = 0;
 					$h_ujian_orm->tgl_mulai = $m_ujian->terlambat;
 					$h_ujian_orm->tgl_selesai = $m_ujian->terlambat;
-					$h_ujian_orm->ujian_selesai = 'N';
+					$h_ujian_orm->ujian_selesai = 'N'; 
 					$h_ujian_orm->save();
 
 					echo 'MHS ID : ' . $mu->mahasiswa_id . " ==> STARTED " . "\n";
@@ -354,6 +354,7 @@ class Pub extends MY_Controller {
 							    
 								$jawaban_ujian_orm->ujian_id = $h_ujian_orm->id;
 								$jawaban_ujian_orm->soal_id  = $s->id_soal;
+								$jawaban_ujian_orm->nilai_essay  = 0;
 								$jawaban_ujian_orm->save();
 							}
 						}

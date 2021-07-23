@@ -707,7 +707,7 @@ class Auth extends MY_Controller
 					$users_temp->is_processed = 1 ; //  FLAG SUDAH DIPROSES
 					$users_temp->save();
 
-					if(empty($users_temp)){
+					if(empty($users_temp_sso)){
 						echo 'DONE' . "\n";
 					}
 					

@@ -497,18 +497,18 @@ $(document).on('click','.btn_submit_nilai_essay',function(){
 										@elseif($jawaban_ujian->soal->tipe_soal == TIPE_SOAL_ESSAY)
 
 											<h4 class="card-title">Jawaban : 
-												@if(is_admin())
-												<span class="float-right">
-													Point : 
-													<div class="input-group">
-														<input type="text" class="form-control input_nilai_essay inp_decimal" id="input_nilai_essay_{{ $jawaban_ujian->id }}" placeholder="" aria-describedby="btn_submit_nilai_essay_{{ $jawaban_ujian->id }}" value="{{ $jawaban_ujian->nilai_essay }}">
-														<div class="input-group-append">
-															<button class="btn btn-success btn_submit_nilai_essay" data-id="{{ $jawaban_ujian->id }}" type="button" id="btn_submit_nilai_essay_{{ $jawaban_ujian->id }}"><i class="ft-check-circle"></i></button>
+												@if(is_admin() && !$is_data_history)
+													<span class="float-right">
+														Point : 
+														<div class="input-group">
+															<input type="text" class="form-control input_nilai_essay inp_decimal" id="input_nilai_essay_{{ $jawaban_ujian->id }}" placeholder="" aria-describedby="btn_submit_nilai_essay_{{ $jawaban_ujian->id }}" value="{{ $jawaban_ujian->nilai_essay }}" {{ empty($jawaban_ujian->jawaban_essay) ? 'disabled="disabled"' : '' }}>
+															<div class="input-group-append">
+																<button class="btn btn-success btn_submit_nilai_essay" data-id="{{ $jawaban_ujian->id }}" type="button" id="btn_submit_nilai_essay_{{ $jawaban_ujian->id }}" {{ empty($jawaban_ujian->jawaban_essay) ? 'disabled="disabled"' : '' }}><i class="ft-check-circle"></i></button>
+															</div>
 														</div>
-													</div>
-												</span>
+													</span>
 												@else
-												<span class="float-right">( Poin : <div class="badge badge-success round">{{ number_format($jawaban_ujian->nilai_essay, 2,'.', '') }}</div> )</span>
+													<span class="float-right">( Poin : <div class="badge badge-success round">{{ number_format($jawaban_ujian->nilai_essay, 2,'.', '') }}</div> )</span>
 												@endif
 											</h4>
 											<div class="pb-2">

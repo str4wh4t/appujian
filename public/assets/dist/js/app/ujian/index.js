@@ -276,6 +276,14 @@ function tidak_jawab() {
 
     if($('input[name="tipe_soal_'+ id_step +'"]').val() == tipe_soal_mcsa){
         answer = $('input[name="opsi_'+ id_step +'"]:checked').val();
+    }else if($('input[name="tipe_soal_'+ id_step +'"]').val() == tipe_soal_mcma){
+        let answer_array = [];
+        let selection_els = $('input[name="opsi_'+ id_step +'[]"]:checked');
+        selection_els.each(function(i, el){
+            let val = $(el).val();
+            answer_array.push(val);
+        });
+        answer = JSON.stringify(answer_array);
     }else if($('input[name="tipe_soal_'+ id_step +'"]').val() == tipe_soal_essay){
         answer = $('textarea[name="opsi_' + id_step + '"]').val();
     }
@@ -337,6 +345,8 @@ function simpan_view() {
         let jawab = null;
         if(tipe_soal ==  tipe_soal_mcsa){
             jawab = form['opsi_' + i];
+        }else if(tipe_soal ==  tipe_soal_mcma){
+            jawab = form['opsi_' + i + '[]'];
         }else if(tipe_soal ==  tipe_soal_essay){
             jawab = form['jawaban_essay_before_' + i];
         }
@@ -520,6 +530,39 @@ $(document).on('click','input[type="radio"]',function(){
         $('.ragu_ragu').show();
         simpan_view();
     }
+});
+
+$(document).on('click','input[type="checkbox"]',function(){
+    let answer = [];
+    // if($(this).prop("checked", true)){
+    //     let val = $(this).val();
+    //     const index = answer.indexOf(val);
+    //     if (index > -1) {
+    //       answer.splice(index, 1);
+    //     }
+    //     answer.push(val);
+    // }else{
+    //     let val = $(this).val();
+    //     const index = answer.indexOf(val);
+    //     if (index > -1) {
+    //       answer.splice(index, 1);
+    //     }
+    // }
+    
+    let sid = $(this).data('sid');
+    let id_step = $(this).attr('rel');
+    let ragu = $("#rg_" + id_step).val() ;
+    let selection_els = $('input[name="opsi_'+ id_step +'[]"]:checked');
+    selection_els.each(function(i, el){
+        let val = $(el).val();
+        answer.push(val);
+    });
+    simpan_jawaban_satu(sid, JSON.stringify(answer), ragu);
+    if(answer.length)
+        $('.ragu_ragu').show();
+    else
+        $('.ragu_ragu').hide();
+    simpan_view();
 });
 
 $(document).on('click','.btn_simpan_essay',function(){

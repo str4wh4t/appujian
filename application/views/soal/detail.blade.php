@@ -88,9 +88,11 @@ function init_page_level(){
             <tr>
                 <td>No Urut</td><td>{{ $soal->no_urut }}</td>
             </tr>
+            @if(!empty($soal->bobot_soal_id))
             <tr>
                 <td>Bobot</td><td>{{ $soal->bobot_soal->bobot }}</td>
             </tr>
+            @endif
             <tr>
                 <td>Dibuat Oleh</td><td>{{ get_nama_lengkap_user($user) }}</td>
             </tr>
@@ -126,35 +128,45 @@ function init_page_level(){
 
         @if($soal->tipe_soal == TIPE_SOAL_MCSA || $soal->tipe_soal == TIPE_SOAL_MCMA)
 
-        <?php
-        $abjad = ['a', 'b', 'c', 'd', 'e'];
+            @php($alphabet = range('a', 'z'))
 
-        foreach ($abjad as $abj) :
-            $ABJ = strtoupper($abj);
-            $opsi = 'opsi_'.$abj;
-            $file = 'file_'.$abj;
-        ?>
+            @php($jawaban_list = [])
+            @if(!$soal->is_bobot_per_jawaban)
+                @if($soal->tipe_soal == TIPE_SOAL_MCSA)
+                    @php($jawaban_list[] = $soal->jawaban)
+                @else
+                    @php($jawaban_list = json_decode($soal->jawaban))
+                @endif
+            @endif
 
-            <div
-            class="alert alert-light border-success {{ ($ABJ === $soal->jawaban) ? 'bg-success' : '' }}">
-            <?php $text_color = ($ABJ == $soal->jawaban) ? 'white' : 'success';  ?>
-            <span style="font-size: 1.5rem"
-                class="float-left mr-1 text-{{ $text_color }}">{{ $ABJ }}. </span>{!!
-            $soal->$opsi !!}
-            </div>
-
-            <?php if(!empty($soal->$file)): ?>
-            <div class="w-50 mx-auto">
-                <?= tampil_media('uploads/bank_soal/'.$soal->$file); ?>
-            </div>
-            <?php endif;?>
-
-        <?php endforeach;?>
+            @for($i = 0; $i < $soal->jml_pilihan_jawaban; $i++)
+                @php($abj = $alphabet[$i])
+                @php($ABJ = strtoupper($abj))
+                @php($opsi = 'opsi_'. $abj)
+                @php($file = 'file_'. $abj)
+                <div class="alert alert-light border-success {{ (in_array($ABJ, $jawaban_list)) ? 'bg-success' : '' }}">
+                    <?php $text_color = (in_array($ABJ, $jawaban_list)) ? 'white' : 'success';  ?>
+                    <span style="font-size: 1.5rem" class="float-left mr-1 text-{{ $text_color }}">{{ $ABJ }}. </span>
+                    {!! $soal->$opsi !!}
+                    
+                    @if($soal->is_bobot_per_jawaban)
+                    @php($opsi_bobot = 'opsi_'. $abj . '_bobot')
+                    <div class="border-1 border-red mt-2 text-danger" style="width: 250px; padding-left:10px; font-size: smaller; background-color: #ffb;">
+                        BOBOT : {{ $soal->$opsi_bobot }}
+                    </div>
+                    @endif
+                </div>
+                @if(!empty($soal->$file))
+                <div class="w-50 mx-auto">
+                    <?= tampil_media('uploads/bank_soal/'.$soal->$file); ?>
+                </div>
+                @endif
+            @endfor
 
         @elseif($soal->tipe_soal == TIPE_SOAL_ESSAY)
-        <div class="alert border-success rounded-0" style="">
-            {!! !empty($soal->jawaban) ? $soal->jawaban : 'Belum ada jawaban' !!}
-        </div>
+            <div class="alert border-success rounded-0" style="">
+                {!! !empty($soal->jawaban) ? $soal->jawaban : 'Belum ada jawaban' !!}
+            </div>
         @endif
         <div class="alert bg-warning mb-2" role="alert">
             <strong>Penjelasan</strong>

@@ -185,11 +185,18 @@ function init_page_level(){
 			}
 		},
 		{
+			targets: 5,
+			data: "bobot",
+			render: function(data, type, row, meta) {
+				return (data == '' ? '{{ ucwords(SOAL_NO_BOBOT_LABEL) }}' : data );
+			}
+		},
+		{
 			targets: 6,
 			data: "bundle",
 			render: function(data, type, row, meta) {
 			let str_return = '';
-			if(data != null) {
+			if(data != '') {
 				let data_array = data.split('---');
 				data_array.forEach(function (item, index) {
 				str_return += '<span class="badge bg-info">' + item + '</span> ';
@@ -218,14 +225,14 @@ function init_page_level(){
 		],
 		order: [[2, "asc"], [3, "asc"], [7, "asc"]],
 		rowId: function(data) {
-		return 'dt_tr_' + data.id_soal;
+			return 'dt_tr_' + data.id_soal;
 		},
 		createdRow: function (row, data, dataIndex) {
-		if(data.is_reported == 1){
-			$(row).addClass('bg-warning');
-		}else{
-			$(row).removeClass('bg-warning');
-		}
+			if(data.is_reported == 1){
+				$(row).addClass('bg-warning');
+			}else{
+				$(row).removeClass('bg-warning');
+			}
 
 		},
 		rowCallback: function(row, data, iDisplayIndex) {

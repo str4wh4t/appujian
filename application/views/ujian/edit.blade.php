@@ -104,8 +104,10 @@ function init_page_level(){
     topik_jumlah_waktu = [];
     topik_urutan = [];
 
+
     @foreach($jumlah_soal as $topik_id => $t)
         @foreach($t as $bobot_soal_id => $jml_soal)
+        <?php $bobot_soal_id = empty($bobot_soal_id) ? 0 : $bobot_soal_id ;  ?>
         topik_jumlah_soal[{{ $topik_id }}] = topik_jumlah_soal[{{ $topik_id }}] ? topik_jumlah_soal[{{ $topik_id }}] : [] ;
         topik_jumlah_soal[{{ $topik_id }}][{{ $bobot_soal_id }}] = {{ $jml_soal }};
         topik_jumlah_soal_asli[{{ $topik_id }}] = topik_jumlah_soal[{{ $topik_id }}] ? topik_jumlah_soal[{{ $topik_id }}] : [] ;
@@ -965,6 +967,19 @@ $(document).on('click','#btn_refine_peserta', function(){
                                     </div>
                                 </div>
                                 @endforeach
+                                {{-- UNTUK ISIAN SOAL DENGAN BOBOT PER JAWABAN --}}
+                                <div class="row">
+                                    <label for="" style="" class="col-md-8">
+                                        {{ ucwords(SOAL_NO_BOBOT_LABEL) }}
+                                        <small class="text-danger">
+                                            <span data-bobot_soal_id="{{ SOAL_NO_BOBOT_ID }}" class="jml_soal"></span> soal
+                                        </small>
+                                    </label>
+                                    <div class="form-group col-md-4">
+                                        <input placeholder="Jml Soal" type="number" data-topik_id="DATA-TOPIK-ID" data-bobot_soal_id="{{ SOAL_NO_BOBOT_ID }}" class="form-control input_jml input-sm input_number" name="jumlah_soal[ID-TOPIK][ID-BOBOT-SOAL]" style="text-align: right" disabled="disabled">
+                                        <small class="help-block"></small>
+                                    </div>
+                                </div>
                             </td>
                         </tr>
                         <tr>
@@ -1142,10 +1157,6 @@ $(document).on('click','#btn_refine_peserta', function(){
                         <button type="button" id="btn_refine_peserta" class="btn btn-outline-info"><i class="icon-info"></i> Refine Peserta</button>
                     </div>
                 </fieldset>
-                @else
-                <input type="hidden" name="kelompok_ujian" value="null">
-                <input type="hidden" name="tahun_mhs" value="null">
-                @endif
                 <div class="form-group">
                     <label for="status_ujian">Peserta Ujian</label>  <small class="help-block text-danger"><b>***</b> Pilih peserta yg akan dienroll ke ujian, jika peserta tidak terlihat pada tabel dibawah kemungkinan mhs tersebut sudah mengerjakan ujian terkait</small>
 {{--                        <div class="form-group">--}}
@@ -1210,7 +1221,6 @@ $(document).on('click','#btn_refine_peserta', function(){
                      <small class="help-block"></small>
                      <div class="alert border-danger text-center text-danger"><i class="icon-info"></i> Total peserta dipilih : <b><span id="span_total_peserta">0</span></b></div>
                 </div>
-                @if(APP_TYPE == 'ujian')
                 <div class="form-group text-center" id="panel_submit_ujian" style="display: none">
                     <a href="{{ site_url('ujian/master') }}" class="btn btn-flat btn-warning">
                         <i class="fa fa-arrow-left"></i> Kembali
@@ -1218,6 +1228,10 @@ $(document).on('click','#btn_refine_peserta', function(){
                     <button id="submit" type="button" class="btn btn-flat btn-primary"><i class="fa fa-save"></i> Simpan</button>
                 </div>
                 @else
+                <input type="hidden" name="kelompok_ujian" value="null">
+                <input type="hidden" name="tahun_mhs" value="null">
+                <input type="hidden" name="peserta_hidden" class="form-control" id="peserta_hidden">
+                <hr />
                 <div class="form-group text-center" id="panel_submit_ujian">
                     <a href="{{ site_url('ujian/master') }}" class="btn btn-flat btn-warning">
                         <i class="fa fa-arrow-left"></i> Kembali

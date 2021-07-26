@@ -2,8 +2,8 @@
 header("Content-type: application/vnd-ms-excel");
 header("Content-Disposition: attachment; filename=". $nama_file .".xls");
 
-$mulai = strftime('%A, %d %B %Y %H:%M:%S', strtotime($ujian->tgl_mulai));
-$selesai = empty($ujian->terlambat) ? '-' : strftime('%A, %d %B %Y %H:%M:%S', strtotime($ujian->terlambat));
+$mulai = indo_date(strftime('%A, %d %B %Y %H:%M:%S', strtotime($ujian->tgl_mulai)));
+$selesai = empty($ujian->terlambat) ? '-' : indo_date(strftime('%A, %d %B %Y %H:%M:%S', strtotime($ujian->terlambat)));
 
 $t = [];
 foreach($ujian->topik AS $topik){

@@ -129,12 +129,12 @@ class Auth extends MY_Controller
 	                    ];
 					
 					$this->session->set_userdata('session_data',$session_data);
-					$message_rootpage = [
-						'header' => 'Welcome',
-						'content' => 'Login berhasil.',
-						'type' => 'success'
-					];
-					$this->session->set_flashdata('message_rootpage', $message_rootpage);
+					// $message_rootpage = [
+					// 	'header' => 'Welcome',
+					// 	'content' => 'Login berhasil.',
+					// 	'type' => 'success'
+					// ];
+					// $this->session->set_flashdata('message_rootpage', $message_rootpage);
 					redirect('/dashboard', 'refresh');
 //				}else{
 //					redirect('not_valid_login', 'refresh');

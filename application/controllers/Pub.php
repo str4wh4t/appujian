@@ -452,14 +452,66 @@ class Pub extends MY_Controller {
 			}
 
 			if($jwb->soal->tipe_soal == TIPE_SOAL_MCSA){
-				$total_bobot = $total_bobot + ($jwb->soal->bobot_soal->nilai * $jwb->soal->topik->poin_topik);
-				if($jwb->jawaban == $jwb->soal->jawaban){
-					$jumlah_benar++;
-					$bobot_poin = ($jwb->soal->bobot_soal->nilai * $jwb->soal->topik->poin_topik);
-					$total_bobot_benar = $total_bobot_benar + $bobot_poin;
-					$topik_ujian_nilai_bobot[$jwb->soal->topik_id] = $topik_ujian_nilai_bobot[$jwb->soal->topik_id] + $bobot_poin;
+				// INI HANYA UNTUK JENIS MCSA
+				if(!$jwb->soal->is_bobot_per_jawaban){
+					$total_bobot = $total_bobot + ($jwb->soal->bobot_soal->nilai * $jwb->soal->topik->poin_topik);
+					if ($jwb->jawaban == $jwb->soal->jawaban) {
+						$jumlah_benar++;
+						$bobot_poin = ($jwb->soal->bobot_soal->nilai * $jwb->soal->topik->poin_topik);
+						$total_bobot_benar = $total_bobot_benar + $bobot_poin;
+						$topik_ujian_nilai_bobot[$jwb->soal->topik_id] = $topik_ujian_nilai_bobot[$jwb->soal->topik_id] + $bobot_poin;
+					} else {
+						$jumlah_salah++;
+					}
 				}else{
-					$jumlah_salah++;
+					if(!empty($jwb->jawaban)){
+						$jumlah_benar++;
+
+						$abj = strtolower($jwb->jawaban);
+						$opsi_bobot = 'opsi_'. $abj .'_bobot' ;
+
+						$nilai_opsi_bobot = $jwb->soal->$opsi_bobot;
+						$bobot_poin = ($nilai_opsi_bobot * $jwb->soal->topik->poin_topik);
+						$total_bobot_benar = $total_bobot_benar + $bobot_poin;
+						$topik_ujian_nilai_bobot[$jwb->soal->topik_id] = $topik_ujian_nilai_bobot[$jwb->soal->topik_id] + $bobot_poin;
+					}
+					else
+						$jumlah_salah++;
+				}
+			}elseif($jwb->soal->tipe_soal == TIPE_SOAL_MCMA){
+				// INI HANYA UNTUK JENIS MCMA
+				// $total_bobot = $total_bobot + ($jwb->soal->bobot_soal->nilai * $jwb->soal->topik->poin_topik);
+				$jawaban_mcma = [];
+				if(!empty($jwb->jawaban_mcma))
+					$jawaban_mcma = json_decode($jwb->jawaban_mcma);
+
+				if(!$jwb->soal->is_bobot_per_jawaban){
+					$total_bobot = $total_bobot + ($jwb->soal->bobot_soal->nilai * $jwb->soal->topik->poin_topik);
+					$jawaban_mcma_kunci = json_decode($jwb->soal->jawaban);
+					if(empty(array_diff($jawaban_mcma, $jawaban_mcma_kunci)) && empty(array_diff($jawaban_mcma_kunci, $jawaban_mcma))){
+						$jumlah_benar++;
+						$bobot_poin = ($jwb->soal->bobot_soal->nilai * $jwb->soal->topik->poin_topik);
+						$total_bobot_benar = $total_bobot_benar + $bobot_poin;
+						$topik_ujian_nilai_bobot[$jwb->soal->topik_id] = $topik_ujian_nilai_bobot[$jwb->soal->topik_id] + $bobot_poin;
+					} else {
+						$jumlah_salah++;
+					}
+				}else{
+					if(!empty($jawaban_mcma)){
+						$jumlah_benar++;
+						foreach($jawaban_mcma as $ABJ){
+							$abj = strtolower($ABJ);
+							$opsi_bobot = 'opsi_'. $abj .'_bobot' ;
+
+							$nilai_opsi_bobot = $jwb->soal->$opsi_bobot;
+							$bobot_poin = ($nilai_opsi_bobot * $jwb->soal->topik->poin_topik);
+							$total_bobot_benar = $total_bobot_benar + $bobot_poin;
+							$topik_ujian_nilai_bobot[$jwb->soal->topik_id] = $topik_ujian_nilai_bobot[$jwb->soal->topik_id] + $bobot_poin;
+						}
+					}
+					else
+						$jumlah_salah++;
+					
 				}
 			}elseif($jwb->soal->tipe_soal == TIPE_SOAL_ESSAY){
 				if(!empty($jwb->jawaban_essay))

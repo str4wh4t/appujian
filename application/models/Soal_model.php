@@ -25,7 +25,7 @@ class Soal_model extends CI_Model {
         $this->db->from('tb_soal a');
         $this->db->join('topik b', 'b.id = a.topik_id');
         $this->db->join('matkul c', 'c.id_matkul = b.matkul_id');
-        $this->db->join('bobot_soal d', 'd.id = a.bobot_soal_id');
+        $this->db->join('bobot_soal d', 'd.id = a.bobot_soal_id', 'left');
         $this->db->join('bundle_soal e', 'e.id_soal = a.id_soal', 'left');
         $this->db->join('bundle f', 'f.id = e.bundle_id', 'left');
         $this->db->join('users g', 'a.created_by = g.username');

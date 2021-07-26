@@ -265,9 +265,7 @@ $(document).on('click','.btn_submit_nilai_essay',function(){
 				<?php $i = 1; ?>
 
 				@foreach ($topik_ujian_list as $topik)
-					<div class="alert bg-info w-100"><b>Topik : </b> {{ $topik->nama_topik }} ( Poin Topik :
-						{{ $topik->poin_topik }} )</div>
-
+				
 					<?php
 					$jawaban_ujian_list = $h_ujian->jawaban_ujian()->whereHas('soal', 
 					function (Builder $query) use($topik) {
@@ -275,7 +273,15 @@ $(document).on('click','.btn_submit_nilai_essay',function(){
 					})
 					->get()
 					->sortBy('id');
+
+					if($jawaban_ujian_list->isEmpty())
+						continue;
+
 					?>
+
+					<div class="alert bg-info w-100">
+						<b>Topik : </b> {{ $topik->nama_topik }} ( Poin Topik : {{ $topik->poin_topik }} )
+					</div>
 
 					@foreach ($jawaban_ujian_list as $jawaban_ujian)
 						<div class="row">
@@ -285,8 +291,12 @@ $(document).on('click','.btn_submit_nilai_essay',function(){
 												</div> --}}
 									<div class="card-content">
 										<div class="card-body pl-1 pr-1">
-											<h4 class="card-title" data-id="{{ $jawaban_ujian->soal->id_soal }}">Pertanyaan : <div class="badge badge-danger round">{{ $i }}</div> <span class="float-right">( Poin
-													Soal : {{ $jawaban_ujian->soal->bobot_soal->nilai }} )</span></h4>
+											<h4 class="card-title" data-id="{{ $jawaban_ujian->soal->id_soal }}">Pertanyaan : 
+												<div class="badge badge-danger round">{{ $i }}</div> 
+												@if(!$jawaban_ujian->soal->is_bobot_per_jawaban)
+												<span class="float-right">( Poin Soal : {{ $jawaban_ujian->soal->bobot_soal->nilai }} )</span>
+												@endif
+											</h4>
 											<div class="pb-2">
 												@if(!empty($jawaban_ujian->soal->section_id))
 												<div id="preview_section" class="alert text-muted border border-info" style="">
@@ -297,20 +307,46 @@ $(document).on('click','.btn_submit_nilai_essay',function(){
 												{!! $jawaban_ujian->soal->soal !!}
 											</div>
 
-											@if($jawaban_ujian->soal->tipe_soal == TIPE_SOAL_MCSA)
+											@if($jawaban_ujian->soal->tipe_soal == TIPE_SOAL_MCSA || $jawaban_ujian->soal->tipe_soal == TIPE_SOAL_MCMA)
 											<div class="panel_jawaban">
+												@php($alphabet = range('a', 'z'))
+												@for($i = 0; $i < $jawaban_ujian->soal->jml_pilihan_jawaban; $i++)
+													@php($abj = $alphabet[$i])
+													@php($ABJ = strtoupper($abj))
 
-												@foreach(OPSI_SOAL as $opsi_soal)
-												<?php $text_color = (strtoupper($opsi_soal) == $jawaban_ujian->jawaban) ? 'success' : ((strtoupper($opsi_soal) == $jawaban_ujian->soal->jawaban) ? 'danger' : 'grey');  ?>
-												<div
-													class="alert alert-light text-{{ $text_color }} {{ (strtoupper($opsi_soal) == $jawaban_ujian->jawaban) ? 'border-success border-3' : ((strtoupper($opsi_soal) == $jawaban_ujian->soal->jawaban) ? 'border-danger border-3' : 'border-grey')}}">
-													<span style="font-size: 1.5rem"
-														class="float-left mr-1">{{ strtoupper($opsi_soal) }}. </span>
-														<?php $opsi = 'opsi_' . $opsi_soal ?>
-														{!! $jawaban_ujian->soal->$opsi !!}
-												</div>
-												@endforeach
+													@if($jawaban_ujian->soal->tipe_soal == TIPE_SOAL_MCSA)
+														@if(!$jawaban_ujian->soal->is_bobot_per_jawaban)
+														<?php $text_color = ($ABJ == $jawaban_ujian->jawaban) ? (($ABJ == $jawaban_ujian->soal->jawaban) ? 'success' : 'danger') : (($ABJ == $jawaban_ujian->soal->jawaban) ? 'success' : 'grey');  ?>
+														<div class="alert alert-light text-{{ $text_color }} {{ ($ABJ == $jawaban_ujian->jawaban) ? (($ABJ == $jawaban_ujian->soal->jawaban) ? 'border-success border-3' : 'border-danger border-3') : (($ABJ == $jawaban_ujian->soal->jawaban) ? 'border-success border-3' : 'border-grey') }}">
+														@else
+														<?php $text_color = (($ABJ == $jawaban_ujian->jawaban) && !empty($jawaban_ujian->jawaban)) ? 'success' : 'grey' ;  ?>
+														<div class="alert alert-light text-{{ $text_color }} {{ (($ABJ == $jawaban_ujian->jawaban) && !empty($jawaban_ujian->jawaban)) ? 'border-success border-3' : 'border-grey' }}">
+														@endif
+													@else
+													{{-- JIKA MCMA --}}
+														@php($jawaban_mcma = empty($jawaban_ujian->jawaban_mcma) ? [] : json_decode($jawaban_ujian->jawaban_mcma))
+														@php($jawaban_mcma_kunci = json_decode($jawaban_ujian->soal->jawaban))
+														@if(!$jawaban_ujian->soal->is_bobot_per_jawaban)
+														<?php $text_color = (in_array($ABJ, $jawaban_mcma)) ? ((in_array($ABJ, $jawaban_mcma_kunci)) ? 'success' : 'danger') : ((in_array($ABJ, $jawaban_mcma_kunci)) ? 'success' : 'grey');  ?>
+														<div class="alert alert-light text-{{ $text_color }} {{ (in_array($ABJ, $jawaban_mcma)) ? ((in_array($ABJ, $jawaban_mcma_kunci)) ? 'border-success border-3' : 'border-danger border-3') : ((in_array($ABJ, $jawaban_mcma_kunci)) ? 'border-success border-3' : 'border-grey') }}">
+														@else
+														<?php $text_color = ((in_array($ABJ, $jawaban_mcma)) && !empty($jawaban_mcma)) ? 'success' : 'grey' ;  ?>
+														<div class="alert alert-light text-{{ $text_color }} {{ ((in_array($ABJ, $jawaban_mcma)) && !empty($jawaban_mcma)) ? 'border-success border-3' : 'border-grey' }}">
+														@endif
+													@endif
+														<span style="font-size: 1.5rem"
+															class="float-left mr-1">{{ $ABJ }}. </span>
+															<?php $opsi = 'opsi_' . $abj ?>
+															{!! $jawaban_ujian->soal->$opsi !!}
 
+														@if($jawaban_ujian->soal->is_bobot_per_jawaban)
+														@php($opsi_bobot = 'opsi_'. $abj . '_bobot')
+														<div class="border-1 border-red mt-2 text-danger" style="width: 250px; padding-left:10px; font-size: smaller; background-color: #ffb;">
+															BOBOT : {{ $jawaban_ujian->soal->$opsi_bobot }}
+														</div>
+														@endif
+													</div>
+												@endfor
 											</div>
 											@endif
 										</div>
@@ -351,10 +387,35 @@ $(document).on('click','.btn_submit_nilai_essay',function(){
 													@else
 													Anda Tidak Menjawab
 													@endif
+
+													@if(!$jawaban_ujian->soal->is_bobot_per_jawaban)
 													{!! ($jawaban_ujian->jawaban == $jawaban_ujian->soal->jawaban) ? $badge_benar : $badge_salah !!}
+													@else
+													{!! !empty($jawaban_ujian->jawaban) ? '' : $badge_salah !!}
+													@endif
+
 													{!! ($jawaban_ujian->status_jawaban == 'Y') ? $badge_ragu : '' !!}
 												</h4>
-												
+
+											@elseif($jawaban_ujian->soal->tipe_soal == TIPE_SOAL_MCMA)
+											
+												<h4 class="card-title">
+													@if (!empty($jawaban_ujian->jawaban_mcma))
+													Anda Menjawab : {{ $jawaban_ujian->jawaban_mcma }}
+													@else
+													Anda Tidak Menjawab
+													@endif
+
+													@if(!$jawaban_ujian->soal->is_bobot_per_jawaban)
+													@php($jawaban_mcma = empty($jawaban_ujian->jawaban_mcma) ? [] : json_decode($jawaban_ujian->jawaban_mcma))
+													@php($jawaban_mcma_kunci = json_decode($jawaban_ujian->soal->jawaban))
+													{!! (empty(array_diff($jawaban_mcma, $jawaban_mcma_kunci)) && empty(array_diff($jawaban_mcma_kunci, $jawaban_mcma))) ? $badge_benar : $badge_salah !!}
+													@else
+													{!! !empty($jawaban_ujian->jawaban_mcma) ? '' : $badge_salah !!}
+													@endif
+
+													{!! ($jawaban_ujian->status_jawaban == 'Y') ? $badge_ragu : '' !!}
+												</h4>
 
 											@elseif($jawaban_ujian->soal->tipe_soal == TIPE_SOAL_ESSAY)
 
@@ -364,7 +425,7 @@ $(document).on('click','.btn_submit_nilai_essay',function(){
 													@else
 													Anda Tidak Menjawab
 													@endif
-													{!! empty($jawaban_ujian->jawaban_essay) ? $badge_salah : '' !!}
+													{!! !empty($jawaban_ujian->jawaban_essay) ? '' : $badge_salah !!}
 													{!! ($jawaban_ujian->status_jawaban == 'Y') ? $badge_ragu : '' !!}
 												</h4>
 												<div class="pb-2">
@@ -378,11 +439,56 @@ $(document).on('click','.btn_submit_nilai_essay',function(){
 										@if($jawaban_ujian->soal->tipe_soal == TIPE_SOAL_MCSA)
 
 											<h4 class="card-title">
-												Jawaban : {{ $jawaban_ujian->soal->jawaban }} <span class="float-right">( Poin :
-													{!! ($jawaban_ujian->jawaban == $jawaban_ujian->soal->jawaban) ? '<div
-														class="badge badge-success round">'.
-														number_format($jawaban_ujian->soal->bobot_soal->nilai * $topik->poin_topik,2,'.', '') .'</div>' :
-													'<div class="badge badge-danger round">'. 0 .'</div>' !!} )</span>
+												Jawaban : {{ $jawaban_ujian->soal->is_bobot_per_jawaban ? '-' : $jawaban_ujian->soal->jawaban }} 
+												<span class="float-right">
+													@if(!$jawaban_ujian->soal->is_bobot_per_jawaban)
+														( Poin : 
+														{!! ($jawaban_ujian->jawaban == $jawaban_ujian->soal->jawaban) ? '<div
+															class="badge badge-success round">'.
+															number_format($jawaban_ujian->soal->bobot_soal->nilai * $topik->poin_topik,2,'.', '') .'</div>' :
+														'<div class="badge badge-danger round">'. 0 .'</div>' !!} )
+													@else
+														@php( $opsi_bobot = 'opsi_'. strtolower($jawaban_ujian->jawaban) .'_bobot' )
+														( Poin : 
+														<div class="badge badge-success round">
+															{{ number_format($jawaban_ujian->soal->$opsi_bobot * $topik->poin_topik,2,'.', '') }}
+														</div> )
+													@endif 
+													</span>
+											</h4>
+											{{-- <button class="btn btn-info btn-block btn_penjelasan"
+												data-id="{{ $jawaban_ujian->soal->id_soal }}">Minta Penjelasan
+											</button> --}} 
+
+										@elseif($jawaban_ujian->soal->tipe_soal == TIPE_SOAL_MCMA)
+
+											<h4 class="card-title">
+												Jawaban : {{ $jawaban_ujian->soal->is_bobot_per_jawaban ? '-' : $jawaban_ujian->soal->jawaban }}
+												<span class="float-right">
+													@php($jawaban_mcma = empty($jawaban_ujian->jawaban_mcma) ? [] : json_decode($jawaban_ujian->jawaban_mcma))
+													@php($jawaban_mcma_kunci = json_decode($jawaban_ujian->soal->jawaban))
+													@if(!$jawaban_ujian->soal->is_bobot_per_jawaban)
+														( Poin : 
+														{!! (empty(array_diff($jawaban_mcma, $jawaban_mcma_kunci)) && empty(array_diff($jawaban_mcma_kunci, $jawaban_mcma))) ? '<div
+															class="badge badge-success round">'.
+															number_format($jawaban_ujian->soal->bobot_soal->nilai * $topik->poin_topik,2,'.', '') .'</div>' :
+														'<div class="badge badge-danger round">'. 0 .'</div>' !!} )
+													@else
+														<?php
+															$nilai_poin_total = 0;
+															if(!empty($jawaban_mcma)){
+																foreach($jawaban_mcma as $j_mcma){
+																	$opsi_bobot = 'opsi_'. strtolower($j_mcma) .'_bobot';
+																	$nilai_poin_total =  $nilai_poin_total + $jawaban_ujian->soal->$opsi_bobot * $topik->poin_topik;
+																}
+															}
+														?>
+														( Poin : 
+														<div class="badge badge-success round">
+															{{ number_format($nilai_poin_total,2,'.', '') }}
+														</div> )
+													@endif 
+													</span>
 											</h4>
 											{{-- <button class="btn btn-info btn-block btn_penjelasan"
 												data-id="{{ $jawaban_ujian->soal->id_soal }}">Minta Penjelasan

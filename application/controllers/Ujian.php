@@ -270,6 +270,8 @@ class Ujian extends MY_Controller
 		$this->form_validation->set_rules('sumber_ujian', 'Sumber Ujian', 'required|in_list[materi,bundle]');
 		$sumber_ujian = $this->input->post('sumber_ujian');
 
+		$jumlah_soal_list = $this->input->post('jumlah_soal', true);
+
 		if ($sumber_ujian == 'materi') {
 
 			$this->form_validation->set_rules('matkul_id', 'Matkul', 'required');
@@ -287,9 +289,7 @@ class Ujian extends MY_Controller
 				$jumlah_soal_total_min = $jumlah_soal_total + 1;
 
 				$this->form_validation->set_rules('jumlah_soal_total', 'Jumlah Soal Total', "required|is_natural_no_zero|less_than[{$jumlah_soal_total_min}]", ['less_than' => "Soal tidak cukup, total tsb hanya memiliki {$jumlah_soal_total} soal"]);
-
-				$jumlah_soal_list = $this->input->post('jumlah_soal', true);
-
+				
 				$gel			= $this->input->post('gel', true);
 				$smt			= $this->input->post('smt', true);
 				$tahun			= $this->input->post('tahun', true);
@@ -346,18 +346,24 @@ class Ujian extends MY_Controller
 
 				$this->form_validation->set_rules('jumlah_soal_total', 'Jumlah Soal Total', "required|is_natural_no_zero|less_than[{$jumlah_soal_total_min}]", ['less_than' => "Soal tidak cukup, total hanya memiliki {$jumlah_soal_total} soal"]);
 
-				$jumlah_soal_list = $this->input->post('jumlah_soal', true);
-
 				if (!empty($jumlah_soal_list)) {
 					foreach ($jumlah_soal_list as $topik_id => $topik_id_list) {
 						foreach ($topik_id_list as $bobot_soal_id => $jml_soal) {
 
 							/**[START] TEST JUMLAH SOAL SESUAI ATAU TIDAK */
 
-							$soal = Soal_orm::where(['topik_id' => $topik_id, 'bobot_soal_id' => $bobot_soal_id, 'is_reported' => NON_REPORTED_SOAL])
+							if($bobot_soal_id != SOAL_NO_BOBOT_ID){
+								$soal = Soal_orm::where(['topik_id' => $topik_id, 'bobot_soal_id' => $bobot_soal_id, 'is_reported' => NON_REPORTED_SOAL])
+													->whereHas('bundle_soal', function (Builder $query) use($bundle_ids) {
+														$query->whereIn('bundle_id', $bundle_ids);
+													});
+							}else{
+								$soal = Soal_orm::where(['topik_id' => $topik_id, 'is_reported' => NON_REPORTED_SOAL])
+												->whereNull('bobot_soal_id')
 												->whereHas('bundle_soal', function (Builder $query) use($bundle_ids) {
 													$query->whereIn('bundle_id', $bundle_ids);
 												});
+							}
 
 							$jumlah_soal_max = $soal->count();
 
@@ -389,11 +395,25 @@ class Ujian extends MY_Controller
 			$waktu_topik_list = $this->input->post('waktu_topik', true);
 			if (!empty($waktu_topik_list)) {
 				foreach ($waktu_topik_list as $topik_id => $waktu) {
-					$this->form_validation->set_rules('waktu_topik[' . $topik_id . ']', 'waktu Topik', "required|is_natural|max_length[4]|greater_than[0]");
+					// if($waktu == 0){
+						$jml_soal_topik_total = 0;
+						if(isset($jumlah_soal_list[$topik_id])){
+							foreach($jumlah_soal_list[$topik_id] as $bobot_soal_id => $jml_soal){
+								$jml_soal_topik_total = $jml_soal_topik_total + $jml_soal;
+							}
+						}
+						
+						if($jml_soal_topik_total > 0) // JIKA JUMLAH SOALNYA TIDAK KOSONG
+							$this->form_validation->set_rules('waktu_topik[' . $topik_id . ']', 'waktu Topik', "required|is_natural|max_length[4]|greater_than[0]");
+
+						if($waktu !== 0){
+							if(empty($jml_soal_topik_total))
+								$this->form_validation->set_rules('waktu_topik[' . $topik_id . ']', 'waktu Topik', "required|is_natural|max_length[4]|less_than[1]");
+						}
+
+					// }
 				}
 			}
-
-
 		}else{
 			$this->form_validation->set_rules('waktu', 'Waktu', 'required|is_natural|max_length[4]|greater_than[0]');
 		}
@@ -912,7 +932,7 @@ class Ujian extends MY_Controller
 							$insert[] = [
 								'ujian_id' => $m_ujian_orm->id_ujian,
 								'topik_id' => $topik_id,
-								'bobot_soal_id' => $bobot_soal_id,
+								'bobot_soal_id' => ($bobot_soal_id == SOAL_NO_BOBOT_ID) ? null : $bobot_soal_id,
 								'jumlah_soal' => $jml_soal,
 								'created_at' => $now,
 							];
@@ -1013,7 +1033,7 @@ class Ujian extends MY_Controller
 							$insert[] = [
 								'ujian_id' => $m_ujian_orm->id_ujian,
 								'topik_id' => $topik_id,
-								'bobot_soal_id' => $bobot_soal_id,
+								'bobot_soal_id' => ($bobot_soal_id == SOAL_NO_BOBOT_ID) ? null : $bobot_soal_id,
 								'jumlah_soal' => $jml_soal,
 								'created_at' => $now,
 							];
@@ -1622,7 +1642,6 @@ class Ujian extends MY_Controller
 			return $a['urutan'] <=> $b['urutan'];
 		});
 
-		
 		$data['urutan_topik'] = $urutan_topik;
 
 		$topik_list = Topik_orm::all();
@@ -1649,17 +1668,20 @@ class Ujian extends MY_Controller
 
 		$data['topik_ujian_jml_soal'] = $topik_ujian_jml_soal;
 
-		$matkul_bundle_list = [];
-		foreach($urutan_topik as $topik_id => $val){
-			// $topik = $topik_orm->findOrFail($topik_id);
-			$topik = $topik_key_nama_array[$topik_id];
-			if(!in_array($topik->matkul_id, $matkul_bundle_ids_list)){
-				$matkul_bundle_list[] = Matkul_orm::findOrFail($topik->matkul_id);
-				$matkul_bundle_ids_list[] = $topik->matkul_id;
-			}
-		}
+		/**
+		 * $matkul_bundle_list DIGUNAKAN UNTUK MENGELOMPOKAN topik DALAM SATu matkul
+		 */
+		// $matkul_bundle_list = [];
+		// foreach($urutan_topik as $topik_id => $val){
+		// 	$topik = $topik_key_nama_array[$topik_id];
+		// 	if(!in_array($topik->matkul_id, $matkul_bundle_ids_list)){
+		// 		$matkul_bundle_list[] = Matkul_orm::findOrFail($topik->matkul_id);
+		// 		$matkul_bundle_ids_list[] = $topik->matkul_id;
+		// 	}
+		// }
 
-		$data['matkul_bundle_list'] = $matkul_bundle_list;
+
+		// $data['matkul_bundle_list'] = $matkul_bundle_list;
 
 		//		$this->load->view('_templates/topnav/_header.php', $data);
 		////		$this->load->view('ujian/token');
@@ -1778,11 +1800,20 @@ class Ujian extends MY_Controller
 			$i = 0;
 			
 			$topik_array_temp = [];
+
+			// vdebug($ujian->topik_ujian);
+
 			foreach ($ujian->topik_ujian as $topik_ujian) {
 				$jumlah_soal_diset = $topik_ujian->jumlah_soal;
-				$soal_avail = Soal_orm::where('topik_id', $topik_ujian->topik_id)
+				if(!empty($topik_ujian->bobot_soal_id)){
+					$soal_avail = Soal_orm::where('topik_id', $topik_ujian->topik_id)
 										->where('bobot_soal_id', $topik_ujian->bobot_soal_id)
 										->where('is_reported', NON_REPORTED_SOAL);
+				}else{
+					$soal_avail = Soal_orm::where('topik_id', $topik_ujian->topik_id)
+										->whereNull('bobot_soal_id')
+										->where('is_reported', NON_REPORTED_SOAL);
+				}
 
 				if($ujian->sumber_ujian == 'bundle'){
 					// JIKA UJIAN DARI BUNDLE MAKA SOAL_AVAIL AKAN DIOVERRIDE
@@ -2056,8 +2087,9 @@ class Ujian extends MY_Controller
 			$jawaban 	= $jwb->jawaban;
 			$ragu_value = $jwb->status_jawaban;
 			$j_essay 	= $jwb->jawaban_essay;
+			$j_mcma 	= $jwb->jawaban_mcma;
 
-			$arr_jawab[$id_soal] = ['j' => $jawaban, 'r' => $ragu_value, 'j_essay' => $j_essay]; // $j_essay SCR OTOMATIS MEN-DECODE htmlentities
+			$arr_jawab[$id_soal] = ['j' => $jawaban, 'r' => $ragu_value, 'j_essay' => $j_essay, 'j_mcma' => $j_mcma]; // $j_essay SCR OTOMATIS MEN-DECODE htmlentities
 
 			$jawaban_abjad 		= empty($jawaban) ? "''" : "'". $jawaban ."'";
 			$ambil_soal 	= $this->ujian->ambilSoal($jawaban_abjad, $id_soal);
@@ -2100,30 +2132,59 @@ class Ujian extends MY_Controller
 					// $urutan_jawaban_huruf = ['A', 'B', 'C', 'D', 'E'];
 
 					$urutan_jawaban = [];
-					$urutan_jawaban_huruf = [];
+					// $urutan_jawaban_huruf = [];
 
-					$urutan_abjad = 0;
-					foreach(OPSI_SOAL as $abjad_soal){
-						$urutan_jawaban[] = $urutan_abjad;
-						$urutan_jawaban_huruf[] = strtoupper($abjad_soal);
-						$urutan_abjad++;
+					// $urutan_abjad = 0;
+					// foreach(OPSI_SOAL as $abjad_soal){
+					// 	$urutan_jawaban[] = $urutan_abjad;
+					// 	$urutan_jawaban_huruf[] = strtoupper($abjad_soal);
+					// 	$urutan_abjad++;
+					// }
+
+					// $urutan_abjad = 0;
+					
+					for($i = 0; $i < $soal->jml_pilihan_jawaban; $i++){
+						// $abj = $alphabet[$i];
+						$urutan_jawaban[] = $i;
+						// $urutan_jawaban_huruf[] = strtoupper($abj);
+						// $urutan_abjad++;
 					}
+
 					$ujian->jenis_jawaban == 'acak' ? shuffle($urutan_jawaban) : null;
 
 					// for ($j = 0; $j < $this->config->item('jml_opsi'); $j++) {
 					$i = 0;
+					$alphabet = range('a', 'z');
 					foreach ($urutan_jawaban as $j) {
-						$opsi 			= "opsi_" . OPSI_SOAL[$j];
-						$file 			= "file_" . OPSI_SOAL[$j];
-						$checked 		= $arr_jawab[$soal->id_soal]['j'] == strtoupper(OPSI_SOAL[$j]) ? "checked" : "";
-						$pilihan_opsi 	= !empty($soal->$opsi) ? $soal->$opsi : "";
-						$tampil_media_opsi = (is_file(base_url() . $path . $soal->$file) || $soal->$file != "") ? tampil_media($path . $soal->$file) : "";
+						$abj_urut 			= $alphabet[$i];
+						$ABJ_urut 			= strtoupper($abj_urut);
 
-						$html .= '<div class="funkyradio-success">
-							<input type="radio" id="opsi_' . strtolower(OPSI_SOAL[$j]) . '_' . $soal->id_soal . '" name="opsi_' . $no . '" data-sid="' . $soal->id_soal . '" value="' . strtoupper(OPSI_SOAL[$j]) . '" rel="' . $no . '" ' . $checked . '>
-							<label for="opsi_' . strtolower(OPSI_SOAL[$j]) . '_' . $soal->id_soal . '" class="label_pilihan">
-								<div class="huruf_opsi"><b>' . $urutan_jawaban_huruf[$i] . '</b></div> <div>' . $pilihan_opsi . '</div><div class="w-25">' . $tampil_media_opsi . '</div>
-							</label></div>';
+						$abj 			= $alphabet[$j];
+						$ABJ 			= strtoupper($abj);
+						$opsi 			= "opsi_" . $abj;
+						$file 			= "file_" . $abj;
+						$tampil_media_opsi = (is_file(base_url() . $path . $soal->$file) || $soal->$file != "") ? tampil_media($path . $soal->$file) : "";
+						
+						if($soal->tipe_soal == TIPE_SOAL_MCSA){
+							$checked 		= $arr_jawab[$soal->id_soal]['j'] == $ABJ ? "checked" : "";
+							$html .= '<div class="funkyradio-success">
+								<input type="radio" id="' . $opsi . '_' . $soal->id_soal . '" name="opsi_' . $no . '" data-sid="' . $soal->id_soal . '" value="' . $ABJ . '" rel="' . $no . '" ' . $checked . '>
+								<label for="' . $opsi . '_' . $soal->id_soal . '" class="label_pilihan">
+									<div class="huruf_opsi"><b>' . $ABJ_urut . '</b></div> <div>' . $soal->$opsi . '</div><div class="w-25">' . $tampil_media_opsi . '</div>
+								</label></div>';
+						}else{
+							// JIKA MCMA
+							$jawaban_exist = [] ;
+							if(!empty($arr_jawab[$soal->id_soal]['j_mcma']))
+								$jawaban_exist = json_decode($arr_jawab[$soal->id_soal]['j_mcma']);
+								
+							$checked 		= in_array($ABJ, $jawaban_exist) ? "checked" : "";
+							$html .= '<div class="funkyradio-success">
+								<input type="checkbox" id="' . $opsi . '_' . $soal->id_soal . '" name="opsi_' . $no . '[]" data-sid="' . $soal->id_soal . '" value="' . $ABJ . '" rel="' . $no . '" ' . $checked . '>
+								<label for="' . $opsi . '_' . $soal->id_soal . '" class="label_pilihan">
+									<div class="huruf_opsi"><b>' . $ABJ_urut . '</b></div> <div>' . $soal->$opsi . '</div><div class="w-25">' . $tampil_media_opsi . '</div>
+								</label></div>';
+						}
 						$i++;
 					}
 
@@ -2341,7 +2402,7 @@ class Ujian extends MY_Controller
 	//					$pilihan_opsi 	= !empty($s->$opsi) ? $s->$opsi : "";
 	//					$tampil_media_opsi = (is_file(base_url().$path.$s->$file) || $s->$file != "") ? tampil_media($path.$s->$file) : "";
 	//					$html .= '<div class="funkyradio-success"">
-	//						<input type="radio" id="opsi_'.strtolower($arr_opsi[$j]).'_'.$s->id_soal.'" name="opsi_'.$no.'" value="'.strtoupper($arr_opsi[$j]).'" rel="'.$no.'" '.$checked.'>
+	//						<input type="radio" id="opsi_'.$arropsi[$j]).'_'.$s->id_soal.'" name="opsi_'.$no.'" value="'.strtoupper($arr_opsi[$j]).'" rel="'.$no.'" '.$checked.'>
 	//						<label for="opsi_'.strtolower($arr_opsi[$j]).'_'.$s->id_soal.'" class="label_pilihan">
 	//							<div class="huruf_opsi">'.$arr_opsi[$j].'</div> <p>'.$pilihan_opsi.'</p><div class="w-25">'.$tampil_media_opsi.'</div>
 	//						</label></div>';
@@ -2451,6 +2512,8 @@ class Ujian extends MY_Controller
 
 		if($jawaban_ujian->soal->tipe_soal == TIPE_SOAL_MCSA){
 			$jawaban_ujian->jawaban = $answer;
+		}elseif($jawaban_ujian->soal->tipe_soal == TIPE_SOAL_MCMA){
+			$jawaban_ujian->jawaban_mcma = json_encode(json_decode($answer));
 		}elseif($jawaban_ujian->soal->tipe_soal == TIPE_SOAL_ESSAY){
 			$jawaban_ujian->jawaban_essay = htmlentities($answer);
 		}
@@ -2588,14 +2651,65 @@ class Ujian extends MY_Controller
 
 			if($jwb->soal->tipe_soal == TIPE_SOAL_MCSA){
 				// INI HANYA UNTUK JENIS MCSA
-				$total_bobot = $total_bobot + ($jwb->soal->bobot_soal->nilai * $jwb->soal->topik->poin_topik);
-				if ($jwb->jawaban == $jwb->soal->jawaban) {
-					$jumlah_benar++;
-					$bobot_poin = ($jwb->soal->bobot_soal->nilai * $jwb->soal->topik->poin_topik);
-					$total_bobot_benar = $total_bobot_benar + $bobot_poin;
-					$topik_ujian_nilai_bobot[$jwb->soal->topik_id] = $topik_ujian_nilai_bobot[$jwb->soal->topik_id] + $bobot_poin;
-				} else {
-					$jumlah_salah++;
+				if(!$jwb->soal->is_bobot_per_jawaban){
+					$total_bobot = $total_bobot + ($jwb->soal->bobot_soal->nilai * $jwb->soal->topik->poin_topik);
+					if ($jwb->jawaban == $jwb->soal->jawaban) {
+						$jumlah_benar++;
+						$bobot_poin = ($jwb->soal->bobot_soal->nilai * $jwb->soal->topik->poin_topik);
+						$total_bobot_benar = $total_bobot_benar + $bobot_poin;
+						$topik_ujian_nilai_bobot[$jwb->soal->topik_id] = $topik_ujian_nilai_bobot[$jwb->soal->topik_id] + $bobot_poin;
+					} else {
+						$jumlah_salah++;
+					}
+				}else{
+					if(!empty($jwb->jawaban)){
+						$jumlah_benar++;
+
+						$abj = strtolower($jwb->jawaban);
+						$opsi_bobot = 'opsi_'. $abj .'_bobot' ;
+
+						$nilai_opsi_bobot = $jwb->soal->$opsi_bobot;
+						$bobot_poin = ($nilai_opsi_bobot * $jwb->soal->topik->poin_topik);
+						$total_bobot_benar = $total_bobot_benar + $bobot_poin;
+						$topik_ujian_nilai_bobot[$jwb->soal->topik_id] = $topik_ujian_nilai_bobot[$jwb->soal->topik_id] + $bobot_poin;
+					}
+					else
+						$jumlah_salah++;
+				}
+			}elseif($jwb->soal->tipe_soal == TIPE_SOAL_MCMA){
+				// INI HANYA UNTUK JENIS MCMA
+				// $total_bobot = $total_bobot + ($jwb->soal->bobot_soal->nilai * $jwb->soal->topik->poin_topik);
+				$jawaban_mcma = [];
+				if(!empty($jwb->jawaban_mcma))
+					$jawaban_mcma = json_decode($jwb->jawaban_mcma);
+
+				if(!$jwb->soal->is_bobot_per_jawaban){
+					$total_bobot = $total_bobot + ($jwb->soal->bobot_soal->nilai * $jwb->soal->topik->poin_topik);
+					$jawaban_mcma_kunci = json_decode($jwb->soal->jawaban);
+					if(empty(array_diff($jawaban_mcma, $jawaban_mcma_kunci)) && empty(array_diff($jawaban_mcma_kunci, $jawaban_mcma))){
+						$jumlah_benar++;
+						$bobot_poin = ($jwb->soal->bobot_soal->nilai * $jwb->soal->topik->poin_topik);
+						$total_bobot_benar = $total_bobot_benar + $bobot_poin;
+						$topik_ujian_nilai_bobot[$jwb->soal->topik_id] = $topik_ujian_nilai_bobot[$jwb->soal->topik_id] + $bobot_poin;
+					} else {
+						$jumlah_salah++;
+					}
+				}else{
+					if(!empty($jawaban_mcma)){
+						$jumlah_benar++;
+						foreach($jawaban_mcma as $ABJ){
+							$abj = strtolower($ABJ);
+							$opsi_bobot = 'opsi_'. $abj .'_bobot' ;
+
+							$nilai_opsi_bobot = $jwb->soal->$opsi_bobot;
+							$bobot_poin = ($nilai_opsi_bobot * $jwb->soal->topik->poin_topik);
+							$total_bobot_benar = $total_bobot_benar + $bobot_poin;
+							$topik_ujian_nilai_bobot[$jwb->soal->topik_id] = $topik_ujian_nilai_bobot[$jwb->soal->topik_id] + $bobot_poin;
+						}
+					}
+					else
+						$jumlah_salah++;
+					
 				}
 			}elseif($jwb->soal->tipe_soal == TIPE_SOAL_ESSAY){
 				if(!empty($jwb->jawaban_essay))
@@ -3217,7 +3331,8 @@ class Ujian extends MY_Controller
 				$jawaban_ujian_history->jawaban_essay = $jawaban_ujian->jawaban_essay;
 				$jawaban_ujian_history->nilai_essay = $jawaban_ujian->nilai_essay;
 				$jawaban_ujian_history->penilai_essay = $jawaban_ujian->penilai_essay;
-				$jawaban_ujian_history->waktu_menilai_essay = empty($jawaban_ujian->waktu_menilai_essay) ? null : $jawaban_ujian->waktu_menilai_essay;
+				$jawaban_ujian_history->waktu_menilai_essay = $jawaban_ujian->waktu_menilai_essay;
+				$jawaban_ujian_history->jawaban_mcma = $jawaban_ujian->jawaban_mcma;
 				$jawaban_ujian_history->save();
 
 			}

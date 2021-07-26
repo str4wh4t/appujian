@@ -385,6 +385,7 @@ class HasilUjian extends MY_Controller {
 				$topik_ujian_list[] = Topik_orm::findOrFail($topik_id);
 			}
 		}else{
+			// LOGIK INI SEPERTINYA SUDAH TIDAK DIPAKAI
 			$topik_ujian_list = $h_ujian->m_ujian->topik;
 		}
 
@@ -561,8 +562,8 @@ class HasilUjian extends MY_Controller {
 				}elseif($jwb->soal->tipe_soal == TIPE_SOAL_ESSAY){
 					// DI ESSAY SEMUA NILAI DIANGGAP BENAR
 					$jumlah_benar++;
-					// $bobot_poin = ($jwb->nilai_essay * $jwb->soal->topik->poin_topik); // BELUM TAHU BAIKNYA DI KALI KAN DENGAN BOBOT TOPIK ATAU TIDAK
-					$bobot_poin = $jwb->nilai_essay ;
+					$bobot_poin = ($jwb->nilai_essay * ($jwb->soal->bobot_soal->nilai * $jwb->soal->topik->poin_topik)); // BELUM TAHU BAIKNYA DI KALI KAN DENGAN BOBOT SOAL dan TOPIK ATAU TIDAK
+					// $bobot_poin = $jwb->nilai_essay ;
 					$total_bobot_benar = $total_bobot_benar + $bobot_poin;
 					$topik_ujian_nilai_bobot[$jwb->soal->topik_id] = $topik_ujian_nilai_bobot[$jwb->soal->topik_id] + $bobot_poin;
 				}

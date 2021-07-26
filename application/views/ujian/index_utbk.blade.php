@@ -588,7 +588,7 @@ function init_page_level(){
     //   e.preventDefault();
     // });
 
-    document.addEventListener('contextmenu', event => event.preventDefault());
+    // document.addEventListener('contextmenu', event => event.preventDefault());
 
     // let width = $(window).width();
 

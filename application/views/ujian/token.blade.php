@@ -292,6 +292,7 @@ function go_ujian(token){
                             @php( $i = 1)
                             @foreach($urutan_topik as $topik_id => $val)
                             @php($topik = $topik_key_nama_array[$topik_id])
+                            @if(!empty($topik_ujian_jml_soal[$topik_id]))
                             <dl class="row">
                                 <dt class="col-sm-6">{{ $i }}. {{ $topik->nama_topik }}</dt>
                                 <dd class="col-sm-3 text-success">{{ $topik_ujian_jml_soal[$topik_id] }} Soal</dd>
@@ -299,7 +300,8 @@ function go_ujian(token){
                                 <dd class="col-sm-3">{{ $val['waktu'] }} Menit</dd>
                                 @endif
                             </dl>
-                            @php( $i++)
+                            @php($i++)
+                            @endif
                             @endforeach
                         </th>
                     </tr>
@@ -310,9 +312,9 @@ function go_ujian(token){
                             <dt class="col-sm-12 text-danger">Topik Ujian :</dt>
                             </dl>
 
-                    @php( $j = 1)
-                    @php( $i = 1)
-                    @foreach($matkul_bundle_list as $matkul)
+                    @php($j = 1)
+                    @php($i = 1)
+                    {{-- @foreach($matkul_bundle_list as $matkul) --}}
                     {{-- 
                     <tr>
                         <th>Materi Ujian ({{ $j }})</th>
@@ -324,7 +326,8 @@ function go_ujian(token){
                             {{-- @php( $i = 1) --}}
                             @foreach($urutan_topik as $topik_id => $val)
                             @php($topik = $topik_key_nama_array[$topik_id])
-                            @if($matkul->id_matkul == $topik->matkul_id)
+                            {{-- @if($matkul->id_matkul == $topik->matkul_id) --}}
+                            @if(!empty($topik_ujian_jml_soal[$topik_id]))
                             <dl class="row">
                                 <dt class="col-sm-6">{{ $i }}. {{ $topik->nama_topik }}</dt>
                                 <dd class="col-sm-3 text-success">{{ $topik_ujian_jml_soal[$topik_id] }} Soal</dd>
@@ -332,11 +335,12 @@ function go_ujian(token){
                                 <dd class="col-sm-3">{{ $val['waktu'] }} Menit</dd>
                                 @endif
                             </dl>
-                            @php( $i++)
+                            @php($i++)
                             @endif
+                            {{-- @endif --}}
                             @endforeach
-                    @php( $j++)
-                    @endforeach
+                    @php($j++)
+                    {{-- @endforeach --}}
 
                         </th>
                     </tr>

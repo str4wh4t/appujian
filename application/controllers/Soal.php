@@ -139,8 +139,12 @@ class Soal extends MY_Controller
 		view('soal/detail', $data);
 	}
 
-	public function add($tipe_soal_selected = TIPE_SOAL_MCSA, array $data = [])
+	public function add($tipe_soal_selected = TIPE_SOAL_MCSA, $jml_pilihan_jawaban = JML_PILIHAN_JAWABAN_DEFAULT, array $data = [])
 	{
+
+		if(($jml_pilihan_jawaban > JML_PILIHAN_JAWABAN_MAX) || ($jml_pilihan_jawaban < 1))
+			show_error("Jumlah pilihan soal tidak valid", 500, "Perhatian");
+
 		$user = $this->ion_auth->user()->row();
 
 		$data['user']      = $user;
@@ -166,9 +170,11 @@ class Soal extends MY_Controller
 
 		$data['bundle_avail'] = Bundle_orm::all();
 		$data['bundle_selected'] = $data['bundle_selected'] ?? [];
+		$data['jawaban_multiple_selected'] = $data['jawaban_multiple_selected'] ?? [];
 
 		$data['section_avail'] = Section_orm::all();
 		$data['tipe_soal_selected'] = $tipe_soal_selected;
+		$data['jml_pilihan_jawaban'] = $jml_pilihan_jawaban;
 
 		//		$this->load->view('_templates/dashboard/_header.php', $data);
 		//		$this->load->view('soal/add');
@@ -176,7 +182,7 @@ class Soal extends MY_Controller
 		view('soal/add', $data);
 	}
 
-	public function edit($id, $tipe_soal_selected = null, array $data = [])
+	public function edit($id, $tipe_soal_selected = null, $jml_pilihan_jawaban = null, array $data = [])
 	{
 		//		$user = $this->ion_auth->user()->row();
 		$soal = Soal_orm::findOrFail($id);
@@ -219,9 +225,11 @@ class Soal extends MY_Controller
 
 		$data['bundle_avail'] = Bundle_orm::all();
 		$data['bundle_selected'] = $data['bundle_selected'] ?? $soal->bundle()->pluck('bundle.id')->toArray();
+		$data['jawaban_multiple_selected'] = $data['jawaban_multiple_selected'] ?? [];
 
 		$data['section_avail'] = Section_orm::all();
 		$data['tipe_soal_selected'] = empty($tipe_soal_selected) ? $soal->tipe_soal : $tipe_soal_selected;
+		$data['jml_pilihan_jawaban'] = empty($jml_pilihan_jawaban) ? $soal->jml_pilihan_jawaban : $jml_pilihan_jawaban;
 
 		//		$this->load->view('_templates/dashboard/_header.php', $data);
 		//		$this->load->view('soal/edit');
@@ -271,17 +279,52 @@ class Soal extends MY_Controller
 		$this->form_validation->set_rules('soal', 'Soal', 'required|trim');
 
 		$tipe_soal = $this->input->post('tipe_soal', true);
-
+		$is_bobot_per_jawaban = $this->input->post('is_bobot_per_jawaban', true) == 'on' ? 1 : 0;
 		if($tipe_soal == TIPE_SOAL_MCSA || $tipe_soal == TIPE_SOAL_MCMA){
-			$this->form_validation->set_rules('jawaban_a', 'Jawaban A', 'required|trim');
-			$this->form_validation->set_rules('jawaban_b', 'Jawaban B', 'required|trim');
-			$this->form_validation->set_rules('jawaban_c', 'Jawaban C', 'required|trim');
-			$this->form_validation->set_rules('jawaban_d', 'Jawaban D', 'required|trim');
-			$this->form_validation->set_rules('jawaban_e', 'Jawaban E', 'required|trim');
+
+			$this->form_validation->set_rules(
+				'jml_pilihan_jawaban',
+				'Jml Pilihan Jawaban',
+				[
+					'required',
+					[
+						'is_valid_jml_pilihan_jawaban',
+						function ($jml_pilihan_jawaban) {
+							return (($jml_pilihan_jawaban <= JML_PILIHAN_JAWABAN_MAX) && ($jml_pilihan_jawaban > 0));
+						}
+					]
+				],
+				[
+					'is_valid_jml_pilihan_jawaban' => 'Gel yg dimasukan salah',
+				]
+			);
+	
+			$jml_pilihan_jawaban = $this->input->post('jml_pilihan_jawaban', true);
+			$alphabet = range('a', 'z');
+			if($is_bobot_per_jawaban){
+				for($i = 0; $i < $jml_pilihan_jawaban; $i++ ){
+					$abj = $alphabet[$i];
+					$ABJ = strtoupper($abj);
+					$opsi_bobot = 'opsi_'. $abj .'_bobot';
+					$this->form_validation->set_rules($opsi_bobot, 'Opsi '. $ABJ .' Bobot', 'required|decimal');
+				}
+			}
+			for($i = 0; $i < $jml_pilihan_jawaban; $i++ ){
+				$abj = $alphabet[$i];
+				$ABJ = strtoupper($abj);
+				$this->form_validation->set_rules('jawaban_'. $abj, 'Jawaban '. $ABJ, 'required|trim');
+			}
 		}
 
-		$this->form_validation->set_rules('jawaban', 'Kunci Jawaban', 'required');
-		$this->form_validation->set_rules('bobot_soal_id', 'Bobot Soal', 'required|is_natural_no_zero');
+		if(!$is_bobot_per_jawaban){
+			if($tipe_soal == TIPE_SOAL_MCSA)
+				$this->form_validation->set_rules('jawaban', 'Kunci Jawaban', 'required');
+			if($tipe_soal == TIPE_SOAL_MCMA)
+				$this->form_validation->set_rules('jawaban[]', 'Kunci Jawaban', 'required');
+
+			$this->form_validation->set_rules('bobot_soal_id', 'Bobot Soal', 'required|is_natural_no_zero');
+		}
+
 		$this->form_validation->set_rules('penjelasan', 'Penjelasan', 'trim');
 		//        $this->form_validation->set_rules('bobot', 'Bobot Soal', 'required|is_natural_no_zero|max_length[2]');
 		$this->form_validation->set_rules(
@@ -388,24 +431,27 @@ class Soal extends MY_Controller
 		if (!$this->input->post())
 			redirect('soal');
 
-		//    	vdebug($this->input->post());
-
+		$this->_validasi();
+		
 		$aksi = $this->input->post('aksi', true);
 		$id_soal = $this->input->post('id_soal', true);
 		$tipe_soal = $this->input->post('tipe_soal', true);
+		$jml_pilihan_jawaban = $this->input->post('jml_pilihan_jawaban', true);
+		$is_bobot_per_jawaban = $this->input->post('is_bobot_per_jawaban', true) == 'on' ? 1 : 0;
 
-		$this->_validasi();
 		// $this->_file_config();
 
 		if ($this->form_validation->run() === false) {
 			// VALIDASI SALAH
 			$bundle_selected = empty($this->input->post('bundle[]')) ? [] : $this->input->post('bundle[]');
+			$jawaban_multiple_selected = empty($this->input->post('jawaban[]')) ? [] : $this->input->post('jawaban[]');
 			$stts = 'ko' ;
 			$data = [
 				'bundle_selected' => $bundle_selected,
+				'jawaban_multiple_selected' => $jawaban_multiple_selected,
 				'stts' => $stts,
 			];
-			$aksi === 'add' ? $this->add($tipe_soal, $data) : $this->edit($id_soal, $tipe_soal, $data);
+			$aksi === 'add' ? $this->add($tipe_soal, $jml_pilihan_jawaban, $data) : $this->edit($id_soal, $tipe_soal, $jml_pilihan_jawaban, $data);
 		} else {
 			// VALIDASI BENAR
 			$data = [
@@ -421,6 +467,9 @@ class Soal extends MY_Controller
 				'section_id'     => $this->input->post('section_id', true),
 			];
 
+			if($tipe_soal == TIPE_SOAL_MCMA)
+				$data['jawaban'] = json_encode($this->input->post('jawaban[]'));
+			
 			// vdebug($data['penjelasan']);
 
 			// $abjad = OPSI_SOAL;
@@ -516,7 +565,7 @@ class Soal extends MY_Controller
 
 					$soal = new Soal_orm();
 					// $soal->soal = $data['soal'];
-					$soal->bobot_soal_id = $data['bobot_soal_id'];
+					$soal->bobot_soal_id = !$is_bobot_per_jawaban ? $data['bobot_soal_id'] : null;
 					$soal->gel = $data['gel'];
 					$soal->smt = $data['smt'];
 					$soal->tahun = $data['tahun'];
@@ -531,6 +580,8 @@ class Soal extends MY_Controller
 					$soal->no_urut = $no_urut ;
 					$soal->section_id = empty($data['section_id']) ? null : $data['section_id'];
 					$soal->tipe_soal = $tipe_soal;
+					$soal->jml_pilihan_jawaban = $jml_pilihan_jawaban;
+					$soal->is_bobot_per_jawaban = $is_bobot_per_jawaban;
 					// $soal->jawaban = $data['jawaban']; // UNTUK JAWABAN ISIAN TERGANTUNG TIPE SOAL
 					$soal->save();
 
@@ -570,9 +621,14 @@ class Soal extends MY_Controller
 
 					if($tipe_soal == TIPE_SOAL_MCSA || $tipe_soal == TIPE_SOAL_MCMA){
 
-						$soal_temp->jawaban = $data['jawaban'];
+						$soal_temp->jawaban = empty($data['jawaban']) ? null : $data['jawaban'];
 
-						foreach (OPSI_SOAL as $abj) {
+						// foreach (OPSI_SOAL as $abj) {
+
+						$alphabet = range('a', 'z');
+						for($j = 0; $j < $soal_temp->jml_pilihan_jawaban; $j++ ){
+							$abj = $alphabet[$j];
+
 							$opsi = 'opsi_' . $abj ;
 							// $html = $soal_temp->$opsi;
 							$html = $this->input->post('jawaban_' . $abj);
@@ -607,6 +663,12 @@ class Soal extends MY_Controller
 
 							$soal_temp->$opsi = $body;
 
+							
+							if($is_bobot_per_jawaban){
+								$opsi_bobot = 'opsi_'. $abj .'_bobot';
+								$soal_temp->$opsi_bobot = $this->input->post($opsi_bobot, true);
+								
+							}
 						}
 
 					}elseif($tipe_soal == TIPE_SOAL_ESSAY){
@@ -723,8 +785,8 @@ class Soal extends MY_Controller
 
 					$soal = Soal_orm::findOrFail($id_soal);
 					// $soal->soal = $data['soal'];
-					$soal->jawaban = $data['jawaban'];
-					$soal->bobot_soal_id = $data['bobot_soal_id'];
+					// $soal->jawaban = $data['jawaban'];
+					$soal->bobot_soal_id = !$is_bobot_per_jawaban ? $data['bobot_soal_id'] : null;
 					$soal->gel = $data['gel'];
 					$soal->smt = $data['smt'];
 					$soal->tahun = $data['tahun'];
@@ -738,6 +800,8 @@ class Soal extends MY_Controller
 					$soal->created_by = $this->ion_auth->user()->row()->username;
 					$soal->section_id = empty($data['section_id']) ? null : $data['section_id'];
 					$soal->tipe_soal = $tipe_soal;
+					$soal->jml_pilihan_jawaban = $jml_pilihan_jawaban;
+					$soal->is_bobot_per_jawaban = $is_bobot_per_jawaban;
 					// $soal->save();
 
 					// $soal_temp = Soal_orm::findOrFail($id_soal);
@@ -779,7 +843,14 @@ class Soal extends MY_Controller
 
 					if($tipe_soal == TIPE_SOAL_MCSA || $tipe_soal == TIPE_SOAL_MCMA){
 
-						foreach (OPSI_SOAL as $abj) {
+						$soal->jawaban = empty($data['jawaban']) ? null : $data['jawaban'];
+
+						// foreach (OPSI_SOAL as $abj) {
+
+						$alphabet = range('a', 'z');
+						for($j = 0; $j < $soal->jml_pilihan_jawaban; $j++ ){
+							$abj = $alphabet[$j];
+
 							$opsi = 'opsi_' . $abj ;
 							// $html = $soal_temp->$opsi;
 							$html = $this->input->post('jawaban_' . $abj);
@@ -815,6 +886,12 @@ class Soal extends MY_Controller
 
 							// $soal_temp->$opsi = $body;
 							$soal->$opsi = $body;
+
+							if($is_bobot_per_jawaban){
+								$opsi_bobot = 'opsi_'. $abj .'_bobot';
+								$soal->$opsi_bobot = $this->input->post($opsi_bobot, true);
+								
+							}
 
 						}
 					}elseif($tipe_soal == TIPE_SOAL_ESSAY){
@@ -1351,9 +1428,10 @@ class Soal extends MY_Controller
 			$soal = $soal->get();
 			if ($soal->isNotEmpty()) {
 				foreach ($soal as $d) {
-					if (!isset($jml_soal[$d->topik_id][$d->bobot_soal_id]))
-						$jml_soal[$d->topik_id][$d->bobot_soal_id] = 0;
-					$jml_soal[$d->topik_id][$d->bobot_soal_id] = ++$jml_soal[$d->topik_id][$d->bobot_soal_id];
+					$key = empty($d->bobot_soal_id) ? SOAL_NO_BOBOT_ID : $d->bobot_soal_id;
+					if (!isset($jml_soal[$d->topik_id][$key]))
+						$jml_soal[$d->topik_id][$key] = 0;
+					$jml_soal[$d->topik_id][$key] = ++$jml_soal[$d->topik_id][$key];
 				}
 			}
 		}

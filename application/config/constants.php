@@ -139,3 +139,9 @@ defined('TIPE_SOAL')      OR define('TIPE_SOAL', [TIPE_SOAL_MCSA => 'MULTIPLE CH
                                                     TIPE_SOAL_MCMA => 'MULTIPLE CHOICE MULTIPLE ANSWER (MCMA)',
                                                     TIPE_SOAL_ESSAY => 'ESSAY']);
 
+defined('JML_PILIHAN_JAWABAN_MAX')      OR define('JML_PILIHAN_JAWABAN_MAX', 6);
+defined('JML_PILIHAN_JAWABAN_DEFAULT')      OR define('JML_PILIHAN_JAWABAN_DEFAULT', 5);    
+defined('IS_BOBOT_PER_JAWBAN_DEFAULT')      OR define('IS_BOBOT_PER_JAWBAN_DEFAULT', 0);  
+defined('SOAL_NO_BOBOT_LABEL')      OR define('SOAL_NO_BOBOT_LABEL', 'tanpa bobot');
+defined('SOAL_NO_BOBOT_ID')      OR define('SOAL_NO_BOBOT_ID', 0);
+defined('SOAL_NO_BOBOT_VALUE')      OR define('SOAL_NO_BOBOT_VALUE', 0);                                               

@@ -42,7 +42,7 @@
                 let interval = 1000;
                 setInterval(function() {
                     date.add(1, 'second');
-                    datetime_el.html(date.format('H:mm:ss'));
+                    datetime_el.html(date.format('HH:mm:ss'));
                 },interval);
             }
         });
@@ -238,7 +238,7 @@
                                                 @endphp
 
                                                 <div class="col-md-4 col-sm-12">
-                                                    <div class="card box-shadow-0 border-primary" style="background-color: {{ (($status_ujian == 'active')||($status_ujian == 'upcoming')) ? (empty($mhs_ujian->h_ujian) ? '#fff' : (($mhs_ujian->h_ujian->ujian_selesai == 'Y' && !$mhs_ujian->m_ujian->repeatable) ? '#e4e4e4' : '#fff')) : '#e4e4e4' }};">
+                                                    <div class="card box-shadow-0 border-primary" style="background-color: {{ (($status_ujian == 'active')||($status_ujian == 'upcoming')) ? (empty($mhs_ujian->h_ujian) ? '#fff' : (($mhs_ujian->h_ujian->ujian_selesai == 'Y' && !$mhs_ujian->m_ujian->repeatable) ? '#f1f1f1' : '#fff')) : '#f1f1f1' }};">
                                                         {{-- <div class="card-header"></div> --}}
                                                         <div class="card-header " style="min-height: 85px;">
                                                             <h6><b>{{ $mhs_ujian->m_ujian->nama_ujian }}</b></h6>

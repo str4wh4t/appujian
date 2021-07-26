@@ -300,11 +300,11 @@ async function init_topik_table_value(bundle_ids){
     }
     data_jml_soal = [];
     if(selected_ids.length)
-        await get_jml_soal_per_topik(selected_ids, bundle_ids);
+        await get_jml_soal_per_topik(selected_ids, bundle_ids); // data_jml_soal terisi ketika fungsi ini
     $('.tr-cloned-topik').remove();
     $('#jumlah_soal_total').text('0');
     $('input[name="jumlah_soal_total"]').val('0');
-    $.each(selected_ids,function(i,topik_id){
+    $.each(selected_ids,function(i, topik_id){
         let nama = topik_avail[topik_id];
 
         // if($.inArray(v, topik_id_dipilih) !== -1){
@@ -866,6 +866,19 @@ $(document).on('click','#btn_refine_peserta', function(){
                                     </div>
                                 </div>
                                 @endforeach
+                                {{-- UNTUK ISIAN SOAL DENGAN BOBOT PER JAWABAN --}}
+                                <div class="row">
+                                    <label for="" style="" class="col-md-8">
+                                        {{ ucwords(SOAL_NO_BOBOT_LABEL) }}
+                                        <small class="text-danger">
+                                            <span data-bobot_soal_id="{{ SOAL_NO_BOBOT_ID }}" class="jml_soal"></span> soal
+                                        </small>
+                                    </label>
+                                    <div class="form-group col-md-4">
+                                        <input placeholder="Jml Soal" type="number" data-topik_id="DATA-TOPIK-ID" data-bobot_soal_id="{{ SOAL_NO_BOBOT_ID }}" class="form-control input_jml input-sm input_number" name="jumlah_soal[ID-TOPIK][ID-BOBOT-SOAL]" style="text-align: right" disabled="disabled">
+                                        <small class="help-block"></small>
+                                    </div>
+                                </div>
                             </td>
                         </tr>
                         <tr>
@@ -1082,6 +1095,7 @@ $(document).on('click','#btn_refine_peserta', function(){
                 @else 
                 <input type="hidden" name="kelompok_ujian" value="null">
                 <input type="hidden" name="tahun_mhs" value="null">
+                <input type="hidden" name="peserta_hidden" class="form-control" id="peserta_hidden">
                 <hr />
                 <div class="form-group text-center" id="panel_submit_ujian">
                     <a href="{{ site_url('ujian/master') }}" class="btn btn-flat btn-warning">

@@ -166,14 +166,18 @@
 				</li>
 				<li class="{{ ($page == 'ujian' && $method == 'latihan_soal' ) ? "active" : "" }} nav-item">
 					<a href="{{ url('ujian/latihan_soal') }}">
-						<i class="ft-edit-3"></i><span class="menu-title" data-i18n="nav.dash.main">Latihan Soal</span>
+						{{-- <i class="ft-edit-3"></i><span class="menu-title" data-i18n="nav.dash.main">Latihan Soal</span> --}}
+						<i class="ft-edit-3"></i><span class="menu-title" data-i18n="nav.dash.main">Tryout</span>
 					</a>
 				</li>
-				<li class="{{ ($page == 'ujian' && $method == 'tryout' ) ? "active" : "" }} nav-item">
+
+				{{-- TRYOUT SEMENTARA DI HIDDEN DULU --}}
+				{{-- <li class="{{ ($page == 'ujian' && $method == 'tryout' ) ? "active" : "" }} nav-item">
 					<a href="{{ url('ujian/tryout') }}">
 						<i class="fa fa-trophy"></i><span class="menu-title" data-i18n="nav.dash.main">Tryout</span>
 					</a>
-				</li>
+				</li> --}}
+
 				@else
 				<li class="{{ $page == 'ujian' ? "active" : "" }} nav-item">
 					<a href="{{ url('ujian/list') }}">

@@ -6,8 +6,8 @@
 {{--<link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/vendors/css/tables/datatable/dataTables.bootstrap4.min.css') }}">--}}
 {{--<link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/vendors/css/tables/extensions/rowReorder.dataTables.min.css') }}">--}}
 {{--<link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/vendors/css/tables/extensions/responsive.dataTables.min.css') }}">--}}
-<link rel="stylesheet" type="text/css"
-    href="{{ asset('assets/template/robust/app-assets/vendors/css/forms/selects/select2.min.css') }}">
+<link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/vendors/css/forms/selects/select2.min.css') }}">
+<link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/vendors/css/forms/toggle/bootstrap-switch.min.css') }}">
 
 <!-- Include TUI CSS. -->
 {{--<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tui-image-editor@3.2.2/dist/tui-image-editor.css">--}}
@@ -62,6 +62,8 @@
 <script src="{{ asset('assets/plugins/summernote_plugins/summernote-audio.js') }}"></script>
 {{--<script src="https://rawgit.com/RobinHerbots/Inputmask/5.x/dist/jquery.inputmask.js"></script>--}}
 <script src="{{ asset('assets/yarn/node_modules/jquery-validation/dist/jquery.validate.js') }}"></script>
+<script src="{{ asset('assets/template/robust/app-assets/vendors/js/forms/toggle/bootstrap-switch.min.js') }}"></script>
+<script src="{{ asset('assets/yarn/node_modules/inputmask/dist/jquery.inputmask.min.js') }}"></script>
 <!-- END PAGE VENDOR JS-->
 @endpush
 
@@ -128,6 +130,18 @@ function init_page_level(){
         followingToolbar: false,
         height: 150,
     });
+
+    $(".inp_decimal").inputmask("decimal",{
+        digits: 2,
+        digitsOptional: false,
+        radixPoint: ".",
+        groupSeparator: ",",
+        allowPlus: false,
+        allowMinus: false,
+        rightAlign: false,
+        autoUnmask: true,
+    });
+
     $('.note-btn').attr('title', '').attr('data-original-title', ''); // DISABLED SUMMERNOTE TOOLTIP
 
     $('.select2').select2();
@@ -144,11 +158,15 @@ function init_page_level(){
         placeholder: "Pilih seksi soal"
     });
 
-     
+    $('#jml_pilihan_jawaban').select2({
+        placeholder: "Pilih jml pilihan jawaban"
+    });
     
     $('#bobot_soal_id').select2({
         placeholder: "Pilih bobot soal"
     }); 
+
+    $(".switchBootstrap").bootstrapSwitch();
 
     let options = {};
     cascadLoading = new Select2Cascade($('#matkul_id'), $('#topik_id'), '{{ site_url('soal/ajax/get_topic_by_matkul/') }}?id=:parentId:', options);
@@ -183,7 +201,7 @@ function init_page_level(){
         $('select[name="matkul_id"]').trigger('change');
     @endif
 
-    @if($tipe_soal_selected == TIPE_SOAL_MCSA || $tipe_soal_selected == TIPE_SOAL_MCMA)
+    @if($tipe_soal_selected == TIPE_SOAL_MCSA)
         $('select[name="jawaban"]').select2({
             placeholder: "Pilih kunci jawaban"
         }); 
@@ -191,7 +209,16 @@ function init_page_level(){
             $('select[name="jawaban"]').val("{{ set_value('jawaban') }}");
             $('select[name="jawaban"]').trigger('change');
         @endif
+    @endif
 
+    @if($tipe_soal_selected == TIPE_SOAL_MCMA)
+        $('select[name="jawaban[]"]').select2({
+            placeholder: "Pilih kunci jawaban"
+        });
+        @if(!empty($jawaban_multiple_selected))
+            $('select[name="jawaban[]"]').val({!! json_encode($jawaban_multiple_selected) !!});
+            $('select[name="jawaban[]"]').trigger('change');
+        @endif
     @endif
 
     @if(!empty(set_value('bobot_soal_id')))
@@ -202,6 +229,10 @@ function init_page_level(){
     @if(!empty(set_value('section_id')))
         $('select[name="section_id"]').val("{{ set_value('section_id') }}");
         $('select[name="section_id"]').trigger('change');
+    @endif
+
+    @if(!empty(set_value('is_bobot_per_jawaban')))
+        $('input[name="is_bobot_per_jawaban"]').bootstrapSwitch('toggleState');
     @endif
 
     /////
@@ -219,6 +250,10 @@ function init_page_level(){
     @endif
 
     @if(!empty(form_error('jawaban')))
+        $('#jawaban').parent('.form-group').addClass('has-error');
+    @endif
+
+    @if(!empty(form_error('jawaban[]')))
         $('#jawaban').parent('.form-group').addClass('has-error');
     @endif
 
@@ -412,9 +447,28 @@ $(document).on('change','#section_id',function(e){
     });
 });
 
+let tipe_soal = {{ $tipe_soal_selected }};
+let jml_pilihan_jawaban = {{ $jml_pilihan_jawaban }};
+
 $(document).on('change','#tipe_soal',function(e){
-    let tipe_soal = $(this).val();
-    location.href = "{{ url('soal/add') }}" + "/" + tipe_soal;
+    tipe_soal = $(this).val();
+    location.href = "{{ url('soal/add') }}" + "/" + tipe_soal + "/" + jml_pilihan_jawaban;
+});
+
+$(document).on('change','#jml_pilihan_jawaban',function(e){
+    jml_pilihan_jawaban = $(this).val();
+    location.href = "{{ url('soal/add') }}" + "/" + tipe_soal + "/" + jml_pilihan_jawaban;
+});
+
+$('#is_bobot_per_jawaban').on('switchChange.bootstrapSwitch', function (event, state) {
+    if(state){
+        $('.show_on_bobot_opsi').show();
+        $('.show_on_bobot_soal').hide();
+    }else{
+        $('.show_on_bobot_opsi').hide();
+        $('.show_on_bobot_soal').show();
+    }    
+
 });
 
 </script>
@@ -449,8 +503,32 @@ $(document).on('change','#tipe_soal',function(e){
                                     @endforeach
                                 </select>
                                 <small class="help-block"
-                                    style="color: #dc3545"><?=form_error('tipe_soal')?></small>
+                                    style="color: #dc3545">{{ form_error('tipe_soal') }}</small>
                             </div>
+
+                            @if($tipe_soal_selected == TIPE_SOAL_MCSA || $tipe_soal_selected == TIPE_SOAL_MCMA)
+                            <div class="form-group">
+                                <label for="jml_pilihan_jawaban" class="control-label">Jml Pilihan Jawaban</label>
+                                <select name="jml_pilihan_jawaban" id="jml_pilihan_jawaban" class="form-control"
+                                    style="width:100%!important">
+                                    <option></option>
+                                    @for($i = 1; $i <= JML_PILIHAN_JAWABAN_MAX; $i++ )
+                                        <option value="{{ $i }}" {{ $i == $jml_pilihan_jawaban? 'selected="selected"' : '' }}>{{ $i }}</option>
+                                    @endfor
+                                </select>
+                                <small class="help-block"
+                                    style="color: #dc3545">{{ form_error('jml_pilihan_jawaban') }}</small>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="is_bobot_per_jawaban">Bobot Per Jawaban</label> <small class="help-block text-danger"><b>***</b> Nilai sesuai bobot pada jawaban</small>
+                                <div>
+                                    <input type="radio" class="switchBootstrap" id="is_bobot_per_jawaban" name="is_bobot_per_jawaban" data-on-text="Ya" data-off-text="Tidak" data-radio-all-off="true" data-on-color="success" data-off-color="danger" />
+                                </div>
+                                <small class="help-block"
+                                    style="color: #dc3545">{{ form_error('is_bobot_per_jawaban') }}</small>
+                            </div>
+                            @endif
 
                             <fieldset class="form-group" style="padding: 10px; border: 1px solid #ccc;">
                                 <legend class="col-form-label col-lg-2 col-sm-12" style="border: 1px solid #ccc; background-color: #d4fdff;">Cluster Soal</legend>
@@ -462,7 +540,7 @@ $(document).on('change','#tipe_soal',function(e){
                                         <option value="{{ $gel }}" {{ $gel == (set_value('gel') != null ? set_value('gel') : get_selected_gel()) ? "selected" : "" }}>GEL-{{ $gel }}</option>    
                                         @endforeach
                                     </select>
-                                    <small class="help-block" style="color: #dc3545"><?=form_error('gel')?></small>
+                                    <small class="help-block" style="color: #dc3545">{{ form_error('gel') }}</small>
                                 </div>
                                 <div class="form-group">
                                     <label for="smt" class="control-label">Smt</label>
@@ -472,7 +550,7 @@ $(document).on('change','#tipe_soal',function(e){
                                         <option value="{{ $smt }}" {{ $smt == (set_value('smt') != null ? set_value('smt') : get_selected_smt()) ? "selected" : "" }}>SMT-{{ $smt }}</option>    
                                         @endforeach
                                     </select>
-                                    <small class="help-block" style="color: #dc3545"><?=form_error('smt')?></small>
+                                    <small class="help-block" style="color: #dc3545">{{ form_error('smt') }}</small>
                                 </div>
                                 <div class="form-group">
                                     <label for="tahun" class="control-label">Tahun</label>
@@ -482,7 +560,7 @@ $(document).on('change','#tipe_soal',function(e){
                                         <option value="{{ $tahun }}" {{ $tahun == (set_value('tahun') != null ? set_value('tahun') : get_selected_tahun()) ? "selected" : "" }}>{{ $tahun }}</option>    
                                         @endforeach
                                     </select>
-                                    <small class="help-block" style="color: #dc3545"><?=form_error('tahun')?></small>
+                                    <small class="help-block" style="color: #dc3545">{{ form_error('tahun') }}</small>
                                 </div>
                             </fieldset>
                             @if(is_admin())
@@ -495,9 +573,9 @@ $(document).on('change','#tipe_soal',function(e){
                                         <option value="{{ $bundle->id }}" {{ in_array($bundle->id, $bundle_selected) ? "selected" : "" }}>{{ $bundle->nama_bundle }}</option>    
                                         @endforeach
                                     </select>
-                                    <small class="help-block" style="color: #dc3545"><?=form_error('bundle')?></small>
+                                    <small class="help-block" style="color: #dc3545">{{ form_error('bundle') }}</small>
                                     <input placeholder="Tambah bundle soal disini" type="text" value="" class="form-control" name="nama_bundle">
-                                    <small class="help-block" style="color: #dc3545"><?=form_error('bundle_nama')?></small>
+                                    <small class="help-block" style="color: #dc3545">{{ form_error('bundle_nama') }}</small>
                                 </div>
                             </fieldset>
                             @endif
@@ -510,7 +588,7 @@ $(document).on('change','#tipe_soal',function(e){
                                     <option value="<?=$d->id_matkul?>"><?=$d->nama_matkul?></option>
                                     <?php endforeach; ?>
                                 </select> <small class="help-block"
-                                    style="color: #dc3545"><?=form_error('matkul_id')?></small>
+                                    style="color: #dc3545">{{ form_error('matkul_id') }}</small>
                             </div>
 
                             <div class="form-group">
@@ -522,7 +600,7 @@ $(document).on('change','#tipe_soal',function(e){
                                 <select name="topik_id" id="topik_id" class="form-group"
                                     style="width:100% !important">
                                 </select> <small class="help-block"
-                                    style="color: #dc3545"><?=form_error('topik_id')?></small>
+                                    style="color: #dc3545">{{ form_error('topik_id') }}</small>
                             </div>
 
                             <div class="alert bg-info mb-2" role="alert">
@@ -531,7 +609,7 @@ $(document).on('change','#tipe_soal',function(e){
 
                             {{--                    <div class="form-group">--}}
                             {{--                        <input type="file" name="file_soal" class="form-control">--}}
-                            {{--                        <small class="help-block" style="color: #dc3545"><?=form_error('file_soal')?></small>--}}
+                            {{--                        <small class="help-block" style="color: #dc3545">{{ form_error('file_soal') }}</small>--}}
                             {{--                    </div>--}}
                             <div class="row">
                                 <div class="col-lg-10">
@@ -543,7 +621,7 @@ $(document).on('change','#tipe_soal',function(e){
                                             <option value="{{ $section->id }}" >{{ $section->keterangan }}</option>    
                                             @endforeach
                                         </select> <small class="help-block"
-                                            style="color: #dc3545"><?=form_error('section_id')?></small>
+                                            style="color: #dc3545">{{ form_error('section_id') }}</small>
                                     </div>
                                 </div>
                                 <div class="col-lg-2">
@@ -557,7 +635,7 @@ $(document).on('change','#tipe_soal',function(e){
                             <div class="form-group">
                                 <textarea name="soal" id="soal"
                                     class="form-control froala-editor summernote_editor">{!! set_value('soal') !!}</textarea>
-                                <small class="help-block" style="color: #dc3545"><?=form_error('soal')?></small>
+                                <small class="help-block" style="color: #dc3545">{{ form_error('soal') }}</small>
                             </div>
 
                             <div class="alert bg-danger mb-2" role="alert">
@@ -565,66 +643,88 @@ $(document).on('change','#tipe_soal',function(e){
                             </div>
 
                             @if($tipe_soal_selected == TIPE_SOAL_MCSA || $tipe_soal_selected == TIPE_SOAL_MCMA)
-                            {{-- Membuat perulangan A-E --}}
-                            <?php  
-                            foreach (OPSI_SOAL as $abj) :
-                                $ABJ = strtoupper($abj); // Abjad Kapital
-                            ?>
+                            {{-- Membuat perulangan jawaban --}}
+                            @php($alphabet = range('a', 'z'))
+                            @for($i = 0; $i < $jml_pilihan_jawaban; $i++ )
+                                @php($abj = $alphabet[$i])
+                                @php($ABJ = strtoupper($abj))
+                                @php($file = 'file_'. $abj)
+                                @php($opsi_bobot = 'opsi_'. $abj .'_bobot')
 
-                            <label for="jawaban_<?= $abj; ?>">Opsi : <strong class="text-danger"><?= $ABJ; ?></strong></label>
-                            {{--                    <div class="form-group">--}}
-                            {{--                        <input type="file" name="file_<?= $abj; ?>" class="form-control">--}}
-                            {{--                        <small class="help-block" style="color: #dc3545"><?=form_error('file_'.$abj)?></small>--}}
-                            {{--                    </div>--}}
-                            <div class="form-group">
-                                <textarea name="jawaban_<?= $abj; ?>" id="jawaban_<?= $abj; ?>"
-                                    class="form-control froala-editor summernote_editor">{!! set_value('jawaban_'.$abj) !!}</textarea>
-                                <small class="help-block"
-                                    style="color: #dc3545"><?=form_error('jawaban_'.$abj)?></small>
-                            </div>
+                                <label for="jawaban_{{ $abj }}">Opsi : <strong class="text-danger">{{ $ABJ }}</strong></label>
+                                {{--                    <div class="form-group">--}}
+                                {{--                        <input type="file" name="{{ $file }}" class="form-control">--}}
+                                {{--                        <small class="help-block" style="color: #dc3545">{{ form_error($file) }}</small>--}}
+                                {{--                    </div>--}}
+                                <div class="form-group">
+                                    <textarea name="jawaban_{{ $abj }}" id="jawaban_{{ $abj }}" class="form-control froala-editor summernote_editor">{!! set_value('jawaban_'.$abj) !!}</textarea>
+                                    <small class="help-block" style="color: #dc3545">{{ form_error('jawaban_'. $abj) }}</small>
+                                </div>
+                                <div class="form-group row show_on_bobot_opsi" style="display: none">
+                                    <label for="topik_id" class="control-label col-2" style="padding-top: 10px"><i class="fa fa-chevron-right"></i> Bobot Opsi : <strong class="text-danger">{{ $ABJ }}</strong></label>
+                                    <input type="text" class="form-control col-2 border-success {{ $opsi_bobot }} inp_decimal" id="{{ $opsi_bobot }}" name="{{ $opsi_bobot }}" placeholder="" value="{{ set_value($opsi_bobot) }}">
+                                    <small class="help-block col-6" style="color: #dc3545">{{ form_error($opsi_bobot) }}</small>
+                                </div>
+                            @endfor
 
-
-                            <?php endforeach; ?>
-
-                            <div class="form-group">
+                            <div class="form-group show_on_bobot_soal">
                                 <label for="jawaban" class="control-label">Kunci Jawaban</label>
-                                <select name="jawaban" id="jawaban" class="form-control"
-                                    style="width:100%!important">
+                                @if($tipe_soal_selected == TIPE_SOAL_MCSA)
+                                <select name="jawaban" id="jawaban" class="form-control" style="width:100%!important">
                                     <option></option>
-                                    @foreach(OPSI_SOAL as $opsi_soal)
-                                    <option value="{{ strtoupper($opsi_soal) }}">{{ strtoupper($opsi_soal) }}</option>
-                                    @endforeach
-                                </select>
-                                <small class="help-block" style="color: #dc3545"><?=form_error('jawaban')?></small>
+                                    @php($alphabet = range('a', 'z'))
+                                    @for($i = 0; $i < $jml_pilihan_jawaban; $i++ )
+                                        @php($abj = $alphabet[$i])
+                                        @php($ABJ = strtoupper($abj))
+                                        <option value="{{ $ABJ }}">{{ $ABJ }}</option>
+                                    @endfor
+                                </select>  
+                                <small class="help-block" style="color: #dc3545">{{ form_error('jawaban') }}</small>                                  
+                                @else
+                                {{-- UNTUK TIPE_SOAL_MCMA --}}
+                                <select name="jawaban[]" id="jawaban" class="form-control" style="width:100%!important" multiple="multiple">
+                                    <option></option>
+                                    @php($alphabet = range('a', 'z'))
+                                    @for($i = 0; $i < $jml_pilihan_jawaban; $i++ )
+                                        @php($abj = $alphabet[$i])
+                                        @php($ABJ = strtoupper($abj))
+                                        <option value="{{ $ABJ }}">{{ $ABJ }}</option>
+                                    @endfor
+                                </select>    
+                                <small class="help-block" style="color: #dc3545">{{ form_error('jawaban[]') }}</small>
+                                @endif
                             </div>
 
                             {{--                <div class="form-group" >--}}
                             {{--                    <label for="bobot" class="control-label">Bobot Soal</label>--}}
                             {{--                    <input value="{{ set_value('bobot', '1') }}" type="number"
                             name="bobot" placeholder="Bobot Soal" id="bobot" class="form-control">--}}
-                            {{--                    <small class="help-block" style="color: #dc3545"><?=form_error('bobot')?></small>--}}
+                            {{--                    <small class="help-block" style="color: #dc3545">{{ form_error('bobot') }}</small>--}}
                             {{--                </div>--}}
 
                             @elseif($tipe_soal_selected == TIPE_SOAL_ESSAY)
                             <div class="form-group">
                                 <textarea name="jawaban" id="jawaban" class="form-control froala-editor summernote_editor">{!! set_value('jawaban') !!}</textarea>
-                                <small class="help-block" style="color: #dc3545"><?=form_error('jawaban')?></small>
+                                <small class="help-block" style="color: #dc3545">{{ form_error('jawaban') }}</small>
                             </div>
                             @endif
 
-                            <div class="form-group">
-                                <label for="bobot_soal_id" class="control-label">Bobot Soal</label>
+                            <div class="form-group show_on_bobot_soal">
+                                <label for="bobot_soal_id" class="control-label">
+                                    <span>Bobot Soal</span>
+                                    <small class="help-block text-info"><span class="text-danger"><b>***</b> Faktor pengali nilai pada jawaban</span></small>
+                                </label>
                                 <select name="bobot_soal_id" id="bobot_soal_id" class="form-control"
                                     style="width:100%!important">
                                     <option></option>
                                     @forelse($bobot_soal as $d)
-                                        <option value="{{ $d->id }}">{{ $d->bobot }}</option>
+                                        <option value="{{ $d->id }}">{{ $d->bobot }} - {{ $d->nilai }}</option>
                                     @empty
 
                                     @endforelse
                                 </select>
                                 <small class="help-block"
-                                    style="color: #dc3545"><?=form_error('bobot_soal_id')?></small>
+                                    style="color: #dc3545">{{ form_error('bobot_soal_id') }}</small>
                             </div>
 
                             <fieldset class="form-group" style="padding: 10px; border: 1px solid #ccc;">
@@ -632,7 +732,7 @@ $(document).on('change','#tipe_soal',function(e){
                                 <label for="penjelasan"><small class="help-block text-info"><span class="text-danger"><b>***</b> Penjelasan mengenai jawaban pada soal yang tertera</span></small></label>
                                 <div class="form-group">
                                     <textarea name="penjelasan" id="penjelasan" class="form-control froala-editor summernote_editor">{!! set_value('penjelasan') !!}</textarea>
-                                    <small class="help-block" style="color: #dc3545"><?=form_error('penjelasan')?></small>
+                                    <small class="help-block" style="color: #dc3545">{{ form_error('penjelasan') }}</small>
                                 </div>
                             </fieldset>
 

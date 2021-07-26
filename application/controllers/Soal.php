@@ -621,7 +621,7 @@ class Soal extends MY_Controller
 
 					if($tipe_soal == TIPE_SOAL_MCSA || $tipe_soal == TIPE_SOAL_MCMA){
 
-						$soal_temp->jawaban = empty($data['jawaban']) ? null : $data['jawaban'];
+						$soal_temp->jawaban = !$is_bobot_per_jawaban ? (empty($data['jawaban']) ? null : $data['jawaban']) : null;
 
 						// foreach (OPSI_SOAL as $abj) {
 
@@ -843,7 +843,7 @@ class Soal extends MY_Controller
 
 					if($tipe_soal == TIPE_SOAL_MCSA || $tipe_soal == TIPE_SOAL_MCMA){
 
-						$soal->jawaban = empty($data['jawaban']) ? null : $data['jawaban'];
+						$soal->jawaban = !$is_bobot_per_jawaban ? (empty($data['jawaban']) ? null : $data['jawaban']) : null;
 
 						// foreach (OPSI_SOAL as $abj) {
 

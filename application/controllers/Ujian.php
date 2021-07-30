@@ -399,6 +399,7 @@ class Ujian extends MY_Controller
 						$jml_soal_topik_total = 0;
 						if(isset($jumlah_soal_list[$topik_id])){
 							foreach($jumlah_soal_list[$topik_id] as $bobot_soal_id => $jml_soal){
+								$jml_soal = $jml_soal == '' ? 0 : $jml_soal ; // JIKA TIDAK MENGISI DIANGGAP 0
 								$jml_soal_topik_total = $jml_soal_topik_total + $jml_soal;
 							}
 						}

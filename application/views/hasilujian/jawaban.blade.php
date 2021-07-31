@@ -262,7 +262,7 @@ $(document).on('click','.btn_submit_nilai_essay',function(){
 					</div>
 				</div>
 
-				<?php $i = 1; ?>
+				<?php $nomor_pertanyaan = 1; ?>
 
 				@foreach ($topik_ujian_list as $topik)
 				
@@ -292,7 +292,7 @@ $(document).on('click','.btn_submit_nilai_essay',function(){
 									<div class="card-content">
 										<div class="card-body pl-1 pr-1">
 											<h4 class="card-title" data-id="{{ $jawaban_ujian->soal->id_soal }}">Pertanyaan : 
-												<div class="badge badge-danger round">{{ $i }}</div> 
+												<div class="badge badge-danger round">{{ $nomor_pertanyaan }}</div> 
 												@if(!$jawaban_ujian->soal->is_bobot_per_jawaban)
 												<span class="float-right">( Poin Soal : {{ $jawaban_ujian->soal->bobot_soal->nilai }} )</span>
 												@endif
@@ -537,7 +537,7 @@ $(document).on('click','.btn_submit_nilai_essay',function(){
 								</div>
 							</div>
 						</div>
-						<?php $i++ ?>
+						<?php $nomor_pertanyaan++ ?>
 					@endforeach
 				@endforeach
 				<!---- --->

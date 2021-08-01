@@ -15,8 +15,6 @@ composer.phar
 !/public/uploads/img_soal/index.html
 /public/uploads/img_app/*
 !/public/uploads/img_app/index.html
-/public/assets/template/*
-!/public/assets/template/index.html
 /public/assets/yarn/*
 !/public/assets/yarn/index.html
 /writeable/yarn/node_modules

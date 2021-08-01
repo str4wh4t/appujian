@@ -20,5 +20,6 @@ composer.phar
 /public/assets/yarn/*
 !/public/assets/yarn/index.html
 /writeable/yarn/node_modules
-/files/template
+/files/template/*
+!/files/template/index.html
 phoenix.php

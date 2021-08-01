@@ -4,14 +4,15 @@
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui">
-	<meta name="keywords" content="ujian online, online exam, latihan soal ujian">
-	<meta name="author" content="{{ APP_NAME }}">
 	
 	<meta name="{{ csrf_name() }}" content="{{ csrf_token() }}">
 	
 	<title>@yield('title', APP_NAME)</title>
 	<meta name="description" content="{{ APP_DESC }}">
-
+	<meta name="author" content="{{ get_app_author() }}">
+	
+	<meta name="keywords" content="ujian online,online exam,latihan soal,tryout ujian">
+	
 	<link rel="apple-touch-icon" href="{{ asset('uploads/img_app/'. APP_FAVICON_APPLE) }}">
 	<link rel="shortcut icon" type="image/x-icon" href="{{ asset('uploads/img_app/'. APP_FAVICON) }}">
 	<link href="{{ asset('assets/yarn/node_modules/typeface-muli/index.css') }}" rel="stylesheet">

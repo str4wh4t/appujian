@@ -231,9 +231,9 @@ user-select: initial;
     position: fixed;
     right: 25%;
     top: 40%;
-    opacity: 0.25;
+    opacity: 0.15;
     z-index: 9997 !important;
-    font-size: 75px;
+    font-size: 70px;
     -ms-transform: rotate(45deg);
     transform: rotate(45deg);
 }
@@ -854,7 +854,7 @@ $('#lembar_ujian').on('scroll', function() {
             <div class="col-md-12">
                 <div class="card">
                     <div class="card-content">
-                        <div class="card-body" >
+                        <div class="card-body" style="padding-top: 0px">
                             <button class="btn btn-danger btn-block" id="btn_akhiri_ujian" type="button" onclick="return simpan_akhir();"><i class="fa fa-stop"></i> Akhiri Ujian</button>
                         </div>
                     </div>
@@ -894,7 +894,7 @@ $('#lembar_ujian').on('scroll', function() {
             <div class="col-md-12">
                 <div class="card mb-0" id="div_navigasi">
                     <div class="card-content">
-                        <div class="card-body text-center" style="padding: 1rem">
+                        <div class="card-body text-left" style="padding: 1rem">
                             <div class="btn-group" role="group" aria-label="" id="next_prev_pertanyaan">
                                 <button type="button" class="action back btn btn-info rounded-0" rel="0" onclick="return back();"><i class="fa fa-chevron-left"></i> Back</button>
                                 <button type="button" class="ragu_ragu btn btn-warning" rel="1" onclick="return tidak_jawab();" style="display: none"><i class="fa fa-pause"></i> <span class="span_ragu">Ragu-Ragu</span></button>

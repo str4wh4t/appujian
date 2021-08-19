@@ -1224,7 +1224,7 @@ class Soal extends MY_Controller
 	{
 		$this->_akses_admin();
 		if ($this->input->post()) {
-			$this->form_validation->set_rules('aksi', 'Aksi', 'required');
+			$this->form_validation->set_rules('method', 'Method', 'required');
 			$this->form_validation->set_rules('bobot', 'Bobot', 'required');
 			$this->form_validation->set_rules('nilai', 'Nilai', 'required|decimal|greater_than[0]');
 			if ($this->form_validation->run() === false) {
@@ -1232,6 +1232,7 @@ class Soal extends MY_Controller
 				$data = [
 					'status'	=> false,
 					'errors'	=> [
+						'method' => form_error('method'),
 						'bobot' => form_error('bobot'),
 						'nilai' => form_error('nilai'),
 					]
@@ -1247,12 +1248,15 @@ class Soal extends MY_Controller
 					$bobot_soal        = new Bobot_soal_orm();
 					$bobot_soal->bobot = $bobot;
 					$bobot_soal->nilai = $nilai;
+					$bobot_soal->created_at = date('Y-m-d H:i:s');
+					$bobot_soal->updated_at = date('Y-m-d H:i:s');
 					$action = $bobot_soal->save();
 					$data['status'] = $action;
 				} else {
 					$bobot_soal        = Bobot_soal_orm::findOrFail($id);
 					$bobot_soal->bobot = $bobot;
 					$bobot_soal->nilai = $nilai;
+					$bobot_soal->updated_at = date('Y-m-d H:i:s');
 					$action = $bobot_soal->save();
 					$data['status'] = $action;
 				}

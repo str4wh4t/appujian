@@ -154,16 +154,21 @@
 
 			@if( in_group(MHS_GROUP_ID) )
 				@if( APP_TYPE == 'tryout' )
-				<li class="{{ $page == 'membership' ? "active" : "" }} nav-item">
-					<a href="{{ url('membership/list') }}">
-						<i class="icon-diamond"></i><span class="menu-title" data-i18n="nav.dash.main">Membership</span>
-					</a>
-				</li>
-				<li class="{{ $page == 'paket' ? "active" : "" }} nav-item">
-					<a href="{{ url('paket/list') }}">
-						<i class="icon-basket-loaded"></i><span class="menu-title" data-i18n="nav.dash.main">Paket Materi</span>
-					</a>
-				</li>
+					@if( SHOW_MEMBERSHIP )
+					<li class="{{ $page == 'membership' ? "active" : "" }} nav-item">
+						<a href="{{ url('membership/list') }}">
+							<i class="icon-diamond"></i><span class="menu-title" data-i18n="nav.dash.main">Membership</span>
+						</a>
+					</li>
+					@endif
+
+					@if( SHOW_PAKET )
+					<li class="{{ $page == 'paket' ? "active" : "" }} nav-item">
+						<a href="{{ url('paket/list') }}">
+							<i class="icon-basket-loaded"></i><span class="menu-title" data-i18n="nav.dash.main">Paket Materi</span>
+						</a>
+					</li>
+					@endif
 				<li class="{{ ($page == 'ujian' && $method == 'latihan_soal' ) ? "active" : "" }} nav-item">
 					<a href="{{ url('ujian/latihan_soal') }}">
 						{{-- <i class="ft-edit-3"></i><span class="menu-title" data-i18n="nav.dash.main">Latihan Soal</span> --}}

@@ -102,7 +102,7 @@ $(document).ready(function() {
         }
       }
     ],
-    order: [[1, "asc"]],
+    order: [[1, "asc"], [2, "asc"]],
     rowId: function(a) {
       return a;
     },

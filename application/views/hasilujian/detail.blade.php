@@ -245,8 +245,8 @@ $(document).on('click','#btn_ulangi_ujian',function(){
                 <?php 
                 $mhs_ujian = $mhs->mhs_ujian()->where(['mahasiswa_id' => $mhs->id_mahasiswa, 'ujian_id' => $ujian->id_ujian])->first();
                 ?>
-                <a class="btn btn-primary btn-lg" href="{{ url('hasilujian/history/' . uuid_create_from_integer($mhs_ujian->id)) }}" title="Lihat Jawaban">
-                    <i class="ft-eye"></i> History Ujian
+                <a class="btn btn-danger btn-lg" href="{{ url('hasilujian/history/' . uuid_create_from_integer($mhs_ujian->id)) }}" title="Lihat Jawaban">
+                    <i class="ft-eye"></i> {{ $ujian->tampilkan_jawaban ? 'Jawaban Ujian' : 'History Ujian'}}
                 </a>
             @endif
 
@@ -263,7 +263,7 @@ $(document).on('click','#btn_ulangi_ujian',function(){
 
                 @if(($today >= $date_start) && ($today < $date_end)) 
                     @if (!empty($h_ujian))
-                        <button class="btn btn-outline-danger btn-lg" id="btn_ulangi_ujian">
+                        <button class="btn btn-success btn-lg" id="btn_ulangi_ujian">
                             <i class="fa fa-refresh"></i> Ulangi Ujian
                         </button>
                     @endif

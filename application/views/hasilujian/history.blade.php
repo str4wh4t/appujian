@@ -181,7 +181,7 @@ use Illuminate\Database\Capsule\Manager as DB;
                                 @if (!empty($h_ujian))
                                 <div class="col-md-12 mt-2 mb-2"
                                     style="text-align: center">
-                                    <button class="btn btn-outline-danger btn-lg" id="btn_ulangi_ujian">
+                                    <button class="btn btn-success btn-lg" id="btn_ulangi_ujian">
                                         <i class="fa fa-refresh"></i> Ulangi Ujian
                                     </button>
                                 </div>

@@ -400,13 +400,13 @@ class Auth extends MY_Controller
 
 			if ($resp->isSuccess()) {
 				// Verified!
-				$this->form_validation->set_rules('full_name', 'Email', 'required|trim|min_length[3]|max_length[250]');
+				$this->form_validation->set_rules('full_name', 'Email', 'required|trim|max_length['. MAX_NM_PESERTA_LENGTH .']');
 				// $this->form_validation->set_rules('nik', 'Nik', 'exact_length[' . NIK_LENGTH . ']|is_unique[mahasiswa.nik]');
-				$this->form_validation->set_rules('email', 'Email', 'required|trim|max_length[250]|valid_email|is_unique[users.email]');
+				$this->form_validation->set_rules('email', 'Email', 'required|trim|max_length['. MAX_EMAIL_PESERTA_LENGTH .']|valid_email|is_unique[users.email]');
 				$this->form_validation->set_rules('telp', 'Telp', 'required|max_length[20]');
 				// $this->form_validation->set_rules('jenis_kelamin', 'Jenis Kelamin', 'required|in_list[L,P]');
-				$this->form_validation->set_rules('kota_asal', 'Kota Asal', 'required|trim|min_length[3]|max_length[250]');
-				$this->form_validation->set_rules('tmp_lahir', 'Tmp Lahir', 'required|trim|min_length[3]|max_length[250]');
+				$this->form_validation->set_rules('kota_asal', 'Kota Asal', 'required|trim|max_length['. MAX_KOTA_ASAL_PESERTA_LENGTH .']');
+				$this->form_validation->set_rules('tmp_lahir', 'Tmp Lahir', 'required|trim|max_length['. MAX_TMP_LAHIR_PESERTA_LENGTH .']');
 				$this->form_validation->set_rules(
 					'tgl_lahir', 
 					'Tgl Lahir', 

@@ -97,9 +97,14 @@ defined('PENYUSUN_SOAL_GROUP_ID')      OR define('PENYUSUN_SOAL_GROUP_ID', 5);
 defined('KOORD_PENGAWAS_GROUP_ID')      OR define('KOORD_PENGAWAS_GROUP_ID', 6);
 defined('TEMPLATE_LEMBAR_UJIAN')      OR define('TEMPLATE_LEMBAR_UJIAN', 'utbk');
 
-defined('MHS_ID_LENGTH')      OR define('MHS_ID_LENGTH', 12);
+defined('MAX_MHS_ID_LENGTH')      OR define('MAX_MHS_ID_LENGTH', 12);
 defined('NIK_LENGTH')      OR define('NIK_LENGTH', 16);
-defined('NO_BILLKEY_LENGTH')      OR define('NO_BILLKEY_LENGTH', 20);
+defined('MAX_NO_BILLKEY_LENGTH')      OR define('MAX_NO_BILLKEY_LENGTH', 20);
+defined('MAX_NM_PESERTA_LENGTH')      OR define('MAX_NM_PESERTA_LENGTH', 250);
+defined('MAX_EMAIL_PESERTA_LENGTH')      OR define('MAX_EMAIL_PESERTA_LENGTH', 100);
+defined('MAX_TMP_LAHIR_PESERTA_LENGTH')      OR define('MAX_TMP_LAHIR_PESERTA_LENGTH', 250);
+defined('JK_AVAIL')      OR define('JK_AVAIL', ['L','P']);
+
 defined('JML_KOLOM_EXCEL_IMPOR_PESERTA')      OR define('JML_KOLOM_EXCEL_IMPOR_PESERTA', 16);
 defined('JML_KOLOM_EXCEL_IMPOR_SOAL')      OR define('JML_KOLOM_EXCEL_IMPOR_SOAL', 13);
 

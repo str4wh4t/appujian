@@ -358,7 +358,6 @@ class Init extends AbstractMigration
             ->addColumn('created_at', 'datetime', ['null' => true])
             ->addColumn('updated_at', 'datetime', ['null' => true])
             ->addIndex('nim', 'unique', 'btree', 'nim')
-            ->addIndex('no_billkey', 'unique', 'btree', 'no_billkey')
             ->addIndex('kelas_id', '', 'btree', 'kelas_id')
             ->create();
 
@@ -652,7 +651,6 @@ class Init extends AbstractMigration
             ->addIndex('activation_selector', 'unique', 'btree', 'uc_activation_selector')
             ->addIndex('forgotten_password_selector', 'unique', 'btree', 'uc_forgotten_password_selector')
             ->addIndex('remember_selector', 'unique', 'btree', 'uc_remember_selector')
-            ->addIndex('no_billkey', 'unique', 'btree', 'no_billkey')
             ->create();
 
         $this->table('users_groups', 'id')

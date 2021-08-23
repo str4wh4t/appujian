@@ -138,7 +138,8 @@ $(document).on('change','#tahun_filter', function(){
     <div class="col-md-4">
         @if(ENABLE_TAMBAH_MHS)
         <a href="{{ site_url('mahasiswa/add') }}" class="btn btn-sm btn-flat btn-outline-primary"><i class="fa fa-plus"></i> Tambah</a>
-        <a href="{{ site_url('mahasiswa/import') }}" class="btn btn-sm btn-flat btn-success"><i class="fa fa-upload"></i> Import</a>
+        {{-- <a href="{{ site_url('mahasiswa/import') }}" class="btn btn-sm btn-flat btn-success"><i class="fa fa-upload"></i> Import</a> --}}
+        <a href="{{ site_url('mahasiswa/edit_on_table') }}" class="btn btn-sm btn-flat btn-success"><i class="fa fa-upload"></i> Import</a>
         @endif
         <button type="button" onclick="reload_ajax()" class="btn btn-sm btn-flat btn-outline-secondary"><i class="fa fa-refresh"></i> Reload</button>
     </div>

@@ -32,7 +32,7 @@
 <script type="text/javascript">
 
 function init_page_level(){
-    $('#jenis_kelamin').select2();
+    $('.select2').select2();
     $('#matkul').select2({placeholder: "Pilih Materi Ujian"});
     let selected = [];
     @foreach($mhs->matkul as $mhs_matkul)
@@ -169,7 +169,7 @@ $(document).on('click','#btn_set_materi',function(){
     <div class="col-12">
         <div class="card">
             <div class="card-header">
-            	<h4 class="card-title"><?=$subjudul?></h4>
+            	<h4 class="card-title">{{ $subjudul }}</h4>
             	<a class="heading-elements-toggle"><i class="ft-ellipsis-h font-medium-3"></i></a>
             </div>
             <div class="card-content">
@@ -185,7 +185,7 @@ $(document).on('click','#btn_set_materi',function(){
 
 
 <!---- --->
-<?=form_open('mahasiswa/ajax/save', array('id'=>'mahasiswa'), array('method'=>'edit', 'id_mahasiswa'=>$mahasiswa->id_mahasiswa))?>
+<?= form_open('mahasiswa/ajax/save', array('id'=>'mahasiswa'), array('method'=>'edit', 'id_mahasiswa'=>$mahasiswa->id_mahasiswa)) ?>
 <div class="row">
     <div class="col-md-6">
         <div class="form-body">
@@ -194,64 +194,71 @@ $(document).on('click','#btn_set_materi',function(){
                 <div class="col-md-12">
         <div class="form-group">
             <label for="nim">No Peserta</label>
-            <input value="<?=$mahasiswa->nim?>" {{ $user_is_exist ? 'readonly="readonly"' : '' }} placeholder="No Peserta" type="text" name="nim" id="nim" class="form-control">
+            <input value="{{ $mahasiswa->nim }}" {{ $user_is_exist ? 'readonly="readonly"' : '' }} placeholder="No Peserta" type="text" name="nim" id="nim" class="form-control">
             <small class="help-block"></small>
         </div>
         <div class="form-group">
             <label for="nama">Nama</label>
-            <input value="<?=$mahasiswa->nama?>" autofocus="autofocus" onfocus="this.select()" placeholder="Nama" type="text" name="nama" id="nama" class="form-control">
+            <input value="{{ $mahasiswa->nama }}" autofocus="autofocus" onfocus="this.select()" placeholder="Nama" type="text" name="nama" id="nama" class="form-control">
             <small class="help-block"></small>
         </div>
         <div class="form-group">
             <label for="nik">NIK</label>
-            <input value="<?=$mahasiswa->nik?>" placeholder="NIK" type="text" name="nik" id="nik" class="form-control">
+            <input value="{{ $mahasiswa->nik }}" placeholder="NIK" type="text" name="nik" id="nik" class="form-control">
             <small class="help-block"></small>
         </div>
         <div class="form-group">
             <label for="tmp_lahir">Tmp Lahir</label>
-            <input value="<?=$mahasiswa->tmp_lahir?>" placeholder="Tmp Lahir" type="text" name="tmp_lahir" id="tmp_lahir" class="form-control">
+            {{-- <input value="{{ $mahasiswa->tmp_lahir }}" placeholder="Tmp Lahir" type="text" name="tmp_lahir" id="tmp_lahir" class="form-control"> --}}
+            <select name="tmp_lahir" id="tmp_lahir" class="form-control select2">
+                @foreach ($kota_kab_list as $item)
+                <option value="{{ $item->kota_kab }}" {{ $mahasiswa->tmp_lahir == $item->kota_kab ? 'selected="selected"' : '' }}>{{ $item->kota_kab }}</option>
+                @endforeach
+            </select>
             <small class="help-block"></small>
         </div>
         <div class="form-group">
             <label for="tgl_lahir">Tgl Lahir</label>
-            <input value="<?=$mahasiswa->tgl_lahir?>" placeholder="Tgl Lahir" type="text" name="tgl_lahir" id="tgl_lahir" class="datetimepicker form-control">
+            <input value="{{ $mahasiswa->tgl_lahir }}" placeholder="Tgl Lahir" type="text" name="tgl_lahir" id="tgl_lahir" class="datetimepicker form-control">
             <small class="help-block"></small>
         </div>
-        <div class="form-group">
+        {{-- <div class="form-group">
             <label for="kota_asal">Kota Asal</label>
-            <input value="<?=$mahasiswa->kota_asal?>" placeholder="Kota Asal" type="text" name="kota_asal" id="kota_asal" class="form-control">
+            <input value="{{ $mahasiswa->kota_asal }}" placeholder="Kota Asal" type="text" name="kota_asal" id="kota_asal" class="form-control">
             <small class="help-block"></small>
-        </div>
+        </div> --}}
         <div class="form-group">
             <label for="email">Email</label>
-            <input value="<?=$mahasiswa->email?>" placeholder="Email" type="text" name="email" id="email" class="form-control">
+            <input value="{{ $mahasiswa->email }}" placeholder="Email" type="text" name="email" id="email" class="form-control">
             <small class="help-block"></small>
         </div>
         <div class="form-group">
             <label for="jenis_kelamin">Jenis Kelamin</label>
             <select name="jenis_kelamin" id="jenis_kelamin" class="form-control select2">
                 <option value="">-- Pilih --</option>
-                <option <?=$mahasiswa->jenis_kelamin === "L" ? "selected" : "" ?> value="L">Laki-laki</option>
-                <option <?=$mahasiswa->jenis_kelamin === "P" ? "selected" : "" ?> value="P">Perempuan</option>
+                <option {{ $mahasiswa->jenis_kelamin === "L" ? "selected" : ""  }} value="L">Laki-laki</option>
+                <option {{ $mahasiswa->jenis_kelamin === "P" ? "selected" : ""  }} value="P">Perempuan</option>
             </select>
             <small class="help-block"></small>
         </div>
         <div class="form-group">
-            <label for="no_billkey">No Billkey</label>
-            <input value="<?=$mahasiswa->no_billkey?>" placeholder="No Billkey" type="text" name="no_billkey" id="no_billkey" class="form-control" disabled="disabled">
+            <label for="no_billkey">No Billkey</label> 
+            <small class="help-block text-danger"><b>***</b> Digunakan sbg password</small>
+            <input value="{{ $mahasiswa->no_billkey }}" placeholder="No Billkey" type="text" name="no_billkey" id="no_billkey" class="form-control" disabled="disabled">
             <small class="help-block"></small>
         </div>
+        <!-- 
         <div class="form-group">
             <label for="matkul">Materi Ujian</label>
             <div class="row">
                 <div class="col-md-12">
                     <select name="matkul[]" id="matkul" class="form-control select2" style="width: 100%!important" multiple="multiple">
-                        <?php foreach ($matkul as $row) : ?>
-                            <option value="<?=$row->id_matkul?>"><?=$row->nama_matkul?></option>
-                        <?php endforeach; ?>
+                        @foreach ($matkul as $row)
+                            <option value="{{ $row->id_matkul }}">{{ $row->nama_matkul }}</option>
+                        @endforeach
                     </select>
                 </div>
-
+            
 {{--                <div class="col-md-3">--}}
 {{--                    <button type="button" class="btn btn-info" id="btn_set_materi"><i class="fa fa-check"></i> Set Materi</button>--}}
 {{--                </div>--}}
@@ -259,16 +266,17 @@ $(document).on('click','#btn_set_materi',function(){
             </div>
             <small class="help-block"></small>
         </div>
+    -->
 
 {{--        <div class="form-group">--}}
 {{--            <label for="jurusan">Jurusan</label>--}}
 {{--            <select id="jurusan" name="jurusan" class="form-control select2">--}}
 {{--                <option value="" disabled selected>-- Pilih --</option>--}}
-{{--                <?php foreach ($jurusan as $j) : ?>--}}
-{{--                <option <?=$mahasiswa->id_jurusan === $j->id_jurusan ? "selected" : "" ?> value="<?=$j->id_jurusan?>">--}}
-{{--                    <?=$j->nama_jurusan?>--}}
+{{--                @foreach ($jurusan as $j) --}}
+{{--                <option {{ $mahasiswa->id_jurusan === $j->id_jurusan ? "selected" : ""  }} value="{{ $j->id_jurusan }}">--}}
+{{--                    {{ $j->nama_jurusan }}--}}
 {{--                </option>--}}
-{{--                <?php endforeach ?>--}}
+{{--                @endforeach --}}
 {{--            </select>--}}
 {{--            <small class="help-block"></small>--}}
 {{--        </div>--}}
@@ -276,11 +284,11 @@ $(document).on('click','#btn_set_materi',function(){
 {{--            <label for="kelas">Kelas</label>--}}
 {{--            <select id="kelas" name="kelas" class="form-control select2">--}}
 {{--                <option value="" disabled selected>-- Pilih --</option>--}}
-{{--                <?php foreach ($kelas as $k) : ?>--}}
-{{--                <option <?=$mahasiswa->id_kelas === $k->id_kelas ? "selected" : "" ?> value="<?=$k->id_kelas?>">--}}
-{{--                    <?=$k->nama_kelas?>--}}
+{{--                @foreach ($kelas as $k) --}}
+{{--                <option {{ $mahasiswa->id_kelas === $k->id_kelas ? "selected" : ""  }} value="{{ $k->id_kelas }}">--}}
+{{--                    {{ $k->nama_kelas }}--}}
 {{--                </option>--}}
-{{--                <?php endforeach ?>--}}
+{{--                @endforeach --}}
 {{--            </select>--}}
 {{--            <small class="help-block"></small>--}}
 {{--        </div>--}}
@@ -297,7 +305,8 @@ $(document).on('click','#btn_set_materi',function(){
         </div>
 
     </div>
-    <div class="col-md-6">
+
+    {{-- <div class="col-md-6">
             <!--
             <div class="alert bg-info">
                 <strong>Perhatian : </strong>
@@ -327,9 +336,10 @@ $(document).on('click','#btn_set_materi',function(){
             <div style="text-align: center">
                 <img id="img_profile" style="width: 320px" src="{{ empty($mahasiswa->foto) ? asset(FOTO_DEFAULT_URL) : $mahasiswa->foto }}" />
             </div>
-    </div>
+    </div> --}}
+    
 </div>
-<?=form_close()?>
+<?= form_close() ?>
 <!---- --->
 
 				</div>

@@ -36,8 +36,8 @@ $(document).ready(function () {
 
     ajaxcsrf();
 
-    // Load Jurusan
-    load_jurusan();
+    // Load Jurusan ** DIMATIKAN OLEH IDRIS 13/AGU/2021
+    // load_jurusan();
 
     // Load Kelas By Jurusan
     $('#jurusan').on('change', function () {
@@ -85,6 +85,15 @@ $(document).ready(function () {
                             $('[name="' + key + '"]').closest('.form-group').removeClass('has-error').addClass('has-success');
                         }
                     });
+
+                    if(data.msg){
+                        Swal.fire({
+                            title: "Error",
+                            text: "Kesalahan : " + data.msg,
+                            icon: "error"
+                        });
+                    }
+
                 }
             }
         });

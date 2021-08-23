@@ -81,7 +81,7 @@ $(document).on('keyup','input[name="foto"]',function(){
     <div class="col-12">
         <div class="card">
             <div class="card-header">
-            	<h4 class="card-title"><?=$subjudul?></h4>
+            	<h4 class="card-title">{{ $subjudul }}</h4>
             	<a class="heading-elements-toggle"><i class="ft-ellipsis-h font-medium-3"></i></a>
             </div>
             <div class="card-content">
@@ -89,7 +89,7 @@ $(document).on('keyup','input[name="foto"]',function(){
 
 
 <!---- --->
-<?=form_open('mahasiswa/ajax/save', array('id'=>'mahasiswa'), array('method'=>'add'))?>
+<?= form_open('mahasiswa/ajax/save', array('id'=>'mahasiswa'), array('method'=>'add')) ?>
 <div class="row">
     <div class="col-md-6">
         <div class="form-body">
@@ -113,7 +113,13 @@ $(document).on('keyup','input[name="foto"]',function(){
             </div>
             <div class="form-group">
                 <label for="nama">Tmp Lahir</label>
-                <input placeholder="Tmp Lahir" type="text" name="tmp_lahir" id="tmp_lahir" class="form-control">
+                {{-- <input placeholder="Tmp Lahir" type="text" name="tmp_lahir" id="tmp_lahir" class="form-control"> --}}
+                <select name="tmp_lahir" id="tmp_lahir" class="form-control select2">
+                    <option value="" disabled {{ empty(set_value('tmp_lahir')) ? 'selected' : '' }}>- Pilih tempat lahir -</option>
+                    @foreach ($kota_kab_list as $item)
+                    <option value="{{ $item->kota_kab }}" {{ set_value('tmp_lahir') == $item->kota_kab ? 'selected="selected"' : '' }}>{{ $item->kota_kab }}</option>
+                    @endforeach
+                </select>
                 <small class="help-block"></small>
             </div>
             <div class="form-group">
@@ -137,18 +143,21 @@ $(document).on('keyup','input[name="foto"]',function(){
             </div>
             <div class="form-group">
                 <label for="no_billkey">No Billkey</label>
+                <small class="help-block text-danger"><b>***</b> Digunakan sbg password</small>
                 <input value="" placeholder="No Billkey" type="text" name="no_billkey" id="no_billkey" class="form-control">
                 <small class="help-block"></small>
             </div>
+        <!-- 
             <div class="form-group">
                 <label for="matkul">Materi Ujian</label>
                 <select name="matkul[]" id="matkul" class="form-control" multiple="multiple" style="width: 100%!important">
-                    <?php foreach ($matkul as $row) : ?>
-                        <option value="<?=$row->id_matkul?>"><?=$row->nama_matkul?></option>
-                    <?php endforeach; ?>
+                    @foreach ($matkul as $row)
+                        <option value="{{ $row->id_matkul }}">{{ $row->nama_matkul }}</option>
+                    @endforeach
                 </select>
                 <small class="help-block"></small>
             </div>
+        -->
 
 {{--            <div class="form-group">--}}
 {{--                <label for="jurusan">Jurusan</label>--}}
@@ -175,7 +184,8 @@ $(document).on('keyup','input[name="foto"]',function(){
             </div>
         </div>
     </div>
-    <div class="col-md-6">
+
+    {{-- <div class="col-md-6">
             <!--
             <div class="alert bg-info">
                 <strong>Perhatian : </strong>
@@ -205,9 +215,10 @@ $(document).on('keyup','input[name="foto"]',function(){
             <div style="text-align: center">
                 <img id="img_profile" style="width: 320px" src="{{ asset('assets/imgs/no_profile.jpg') }}" />
             </div>
-    </div>
+    </div> --}}
+    
 </div>
-<?=form_close()?>
+<?= form_close() ?>
 <!---- --->
 
 				</div>

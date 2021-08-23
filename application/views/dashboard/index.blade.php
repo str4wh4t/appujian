@@ -140,6 +140,7 @@ $(document).on('click','img.featherlight-image',function(){
 {{--            <dt class="col-md-6">Matkul</dt>--}}
 {{--            <dd class="col-md-6"><?=$dosen->nama_matkul?></dd>--}}
 {{--        </dl>--}}
+
         <dl class="row">
             <dt class="col-md-4">Materi Ujian</dt>
             <dd class="col-md-8">
@@ -152,6 +153,7 @@ $(document).on('click','img.featherlight-image',function(){
                 </ol>
             </dd>
         </dl>
+
     </div>
     <div class="col-md-6">
         <div class="card">
@@ -372,7 +374,8 @@ $(document).on('click','img.featherlight-image',function(){
                     <dt class="col-md-4">Email</dt>
                     <dd class="col-md-8">: <?=$mahasiswa->email?></dd>
                 </dl>
-                <dl class="row">
+
+                {{-- <dl class="row">
                     <dt class="col-md-4">Materi Ujian</dt>
                     <dd class="col-md-8">
                         <ol class="pl-4" style="padding-left: 15px !important">
@@ -383,7 +386,8 @@ $(document).on('click','img.featherlight-image',function(){
                             @endforelse
                         </ol>
                     </dd>
-                </dl>
+                </dl> --}}
+
         {{--        <dl class="row">--}}
         {{--            <dt class="col-md-4">Jurusan</dt>--}}
         {{--            <dd class="col-md-8"><?=$mahasiswa->nama_jurusan?></dd>--}}

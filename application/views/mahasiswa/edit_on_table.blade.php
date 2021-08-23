@@ -42,11 +42,17 @@
             return regex.test(email);
         }
 
+        let jk_avail = ['{{ JK_AVAIL[0] }}', '{{ JK_AVAIL[1] }}'];
+
         let emailValidator = function (value, callback) {
             setTimeout(function () {
                 if (value != '') {
-                    if (isEmail(value)) {
-                        callback(true);
+                    if (value.length <= {{ MAX_EMAIL_PESERTA_LENGTH }}) {
+                        if (isEmail(value)) {
+                            callback(true);
+                        } else {
+                            callback(false);
+                        }
                     } else {
                         callback(false);
                     }
@@ -76,41 +82,147 @@
           }, 100);
         };
 
+        let isValidNopes = function (value, callback){
+            value = value.trim();
+            var date = moment(value);
+            setTimeout(function(){
+            if(value != '') {
+                if (!isNaN(value)){
+                    if (value.length <= {{ MAX_MHS_ID_LENGTH }}) {
+                        callback(true);
+                    } else {
+                        callback(false);
+                    }
+                } else {
+                    callback(false);
+                }
+            }else {
+                callback(true);
+            }
+          }, 100);
+        };
+
+        let isValidNobillkey = function (value, callback){
+            value = value.trim();
+            var date = moment(value);
+            setTimeout(function(){
+            if(value != '') {
+                if (!isNaN(value)){
+                    if (value.length <= {{ MAX_NO_BILLKEY_LENGTH }}) {
+                        callback(true);
+                    } else {
+                        callback(false);
+                    }
+                } else {
+                    callback(false);
+                }
+            }else {
+                callback(true);
+            }
+          }, 100);
+        };
+
+        let isValidNik = function (value, callback){
+            value = value.trim();
+            var date = moment(value);
+            setTimeout(function(){
+            if(value != '') {
+                if (!isNaN(value)){
+                    if (value.length == {{ NIK_LENGTH }}) {
+                        callback(true);
+                    } else {
+                        callback(false);
+                    }
+                } else {
+                    callback(false);
+                }
+            }else {
+                callback(true);
+            }
+          }, 100);
+        };
+
+        let isValidJk = function (value, callback){
+            value = value.trim();
+            var date = moment(value);
+            setTimeout(function(){
+            if(value != '') {
+                if (jk_avail.includes(value)) {
+                    callback(true);
+                } else {
+                    callback(false);
+                }
+            }else {
+                callback(true);
+            }
+          }, 100);
+        };
+
+        let isValidNmpes = function (value, callback){
+            value = value.trim();
+            var date = moment(value);
+            setTimeout(function(){
+            if(value != '') {
+                if ((value.length <= {{ MAX_NM_PESERTA_LENGTH }})) {
+                    callback(true);
+                } else {
+                    callback(false);
+                }
+            }else {
+                callback(true);
+            }
+          }, 100);
+        };
+
         let container = document.getElementById('hot');
         let hot = new Handsontable(container, {
                 data: data,
                 rowHeaders: true,
                 // colHeaders: true,
-                colHeaders:  ['NO PESERTA','NAMA','NIK','TMP LAHIR','TGL LAHIR<br>(YYYY-MM-DD)','L/P','EMAIL','NO BILLKEY','FOTO','KODEPS','PRODI','JALUR','GEL','SMT','TAHUN','ID MATERI UJIAN'],
+                // colHeaders:  ['NO PESERTA','NAMA','NIK','TMP LAHIR','TGL LAHIR<br>(YYYY-MM-DD)','L/P','EMAIL','NO BILLKEY','FOTO','KODEPS','PRODI','JALUR','GEL','SMT','TAHUN','ID MATERI UJIAN'],
+                // colHeaders:  ['NO PESERTA','NAMA','NIK','TMP LAHIR','TGL LAHIR<br>(YYYY-MM-DD)','L/P','EMAIL','NO BILLKEY','FOTO'],
+                colHeaders:  ['NO PESERTA','NAMA','NIK','TMP LAHIR','TGL LAHIR<br>(YYYY-MM-DD)','JENIS KELAMIN<br>({{ JK_AVAIL[0] }}/{{ JK_AVAIL[1] }})','EMAIL','NO BILLKEY','FOTO'],
                 filters: true,
                 dropdownMenu: true,
                 // minRows: 50,
                 // maxRows: 50,
-                width: 925,
+                width: 1000,
                 height: 500,
-                colWidths: [150, 200, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150],
+                // colWidths: [150, 200, 150, 150, 150, 150, 150, 150, 150],
+                colWidths: [150, 200, 150, 150, 150, 150, 150, 150],
                 // rowHeights: [50, 40, 100],
                 manualColumnResize: false,
                 manualRowResize: true,
                 contextMenu: true,
+                // columns: [
+                //     {},
+                //     {},
+                //     {},
+                //     {},
+                //     {validator: isValidDate, allowInvalid: false},
+                //     {},
+                //     {validator: emailValidator, allowInvalid: false},
+                //     {},
+                //     {},
+                //     {},
+                //     {},
+                //     {},
+                //     {},
+                //     {},
+                //     {},
+                //     {}
+                // ],
                 columns: [
-                    {},
-                    {},
-                    {},
+                    {validator: isValidNopes, allowInvalid: false},
+                    {validator: isValidNmpes, allowInvalid: false},
+                    {validator: isValidNik, allowInvalid: false},
                     {},
                     {validator: isValidDate, allowInvalid: false},
-                    {},
+                    {validator: isValidJk, allowInvalid: false},
                     {validator: emailValidator, allowInvalid: false},
-                    {},
-                    {},
-                    {},
-                    {},
-                    {},
-                    {},
-                    {},
-                    {},
-                    {}
-                  ]
+                    {validator: isValidNobillkey, allowInvalid: false},
+                    // {},
+                ]
 
         });
 
@@ -133,10 +245,12 @@
                 row_number = i;
                 $.each(v, function (j, val) {
                     col_number = j;
-                    if(val == ''){
-                        allow = false;
-                        return false;
-                    }
+                    // if(col_number != 8){ // colom 8 , foto boleh dikosongi
+                        if(!val){
+                            allow = false;
+                            return false;
+                        }
+                    // }
                 });
                 if(!allow)
                     return false;
@@ -160,7 +274,8 @@
                             text: "Data berhasil di impor.",
                             icon: "success"
                         });
-                        hot.updateSettings({data: [['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '']]});
+                        // hot.updateSettings({data: [['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '']]});
+                        hot.updateSettings({data: [['', '', '', '', '', '', '', '']]});
                     }
                     ajx_overlay(false);
                 });
@@ -226,23 +341,25 @@ html body {
                             <div class="alert bg-danger">
                                 <p>Perhatian :</p>
                                 <ul class="">
-                                    <li>Data No Peserta maks. {{ MHS_ID_LENGTH }} karakter</li>
-                                    <li>Data No Billkey maks. {{ NO_BILLKEY_LENGTH }} karakter</li>
-                                    <li>Data Nama min. 3 karakter dan maks. 250 karakter</li>
-                                    <li>Data Email maks. 250 karakter</li>
-                                    <li>Data Jk hanya berisi L atau P</li>
-                                    <li>Jika ada, data Materi Ujian harus sesuai dengan ID yang ada</li>
+                                    <li>Data No Peserta maks. {{ MAX_MHS_ID_LENGTH }} karakter</li>
+                                    <li>Data Nama maks. {{ MAX_NM_PESERTA_LENGTH }} karakter</li>
+                                    <li>Data NIK adalah {{ NIK_LENGTH }} karakter</li>
+                                    <li>Data Jenis Kel. hanya berisi {{ JK_AVAIL[0] }} atau {{ JK_AVAIL[1] }}</li>
+                                    <li>Data Email maks. {{ MAX_EMAIL_PESERTA_LENGTH }} karakter</li>
+                                    <li>Data Billkey diisi sebagai <span class="bg-yellow text-danger"><b>&nbsp;PASSWORD&nbsp;</b></span> login peserta</li>
+                                    <li>Data No Billkey maks. {{ MAX_NO_BILLKEY_LENGTH }} karakter</li>
+                                    {{-- <li>Data Foto berisi url dari foto peserta, boleh dikosongi</li> --}}
+                                    {{-- <li>Jika ada, data Materi Ujian harus sesuai dengan ID yang ada</li> --}}
                                 </ul>
                             </div>
-                            <div class="alert bg-success">
+                            <div class="alert bg-white border-red text-dark">
                                 <ul>
-                                    <li>Anda dapat meng-copas dari excel ke tabel berikut</li>
-                                    <li>Setelah data terisi anda dapat mengirimkan data dengan melalui tombol import</li>
-                                    <li>Sistem akan memvalidasi data anda, dan apabila ada kesalahan silahkan edit langsung pada tabel</li>
+                                    <li>Silahkan download format excel dan dapat anda copy-paste kedalam table
+                                    <li>Template Excel : [ <a href="<?= base_url('assets/dist/format/mahasiswa_simple.xlsx') ?>" class="">DOWNLOAD</a> ]</li>
                                 </ul>
                             </div>
-                            <button type="button" class="btn btn-block btn-flat btn-primary" id="btn_import"><i class="fa fa-arrow-circle-o-up"></i> Import</button>
-                            <a href="{{ site_url('mahasiswa/import') }}" class="btn btn-block btn-flat btn-warning"><i class="fa fa-arrow-left"></i> Batal</a>
+                            <button type="button" class="btn btn-block btn-flat btn-primary" id="btn_import"><i class="fa fa-arrow-circle-o-up"></i> Simpan</button>
+                            <a href="{{ site_url('mahasiswa/index') }}" class="btn btn-block btn-flat btn-warning"><i class="fa fa-arrow-left"></i> Batal</a>
                         </div>
                         <div class="col-md-9">
                             {{--                    <div class="table-responsive scroll-container">--}}

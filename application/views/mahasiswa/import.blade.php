@@ -66,7 +66,7 @@ function init_page_level(){
                     </ul>
                 </div>
                 <div class="text-center">
-                    <a data-toggle="modal" href="#materiId" style="text-decoration:none" class="btn btn-outline-primary btn-glow">ID MATKUL</a>
+                    {{-- <a data-toggle="modal" href="#materiId" style="text-decoration:none" class="btn btn-outline-primary btn-glow">ID MATKUL</a> --}}
                     <a href="<?= base_url('assets/dist/format/mahasiswa.xlsx') ?>" class="btn btn-outline-info btn-glow">FORMAT EXCEL</a>
                     <a href="<?= site_url('mahasiswa/edit_on_table') ?>" class="btn btn-outline-success btn-glow">TABEL</a>
                 </div>
@@ -90,10 +90,10 @@ function init_page_level(){
                         <p>Perhatian :</p>
                         <ul class="">
                             <li>Apabila ditemukan data !! ERROR !! , silahkan perbaiki data terlebih dahulu sebelum bisa diimpor.</li>
-                            <li>Data No Peserta maks. {{ MHS_ID_LENGTH }} karakter</li>
+                            <li>Data No Peserta maks. {{ MAX_MHS_ID_LENGTH }} karakter</li>
                             <li>Data Nama min. 3 karakter dan maks. 250 karakter</li>
                             <li>Data Email maks. 250 karakter</li>
-                            <li>Data No Billkey tepat {{ NO_BILLKEY_LENGTH }} karakter</li>
+                            <li>Data No Billkey tepat {{ MAX_NO_BILLKEY_LENGTH }} karakter</li>
                             <li>Data Jk hanya berisi L atau P</li>
                             <li>Data Materi Ujian harus sesuai dengan ID yang ada</li>
                         </ul>

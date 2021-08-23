@@ -80,12 +80,12 @@ class Dosen extends MY_Controller
 	protected function _save()
 	{
 		$method 	= $this->input->post('method', true);
-		$id_dosen 	= $this->input->post('id_dosen', true);
-		$nama_dosen = $this->input->post('nama_dosen', true);
 		$nip        = $this->input->post('nip', true);
-		$email 		= $this->input->post('email', true);
-		$tgl_lahir 		= $this->input->post('tgl_lahir', true);
+		$nama_dosen = $this->input->post('nama_dosen', true);
 		$matkul 	= $this->input->post('matkul[]', true);
+		$tgl_lahir 		= $this->input->post('tgl_lahir', true);
+		$email 		= $this->input->post('email', true);
+		$id_dosen 	= $this->input->post('id_dosen', true);
 //		vdebug($matkul);
 		if ($method == 'add') {
 			$u_nip = '|is_unique[dosen.nip]';
@@ -127,12 +127,13 @@ class Dosen extends MY_Controller
 			$this->_json($data);
 		} else {
 			$input = [
-				'nip'			=> $nip,
-				'nama_dosen' 	=> $nama_dosen,
-				'email' 		=> $email,
-				'tgl_lahir' 		=> $tgl_lahir,
+				'nip'			=> $this->input->post('nip', true),
+				'nama_dosen' 	=> $this->input->post('nama_dosen', true),
+				'email' 		=> $this->input->post('email', true),
+				'tgl_lahir' 		=> $this->input->post('tgl_lahir', true),
 				// 'matkul_id' 	=> $matkul
 			];
+
 			if ($method === 'add') {
 			
 //				$action = $this->master->create('dosen', $input);

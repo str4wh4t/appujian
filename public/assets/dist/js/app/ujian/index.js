@@ -80,7 +80,7 @@ function buka(id_widget) {
     waktu_buka_soal = moment().format("YYYY-MM-DD HH:mm:ss");
     // console.log('buka', waktu_buka_soal);
     // $('#q_n_a').scrollTop(0);
-    $('#fixed_panel').scrollTop(0);
+    $('#lembar_ujian').scrollTop(0);
 
     nomer_soal_before = id_widget;
 }
@@ -159,7 +159,7 @@ function next() {
     waktu_buka_soal = moment().format("YYYY-MM-DD HH:mm:ss");
     // console.log('next', waktu_buka_soal);
     // $('#q_n_a').scrollTop(0);
-    $('#fixed_panel').scrollTop(0);
+    $('#lembar_ujian').scrollTop(0);
 
     nomer_soal_before = berikutnya;
 }
@@ -237,7 +237,7 @@ function back() {
     waktu_buka_soal = moment().format("YYYY-MM-DD HH:mm:ss");
     // console.log('buka', waktu_buka_soal);
     // $('#q_n_a').scrollTop(0);
-    $('#fixed_panel').scrollTop(0);
+    $('#lembar_ujian').scrollTop(0);
 
     nomer_soal_before = back;
 }

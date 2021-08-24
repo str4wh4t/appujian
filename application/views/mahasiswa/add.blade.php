@@ -24,12 +24,15 @@
 <script src="{{ asset('assets/yarn/node_modules/moment/min/moment.min.js') }}"></script>
 <script src="{{ asset('assets/yarn/node_modules/bootstrap4-datetimepicker/build/js/bootstrap-datetimepicker.min.js') }}"></script>
 <script src="{{ asset('assets/template/robust/app-assets/vendors/js/forms/toggle/bootstrap-switch.min.js') }}"></script>
+<script src="{{ asset('assets/yarn/node_modules/jquery-validation/dist/jquery.validate.js') }}"></script>
 <!-- END PAGE VENDOR -->
 @endpush
 
 @push('page_level_js')
 <!-- BEGIN PAGE LEVEL JS-->
 <script type="text/javascript">
+
+let validator;
 
 function init_page_level(){
     $('.select2').select2();
@@ -48,6 +51,57 @@ function init_page_level(){
             today: 'fa fa-check',
             clear: 'fa fa-trash',
             close: 'fa fa-times'
+        }
+    });
+
+    validator = $("#form_add_prodi").validate({
+        debug: false,
+        ignore: [],
+        rules: {
+            'nama_prodi': {required: true},
+        },
+        messages: {
+            'nama_prodi': {
+                required: "tidak boleh kosong",
+            },
+        },
+        errorElement: "small",
+        // <p class="badge-default badge-danger block-tag text-right"><small class="block-area white">Helper aligned to right</small></p>
+        errorPlacement: function ( error, element ) {
+            error.addClass("badge-default badge-danger block-tag pl-2");
+            // error.css('display','block');
+            if ( element.prop("type") === "radio" ) {
+                error.appendTo(element.siblings(".error_radio"));
+            } else if ( element.hasClass("only_input_select2multi")) {
+                // error.insertAfter(element.parent().parent().parent().siblings(".error_select2"));
+                error.css('display','block');
+                error.insertAfter(element.siblings(".error_select2"));
+                // error.insertAfter(element);
+            } else if ( element.hasClass("only_input_select2single")) {
+                // error.insertAfter(element.parent().parent().parent().siblings(".error_select2"));
+                error.css('display','block');
+                error.insertAfter(element.siblings(".error_select2"));
+                // error.insertAfter(element);
+            } else if ( element.prop("type") === "checkbox" ) {
+                error.appendTo(element.siblings(".error_checkbox"));
+            } else if ( element.hasClass("summernote_editor")) {
+                // error.insertAfter(element.parent().parent().parent().siblings(".error_select2"));
+                error.css('display','block');
+                error.insertAfter(element.siblings(".error_summernote"));
+                // error.insertAfter(element);
+            }
+            else {
+                error.insertAfter(element);
+                element.addClass('border-danger');
+            }
+        },
+        highlight: function ( element, errorClass, validClass ) {
+            // $(element).parents( ".col-sm-5" ).addClass( "has-error" ).removeClass( "has-success" );
+            $(element).addClass('border-danger');
+        },
+        unhighlight: function (element, errorClass, validClass) {
+            // $(element).parents( ".col-sm-5" ).addClass( "has-success" ).removeClass( "has-error" );
+            $(element).removeClass('border-danger');
         }
     });
 }
@@ -69,6 +123,33 @@ $(document).on('keyup','input[name="foto"]',function(){
             $('#img_profile').attr('src','{{ asset('assets/imgs/no_profile.jpg') }}');
         }
     );
+});
+
+$(document).on('click','#btn_add_prodi',function(e){
+    validator.resetForm();
+    $('#nama_prodi').val('');
+    $('#modal_add_prodi').modal('show');
+    return false;
+});
+
+$(document).on('click','#btn_submit_add_prodi',function(e){  
+
+    let result = validator.form();
+    if(result){
+        let nama_prodi = $('#nama_prodi').val();
+        let newopt = new Option(nama_prodi, nama_prodi, true, true);
+        $('#prodi').append(newopt).trigger('change');
+        validator.resetForm();
+        $('#nama_prodi').val('');
+        $('#modal_add_prodi').modal('hide');
+        Swal.fire({
+            title: "Perhatian",
+            text: "Prodi telah ditambahkan",
+            icon: "success",
+            confirmButtonText: "Ok",
+        });
+    }
+
 });
 
 </script>
@@ -115,9 +196,9 @@ $(document).on('keyup','input[name="foto"]',function(){
                 <label for="nama">Tmp Lahir</label>
                 {{-- <input placeholder="Tmp Lahir" type="text" name="tmp_lahir" id="tmp_lahir" class="form-control"> --}}
                 <select name="tmp_lahir" id="tmp_lahir" class="form-control select2">
-                    <option value="" disabled {{ empty(set_value('tmp_lahir')) ? 'selected' : '' }}>- Pilih tempat lahir -</option>
+                    <option value="" disabled selected>- Pilih tempat lahir -</option>
                     @foreach ($kota_kab_list as $item)
-                    <option value="{{ $item->kota_kab }}" {{ set_value('tmp_lahir') == $item->kota_kab ? 'selected="selected"' : '' }}>{{ $item->kota_kab }}</option>
+                    <option value="{{ $item->kota_kab }}">{{ $item->kota_kab }}</option>
                     @endforeach
                 </select>
                 <small class="help-block"></small>
@@ -147,6 +228,18 @@ $(document).on('keyup','input[name="foto"]',function(){
                 <input value="" placeholder="No Billkey" type="text" name="no_billkey" id="no_billkey" class="form-control">
                 <small class="help-block"></small>
             </div>
+
+            <div class="form-group">
+                <label for="prodi" style="display: block">Prodi <span class="pull-right">[ <b><a href="#" id="btn_add_prodi"><i class="fa fa-plus"></i> Add prodi</a></b> ]</span></label>
+               <select id="prodi" name="prodi" class="form-control select2">
+                    <option value="" disabled selected>- Pilih prodi -</option>
+                    @foreach ($prodi_list as $item)
+                    <option value="{{ $item }}">{{ $item }}</option>
+                    @endforeach
+               </select>
+               <small class="help-block"></small>
+           </div>
+
         <!-- 
             <div class="form-group">
                 <label for="matkul">Materi Ujian</label>
@@ -226,4 +319,27 @@ $(document).on('keyup','input[name="foto"]',function(){
         </div>
     </div>
 </section>
+
+<div class="modal" id="modal_add_prodi">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Tambah Prodi</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span></button>
+            </div>
+            <div class="modal-body">
+                <form id="form_add_prodi" method="POST" action="#" >
+                <div class="form-group">
+                    <label for="nama_prodi">Nama Prodi</label>
+                    <input type="text" class="form-control" value="" name="nama_prodi" id="nama_prodi" placeholder=""/>
+                </div>
+                <div class="form-group pull-right">
+                    <button type="button" id="btn_submit_add_prodi" class="btn btn-flat btn-success">Tambah</button>
+                </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 @endsection

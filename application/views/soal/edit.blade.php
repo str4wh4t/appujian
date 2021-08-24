@@ -359,6 +359,8 @@ $(document).on('keypress','input[name="nama_bundle"]',function(e){
 
 $(document).on('click','#btn_tambah_section',function(e){
     validator.resetForm();
+    $('#keterangan').val('');
+    $('#konten').summernote('code', '');
     $('#modal_section').modal('show');
 });
 
@@ -742,7 +744,7 @@ $('#is_bobot_per_jawaban').on('switchChange.bootstrapSwitch', function (event, s
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h4 class="modal-title">Pilihan Section</h4>
+                <h4 class="modal-title">Tambah Section</h4>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">×</span></button>
             </div>

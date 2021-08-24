@@ -66,6 +66,7 @@ class Mahasiswa extends MY_Controller
 		];
 
 		$data['kota_kab_list'] = Data_daerah_orm::all();
+		$data['prodi_list'] = Mhs_orm::distinct()->pluck('prodi')->toArray();
 
 		//		$this->load->view('_templates/dashboard/_header.php', $data);
 		//		$this->load->view('master/mahasiswa/add');
@@ -90,6 +91,7 @@ class Mahasiswa extends MY_Controller
 		];
 
 		$data['kota_kab_list'] = Data_daerah_orm::all();
+		$data['prodi_list'] = Mhs_orm::distinct()->pluck('prodi')->toArray();
 
 		//		$this->load->view('_templates/dashboard/_header.php', $data);
 		//		$this->load->view('master/mahasiswa/edit');
@@ -186,6 +188,8 @@ class Mahasiswa extends MY_Controller
 		//		$this->form_validation->set_rules('jurusan', 'Jurusan', 'required');
 		//		$this->form_validation->set_rules('kelas', 'Kelas', 'required');
 
+		$this->form_validation->set_rules('prodi', 'Prodi', 'required');
+
 		$this->form_validation->set_message('required', 'Kolom {field} wajib diisi');
 	}
 
@@ -210,6 +214,7 @@ class Mahasiswa extends MY_Controller
 					'jenis_kelamin' => form_error('jenis_kelamin'),
 					'matkul[]' => form_error('matkul[]'),
 					'no_billkey' => form_error('no_billkey'),
+					'prodi' => form_error('prodi'),
 					//					'jurusan' => form_error('jurusan'),
 					//					'kelas' => form_error('kelas'),
 				]
@@ -229,6 +234,7 @@ class Mahasiswa extends MY_Controller
 				'jenis_kelamin' => $this->input->post('jenis_kelamin', true),
 				'matkul'        => $this->input->post('matkul[]', true),
 				'no_billkey' 	=> $this->input->post('no_billkey', true),
+				'prodi' 		=> $this->input->post('prodi', true),
 				//				'kelas_id' 		=> $this->input->post('kelas', true),
 			];
 			$msg = null;
@@ -285,8 +291,8 @@ class Mahasiswa extends MY_Controller
 					$mhs->foto = $input['foto'];
 					$mhs->jenis_kelamin = $input['jenis_kelamin'];
 					$mhs->no_billkey = $input['no_billkey'];
-					$mhs->prodi = PRODI_TXT_DEFAULT;
-					$mhs->kodeps = PRODI_KODE_DEFAULT;
+					$mhs->prodi = $input['prodi'];
+					// $mhs->kodeps = PRODI_KODE_DEFAULT;
 					$mhs->tahun = Tahun::get_tahun_aktif();
 					$mhs->save();
 
@@ -325,6 +331,7 @@ class Mahasiswa extends MY_Controller
 					$mhs->foto = empty($input['foto']) ? null : $input['foto'];
 					$mhs->jenis_kelamin = $input['jenis_kelamin'];
 					// $mhs->no_billkey = empty($input['no_billkey']) ? null : $input['no_billkey']; // UNTUK EDIT no_billkey NYA DI DISABLE
+					$mhs->prodi = $input['prodi'];
 					$mhs->save();
 
 					if(!empty($input['matkul'])){
@@ -1114,12 +1121,12 @@ class Mahasiswa extends MY_Controller
 				// 	break;
 				// }
 
-				// $prodi = $d[10];
-				// if (strlen($prodi) > 250 || strlen($prodi) < 3) {
-				// 	$allow = false;
-				// 	$msg = 'Row : ' . $i . ', Prodi bermasalah, prodi : ' . $prodi;
-				// 	break;
-				// }
+				$prodi = $d[8];
+				if (strlen($prodi) > MAX_PRODI_LENGTH) {
+					$allow = false;
+					$msg = 'Row : ' . $i . ', Prodi bermasalah, prodi : ' . $prodi;
+					break;
+				}
 
 				// $jalur = $d[11];
 				// if (strlen($jalur) > 250 || strlen($jalur) < 3) {
@@ -1218,13 +1225,11 @@ class Mahasiswa extends MY_Controller
 				$mhs->jenis_kelamin = $jk;
 				// $mhs->foto         = $foto;
 				// $mhs->kodeps         = $kodeps;
-				// $mhs->prodi         = $prodi;
+				$mhs->prodi         = $prodi;
 				// $mhs->jalur         = $jalur;
 				// $mhs->gel         = $gel;
 				// $mhs->smt         = $smt;
 				// $mhs->tahun         = $tahun;
-				$mhs->prodi = PRODI_TXT_DEFAULT;
-				$mhs->kodeps = PRODI_KODE_DEFAULT;
 				$mhs->tahun = Tahun::get_tahun_aktif();
 				$mhs->save();
 

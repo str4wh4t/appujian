@@ -174,14 +174,48 @@
           }, 100);
         };
 
+        let isValidProdi = function (value, callback){
+            value = value.trim();
+            var date = moment(value);
+            setTimeout(function(){
+            if(value != '') {
+                if (value.length <= {{ MAX_PRODI_LENGTH }}) {
+                    callback(true);
+                } else {
+                    callback(false);
+                }
+            }else {
+                callback(true);
+            }
+          }, 100);
+        };
+
+        let isValidTmplahir = function (value, callback){
+            value = value.trim();
+            var date = moment(value);
+            setTimeout(function(){
+            if(value != '') {
+                if (value.length <= {{ MAX_TMP_LAHIR_PESERTA_LENGTH }}) {
+                    callback(true);
+                } else {
+                    callback(false);
+                }
+            }else {
+                callback(true);
+            }
+          }, 100);
+        };
+
+        
+
         let container = document.getElementById('hot');
         let hot = new Handsontable(container, {
                 data: data,
                 rowHeaders: true,
                 // colHeaders: true,
                 // colHeaders:  ['NO PESERTA','NAMA','NIK','TMP LAHIR','TGL LAHIR<br>(YYYY-MM-DD)','L/P','EMAIL','NO BILLKEY','FOTO','KODEPS','PRODI','JALUR','GEL','SMT','TAHUN','ID MATERI UJIAN'],
-                // colHeaders:  ['NO PESERTA','NAMA','NIK','TMP LAHIR','TGL LAHIR<br>(YYYY-MM-DD)','L/P','EMAIL','NO BILLKEY','FOTO'],
-                colHeaders:  ['NO PESERTA','NAMA','NIK','TMP LAHIR','TGL LAHIR<br>(YYYY-MM-DD)','JENIS KELAMIN<br>({{ JK_AVAIL[0] }}/{{ JK_AVAIL[1] }})','EMAIL','NO BILLKEY','FOTO'],
+                // colHeaders:  ['NO PESERTA','NAMA','NIK','TMP LAHIR','TGL LAHIR<br>(YYYY-MM-DD)','L/P','EMAIL','NO BILLKEY','FOTO','KODEPS','PRODI'],
+                colHeaders:  ['NO PESERTA','NAMA','NIK','TMP LAHIR','TGL LAHIR<br>(YYYY-MM-DD)','JENIS KELAMIN<br>({{ JK_AVAIL[0] }}/{{ JK_AVAIL[1] }})','EMAIL','NO BILLKEY','PRODI'],
                 filters: true,
                 dropdownMenu: true,
                 // minRows: 50,
@@ -189,7 +223,7 @@
                 width: 1000,
                 height: 500,
                 // colWidths: [150, 200, 150, 150, 150, 150, 150, 150, 150],
-                colWidths: [150, 200, 150, 150, 150, 150, 150, 150],
+                colWidths: [150, 200, 150, 150, 150, 150, 150, 150, 150],
                 // rowHeights: [50, 40, 100],
                 manualColumnResize: false,
                 manualRowResize: true,
@@ -216,12 +250,12 @@
                     {validator: isValidNopes, allowInvalid: false},
                     {validator: isValidNmpes, allowInvalid: false},
                     {validator: isValidNik, allowInvalid: false},
-                    {},
+                    {validator: isValidTmplahir, allowInvalid: false},
                     {validator: isValidDate, allowInvalid: false},
                     {validator: isValidJk, allowInvalid: false},
                     {validator: emailValidator, allowInvalid: false},
                     {validator: isValidNobillkey, allowInvalid: false},
-                    // {},
+                    {validator: isValidProdi, allowInvalid: false},
                 ]
 
         });
@@ -275,7 +309,7 @@
                             icon: "success"
                         });
                         // hot.updateSettings({data: [['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '']]});
-                        hot.updateSettings({data: [['', '', '', '', '', '', '', '']]});
+                        hot.updateSettings({data: [['', '', '', '', '', '', '', '', '']]});
                     }
                     ajx_overlay(false);
                 });
@@ -344,10 +378,12 @@ html body {
                                     <li>Data No Peserta maks. {{ MAX_MHS_ID_LENGTH }} karakter</li>
                                     <li>Data Nama maks. {{ MAX_NM_PESERTA_LENGTH }} karakter</li>
                                     <li>Data NIK adalah {{ NIK_LENGTH }} karakter</li>
+                                    <li>Data Tmp Lahir adalah {{ MAX_TMP_LAHIR_PESERTA_LENGTH }} karakter</li>
                                     <li>Data Jenis Kel. hanya berisi {{ JK_AVAIL[0] }} atau {{ JK_AVAIL[1] }}</li>
                                     <li>Data Email maks. {{ MAX_EMAIL_PESERTA_LENGTH }} karakter</li>
                                     <li>Data Billkey diisi sebagai <span class="bg-yellow text-danger"><b>&nbsp;PASSWORD&nbsp;</b></span> login peserta</li>
                                     <li>Data No Billkey maks. {{ MAX_NO_BILLKEY_LENGTH }} karakter</li>
+                                    <li>Data prodi default = <span class="bg-yellow text-danger"><b>&nbsp;{{ PRODI_TXT_DEFAULT }}&nbsp;</b></span></li>
                                     {{-- <li>Data Foto berisi url dari foto peserta, boleh dikosongi</li> --}}
                                     {{-- <li>Jika ada, data Materi Ujian harus sesuai dengan ID yang ada</li> --}}
                                 </ul>

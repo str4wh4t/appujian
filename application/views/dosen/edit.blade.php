@@ -81,7 +81,7 @@ function init_page_level(){
                 <div class="col-md-12">
                     <div class="form-group">
                     <label for="nip">NIP</label>
-                    <input value="<?=$data->nip?>" {{ $user_is_exist ? 'readonly="readonly"' : '' }} type="number" id="nip" class="form-control" name="nip" placeholder="NIP">
+                    <input value="<?=$data->nip?>" {{ $user_is_exist ? 'readonly="readonly"' : '' }} type="text" id="nip" class="form-control" name="nip" placeholder="NIP">
                     <small class="help-block"></small>
                 </div>
                 <div class="form-group">

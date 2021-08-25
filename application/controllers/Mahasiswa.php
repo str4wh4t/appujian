@@ -188,7 +188,7 @@ class Mahasiswa extends MY_Controller
 		//		$this->form_validation->set_rules('jurusan', 'Jurusan', 'required');
 		//		$this->form_validation->set_rules('kelas', 'Kelas', 'required');
 
-		$this->form_validation->set_rules('prodi', 'Prodi', 'required');
+		$this->form_validation->set_rules('prodi', 'Prodi', 'required|trim');
 
 		$this->form_validation->set_message('required', 'Kolom {field} wajib diisi');
 	}
@@ -1001,7 +1001,8 @@ class Mahasiswa extends MY_Controller
 			$msg = null;
 			$i = 1;
 			foreach ($input as $d) {
-				$nim = strval($d[0]);
+				$nim = trim($d[0]);
+				$nim = strval($nim);
 				if (strlen($nim) > MAX_MHS_ID_LENGTH || !ctype_digit($nim)) {
 					$allow = false;
 					$msg = 'Row : ' . $i . ', NIM salah, nim : ' . $nim;
@@ -1013,14 +1014,15 @@ class Mahasiswa extends MY_Controller
 					break;
 				}
 
-				$nama = $d[1];
+				$nama = trim($d[1]);
 				if (strlen($nama) > MAX_NM_PESERTA_LENGTH) {
 					$allow = false;
 					$msg = 'Row : ' . $i . ', Nama salah, nama : ' . $nama;
 					break;
 				}
 
-				$nik = strval($d[2]);
+				$nik = trim($d[2]);
+				$nik = strval($nik);
 				$nik = str_replace("'", "", $nik);
 				if (strlen($nik) != NIK_LENGTH || !ctype_digit($nik)) {
 					$allow = false;
@@ -1034,15 +1036,15 @@ class Mahasiswa extends MY_Controller
 				//				$msg = 'Row : '. $i .', NIK sudah terdaftar, nik : '. $nik ;
 				//				break;
 				//			}
-
-				$tmp_lahir = $d[3];
+				
+				$tmp_lahir = trim($d[3]);
 				if (strlen($tmp_lahir) > MAX_TMP_LAHIR_PESERTA_LENGTH) {
 					$allow = false;
 					$msg = 'Row : ' . $i . ', Tmp lahir salah, tmp lahir : ' . $tmp_lahir;
 					break;
 				}
 
-				$tgl_lahir = $d[4];
+				$tgl_lahir = trim($d[4]);
 				if (strlen($tgl_lahir) != 10) {
 					$allow = false;
 					$msg = 'Row : ' . $i . ', Tgl lahir salah, tgl lahir : ' . $tmp_lahir;
@@ -1056,14 +1058,14 @@ class Mahasiswa extends MY_Controller
 					}
 				}
 
-				$jk = $d[5];
+				$jk = trim($d[5]);
 				if (!in_array($jk, JK_AVAIL)) {
 					$allow = false;
 					$msg = 'Row : ' . $i . ', Jenis kelamin bermasalah, jenis kelamin : ' . $jk;
 					break;
 				}
 
-				$email = $d[6];
+				$email = trim($d[6]);
 				if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
 
 					/** EMAIL SEKARANG BOLEH SAMA JD DIMATIKAN DULU LOGIC NYA **/
@@ -1084,7 +1086,8 @@ class Mahasiswa extends MY_Controller
 					break;
 				}
 
-				$no_billkey = strval($d[7]);
+				$no_billkey = trim($d[7]);
+				$no_billkey = strval($no_billkey);
 				$no_billkey = str_replace("'", "", $no_billkey);
 				if (strlen($no_billkey) > MAX_NO_BILLKEY_LENGTH || !ctype_digit($no_billkey)) {
 					$allow = false;
@@ -1121,7 +1124,8 @@ class Mahasiswa extends MY_Controller
 				// 	break;
 				// }
 
-				$prodi = $d[8];
+				$prodi = trim($d[8]);
+				$prodi = $prodi;
 				if (strlen($prodi) > MAX_PRODI_LENGTH) {
 					$allow = false;
 					$msg = 'Row : ' . $i . ', Prodi bermasalah, prodi : ' . $prodi;

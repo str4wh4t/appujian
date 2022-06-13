@@ -692,7 +692,7 @@ $(window).focus(function() {
         'app_id': '{{ APP_ID }}',
     }));
 }).blur(function() {
-    @if(SHOW_WARNING_SAAT_UJIAN)
+    @if(is_show_warning_saat_ujian())
     Swal.fire({
         title: "Perhatian",
         text: "Anda diperingatkan tidak boleh membuka halaman lain, semua aktifitas anda direkam oleh sistem untuk penilaian",

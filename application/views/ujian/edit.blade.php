@@ -377,21 +377,21 @@ async function init_topik_table_value(bundle_ids){
             selected_ids = topik_ids_from_selected_bundle ;
         }
     }
-    // console.log('bundle_ids', bundle_ids);
+
     data_jml_soal = [];
+
     if(selected_ids.length)
         await get_jml_soal_per_topik(selected_ids, bundle_ids);
+
     $('.tr-cloned-topik').remove();
     $('#jumlah_soal_total').text('0');
     $('input[name="jumlah_soal_total"]').val('0');
     $.each(selected_ids,function(i,topik_id){
         let nama = topik_avail[topik_id];
-        // if($.inArray(v, topik_id_dipilih) !== -1){
-        //     val = topik_jumlah_soal[v] ;
-        // }
+
         let clone  = $('#tr-master-topik').clone().attr('id','tr-cloned-topik-' + topik_id).addClass('tr-cloned-topik');
         clone.find('label.label_topik').html(nama);
-        // let bobot_soal_id = clone.data('bobot_soal_id');
+
         clone.find('.input_jml').each(function(j){
             let bobot_soal_id = $(this).data('bobot_soal_id');
             let val = topik_jumlah_soal[topik_id] && topik_jumlah_soal[topik_id][bobot_soal_id] ? topik_jumlah_soal[topik_id][bobot_soal_id] : 0;
@@ -430,7 +430,7 @@ async function init_topik_table_value(bundle_ids){
                         .removeAttr('disabled');
         });
 
-        clone.insertAfter("#table-topik tr.head" );
+        clone.insertBefore("#tr-footer-topik" );
         clone.show();
         sum_input_jumlah_soal();
     });
@@ -982,14 +982,14 @@ $(document).on('click','#btn_refine_peserta', function(){
                                 </div>
                             </td>
                         </tr>
-                        <tr>
+                        <tr id="tr-footer-topik">
                             <td>
                                 <label for="" style="margin-top: 7px;">Total Soal</label>
                             </td>
                             <td>
                                 <div class="form-group" style="text-align: right">
                                     <b><span id="jumlah_soal_total" class="text-success" style="">0</span></b>
-                                    <input class="form-control input_number" type="hidden" name="jumlah_soal_total">
+                                    <input class="input_number" type="hidden" name="jumlah_soal_total">
                                     <small class="help-block"></small>
                                 </div>
                             </td>

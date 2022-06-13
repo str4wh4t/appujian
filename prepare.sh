@@ -6,5 +6,5 @@ php composer-setup.php
 php -r "unlink('composer-setup.php');"
 php composer.phar install
 php "$(pwd)/vendor/bin/phoenix" "migrate"
-ln -s "$(pwd)/writeable/yarn/node_modules" "$(pwd)/public/assets/yarn/node_modules"
+ln -s "$(pwd)/writeable/yarn/node_modules" "$(pwd)/public/assets/yarn"
 php "public/index.php" "pub/generate_data_daerah"

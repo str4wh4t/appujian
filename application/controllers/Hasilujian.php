@@ -230,7 +230,7 @@ class HasilUjian extends MY_Controller {
 		            $return .= '<tr>';
 		            // $tpk    = Topik_orm::findOrFail($t);
 		            $return .= '<td width="80%">' . $tpk[$t] . '</td>';
-		            if(SHOW_DETAIL_HASIL)
+		            if(is_show_detail_hasil())
                         $return .= '<td width="20%">' . $v . '</td>';
 		            $return .= '</tr>';
 	            }

@@ -915,7 +915,7 @@ $('#lembar_ujian').on('scroll', function() {
                                                 <div class="funkyradio-success">
                                                     <input type="radio" id="opsi_a_120" name="opsi_1" data-sid="120" value="A" rel="1">
                                                     <label for="opsi_a_120" class="label_pilihan">
-                                                        <div class="huruf_opsi">a</div>
+                                                        <div class="huruf_opsi">A</div>
                                                         <div>
                                                             <p>Jenderal Besar Soedirman<br></p>
                                                         </div>
@@ -924,7 +924,7 @@ $('#lembar_ujian').on('scroll', function() {
                                                 <div class="funkyradio-success">
                                                     <input type="radio" id="opsi_b_120" name="opsi_1" data-sid="120" value="B" rel="1">
                                                     <label for="opsi_b_120" class="label_pilihan">
-                                                        <div class="huruf_opsi">b</div>
+                                                        <div class="huruf_opsi">B</div>
                                                         <div>
                                                             <p>Jenderal Besar Soeharto<br></p>
                                                         </div>
@@ -933,7 +933,7 @@ $('#lembar_ujian').on('scroll', function() {
                                                 <div class="funkyradio-success">
                                                     <input type="radio" id="opsi_c_120" name="opsi_1" data-sid="120" value="C" rel="1">
                                                     <label for="opsi_c_120" class="label_pilihan">
-                                                        <div class="huruf_opsi">c</div>
+                                                        <div class="huruf_opsi">C</div>
                                                         <div>
                                                             <p>Sukristiyono<br></p>
                                                         </div>
@@ -942,7 +942,7 @@ $('#lembar_ujian').on('scroll', function() {
                                                 <div class="funkyradio-success">
                                                     <input type="radio" id="opsi_d_120" name="opsi_1" data-sid="120" value="D" rel="1">
                                                     <label for="opsi_d_120" class="label_pilihan">
-                                                        <div class="huruf_opsi">d</div>
+                                                        <div class="huruf_opsi">D</div>
                                                         <div>
                                                             <p>Douglas MacArthur<br></p>
                                                         </div>
@@ -951,7 +951,7 @@ $('#lembar_ujian').on('scroll', function() {
                                                 <div class="funkyradio-success">
                                                     <input type="radio" id="opsi_e_120" name="opsi_1" data-sid="120" value="E" rel="1">
                                                     <label for="opsi_e_120" class="label_pilihan">
-                                                        <div class="huruf_opsi">e</div>
+                                                        <div class="huruf_opsi">E</div>
                                                         <div>
                                                             <p>Jenderal Besar A.H Nasution<br></p>
                                                         </div>
@@ -968,7 +968,7 @@ $('#lembar_ujian').on('scroll', function() {
                                                 <div class="funkyradio-success">
                                                     <input type="radio" id="opsi_a_130" name="opsi_2" data-sid="130" value="A" rel="2">
                                                     <label for="opsi_a_130" class="label_pilihan">
-                                                        <div class="huruf_opsi">a</div>
+                                                        <div class="huruf_opsi">A</div>
                                                         <div>
                                                             <p>Jawa Barat<br></p>
                                                         </div>
@@ -977,7 +977,7 @@ $('#lembar_ujian').on('scroll', function() {
                                                 <div class="funkyradio-success">
                                                     <input type="radio" id="opsi_b_130" name="opsi_2" data-sid="130" value="B" rel="2">
                                                     <label for="opsi_b_130" class="label_pilihan">
-                                                        <div class="huruf_opsi">b</div>
+                                                        <div class="huruf_opsi">B</div>
                                                         <div>
                                                             <p>Maluku<br></p>
                                                         </div>
@@ -987,7 +987,7 @@ $('#lembar_ujian').on('scroll', function() {
                                                     <input type="radio" id="opsi_c_130" name="opsi_2" data-sid="130" value="C"
                                                         rel="2">
                                                     <label for="opsi_c_130" class="label_pilihan">
-                                                        <div class="huruf_opsi">c</div>
+                                                        <div class="huruf_opsi">C</div>
                                                         <div>
                                                             <p>Kalimantan Utara<br></p>
                                                         </div>
@@ -997,7 +997,7 @@ $('#lembar_ujian').on('scroll', function() {
                                                     <input type="radio" id="opsi_d_130" name="opsi_2" data-sid="130" value="D"
                                                         rel="2">
                                                     <label for="opsi_d_130" class="label_pilihan">
-                                                        <div class="huruf_opsi">d</div>
+                                                        <div class="huruf_opsi">D</div>
                                                         <div>
                                                             <p>Gorontalo<br></p>
                                                         </div>
@@ -1007,7 +1007,7 @@ $('#lembar_ujian').on('scroll', function() {
                                                     <input type="radio" id="opsi_e_130" name="opsi_2" data-sid="130" value="E"
                                                         rel="2">
                                                     <label for="opsi_e_130" class="label_pilihan">
-                                                        <div class="huruf_opsi">e</div>
+                                                        <div class="huruf_opsi">E</div>
                                                         <div>
                                                             <p>Jambi<br>
                                                             </p>
@@ -1025,7 +1025,7 @@ $('#lembar_ujian').on('scroll', function() {
                                                 <div class="funkyradio-success">
                                                     <input type="radio" id="opsi_a_142" name="opsi_3" data-sid="142" value="A" rel="3">
                                                     <label for="opsi_a_142" class="label_pilihan">
-                                                        <div class="huruf_opsi">a</div>
+                                                        <div class="huruf_opsi">A</div>
                                                         <div>
                                                             <p>15</p>
                                                         </div>
@@ -1034,7 +1034,7 @@ $('#lembar_ujian').on('scroll', function() {
                                                 <div class="funkyradio-success">
                                                     <input type="radio" id="opsi_b_142" name="opsi_3" data-sid="142" value="B" rel="3">
                                                     <label for="opsi_b_142" class="label_pilihan">
-                                                        <div class="huruf_opsi">b</div>
+                                                        <div class="huruf_opsi">B</div>
                                                         <div>
                                                             <p>30</p>
                                                         </div>
@@ -1043,7 +1043,7 @@ $('#lembar_ujian').on('scroll', function() {
                                                 <div class="funkyradio-success">
                                                     <input type="radio" id="opsi_c_142" name="opsi_3" data-sid="142" value="C" rel="3">
                                                     <label for="opsi_c_142" class="label_pilihan">
-                                                        <div class="huruf_opsi">c</div>
+                                                        <div class="huruf_opsi">C</div>
                                                         <div>
                                                             <p>45</p>
                                                         </div>
@@ -1052,7 +1052,7 @@ $('#lembar_ujian').on('scroll', function() {
                                                 <div class="funkyradio-success">
                                                     <input type="radio" id="opsi_d_142" name="opsi_3" data-sid="142" value="D" rel="3">
                                                     <label for="opsi_d_142" class="label_pilihan">
-                                                        <div class="huruf_opsi">d</div>
+                                                        <div class="huruf_opsi">D</div>
                                                         <div>
                                                             <p>5</p>
                                                         </div>
@@ -1061,7 +1061,7 @@ $('#lembar_ujian').on('scroll', function() {
                                                 <div class="funkyradio-success">
                                                     <input type="radio" id="opsi_e_142" name="opsi_3" data-sid="142" value="E" rel="3">
                                                     <label for="opsi_e_142" class="label_pilihan">
-                                                        <div class="huruf_opsi">e</div>
+                                                        <div class="huruf_opsi">E</div>
                                                         <div>
                                                             <p>128</p>
                                                         </div>

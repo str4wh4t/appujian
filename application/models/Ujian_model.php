@@ -370,7 +370,7 @@ class Ujian_model extends CI_Model {
 			        foreach ($hasil_ujian_per_topik as $t => $v) {
 				        // $tpk    = $topik->findOrFail($t);
 				        $return .= '<dt class="col-md-8">' . $tpk[$t] . '</dt>';
-				        if(SHOW_DETAIL_HASIL)
+				        if(is_show_detail_hasil()) 
 	                            $return .= '<dd class="col-md-4">' . $v . '</dd>';
 			        }
 		        }

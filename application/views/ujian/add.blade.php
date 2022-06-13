@@ -45,6 +45,12 @@ let topik_ids_from_selected_bundle  = [];
 let topik_ids_from_selected_bundle_key  = [];
 let bundle_id_list = [];
 
+let matkul_jumlah_waktu = [];
+let matkul_urutan = [];
+let matkul_avail = [];
+let matkul_ids_from_selected_bundle  = [];
+let matkul_ids_from_selected_bundle_key  = [];
+
 let filter = {
 		gel: null,
 		smt: null,
@@ -201,11 +207,14 @@ $('#topik_id').on('select2:select', function (e) {
 $('#bundle').on('select2:select', function (e) {
     let bundle_ids = $(this).val();
     bundle_id_list = bundle_ids;
+
     ajx_overlay(true);
     init_topik_table_value(bundle_ids).then(function(){
         // get_matkul_from_selected_bundle(bundle_ids).then(function(){
             // init_peserta_table_value(bundle_ids).then(function(){
-                ajx_overlay(false);
+                init_matkul_table_value(bundle_ids).then(function(){
+                    ajx_overlay(false);
+                });   
             // });
         // });
     });
@@ -229,11 +238,26 @@ $('#bundle').on('select2:unselect', function (e) {
 
     topik_ids_from_selected_bundle = topik_ids_from_selected_bundle_temp;
 
+    /// 
+
+    delete matkul_ids_from_selected_bundle_key[data.id] ;
+
+    let matkul_ids_from_selected_bundle_temp = []
+    $.each(matkul_ids_from_selected_bundle_key, function(i, j){
+        $.each(j, function(ii, jj){
+            matkul_ids_from_selected_bundle_temp.push(jj);
+        });
+    });
+
+    matkul_ids_from_selected_bundle = matkul_ids_from_selected_bundle_temp;
+
     ajx_overlay(true);
     init_topik_table_value(bundle_ids).then(function(){
         // get_matkul_from_selected_bundle(bundle_ids).then(function(){
             // init_peserta_table_value(bundle_id_list).then(function(){
-                ajx_overlay(false);
+                init_matkul_table_value(bundle_ids).then(function(){
+                    ajx_overlay(false);
+                });
             // });
         // });
     });
@@ -298,25 +322,22 @@ async function init_topik_table_value(bundle_ids){
         await get_topik_from_selected_bundle(bundle_ids);
         selected_ids = topik_ids_from_selected_bundle ;
     }
+
     data_jml_soal = [];
+
     if(selected_ids.length)
         await get_jml_soal_per_topik(selected_ids, bundle_ids); // data_jml_soal terisi ketika fungsi ini
+
     $('.tr-cloned-topik').remove();
     $('#jumlah_soal_total').text('0');
     $('input[name="jumlah_soal_total"]').val('0');
     $.each(selected_ids,function(i, topik_id){
         let nama = topik_avail[topik_id];
 
-        // if($.inArray(v, topik_id_dipilih) !== -1){
-        //     val = topik_jumlah_soal[v] ;
-        // }
-
         let clone  = $('#tr-master-topik').clone()
                                         .attr('id','tr-cloned-topik-' + topik_id)
                                         .addClass('tr-cloned-topik');
         clone.find('label.label_topik').html(nama);
-
-        // let bobot_soal_id = clone.data('bobot_soal_id');
 
         clone.find('.input_jml').each(function(j){
             let bobot_soal_id = $(this).data('bobot_soal_id');
@@ -361,9 +382,109 @@ async function init_topik_table_value(bundle_ids){
         });
         
 
-        clone.insertAfter("#table-topik tr.head" );
+        clone.insertBefore("#tr-footer-topik" );
         clone.show();
         sum_input_jumlah_soal();
+    });
+}
+
+const get_matkul_from_selected_bundle_2 = (bundle_ids) => {
+    return $.ajax({
+        url: "{{ site_url('soal/ajax/get_matkul_from_selected_bundle_2') }}",
+        data: { 'bundle_ids' : JSON.stringify(bundle_ids) },
+        type: 'POST',
+        success: function (response) {
+            matkul_ids_from_selected_bundle = response.ids;
+            matkul_avail = response.matkul;
+            matkul_ids_from_selected_bundle_key  = response.matkul_id_ref_bundle;
+        }
+    });
+};
+
+async function init_matkul_table_value(bundle_ids){
+    let selected_ids = [] ;
+    if(bundle_ids === undefined){
+        // selected_ids = $('#topik_id').val();
+        // if($.inArray('ALL', selected_ids) !== -1){
+        //     selected_ids = [];
+        //     $.each(topik_avail, function(i,v){
+        //         selected_ids.push(i);
+        //     });
+        // }
+    }else{
+        await get_matkul_from_selected_bundle_2(bundle_ids);
+        selected_ids = matkul_ids_from_selected_bundle ;
+    }
+    
+    data_jml_soal = [];
+
+    // if(selected_ids.length)
+        // await get_jml_soal_per_topik(selected_ids, bundle_ids); // data_jml_soal terisi ketika fungsi ini
+
+    $('.tr-cloned-matkul').remove();
+    $('#jumlah_soal_total').text('0');
+    $('input[name="jumlah_soal_total"]').val('0');
+    $.each(selected_ids,function(i, matkul_id){
+        let nama = matkul_avail[matkul_id];
+
+        let clone  = $('#tr-master-matkul').clone()
+                                        .attr('id','tr-cloned-matkul-' + matkul_id)
+                                        .addClass('tr-cloned-matkul');
+        clone.find('label.label_matkul').html(nama);
+
+        // clone.find('.input_jml').each(function(j){
+        //     let bobot_soal_id = $(this).data('bobot_soal_id');
+        //     let val = topik_jumlah_soal[topik_id] && topik_jumlah_soal[topik_id][bobot_soal_id] ? topik_jumlah_soal[topik_id][bobot_soal_id] : 0;
+        //     $(this).attr('name','jumlah_soal['+ topik_id +']['+ bobot_soal_id +']')
+        //                 .addClass('input_jumlah_soal')
+        //                 .val(val)
+        //                 .data('topik_id',topik_id)
+        //                 .removeAttr('disabled');
+        // });
+
+        // clone.find('.jml_soal').each(function(j){
+        //     let bobot_soal_id = $(this).data('bobot_soal_id');
+        //     if(data_jml_soal[topik_id] && data_jml_soal[topik_id][bobot_soal_id])
+        //         $(this).text(data_jml_soal[topik_id][bobot_soal_id]);
+        //     else
+        //         $(this).closest('.row').remove();
+        // });
+
+        clone.find('.input_waktu').each(function(j){
+            let val = matkul_jumlah_waktu[matkul_id] ? matkul_jumlah_waktu[matkul_id] : 0;
+            $(this).attr('name','waktu_matkul['+ matkul_id +']')
+                        .addClass('input_waktu_matkul')
+                        .val(val)
+                        .data('matkul_id',matkul_id);
+
+            let is_sekuen_matkul = $('#is_sekuen_matkul').is(':checked');
+            
+            if(is_sekuen_matkul)
+                $(this).removeAttr('disabled');
+            else
+                $(this).attr('disabled', 'disabled');
+        });
+
+        clone.find('.input_urutan').each(function(j){
+            let val = matkul_urutan[matkul_id] ? matkul_urutan[matkul_id] : 0;
+            $(this).attr('name','urutan_matkul['+ matkul_id +']')
+                        .addClass('input_urutan_matkul')
+                        .val(val)
+                        .data('matkul_id',matkul_id);
+                        // .removeAttr('disabled');
+
+            let is_grouping_by_matkul = $('#is_grouping_by_matkul').is(':checked');
+            
+            if(is_grouping_by_matkul)
+                $(this).removeAttr('disabled');
+            else
+                $(this).attr('disabled', 'disabled');
+        });
+        
+
+        clone.insertBefore("#tr-footer-matkul" );
+        clone.show();
+        // sum_input_jumlah_soal();
     });
 }
 
@@ -402,22 +523,49 @@ function sum_input_jumlah_soal(){
     $('input[name="jumlah_soal_total"]').val(jumlah_soal_total);
 }
 
-$(document).on('keyup','.input_waktu_topik',function () {
+$(document).on('keyup mouseup','.input_waktu_topik',function () {
     let  topik_id = $(this).data('topik_id');
     topik_jumlah_waktu[topik_id] = topik_jumlah_waktu[topik_id] ? topik_jumlah_waktu[topik_id] : 0 ;
     topik_jumlah_waktu[topik_id] = $(this).val();
     sum_input_jumlah_waktu();
 });
 
+$(document).on('keyup mouseup','.input_waktu_matkul',function () {
+    let  maktul_id = $(this).data('maktul_id');
+    matkul_jumlah_waktu[matkul_id] = matkul_jumlah_waktu[matkul_id] ? matkul_jumlah_waktu[matkul_id] : 0 ;
+    matkul_jumlah_waktu[matkul_id] = $(this).val();
+    sum_input_jumlah_waktu();
+    sum_input_jumlah_waktu_matkul();
+});
+
 function sum_input_jumlah_waktu(){
     let jumlah_waktu_total = 0;
+    let  jumlah_waktu = 0;
     $('.input_waktu_topik').each(function(i){
-       let  jumlah_waktu = $(this).val() == '' ? 0 : $(this).val() ;
+       jumlah_waktu = $(this).val() == '' ? 0 : $(this).val() ;
        jumlah_waktu_total = jumlah_waktu_total + parseInt(jumlah_waktu);
     });
+
+    $('.input_waktu_matkul').each(function(i){
+       jumlah_waktu = $(this).val() == '' ? 0 : $(this).val() ;
+       jumlah_waktu_total = jumlah_waktu_total + parseInt(jumlah_waktu);
+    });
+
     // $('#jumlah_waktu_total').text(jumlah_waktu_total);
     // $('input[name="jumlah_waktu_total"]').val(jumlah_waktu_total);
     $('input[name="waktu"]').val(jumlah_waktu_total);
+}
+
+function sum_input_jumlah_waktu_matkul(){
+    let jumlah_waktu_total = 0;
+    let  jumlah_waktu = 0;
+    $('.input_waktu_matkul').each(function(i){
+       jumlah_waktu = $(this).val() == '' ? 0 : $(this).val() ;
+       jumlah_waktu_total = jumlah_waktu_total + parseInt(jumlah_waktu);
+    });
+
+    $('input[name="jumlah_waktu_matkul_total"]').val(jumlah_waktu_total);
+    $('#jumlah_waktu_matkul_total').text(jumlah_waktu_total);
 }
 
 const init_peserta_table_value = (bundle_ids) => { // SEKARANG bundle_ids TIDAK DIPAKAI 31/MAY/2021
@@ -642,9 +790,15 @@ $('#is_sekuen_topik').on('switchChange.bootstrapSwitch', function(event, state) 
     if(event.target.checked){ // DETEKSI JIKA TRUE 
         $('.input_waktu_topik').removeAttr('disabled');
         $('input[name="waktu"]').attr('disabled', 'disabled');
+        $('input[name="waktu"]').val('');
+
+        $('#is_grouping_by_matkul').bootstrapSwitch('state', false, false);
+        $('#is_sekuen_matkul').bootstrapSwitch('state', false, false);
+
         sum_input_jumlah_waktu();
     }else{
         $('.input_waktu_topik').attr('disabled', 'disabled');
+        $('.input_waktu_topik').val('0');
         $('input[name="waktu"]').removeAttr('disabled');
         $('input[name="waktu"]').val('');
     }
@@ -653,6 +807,7 @@ $('#is_sekuen_topik').on('switchChange.bootstrapSwitch', function(event, state) 
 $('#sumber_materi').on('ifChecked', function(event){
     $('#panel_materi').removeClass('d-none');
     $('#panel_bundle').addClass('d-none');
+    $('#panel_is_group_by_matkul').addClass('d-none');
     // $('#div_group_mhs_matkul').addClass('d-none');
     $('#bundle').val(null).trigger('change');
     $('#bundle').select2('close');
@@ -663,6 +818,7 @@ $('#sumber_materi').on('ifChecked', function(event){
 $('#sumber_bundle').on('ifChecked', function(event){
     $('#panel_materi').addClass('d-none');
     $('#panel_bundle').removeClass('d-none');
+    $('#panel_is_group_by_matkul').removeClass('d-none');
     // $('#div_group_mhs_matkul').removeClass('d-none');
     $('#matkul_id').select2('close');
     $('#matkul_id').val("").trigger('change');
@@ -680,6 +836,49 @@ $(document).on('click','#btn_refine_peserta', function(){
         ajx_overlay(false);
         $('#panel_submit_ujian').show();
     });
+});
+
+
+$('#is_grouping_by_matkul').on('switchChange.bootstrapSwitch', function(event, state) {
+    if(event.target.checked){ // DETEKSI JIKA TRUE 
+        // $('.input_waktu_topik').removeAttr('disabled');
+        // $('input[name="waktu"]').attr('disabled', 'disabled');
+        // sum_input_jumlah_waktu();
+
+        $('.panel_is_group_by_matkul_waktu').removeClass('d-none');
+        $('#is_sekuen_topik').bootstrapSwitch('state', false, false);
+        // $('#is_sekuen_matkul').bootstrapSwitch('state', true, true);
+
+        $('.input_urutan_matkul').removeAttr('disabled');
+        // $('.input_urutan_matkul').val('0');
+    }else{
+        // $('.input_waktu_topik').attr('disabled', 'disabled');
+        // $('input[name="waktu"]').removeAttr('disabled');
+        // $('input[name="waktu"]').val('');
+
+        $('.panel_is_group_by_matkul_waktu').addClass('d-none');
+        // $('#is_sekuen_matkul').bootstrapSwitch('state', false, false);
+
+        $('.input_urutan_matkul').attr('disabled', 'disabled');
+        $('.input_urutan_matkul').val('0');
+    }
+    $('#is_sekuen_matkul').bootstrapSwitch('state', false, false);
+});
+
+$('#is_sekuen_matkul').on('switchChange.bootstrapSwitch', function(event, state) {
+    if(event.target.checked){ // DETEKSI JIKA TRUE 
+        $('.input_waktu_matkul').removeAttr('disabled');
+        $('input[name="waktu"]').attr('disabled', 'disabled');
+
+        // $('#is_grouping_by_matkul').bootstrapSwitch('state', false, false);
+
+        sum_input_jumlah_waktu();
+    }else{
+        $('.input_waktu_matkul').attr('disabled', 'disabled');
+        $('.input_waktu_matkul').val('0');
+        $('input[name="waktu"]').removeAttr('disabled');
+        $('input[name="waktu"]').val('');
+    }
 });
 
 </script>
@@ -809,13 +1008,73 @@ $(document).on('click','#btn_refine_peserta', function(){
                     </div>
                 </fieldset>
 
+                <div id="panel_is_group_by_matkul" class="form-group d-none">
+                    <label for="is_grouping_by_matkul">Is Grouping By Materi</label> <small class="help-block text-danger"><b>***</b> Soal digroup berdasaran materi ujian</small>
+                    <div>
+                        <input type="radio" class="switchBootstrap" id="is_grouping_by_matkul" name="is_grouping_by_matkul" data-on-text="Ya" data-off-text="Tidak" data-radio-all-off="true" data-on-color="success" data-off-color="danger" />
+                    </div>
+                    <small class="help-block"></small>
+                </div>
+
+                <div class="form-group panel_is_group_by_matkul_waktu d-none">
+                    <label for="is_sekuen_matkul">Is Sekuen Materi</label> <small class="help-block text-danger"><b>***</b> Mengerjakan soal scr sekuensial (pengerjaan materi bergantian berdasar waktu)</small>
+                    <div>
+                        <input type="radio" class="switchBootstrap" id="is_sekuen_matkul" name="is_sekuen_matkul" data-on-text="Ya" data-off-text="Tidak" data-radio-all-off="true" data-on-color="success" data-off-color="danger"/>
+                    </div>
+                    <small class="help-block"></small>
+                </div>
+
+                <div class="panel_is_group_by_matkul_waktu d-none">
+                    <label for="urutan_grouping_by_matkul">
+                        <span>Urutan Materi</span>
+                        <small class="help-block text-danger"><b>***</b> Silahkan tentukan urutan materi</small>
+                    </label>
+                    <table class="table table-bordered" id="table-materi">
+                        <tr class="head" style="background-color: #eee">
+                            <td class="w-100">
+                                <div class="row">
+                                    <label for="" style="" class="col-md-2">Urutan</label>
+                                    <label for="" style="" class="col-md-8">Nm Materi</label>
+                                    <label for="" style="" class="col-md-2">Waktu Materi</label>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr id="tr-master-matkul" style="display: none">
+                            <td>
+                                <div class="row">
+                                    <div class="form-group col-md-2">
+                                        <input placeholder="Urutan" type="number" data-matkul_id="DATA-MATKUL-ID" class="form-control input_urutan input-sm input_number" name="urutan_matkul[ID-MATKUL]" style="" value="0" disabled="disabled">
+                                        <small class="help-block"></small>
+                                    </div>
+                                    <label class="label_matkul col-md-8" for="">NAMA-MATKUL</label>
+                                    <div class="form-group col-md-2">
+                                        <input placeholder="Waktu Materi" type="number" data-matkul_id="DATA-MATKUL-ID" class="form-control input_waktu input-sm input_number" name="waktu_matkul[ID-MATKUL]" style="" disabled="disabled">
+                                        <small class="help-block"></small>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr id="tr-footer-matkul">
+                            <td>
+                                <label for="" style="margin-top: 7px;">Total Waktu</label>
+                                <div class="form-group" style="text-align: right; float:right;">
+                                    <b><span id="jumlah_waktu_matkul_total" class="text-success" style="">0</span></b>
+                                    <input class="input_number" type="hidden" name="jumlah_waktu_matkul_total">
+                                    <small class="help-block"></small>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+
                 <div class="form-group">
-                    <label for="is_sekuen_topik">Is Sekuen Topik</label> <small class="help-block text-danger"><b>***</b> Mengerjakan soal scr sekuensial (pengerjaan topik bergantian)</small>
+                    <label for="is_sekuen_topik">Is Sekuen Topik</label> <small class="help-block text-danger"><b>***</b> Mengerjakan soal scr sekuensial (pengerjaan topik bergantian berdasar waktu)</small>
                     <div>
                         <input type="radio" class="switchBootstrap" id="is_sekuen_topik" name="is_sekuen_topik" data-on-text="Ya" data-off-text="Tidak" data-radio-all-off="true" data-on-color="success" data-off-color="danger" />
                     </div>
                     <small class="help-block"></small>
                 </div>
+                
                 <div>
                     <label for="jumlah_soal">
                         <span>Jumlah Soal</span>
@@ -881,14 +1140,14 @@ $(document).on('click','#btn_refine_peserta', function(){
                                 </div>
                             </td>
                         </tr>
-                        <tr>
+                        <tr id="tr-footer-topik">
                             <td>
                                 <label for="" style="margin-top: 7px;">Total Soal</label>
                             </td>
                             <td>
                                 <div class="form-group" style="text-align: right">
                                     <b><span id="jumlah_soal_total" class="text-success" style="">0</span></b>
-                                    <input class="form-control input_number" type="hidden" name="jumlah_soal_total">
+                                    <input class="input_number" type="hidden" name="jumlah_soal_total">
                                     <small class="help-block"></small>
                                 </div>
                             </td>

@@ -992,6 +992,7 @@ class Mahasiswa extends MY_Controller
 
 	protected function _table_import()
 	{
+		ini_set('max_execution_time', 0);
 		try{
 			$input = json_decode($this->input->post('data', true));
 

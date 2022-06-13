@@ -271,6 +271,7 @@ class Ujian extends MY_Controller
 		$sumber_ujian = $this->input->post('sumber_ujian');
 
 		$jumlah_soal_list = $this->input->post('jumlah_soal', true);
+		$jml_soal_by_materi = [];
 
 		if ($sumber_ujian == 'materi') {
 
@@ -350,6 +351,12 @@ class Ujian extends MY_Controller
 					foreach ($jumlah_soal_list as $topik_id => $topik_id_list) {
 						foreach ($topik_id_list as $bobot_soal_id => $jml_soal) {
 
+							$topik = Topik_orm::findOrFail($topik_id);
+							if(!isset($jml_soal_by_materi[$topik->matkul_id]))
+								$jml_soal_by_materi[$topik->matkul_id] = $jml_soal;
+							else
+								$jml_soal_by_materi[$topik->matkul_id] = $jml_soal_by_materi[$topik->matkul_id] + $jml_soal;
+
 							/**[START] TEST JUMLAH SOAL SESUAI ATAU TIDAK */
 
 							if($bobot_soal_id != SOAL_NO_BOBOT_ID){
@@ -390,7 +397,19 @@ class Ujian extends MY_Controller
 			}
 		}
 
+		$is_grouping_by_matkul = $this->input->post('is_grouping_by_matkul', true) == 'on' ? 1 : 0;
+
+		if($is_grouping_by_matkul){
+			$urutan_matkul_list = $this->input->post('urutan_matkul', true);
+			if (!empty($urutan_matkul_list)) {
+				foreach ($urutan_matkul_list as $matkul_id => $urutan) {
+					$this->form_validation->set_rules('urutan_matkul[' . $matkul_id . ']', 'Urutan matkul', "required|is_natural");
+				}
+			}
+		}
+
 		$is_sekuen_topik = $this->input->post('is_sekuen_topik', true) == 'on' ? 1 : 0;
+		$is_sekuen_matkul = $this->input->post('is_sekuen_matkul', true) == 'on' ? 1 : 0;
 		if($is_sekuen_topik){
 			$waktu_topik_list = $this->input->post('waktu_topik', true);
 			if (!empty($waktu_topik_list)) {
@@ -405,16 +424,39 @@ class Ujian extends MY_Controller
 						}
 						
 						if($jml_soal_topik_total > 0) // JIKA JUMLAH SOALNYA TIDAK KOSONG
-							$this->form_validation->set_rules('waktu_topik[' . $topik_id . ']', 'waktu Topik', "required|is_natural|max_length[4]|greater_than[0]");
-
-						if($waktu !== 0){
-							if(empty($jml_soal_topik_total))
-								$this->form_validation->set_rules('waktu_topik[' . $topik_id . ']', 'waktu Topik', "required|is_natural|max_length[4]|less_than[1]");
+							$this->form_validation->set_rules('waktu_topik[' . $topik_id . ']', 'Waktu Topik', "required|is_natural|max_length[4]|greater_than[0]");
+						else{
+							if(!empty($waktu)){
+								$this->form_validation->set_rules('waktu_topik[' . $topik_id . ']', 'Waktu Topik', "required|is_natural|max_length[4]|less_than[1]");
+							}
 						}
 
 					// }
 				}
 			}
+		}else if($is_sekuen_matkul){
+			// $total_waktu = 0;
+			$waktu_matkul_list = $this->input->post('waktu_matkul', true);
+			if (!empty($waktu_matkul_list)) {
+				foreach ($waktu_matkul_list as $matkul_id => $waktu) {
+					// if(!empty($waktu)){
+						if(isset($jml_soal_by_materi[$matkul_id])){
+							if($jml_soal_by_materi[$matkul_id] > 0){
+								$this->form_validation->set_rules('waktu_matkul[' . $matkul_id . ']', 'Waktu Matkul', "required|is_natural|max_length[4]|greater_than[0]");
+							}else{
+								if(!empty($waktu)){
+									$this->form_validation->set_rules('waktu_matkul[' . $matkul_id . ']', 'Waktu Matkul', "required|is_natural|max_length[4]|less_than[1]");
+								}
+							}
+						}
+						// $total_waktu = $total_waktu + (int)$waktu;
+					// }
+				}
+			}
+
+			// if(empty($total_waktu)){
+			// 	$this->form_validation->set_rules('jumlah_waktu_matkul_total', 'Waktu Matkul Total', "required|is_natural|max_length[4]|greater_than[0]");
+			// }
 		}else{
 			$this->form_validation->set_rules('waktu', 'Waktu', 'required|is_natural|max_length[4]|greater_than[0]');
 		}
@@ -748,6 +790,7 @@ class Ujian extends MY_Controller
 				'jalur[]' 	=> form_error('jalur[]'),
 				'gel_mhs[]' 	=> form_error('gel_mhs[]'),
 				'smt_mhs[]' 	=> form_error('smt_mhs[]'),
+				'jumlah_waktu_matkul_total' 	=> form_error('jumlah_waktu_matkul_total'),
 			];
 
 			$jumlah_soal_list = $this->input->post('jumlah_soal', true);
@@ -772,6 +815,28 @@ class Ujian extends MY_Controller
 				if (!empty($waktu_topik_list)) {
 					foreach ($waktu_topik_list as $topik_id => $waktu) {
 						$data['errors']['waktu_topik[' . $topik_id . ']'] = form_error('waktu_topik[' . $topik_id . ']');
+					}
+				}
+			}
+
+			$is_grouping_by_matkul = $this->input->post('is_grouping_by_matkul', true) == 'on' ? 1 : 0;
+
+			if($is_grouping_by_matkul){
+
+				$urutan_matkul_list = $this->input->post('urutan_matkul', true);
+				if (!empty($urutan_matkul_list)) {
+					foreach ($urutan_matkul_list as $matkul_id => $urutan) {
+						$data['errors']['urutan_matkul[' . $matkul_id . ']'] = form_error('urutan_matkul[' . $matkul_id . ']');
+					}
+				}
+
+				$is_sekuen_matkul = $this->input->post('is_sekuen_matkul', true) == 'on' ? 1 : 0;
+				if($is_sekuen_matkul){
+					$waktu_matkul_list = $this->input->post('waktu_matkul', true);
+					if (!empty($waktu_matkul_list)) {
+						foreach ($waktu_matkul_list as $matkul_id => $waktu) {
+							$data['errors']['waktu_matkul[' . $matkul_id . ']'] = form_error('waktu_matkul[' . $matkul_id . ']');
+						}
 					}
 				}
 			}
@@ -808,20 +873,50 @@ class Ujian extends MY_Controller
 				}
 			}
 
-			$is_sekuen_topik = $this->input->post('is_sekuen_topik', true) == 'on' ? 1 : 0;
 			
 			$waktu			= $this->input->post('waktu', true);
-			if($is_sekuen_topik){
-				$waktu_topik_list = $this->input->post('waktu_topik', true);
-				$jml_waktu_topik = 0;
-				if (!empty($waktu_topik_list)) {
-					foreach ($waktu_topik_list as $topik_id => $waktu) {
-						$data['errors']['waktu_topik[' . $topik_id . ']'] = form_error('waktu_topik[' . $topik_id . ']');
-						$jml_waktu_topik = $jml_waktu_topik + $waktu;
-						$urutan_topik[$topik_id]['waktu'] = $waktu;
+			$is_grouping_by_matkul = $this->input->post('is_grouping_by_matkul', true) == 'on' ? 1 : 0;
+			$is_sekuen_topik = $this->input->post('is_sekuen_topik', true) == 'on' ? 1 : 0;
+			$is_sekuen_matkul = $this->input->post('is_sekuen_matkul', true) == 'on' ? 1 : 0;
+
+			$urutan_matkul = [];
+
+			if($is_grouping_by_matkul){
+
+				$urutan_matkul_list = $this->input->post('urutan_matkul', true);
+				if (!empty($urutan_matkul_list)) {
+					foreach ($urutan_matkul_list as $matkul_id_select => $urutan) {
+						$urutan_matkul[$matkul_id_select] = [
+							'urutan' => $urutan,
+							'waktu'	=> 0,
+						];
 					}
 				}
-				$waktu = $jml_waktu_topik;
+
+				if($is_sekuen_matkul){
+					$waktu_matkul_list = $this->input->post('waktu_matkul', true);
+					$jml_waktu_matkul = 0;
+					if (!empty($waktu_matkul_list)) {
+						foreach ($waktu_matkul_list as $matkul_id_select => $waktu) {
+							$jml_waktu_matkul = $jml_waktu_matkul + $waktu;
+							$urutan_matkul[$matkul_id_select]['waktu'] = $waktu;
+						}
+					}
+					$waktu = $jml_waktu_matkul;
+				}
+
+			}else{
+				if($is_sekuen_topik){
+					$waktu_topik_list = $this->input->post('waktu_topik', true);
+					$jml_waktu_topik = 0;
+					if (!empty($waktu_topik_list)) {
+						foreach ($waktu_topik_list as $topik_id => $waktu) {
+							$jml_waktu_topik = $jml_waktu_topik + $waktu;
+							$urutan_topik[$topik_id]['waktu'] = $waktu;
+						}
+					}
+					$waktu = $jml_waktu_topik;
+				}
 			}
 
 			$prodi 		= $this->input->post('prodi[]');
@@ -883,6 +978,11 @@ class Ujian extends MY_Controller
 				'is_sekuen_topik'			=> $is_sekuen_topik,
 				'urutan_topik'				=> json_encode($urutan_topik),
 				'filter_mhs'				=> json_encode($filter_mhs_array),
+				'is_grouping_by_matkul'		=> $is_grouping_by_matkul,
+				'urutan_matkul'				=> empty($urutan_matkul) ? null : json_encode($urutan_matkul),
+				'is_grouping_by_parent_topik'	=> 0, // NOT YET IMPLEMENT
+				'urutan_parent_topik'	=> null, // NOT YET IMPLEMENT
+				'is_sekuen_matkul'			=> $is_sekuen_matkul,
 			];
 
 			if ($method === 'add') {
@@ -922,6 +1022,11 @@ class Ujian extends MY_Controller
 					$m_ujian_orm->is_sekuen_topik = $input['is_sekuen_topik'];
 					$m_ujian_orm->urutan_topik = $input['urutan_topik'];
 					$m_ujian_orm->filter_mhs = $input['filter_mhs'];
+					$m_ujian_orm->is_grouping_by_matkul = $input['is_grouping_by_matkul'];
+					$m_ujian_orm->urutan_matkul = $input['urutan_matkul'];
+					$m_ujian_orm->is_grouping_by_parent_topik = $input['is_grouping_by_parent_topik'];
+					$m_ujian_orm->urutan_parent_topik = $input['urutan_parent_topik'];
+					$m_ujian_orm->is_sekuen_matkul = $input['is_sekuen_matkul'];
 
 					$m_ujian_orm->created_by = $user->username;
 					$m_ujian_orm->save();
@@ -1321,7 +1426,8 @@ class Ujian extends MY_Controller
 				$query->where('status_ujian', 1);
 			}
 		)->get()
-		->sortByDesc('m_ujian.tgl_mulai');
+		// ->sortByDesc('m_ujian.tgl_mulai');
+		->sortBy('m_ujian.tgl_mulai');
 
 		$data['mhs_ujian_all'] = $mhs_ujian_all;
 
@@ -1387,7 +1493,8 @@ class Ujian extends MY_Controller
 				$query->where('repeatable', 1); // LATIHAN SOAL JIKA UJIAN IS REPEATABLE
 			}
 		)->get()
-		->sortByDesc('m_ujian.tgl_mulai');
+		// ->sortByDesc('m_ujian.tgl_mulai');
+		->sortBy('m_ujian.tgl_mulai');
 
 		$data['mhs_ujian_all'] = $mhs_ujian_all;
 
@@ -1453,6 +1560,7 @@ class Ujian extends MY_Controller
 				$query->where('repeatable', 0); // TRYOUT SOAL JIKA UJIAN IS NOT REPEATABLE
 			}
 		)->get()
+		// ->sortByDesc('m_ujian.tgl_mulai');
 		->sortByDesc('m_ujian.tgl_mulai');
 
 		$data['mhs_ujian_all'] = $mhs_ujian_all;
@@ -1563,13 +1671,23 @@ class Ujian extends MY_Controller
 					// }
 
 					if(empty($mhs_ujian->sisa_kuota_latihan_soal)){
-						$message_rootpage = [
-							'header' => 'Perhatian',
-							'content' => 'Membership anda sudah expired / kuota latihan sudah habis',
-							'type' => 'error'
-						];
-						$this->session->set_flashdata('message_rootpage', $message_rootpage);
-						redirect('ujian/latihan_soal');
+						$allow = false;
+						$h_ujian = Hujian_orm::where(['mahasiswa_id' => $mhs_ujian->mahasiswa_id, 'ujian_id' => $mhs_ujian->ujian_id])->first();
+						if(!empty($h_ujian)){
+							if($h_ujian->ujian_selesai == 'N'){
+								$allow = true;
+							}
+						}
+
+						if(!$allow){
+							$message_rootpage = [
+								'header' => 'Perhatian',
+								'content' => 'Membership anda sudah expired / kuota latihan sudah habis',
+								'type' => 'error'
+							];
+							$this->session->set_flashdata('message_rootpage', $message_rootpage);
+							redirect('ujian/latihan_soal');
+						}
 					}
 				}
 			}else{

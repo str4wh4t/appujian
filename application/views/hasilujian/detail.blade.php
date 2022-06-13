@@ -123,7 +123,7 @@ $(document).on('click','#btn_ulangi_ujian',function(){
                     }else{
                         Swal.fire({
                             title: "Perhatian",
-                            text: "Terjadi kesalahan.",
+                            text: data.msg,
                             icon: "warning"
                         });
                     }

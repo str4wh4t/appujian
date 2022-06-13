@@ -83,3 +83,66 @@ function get_app_logo_cert() {
     
     return $app_logo_cert ;
 }
+
+function is_show_registration() {
+    $is_show_registration = 0;
+    $setting = Setting::where(['variabel' => 'is_show_registration', 'flag' => '1'])->first();
+    if(!empty($setting))
+        $is_show_registration = $setting->nilai;
+    
+    return $is_show_registration ;
+}
+
+function is_show_detail_hasil() {
+    $is_show_detail_hasil = 0;
+    $setting = Setting::where(['variabel' => 'is_show_detail_hasil', 'flag' => '1'])->first();
+    if(!empty($setting))
+        $is_show_detail_hasil = $setting->nilai;
+    
+    return $is_show_detail_hasil ;
+}
+
+function is_enable_tambah_mhs() {
+    $is_enable_tambah_mhs = 0;
+    $setting = Setting::where(['variabel' => 'is_enable_tambah_mhs', 'flag' => '1'])->first();
+    if(!empty($setting))
+        $is_enable_tambah_mhs = $setting->nilai;
+    
+    return $is_enable_tambah_mhs ;
+}
+
+function is_show_tata_tertib() {
+    $is_show_tata_tertib = 0;
+    $setting = Setting::where(['variabel' => 'is_show_tata_tertib', 'flag' => '1'])->first();
+    if(!empty($setting))
+        $is_show_tata_tertib = $setting->nilai;
+    
+    return $is_show_tata_tertib ;
+}
+
+function is_show_warning_saat_ujian() {
+    $is_show_warning_saat_ujian = 0;
+    $setting = Setting::where(['variabel' => 'is_show_warning_saat_ujian', 'flag' => '1'])->first();
+    if(!empty($setting))
+        $is_show_warning_saat_ujian = $setting->nilai;
+    
+    return $is_show_warning_saat_ujian ;
+}
+
+function is_show_membership() {
+    $is_show_membership = 0;
+    $setting = Setting::where(['variabel' => 'is_show_membership', 'flag' => '1'])->first();
+    if(!empty($setting))
+        $is_show_membership = $setting->nilai;
+    
+    return $is_show_membership ;
+}
+
+function is_show_paket() {
+    $is_show_paket = 0;
+    $setting = Setting::where(['variabel' => 'is_show_paket', 'flag' => '1'])->first();
+    if(!empty($setting))
+        $is_show_paket = $setting->nilai;
+    
+    return $is_show_paket ;
+}

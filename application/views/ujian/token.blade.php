@@ -189,8 +189,9 @@ function init_page_level(){
 }
 
 function go_ujian(token){
-    @if(SHOW_TATA_TERTIB)
+    @if(is_show_tata_tertib())
     $('#modal_tata_tertib').data('id',token);
+    $('#chk_setuju_tata_tertib').prop('checked', false); 
     $('#modal_tata_tertib').modal('show');
     @else
     Swal.fire({
@@ -231,19 +232,24 @@ function go_ujian(token){
 <div class="box box-primary">
     <div class="box-body">
         <div class="row">
-            <div class="col-sm-5">
-                <a href="{{ $_SERVER['HTTP_REFERER'] ?? site_url('ujian/list') }}" class="btn btn-warning mb-1"><i class="fa fa-arrow-left"></i> Kembali</a>
+            <div class="col-sm-12">
+            <a href="{{ $_SERVER['HTTP_REFERER'] ?? site_url('ujian/list') }}" class="btn btn-warning mb-1"><i class="fa fa-arrow-left"></i> Kembali</a>
+            </div>
+        </div>
+        <div class="row">
+            @if(is_show_tata_tertib())
+            <div class="col-sm-4">
                 <div class="">
-                    <p style="font-size: 20px; text-align: center; border: 1px solid #333; padding: 5px;">Tata Tertib Ujian</p>
+                    <p style="font-size: 16px; text-align: center; border: 1px solid #333; padding: 5px;">Tata Tertib Ujian</p>
                     <hr>
                     <p>
-                        <ol>
+                        <ol style="font-size: small; padding-left: 20px;"> 
                             <li>Selama ujian berlangsung, peserta wajib menghidupkan kamera/video zoom. Peserta menutup 
                                 kamera selama ujian, maka <b>pengawas memberhentikan ujian dan peserta tidak bisa melanjutkan 
                                     ujian kembali </b></li>
                             <li><b>Peserta dilarang meninggalkan zoom selama ujian berlangsung</b></li>
                             <li>Peserta tidak boleh melakukan perjokian, tindakan tidak jujur dan bentuk kecurangan lainnya, antara lain </li>
-                            <ul>
+                            <ul style="padding-left: 20px;">
                                 <li>Membuka halaman lain diluar aplikasi ujian dan zoom</li>
                                 <li>Mengoperasikan gawai/perangkat elektronik telekomunikasi lain (HP, Tab, Smartwactch, Kalkulator)</li>
                                 <li>Selama waktu ujian peserta <b>tidak boleh berkomunikasi dengan orang lain </b>dalam bentuk apapun. Menggerakkan bibir berbicara, 
@@ -258,8 +264,9 @@ function go_ujian(token){
                     </p>
                 </div>
             </div>
-            <div class="col-sm-7">
-                <div class="alert bg-danger mt-5">
+            @endif
+            <div class="col-sm-8">
+                <div class="alert bg-danger">
                     <span style="font-size: 20px">Waktu<i class="pull-right fa fa-clock-o"></i></span>
                     <hr>
                     <span class="d-block"> <span class="live-clock" id="time_now" style="font-size: 20px"><?=date('H:i:s')?></span></span>
@@ -429,7 +436,7 @@ function go_ujian(token){
     </div>
 </div>
 
-@if(SHOW_TATA_TERTIB)
+@if(is_show_tata_tertib())
 <!-- Modal -->
 <div class="modal text-left"
      id="modal_tata_tertib"

@@ -154,7 +154,7 @@
 
 			@if( in_group(MHS_GROUP_ID) )
 				@if( APP_TYPE == 'tryout' )
-					@if( SHOW_MEMBERSHIP )
+					@if(is_show_membership())
 					<li class="{{ $page == 'membership' ? "active" : "" }} nav-item">
 						<a href="{{ url('membership/list') }}">
 							<i class="icon-diamond"></i><span class="menu-title" data-i18n="nav.dash.main">Membership</span>
@@ -162,7 +162,7 @@
 					</li>
 					@endif
 
-					@if( SHOW_PAKET )
+					@if(is_show_paket())
 					<li class="{{ $page == 'paket' ? "active" : "" }} nav-item">
 						<a href="{{ url('paket/list') }}">
 							<i class="icon-basket-loaded"></i><span class="menu-title" data-i18n="nav.dash.main">Paket Materi</span>

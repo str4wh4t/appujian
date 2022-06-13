@@ -286,6 +286,11 @@ $(document).ready(function(){
     
 });
 
+// $(window).on('beforeunload', function(){
+//     if(socket_enable)
+//         init_socket(); 
+// });
+
 </script>
 
 <!-- BEGIN PAGE LEVEL JS (PAGE LEVEL)-->

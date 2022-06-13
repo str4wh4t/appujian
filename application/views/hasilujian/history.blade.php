@@ -81,7 +81,7 @@ use Illuminate\Database\Capsule\Manager as DB;
 						}else{
 							Swal.fire({
 								title: "Perhatian",
-								text: "Terjadi kesalahan.",
+								text: data.msg,
 								icon: "warning"
 							});
 						}

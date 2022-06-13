@@ -1471,6 +1471,7 @@ class Soal extends MY_Controller
 
 		$matkul_ids = Topik_orm::whereIn('id',$topik_id_list)
 									// ->get(['matkul_id'])
+									->orderBy('matkul_id')
 									->pluck('matkul_id')
 									->toArray();
 		$matkul_ids = array_unique($matkul_ids);
@@ -1490,10 +1491,11 @@ class Soal extends MY_Controller
 		$topik_list = [];
 
 		$bundle_list = Bundle_orm::whereIn('id', $bundle_ids)->get();
+
 		if($bundle_list->isNotEmpty()){
 			foreach($bundle_list as $bundle){
 				if($bundle->soal->isNotEmpty()){
-					$soal_list = $bundle->soal()->groupBy('topik_id')->get(['topik_id']);
+					$soal_list = $bundle->soal()->groupBy('topik_id')->get(['topik_id'])->sortBy('topik_id');
 					foreach($soal_list as $soal){
 						if(!isset($topik_id_ref_bundle_list[$bundle->id]))
 							$topik_id_ref_bundle_list[$bundle->id] = [];
@@ -1501,16 +1503,70 @@ class Soal extends MY_Controller
 							$topik_id_ref_bundle_list[$bundle->id][] = $soal->topik_id ;
 						if(!in_array($soal->topik_id, $topik_id_list)){
 							$topik_id_list[] = $soal->topik_id;
-							$topik_list[$soal->topik_id] = '<small><b>'. $soal->topik->matkul->nama_matkul . '</b></small><br/><span class="text-danger">' . $soal->topik->nama_topik . '</span>';
+							// $topik_list[$soal->topik_id] = $soal->topik->nama_topik ;
+							$topik_list[$soal->topik_id] = '<small><b>'. $soal->topik->matkul->nama_matkul .'</b></small><br/><span class="text-danger">'. $soal->topik->nama_topik .'</span>';
 						}
-
 					}
 				}
 			}
 		}
 
-		$this->_json(['ids' => $topik_id_list, 'topik_id_ref_bundle' => $topik_id_ref_bundle_list, 'topik' => $topik_list]);
+		if(!empty($topik_id_list)){
+			$topik_id_list = Topik_orm::whereIn('id',$topik_id_list)
+										->orderBy('matkul_id')
+										// ->orderBy('id', 'DESC')
+										->orderBy('id')
+										->pluck('id')
+										->toArray();
+		}
 
+		// vdebug($topik_id_list);
+
+		$this->_json(['ids' => $topik_id_list, 'topik_id_ref_bundle' => $topik_id_ref_bundle_list, 'topik' => $topik_list]);
+	}
+
+	protected function _get_matkul_from_selected_bundle_2(){
+
+		$bundle_ids = $this->input->post('bundle_ids');
+		$bundle_ids = json_decode($bundle_ids);
+
+		$matkul_id_list = [];
+		$matkul_id_ref_bundle_list = [];
+		$matkul_list = [];
+
+		$bundle_list = Bundle_orm::whereIn('id', $bundle_ids)->get();
+
+		if($bundle_list->isNotEmpty()){
+			foreach($bundle_list as $bundle){
+				if($bundle->soal->isNotEmpty()){
+					$soal_list = $bundle->soal()->groupBy('topik_id')->get(['topik_id'])->sortBy('topik_id');
+					foreach($soal_list as $soal){
+						if(!isset($matkul_id_ref_bundle_list[$bundle->id]))
+							$matkul_id_ref_bundle_list[$bundle->id] = [];
+						if(!in_array($soal->topik->matkul_id, $matkul_id_ref_bundle_list[$bundle->id]))
+							$matkul_id_ref_bundle_list[$bundle->id][] = $soal->topik->matkul_id;
+						if(!in_array($soal->topik->matkul_id, $matkul_id_list)){
+							$matkul_id_list[] = $soal->topik->matkul_id;
+							// $matkul_list[$soal->topik_id] = $soal->topik->nama_topik ;
+							$matkul_list[$soal->topik->matkul_id] = $soal->topik->matkul->nama_matkul;
+						}
+					}
+				}
+			}
+		}
+
+		if(!empty($matkul_id_list)){
+			$matkul_id_list = Matkul_orm::whereIn('id_matkul',$matkul_id_list)
+										->orderBy('id_matkul')
+										// ->orderBy('id', 'DESC')
+										->orderBy('id_matkul')
+										->pluck('id_matkul')
+										->toArray();
+		}
+
+		// vdebug($matkul_id_list);
+
+		$this->_json(['ids' => $matkul_id_list, 'matkul_id_ref_bundle' => $matkul_id_ref_bundle_list, 'matkul' => $matkul_list]);
 	}
 
 	public function import($import_data = null)

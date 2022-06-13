@@ -950,6 +950,31 @@ class Ujian extends MY_Controller
 			$kelompok_ujian			= $this->input->post('kelompok_ujian', true);
 			$tgl_ujian			= $this->input->post('tgl_ujian', true);
 			$tahun_mhs			= $this->input->post('tahun_mhs', true);
+			$is_all_participants = $this->input->post('all_participants')  == 1 ? true : false;
+
+			if($is_all_participants){
+
+				$filter_data = [
+					'kelompok_ujian' => $kelompok_ujian,
+					'tahun' => $tahun_mhs
+				];
+
+				$filter_table_data = [
+					'prodi' => $filter_mhs_array['prodi'],
+					'jalur' => $filter_mhs_array['jalur'],
+					'gel' => $filter_mhs_array['gel_mhs'],
+					'smt' => $filter_mhs_array['smt_mhs'],
+				];
+
+				$tgl_ujian_filter = empty($tgl_ujian) ? 'null' : $tgl_ujian; 
+				$peserta = $this->_get_filter_mhs($filter_data, $filter_table_data, $tgl_ujian_filter);
+				$peserta_id_list = [];
+				foreach($peserta as $p){
+					$peserta_id_list[] = $p->id_mahasiswa;
+				}
+				$peserta = $peserta_id_list;
+
+			}
 
 			//[START] LOGIC TAMPILKAN HASIL & JAWABAN
 			$tampilkan_hasil = $tampilkan_jawaban == 1 ? 1 : $tampilkan_hasil ;
@@ -3638,14 +3663,8 @@ class Ujian extends MY_Controller
 		}
 	}
 
-	protected function _get_peserta(){
-
-		$this->_akses_selain_mahasiswa();
-
+	protected function _get_filter_mhs($filter_data, $filter_table_data, $tgl_ujian){
 		$mhs = [];
-		$filter_data	= $this->input->post('filter');
-		$filter_table_data	= $this->input->post('filter_table');
-		$tgl_ujian	= $this->input->post('tgl_ujian');
 		$filter			= [];
 		$filter_table			= [];
 
@@ -3678,7 +3697,6 @@ class Ujian extends MY_Controller
 					}
 				}
 			}
-
 			if(!empty($filter_table)){
 				foreach($filter_table as $key => $v){
 					$query->whereIn($key, $v);
@@ -3687,6 +3705,19 @@ class Ujian extends MY_Controller
 		}
 
 		$mhs = $query->get();
+
+		return $mhs ;
+	}
+
+	protected function _get_peserta(){
+
+		$this->_akses_selain_mahasiswa();
+
+		$filter_data	= $this->input->post('filter');
+		$filter_table_data	= $this->input->post('filter_table');
+		$tgl_ujian	= $this->input->post('tgl_ujian');
+
+		$mhs = $this->_get_filter_mhs($filter_data, $filter_table_data, $tgl_ujian);
 
 		// $this->_json(['mhs' => $mhs,'mhs_ujian' => $mhs_ujian]);
 		$this->_json(['mhs' => $mhs]);

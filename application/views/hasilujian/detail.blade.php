@@ -171,11 +171,14 @@ $(document).on('click','#btn_ulangi_ujian',function(){
         <button type="button" onclick="reload_ajax()" class="btn btn-sm btn-outline-secondary btn-flat"><i class="fa fa-refresh"></i> Reload</button>
         @if(is_admin())
         <div class="pull-right">
-            <a target="_blank" href="{{ site_url('hasilujian/cetak_detail/' . segment(3)) }}" class="btn btn-danger btn-flat btn-sm">
+            <!-- <a target="_blank" href="{{ site_url('hasilujian/cetak_detail/' . segment(3)) }}" class="btn btn-danger btn-flat btn-sm">
                 <i class="fa fa-print"></i> Cetak Hasil Ujian
             </a>
             <a target="_blank" href="{{ site_url('hasilujian/cetak_detail_xls/' . segment(3)) }}" class="btn btn-success btn-flat btn-sm">
                 <i class="fa fa-print"></i> Cetak Hasil Ujian .xls
+            </a> -->
+            <a target="_blank" href="{{ site_url('hasilujian/cetak_detail_xls/' . segment(3)) }}" class="btn btn-success btn-flat btn-sm">
+                <i class="fa fa-print"></i> Cetak Hasil Ujian
             </a>
         </div>
         @endif

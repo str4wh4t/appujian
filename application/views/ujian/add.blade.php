@@ -151,7 +151,7 @@ function init_page_level(){
 
 const init_cascade_select2 = () => {
     let options = {};
-    let cascadLoading = new Select2Cascade($('#matkul_id'), $('#topik_id'), '{{ site_url('soal/ajax/get_topic_by_matkul/') }}?id=:parentId:&empty=1', options);
+    let cascadLoading = new Select2Cascade($('#matkul_id'), $('#topik_id'), '{{ site_url("soal/ajax/get_topic_by_matkul/") }}?id=:parentId:&empty=1', options);
     cascadLoading.then( function(parent, child, items) {
         topik_id_dipilih = [];
         topik_jumlah_soal = [];
@@ -639,6 +639,12 @@ $(document).on('change','.chkbox_pilih_peserta',function () {
 });
 
 $(document).on('click','#submit',function (e) {
+    $('#all_participants').val('0');
+    $('#formujian').submit();
+});
+
+$(document).on('click','#submit_all_participants',function (e) {
+    $('#all_participants').val('1');
     $('#formujian').submit();
 });
 
@@ -731,7 +737,7 @@ $(document).on('change','#kelompok_ujian', function(){
 
 $(document).on('dp.hide','#tgl_ujian', function(){
     let tgl_ujian = $(this).val() == '' ? 'null' : $(this).val();
-    filter_mhs.tgl_ujian = tgl_ujian;
+    // filter_mhs.tgl_ujian = tgl_ujian;
     init_peserta_table(null);
 });
 
@@ -1220,6 +1226,7 @@ $('#is_sekuen_matkul').on('switchChange.bootstrapSwitch', function(event, state)
                     </div>
                     <small class="help-block"></small>
                 </div>
+                <input type="hidden" id="all_participants" name="all_participants" value="0">
                 @if(APP_TYPE == 'ujian')
                 <fieldset class="form-group" style="padding: 10px; border: 1px solid #ccc;">
                     <legend class="col-form-label col-sm-2" style="border: 1px solid #ccc; background-color: #fffcd4;">Cluster Peserta</legend>
@@ -1349,7 +1356,8 @@ $('#is_sekuen_matkul').on('switchChange.bootstrapSwitch', function(event, state)
                     <a href="{{ site_url('ujian/master') }}" class="btn btn-flat btn-warning">
                         <i class="fa fa-arrow-left"></i> Kembali
                     </a>
-                    <button id="submit" type="button" class="btn btn-flat btn-outline-primary"><i class="fa fa-save"></i> Simpan</button>
+                    <button id="submit" type="button" class="btn btn-flat btn-primary"><i class="fa fa-save"></i> Simpan Peserta (Dipilih)</button>
+                    <button id="submit_all_participants" type="button" class="btn btn-flat btn-info"><i class="fa fa-save"></i> Simpan Peserta (Semua)</button>
                 </div>
                 @else 
                 <input type="hidden" name="kelompok_ujian" value="null">
@@ -1360,7 +1368,8 @@ $('#is_sekuen_matkul').on('switchChange.bootstrapSwitch', function(event, state)
                     <a href="{{ site_url('ujian/master') }}" class="btn btn-flat btn-warning">
                         <i class="fa fa-arrow-left"></i> Kembali
                     </a>
-                    <button id="submit" type="button" class="btn btn-flat btn-outline-primary"><i class="fa fa-save"></i> Simpan</button>
+                    <button id="submit" type="button" class="btn btn-flat btn-primary"><i class="fa fa-save"></i> Simpan Peserta (Dipilih)</button>
+                    <button id="submit_all_participants" type="button" class="btn btn-flat btn-info"><i class="fa fa-save"></i> Simpan Peserta (Semua)</button>
                 </div>
                 @endif
                 <?=form_close()?>

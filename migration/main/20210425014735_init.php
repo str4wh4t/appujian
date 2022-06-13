@@ -724,7 +724,7 @@ class Init extends AbstractMigration
 
         $this->insert('setting', [
             [
-                'id' => '1',
+                // 'id' => '1',
                 'variabel' => 'tahun_aktif',
                 'nilai' => date("Y"),
                 'flag' => '1',

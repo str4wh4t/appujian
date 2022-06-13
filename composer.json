@@ -25,13 +25,15 @@
         "tecnickcom/tcpdf": "^6.3",
         "midtrans/midtrans-php": "^2.3",
         "nesbot/carbon": "^2.46",
-        "lulco/phoenix": "^1.7"
+        "lulco/phoenix": "^1.7",
+        "vlucas/phpdotenv": "^5.4"
     },
     "suggest": {
         "paragonie/random_compat": "Provides better randomness in PHP 5.x"
     },
     "require-dev": {
-        "phpoffice/phpspreadsheet": "1.*"
+        "phpoffice/phpspreadsheet": "1.*",
+        "symfony/var-dumper": "^5.4"
     },
    "autoload": {
         "psr-4": {

@@ -20,4 +20,5 @@ composer.phar
 /writeable/yarn/node_modules
 /files/template/*
 !/files/template/index.html
-phoenix.php
+.env
+phoenix.php.example

@@ -29,6 +29,7 @@ setlocale(LC_ALL, 'id_ID.utf8');
 // $config['base_url'] .= preg_replace('@/+$@','',dirname($_SERVER['SCRIPT_NAME'])).'/';
 
 // $config['base_url'] = "http://site.com/"; 
+$config['base_url'] = $_ENV['APP_URL'];
 
 /*
 |--------------------------------------------------------------------------
@@ -331,6 +332,7 @@ $config['cache_query_string'] = FALSE;
 */
 
 // $config['encryption_key'] = 'xxxxx';
+$config['encryption_key'] = $_ENV['APP_KEY'];
 
 /*
 |--------------------------------------------------------------------------
@@ -387,7 +389,7 @@ $config['cache_query_string'] = FALSE;
 // $config['sess_driver'] = 'files';
 // $config['sess_cookie_name'] = 'ujian_undip_session';
 $config['sess_expiration'] = 7200;
-$config['sess_save_path'] = sys_get_temp_dir();
+// $config['sess_save_path'] = sys_get_temp_dir();
 $config['sess_match_ip'] = FALSE;
 $config['sess_time_to_update'] = 300;
 $config['sess_regenerate_destroy'] = FALSE;

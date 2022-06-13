@@ -77,12 +77,11 @@ $query_builder = TRUE;
 
 $db['default'] = array(
 	'dsn'	=> '',
-
-	'hostname' => DB_HOSTNAME, 
-	'username' => DB_USERNAME,
-	'password' => DB_PASSWORD,
-	'database' => DB_DATABASE,
-
+	'hostname' => $_ENV['DB_HOST'],
+    'username' => $_ENV['DB_USERNAME'],
+    'password' => $_ENV['DB_PASSWORD'],
+    'database' => $_ENV['DB_NAME'],
+    'port' => $_ENV['DB_PORT'],
 	'dbdriver' => 'mysqli',
 	'dbprefix' => '',
 	'pconnect' => FALSE,

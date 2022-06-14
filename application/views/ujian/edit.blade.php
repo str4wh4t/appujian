@@ -55,7 +55,7 @@ let filter = {
 
 let filter_mhs = {
     kelompok_ujian: null,
-    // tgl_ujian: null,
+    tgl_ujian: null,
     tahun: null,
     // mhs_matkul: null,
 };
@@ -90,7 +90,7 @@ function init_page_level(){
     filter.tahun    = $('#tahun').val();
 
     filter_mhs.kelompok_ujian    = $('#kelompok_ujian').val();
-    // filter_mhs.tgl_ujian    = $('#tgl_ujian').val() == '' ? 'null' : $('#tgl_ujian').val();
+    filter_mhs.tgl_ujian    = $('#tgl_ujian').val() == '' ? 'null' : $('#tgl_ujian').val();
     filter_mhs.tahun    = $('#tahun_mhs').val();
     // filter_mhs.mhs_matkul    = 'null';
 
@@ -497,13 +497,14 @@ const init_peserta_table_value = (bundle_ids) => {
     // let sumber_ujian = $('input[name="sumber_ujian"]:checked').val();
     // let id_matkul = $('#matkul_id').val();
 
-    let tgl_ujian = $('#tgl_ujian').val() == '' ? 'null' : $('#tgl_ujian').val();
+    // let tgl_ujian = $('#tgl_ujian').val() == '' ? 'null' : $('#tgl_ujian').val();
 
     return $.ajax({
         // url: "{{ site_url('matkul/ajax/get_peserta_ujian_matkul_not_ujian') }}",
         // data: { 'id' : id_matkul, 'bundle_ids' : JSON.stringify(bundle_ids), 'sumber_ujian' : sumber_ujian,  'ujian_id': '{{ $ujian->id_ujian }}', 'filter' : filter_mhs },
         url: "{{ site_url('ujian/ajax/get_peserta_ujian') }}",
-        data: { 'filter' : filter_mhs, 'filter_table' : filter_table, 'tgl_ujian' : tgl_ujian, 'id' : {{ $ujian->id_ujian }} },
+        // data: { 'filter' : filter_mhs, 'filter_table' : filter_table, 'tgl_ujian' : tgl_ujian, 'id' : {{ $ujian->id_ujian }} },
+        data: { 'filter' : filter_mhs, 'filter_table' : filter_table, 'id' : {{ $ujian->id_ujian }} },
         type: 'POST',
         success: function (response) {
             init_peserta_table(response.mhs, response.mhs_ujian);
@@ -1076,6 +1077,8 @@ $(document).on('click','#btn_refine_peserta', function(){
                     <small class="help-block"></small>
                 </div>
                 <input type="hidden" id="all_participants" name="all_participants" value="0">
+                <input type="hidden" id="filter" name="filter" value="null">
+                <input type="hidden" id="filter_table" name="filter_table" value="null">
                 @if(APP_TYPE == 'ujian')
                 <fieldset class="form-group" style="padding: 10px; border: 1px solid #ccc;">
                     <legend class="col-form-label col-sm-2" style="border: 1px solid #ccc; background-color: #fffcd4;">Cluster Peserta</legend>

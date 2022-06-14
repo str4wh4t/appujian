@@ -756,7 +756,6 @@ class Ujian extends MY_Controller
 
 	public function save()
 	{
-
 		$this->_akses_admin_dan_dosen();
 		
 		$this->_validasi();
@@ -873,7 +872,6 @@ class Ujian extends MY_Controller
 				}
 			}
 
-			
 			$waktu			= $this->input->post('waktu', true);
 			$is_grouping_by_matkul = $this->input->post('is_grouping_by_matkul', true) == 'on' ? 1 : 0;
 			$is_sekuen_topik = $this->input->post('is_sekuen_topik', true) == 'on' ? 1 : 0;
@@ -953,27 +951,18 @@ class Ujian extends MY_Controller
 			$is_all_participants = $this->input->post('all_participants')  == 1 ? true : false;
 
 			if($is_all_participants){
-
-				$filter_data = [
-					'kelompok_ujian' => $kelompok_ujian,
-					'tahun' => $tahun_mhs
-				];
-
-				$filter_table_data = [
-					'prodi' => $filter_mhs_array['prodi'],
-					'jalur' => $filter_mhs_array['jalur'],
-					'gel' => $filter_mhs_array['gel_mhs'],
-					'smt' => $filter_mhs_array['smt_mhs'],
-				];
-
-				$tgl_ujian_filter = empty($tgl_ujian) ? 'null' : $tgl_ujian; 
-				$peserta = $this->_get_filter_mhs($filter_data, $filter_table_data, $tgl_ujian_filter);
-				$peserta_id_list = [];
-				foreach($peserta as $p){
-					$peserta_id_list[] = $p->id_mahasiswa;
+				if ($method === 'add'){
+					$mhs_peserta = $this->_get_peserta(false);
+					$peserta_id_list = [];
+					foreach($mhs_peserta as $mp){
+						$peserta_id_list[] = $mp->id_mahasiswa;
+					}
+					$peserta = $peserta_id_list;
+				}else if ($method === 'edit'){
+					$mhs_peserta = $this->_get_peserta_ujian(false);
+					$peserta = $mhs_peserta['mhs_ujian'];
 				}
-				$peserta = $peserta_id_list;
-
+				
 			}
 
 			//[START] LOGIC TAMPILKAN HASIL & JAWABAN
@@ -3664,6 +3653,29 @@ class Ujian extends MY_Controller
 	}
 
 	protected function _get_filter_mhs($filter_data, $filter_table_data, $tgl_ujian){
+		
+
+		//return $mhs ;
+	}
+
+	protected function _get_peserta($to_json = true){
+
+		$this->_akses_selain_mahasiswa();
+
+		$filter_data	= $this->input->post('filter');
+		$filter_table_data	= $this->input->post('filter_table');
+		// $tgl_ujian	= $this->input->post('tgl_ujian');
+
+		if(!is_array($filter_data)){
+			$filter_data = json_decode($filter_data, true);
+		}
+
+		if(!is_array($filter_table_data)){
+			$filter_table_data = json_decode($filter_table_data, true);
+		}
+
+		// dd($filter_data);
+
 		$mhs = [];
 		$filter			= [];
 		$filter_table			= [];
@@ -3681,9 +3693,9 @@ class Ujian extends MY_Controller
 			}
 		}
 
-		if($tgl_ujian != 'null'){
-			$query->where('tgl_ujian', $tgl_ujian);
-		}
+		// if($tgl_ujian != 'null'){
+		// 	$query->where('tgl_ujian', $tgl_ujian);
+		// }
 
 		if (!empty($filter_table_data)) {
 			foreach ($filter_table_data as $key => $v) {
@@ -3706,33 +3718,33 @@ class Ujian extends MY_Controller
 
 		$mhs = $query->get();
 
-		return $mhs ;
-	}
-
-	protected function _get_peserta(){
-
-		$this->_akses_selain_mahasiswa();
-
-		$filter_data	= $this->input->post('filter');
-		$filter_table_data	= $this->input->post('filter_table');
-		$tgl_ujian	= $this->input->post('tgl_ujian');
-
-		$mhs = $this->_get_filter_mhs($filter_data, $filter_table_data, $tgl_ujian);
-
 		// $this->_json(['mhs' => $mhs,'mhs_ujian' => $mhs_ujian]);
-		$this->_json(['mhs' => $mhs]);
+		if($to_json)	
+			$this->_json(['mhs' => $mhs]);
+		else
+			return $mhs;
 	}
 
-	protected function _get_peserta_ujian(){
+	protected function _get_peserta_ujian($to_json = true){
 
 		$this->_akses_selain_mahasiswa();
 
-		$mhs = [];
-		$ujian_id	= $this->input->post('id');
+		
+		$ujian_id	= empty($this->input->post('id')) ? $this->input->post('id_ujian') : $this->input->post('id');
 		$m_ujian = Mujian_orm::findOrFail($ujian_id);
 		$filter_data	= $this->input->post('filter');
 		$filter_table_data	= $this->input->post('filter_table');
-		$tgl_ujian	= $this->input->post('tgl_ujian');
+		// $tgl_ujian	= $this->input->post('tgl_ujian');
+
+		if(!is_array($filter_data)){
+			$filter_data = json_decode($filter_data, true);
+		}
+
+		if(!is_array($filter_table_data)){
+			$filter_table_data = json_decode($filter_table_data, true);
+		}
+
+		$mhs = [];
 		$filter			= [];
 		$filter_table			= [];
 
@@ -3749,9 +3761,9 @@ class Ujian extends MY_Controller
 			}
 		}
 
-		if($tgl_ujian != 'null'){
-			$query->where('tgl_ujian', $tgl_ujian);
-		}
+		// if($tgl_ujian != 'null'){
+		// 	$query->where('tgl_ujian', $tgl_ujian);
+		// }
 
 		if (!empty($filter_table_data)) {
 			foreach ($filter_table_data as $key => $v) {
@@ -3777,15 +3789,20 @@ class Ujian extends MY_Controller
 
 		$mhs_ujian_has_hasil = Hujian_orm::where('ujian_id', $ujian_id)->pluck('mahasiswa_id')->toArray() ;
 		$mhs_ujian_has_hasil_history = Hujian_history_orm::where('ujian_id', $ujian_id)->pluck('mahasiswa_id')->toArray() ;
-		
+
 		$mhs_ujian_has_hasil_valid = array_unique(array_merge($mhs_ujian_has_hasil, $mhs_ujian_has_hasil_history), SORT_REGULAR);
 
 		$mhs = $query->whereNotIn('id_mahasiswa', $mhs_ujian_has_hasil_valid)->get();
 
 		$mhs_ujian_valid = array_diff($mhs_ujian, $mhs_ujian_has_hasil_valid);
 
+		$mhs_return = ['mhs' => $mhs, 'mhs_ujian' => $mhs_ujian_valid];
+
 		// $this->_json(['mhs' => $mhs,'mhs_ujian' => $mhs_ujian]);
-		$this->_json(['mhs' => $mhs, 'mhs_ujian' => $mhs_ujian_valid]);
+		if($to_json)
+			$this->_json($mhs_return);
+		else
+			return $mhs_return;
 	}
 
 	protected function _get_catatan_pengawas(){

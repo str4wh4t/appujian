@@ -3729,7 +3729,6 @@ class Ujian extends MY_Controller
 
 		$this->_akses_selain_mahasiswa();
 
-		
 		$ujian_id	= empty($this->input->post('id')) ? $this->input->post('id_ujian') : $this->input->post('id');
 		$m_ujian = Mujian_orm::findOrFail($ujian_id);
 		$filter_data	= $this->input->post('filter');

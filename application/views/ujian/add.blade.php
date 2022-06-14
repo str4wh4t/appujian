@@ -1018,6 +1018,8 @@ $('#is_sekuen_matkul').on('switchChange.bootstrapSwitch', function(event, state)
                     </div>
                 </fieldset>
 
+                <!-- GROUPING BY MATERI SEDANG DALAM PENGEMBANGAN -->
+                <!--
                 <div id="panel_is_group_by_matkul" class="form-group d-none">
                     <label for="is_grouping_by_matkul">Is Grouping By Materi</label> <small class="help-block text-danger"><b>***</b> Soal digroup berdasaran materi ujian</small>
                     <div>
@@ -1025,6 +1027,7 @@ $('#is_sekuen_matkul').on('switchChange.bootstrapSwitch', function(event, state)
                     </div>
                     <small class="help-block"></small>
                 </div>
+                -->
 
                 <div class="form-group panel_is_group_by_matkul_waktu d-none">
                     <label for="is_sekuen_matkul">Is Sekuen Materi</label> <small class="help-block text-danger"><b>***</b> Mengerjakan soal scr sekuensial (pengerjaan materi bergantian berdasar waktu)</small>

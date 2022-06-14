@@ -597,6 +597,8 @@ $(document).on('click','#submit',function (e) {
 
 $(document).on('click','#submit_all_participant',function (e) {
     $('#all_participants').val('1');
+    $('#filter').val(JSON.stringify(filter_mhs));
+    $('#filter_table').val(JSON.stringify(filter_table));
     $('#formujian').submit();
 });
 

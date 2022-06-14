@@ -2079,6 +2079,7 @@ class Ujian extends MY_Controller
 				$h_ujian->tgl_mulai = $input['tgl_mulai'];
 				$h_ujian->tgl_selesai = $input['tgl_selesai'];
 				$h_ujian->ujian_selesai = $input['ujian_selesai'];
+				$h_ujian->started_by = $user->username;
 				$h_ujian->save();
 
 				// foreach ($soal as $topik_id => $t) {

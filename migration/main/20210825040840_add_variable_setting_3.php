@@ -59,6 +59,10 @@ class AddVariableSetting3 extends AbstractMigration
             ->addColumn('is_sekuen_matkul', 'boolean', ['default' => false, 'comment' => '0 : tidak ; 1 : iya'])
             ->save();
 
+        $this->table('h_ujian')
+            ->addColumn('started_by', 'string', ['null' => true, 'length' => 50])
+            ->save();
+
     }
 
     protected function down(): void
@@ -77,6 +81,10 @@ class AddVariableSetting3 extends AbstractMigration
             ->dropColumn('is_grouping_by_parent_topik')
             ->dropColumn('urutan_parent_topik')
             ->dropColumn('is_sekuen_matkul')
+            ->save();
+
+        $this->table('h_ujian')
+            ->dropColumn('started_by')
             ->save();
     }
 }

@@ -242,11 +242,10 @@ class Pub extends MY_Controller {
 					die('Waktu cron habis');
 				}
 
-				
 				$m_ujian = $m_ujian_orm->where(['id_ujian' => $mu->ujian_id, 'status_ujian' => 1])->first();
-				
+
 				if(empty($m_ujian)){
-					echo 'break, status not active';
+					echo 'break, status not active, m_ujian : ' . $mu->ujian_id . "\n";
 					break;
 				}
 				
@@ -335,7 +334,8 @@ class Pub extends MY_Controller {
 					$h_ujian_orm->nilai_bobot = 0;
 					$h_ujian_orm->tgl_mulai = $m_ujian->terlambat;
 					$h_ujian_orm->tgl_selesai = $m_ujian->terlambat;
-					$h_ujian_orm->ujian_selesai = 'N'; 
+					$h_ujian_orm->ujian_selesai = 'N';
+					$h_ujian_orm->started_by = 'cron'; 
 					$h_ujian_orm->save();
 
 					echo date('Y-m-d H:i:s') . ' => MHS ID : ' . $mu->mahasiswa_id . " ==> STARTED " . "\n";

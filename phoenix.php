@@ -1,4 +1,9 @@
 <?php
+
+require_once 'vendor/autoload.php';
+$dotenv = \Dotenv\Dotenv::createImmutable(__DIR__);
+$dotenv->load();
+
 return [
     'migration_dirs' => [
         'main' => __DIR__ . '/migration/main',

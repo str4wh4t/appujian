@@ -953,15 +953,15 @@ class Ujian extends MY_Controller
 			if($is_all_participants){
 				if ($method === 'add'){
 					$mhs_peserta = $this->_get_peserta(false);
-					$peserta_id_list = [];
-					foreach($mhs_peserta as $mp){
-						$peserta_id_list[] = $mp->id_mahasiswa;
-					}
-					$peserta = $peserta_id_list;
 				}else if ($method === 'edit'){
 					$mhs_peserta = $this->_get_peserta_ujian(false);
-					$peserta = $mhs_peserta['mhs_ujian'];
+					$mhs_peserta = $mhs_peserta['mhs'];
 				}
+				$peserta_id_list = [];
+				foreach($mhs_peserta as $mp){
+					$peserta_id_list[] = $mp->id_mahasiswa;
+				}
+				$peserta = $peserta_id_list;
 				
 			}
 

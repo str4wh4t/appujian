@@ -246,7 +246,7 @@ class Pub extends MY_Controller {
 
 				if(empty($m_ujian)){
 					echo 'break, status not active, m_ujian : ' . $mu->ujian_id . "\n";
-					break;
+					continue;
 				}
 				
 				if(empty($m_ujian->terlambat)){

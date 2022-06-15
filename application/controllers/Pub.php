@@ -1183,7 +1183,7 @@ class Pub extends MY_Controller {
 		
 		$h_ujian_list = new Hujian_orm();
 
-		$h_ujian_list = $h_ujian_list->where('ujian_selesai', 'Y')->where('fixed_detail_nilai', '1')->orderBy('id')->get();
+		$h_ujian_list = $h_ujian_list->where('ujian_selesai', 'Y')->where('fixed_detail_nilai', '0')->orderBy('id')->get();
 		
 		if($h_ujian_list->isNotEmpty()) {
 			foreach ($h_ujian_list as $h_ujian) {

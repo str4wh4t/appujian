@@ -223,7 +223,7 @@ function init_page_level(){
             },
         ],
         order: [
-            [1, 'asc'],
+            [4, 'asc'],
         ],
         rowId: function (a) {
             return a;

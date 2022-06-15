@@ -45,13 +45,19 @@ class Pub extends MY_Controller {
 		$mhs 	= $hasil->mhs;
 //		$hasil 	= $ujian;
 		
-		$detail_bobot_benar = json_decode($hasil->detail_bobot_benar);
+		// $detail_bobot_benar = json_decode($hasil->detail_bobot_benar);
+		$detail_nilai = json_decode($hasil->detail_nilai);
 		$detail_ujian = [];
-		foreach($detail_bobot_benar as $topik_id => $nilai){
-			$nm_topik = strtoupper(Topik_orm::findOrFail($topik_id)->nama_topik);
-			$detail_ujian[$nm_topik] = $nilai ;
+
+		$ujian_topik = $ujian->topik()->groupBy('id')->get();
+
+		foreach($ujian_topik as $topik){
+			$topik_id = $topik->id;
+			$nama_topik = strtoupper($topik->nama_topik);
+			$detail_ujian[$nama_topik] = $detail_nilai->$topik_id ?? 0;
 		}
-		// vdebug($detail_ujian);
+
+		// dd($detail_ujian);
 
 		// $image_file = FCPATH . 'uploads/img_app/logo_undip.png';
 		// vdebug($image_file);
@@ -1096,10 +1102,11 @@ class Pub extends MY_Controller {
 		if($h_ujian_list->isNotEmpty()) {
 			foreach ($h_ujian_list as $h_ujian) {
 			
-//				if( $h_ujian->id != '47'){
-//					continue;
-//				}
+				// if( $h_ujian->id != '36685'){
+				// 	continue;
+				// }
 				
+				// echo $h_ujian->id . "\n" ;
 				echo $h_ujian->id ;
 //				echo $h_ujian->mhs->nama . "\n";
 				
@@ -1127,6 +1134,7 @@ class Pub extends MY_Controller {
 					if (!isset($topik_ujian_nilai_bobot[$jwb->soal->topik_id])) {
 						$topik_ujian_nilai_bobot[$jwb->soal->topik_id] = 0;
 					}
+					// echo $jwb->soal->id_soal . "\n";
 					$total_bobot = $total_bobot + ($jwb->soal->bobot_soal->nilai * $jwb->soal->topik->poin_topik);
 					if ($jwb->jawaban == $jwb->soal->jawaban) {
 						$jumlah_benar++;
@@ -1158,11 +1166,94 @@ class Pub extends MY_Controller {
 //				$h_ujian->ujian_selesai      = 'Y';
 //				$h_ujian->ended_by           = 'cron';
 				$h_ujian->fixed_nilai        = 1;
-				$action                      = $h_ujian->save();
+				$h_ujian->save();
 				
-				echo 'done' . "\n";
+				echo ' ===> done' . "\n";
 				
 				// return $action;
+			}
+		}
+		
+	}
+
+	public function fix_detail_nilai(){
+		if(!is_cli()) show_404();
+
+		// die; // FITUR DISABLED
+		
+		$h_ujian_list = new Hujian_orm();
+
+		$h_ujian_list = $h_ujian_list->where('ujian_selesai', 'Y')->where('fixed_detail_nilai', '1')->orderBy('id')->get();
+		
+		if($h_ujian_list->isNotEmpty()) {
+			foreach ($h_ujian_list as $h_ujian) {
+			
+//				if( $h_ujian->id != '47'){
+//					continue;
+//				}
+				
+				echo $h_ujian->id ;
+				// echo $h_ujian->mhs->nama . "\n";
+				
+				$this->load->model('Ujian_model', 'ujian');
+				$this->load->model('Master_model', 'master');
+				
+				// Jawaban
+				$pc_jawaban = $h_ujian->jawaban_ujian;
+				
+				$topik_ujian_list = $h_ujian->m_ujian->topik_ujian()->get();
+
+				if($topik_ujian_list->isEmpty()){
+					die("INVALID UJIAN");
+				}
+
+				$topik_ujian_jml_soal = [];
+				$jml_topik_ujian_nilai_benar = [];
+
+				foreach($topik_ujian_list as $topik_ujian){
+					if(!isset($topik_ujian_jml_soal[$topik_ujian->topik_id])){
+						$topik_ujian_jml_soal[$topik_ujian->topik_id] = 0; 
+					}
+					$topik_ujian_jml_soal[$topik_ujian->topik_id] += $topik_ujian->jumlah_soal ;
+					if (!isset($jml_topik_ujian_nilai_benar[$topik_ujian->topik_id])) {
+						$jml_topik_ujian_nilai_benar[$topik_ujian->topik_id] = 0;
+					}
+				}
+
+				// dd($topik_ujian_jml_soal);
+
+				// {
+				// 	"32": 
+				// 		{"waktu": "3", "urutan": "2"}, 
+				// 	"35": 
+				// 		{"waktu": "1", "urutan": "0"}, 
+				// 	"36": {"waktu": "2", "urutan": "1"}}
+				
+				foreach ($pc_jawaban as $jwb) {
+					if ($jwb->jawaban == $jwb->soal->jawaban) {
+						$jml_topik_ujian_nilai_benar[$jwb->soal->topik_id] += 1;
+					}
+				}
+
+				$topik_ujian_nilai = [];
+
+				foreach($topik_ujian_jml_soal as $topik_id => $jml_soal){
+					if($jml_soal != 0){
+						$nilai = $jml_topik_ujian_nilai_benar[$topik_id] / $jml_soal * 100;
+						$topik_ujian_nilai[$topik_id] = round($nilai, 2);
+					}else{
+						$topik_ujian_nilai[$topik_id] = 0;
+					}
+				}
+
+				// dd($topik_ujian_nilai);
+
+				$h_ujian->detail_nilai = json_encode($topik_ujian_nilai);
+				$h_ujian->fixed_detail_nilai        = 1;
+				$h_ujian->save();
+				
+				echo ' ===> done' . "\n";
+				// die;
 			}
 		}
 		

@@ -6,7 +6,9 @@ $mulai = indo_date(strftime('%A, %d %B %Y %H:%M:%S', strtotime($ujian->tgl_mulai
 $selesai = empty($ujian->terlambat) ? '-' : indo_date(strftime('%A, %d %B %Y %H:%M:%S', strtotime($ujian->terlambat)));
 
 $t = [];
-foreach($ujian->topik AS $topik){
+
+$ujian_topik = $ujian->topik()->groupBy('id')->get();
+foreach($ujian_topik AS $topik){
     $t[] = $topik->nama_topik;
     $t = array_unique($t);
 }
@@ -52,7 +54,7 @@ $rata_rata_ujian = number_format($nilai->avg_nilai,2,'.', '') ;
         <td rowspan="2" ><b>Absen Oleh</b></td>
         <td colspan="4" ><b>Bapu</b></td>
         <?php if(is_show_detail_hasil()): ?>
-        <?php foreach($ujian->topik AS $topik): ?>
+        <?php foreach($ujian_topik AS $topik): ?>
             <td rowspan="2"><b><?= $topik->nama_topik ?></b></td>
         <?php endforeach; ?>
         <?php endif; ?>
@@ -84,8 +86,11 @@ $rata_rata_ujian = number_format($nilai->avg_nilai,2,'.', '') ;
         <td ><?= $row['is_sering_buka_page_lain'] ?></td>
         <td ><?= $row['catatan_pengawas'] ?></td>
         <?php if(is_show_detail_hasil()): ?>
-        <?php foreach($ujian->topik AS $topik): ?>
-            <td><?= $row['detail_bobot_benar'][$topik->id] ?></td>
+        <?php foreach($ujian_topik AS $topik): ?>
+            <td><?php 
+                    // echo $row['detail_bobot_benar'][$topik->id]; 
+                    echo $row['detail_nilai'][$topik->id];
+                ?></td>
         <?php endforeach; ?>
         <?php endif; ?>
         <td ><?= $nilai_bobot_benar ?></td>

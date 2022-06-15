@@ -89,7 +89,8 @@ $dt = DateTime::createFromFormat('Y-m-d H:i:s', $d);
 $tgl_ujian_format = strftime("%A, %d %B %Y", $dt->getTimestamp());
 $tgl_ujian_format = indo_date($tgl_ujian_format);
 
-$hasil_akhir = number_format($hasil['nilai_bobot_benar'],2,'.', '') ;
+// $hasil_akhir = number_format($hasil['nilai_bobot_benar'],2,'.', '') ;  // <== UNCOMENT UNTUK MENAMPILKAN DETAIL BOBOT
+$hasil_akhir = number_format($hasil['nilai'],2,'.', '') ; // UNCOMENT UNTUK MENAMPILKAN DETAIL NILAI
 
 $nama_ujian = strtoupper($ujian->nama_ujian);
 
@@ -125,8 +126,8 @@ EOD;
 
 $txt_topik = '';
 $txt_nilai = '';
-foreach ($detail_ujian as $topik => $nilai){
-	$txt_topik .= '<th style="text-align: center; border:1px solid #000000;">' . $topik . '</th>';
+foreach ($detail_ujian as $nama_topik => $nilai){
+	$txt_topik .= '<th style="text-align: center; border:1px solid #000000;">' . $nama_topik . '</th>';
 	$txt_nilai .= '<td style="text-align: center; border:1px solid #000000;">' . $nilai . '</td>';
 }
 

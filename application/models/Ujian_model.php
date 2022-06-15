@@ -330,14 +330,15 @@ class Ujian_model extends CI_Model {
     public function HslUjianById($id, $dt=false)
     {
     	
-    	$this->db->select('d.id, a.nim, a.nama, d.detail_bobot_benar, d.nilai, d.nilai_bobot_benar, b.masa_berlaku_sert, b.tampilkan_jawaban, TIMESTAMPDIFF(SECOND, d.tgl_mulai, d.tgl_selesai) AS lama_pengerjaan, d.mahasiswa_ujian_id, c.absen_by, c.absen_by_username, c.is_terlihat_pada_layar, c.is_perjokian, c.is_sering_buka_page_lain, c.catatan_pengawas');
+    	$this->db->select('d.id, a.nim, a.nama, d.detail_bobot_benar, d.detail_nilai, d.nilai, d.nilai_bobot_benar, b.masa_berlaku_sert, b.tampilkan_jawaban, TIMESTAMPDIFF(SECOND, d.tgl_mulai, d.tgl_selesai) AS lama_pengerjaan, d.mahasiswa_ujian_id, c.absen_by, c.absen_by_username, c.is_terlihat_pada_layar, c.is_perjokian, c.is_sering_buka_page_lain, c.catatan_pengawas');
         $this->db->from('h_ujian d');
 		$this->db->join('mahasiswa a', 'a.id_mahasiswa = d.mahasiswa_id');
 		$this->db->join('m_ujian b', 'd.ujian_id = b.id_ujian');
         $this->db->join('daftar_hadir c', 'c.mahasiswa_ujian_id = d.mahasiswa_ujian_id', 'left');
         $this->db->where([ 'd.ujian_id' => $id, 'd.ujian_selesai' => 'Y']);
         $this->db->group_by('a.id_mahasiswa');
-        $this->db->order_by('d.nilai_bobot_benar','desc');
+        // $this->db->order_by('d.nilai_bobot_benar','desc');
+        $this->db->order_by('d.nilai','desc');
         $this->db->order_by('lama_pengerjaan','asc');
         
         if($dt === false) {
@@ -364,14 +365,15 @@ class Ujian_model extends CI_Model {
 
 	        // $dt->edit('detail_bobot_benar', function ($data) use ($topik){
             $dt->edit('detail_bobot_benar', function ($data) use ($tpk){
-	        	$hasil_ujian_per_topik = json_decode($data['detail_bobot_benar']);
+	        	// $hasil_ujian_per_topik = json_decode($data['detail_bobot_benar']); // <== UNCOMENT UNTUK MENAMPILKAN DETAIL BOBOT
+                $hasil_ujian_per_topik = json_decode($data['detail_nilai']); // UNCOMENT UNTUK MENAMPILKAN DETAIL NILAI
 	        	$return = '<dl class="row">';
 	        	if(!empty($hasil_ujian_per_topik)) {
 			        foreach ($hasil_ujian_per_topik as $t => $v) {
 				        // $tpk    = $topik->findOrFail($t);
 				        $return .= '<dt class="col-md-8">' . $tpk[$t] . '</dt>';
 				        if(is_show_detail_hasil()) 
-	                            $return .= '<dd class="col-md-4">' . $v . '</dd>';
+                            $return .= '<dd class="col-md-4">' . $v . '</dd>';
 			        }
 		        }
 	        	$return .= '</dl>';

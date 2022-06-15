@@ -61,7 +61,22 @@ class AddVariableSetting3 extends AbstractMigration
 
         $this->table('h_ujian')
             ->addColumn('started_by', 'string', ['null' => true, 'length' => 50])
+            ->addColumn('detail_nilai', 'text', ['null' => true])
+            ->addColumn('fixed_detail_nilai', 'boolean', ['default' => false, 'comment' => 'flag untuk perbaikan value pada kolom detail_nilai'])
             ->save();
+        
+        $this->table('h_ujian_history')
+            ->addColumn('started_by', 'string', ['null' => true, 'length' => 50])
+            ->addColumn('detail_nilai', 'text', ['null' => true])
+            ->save();
+
+        $this->table('h_ujian_deleted')
+            ->addColumn('started_by', 'string', ['null' => true, 'length' => 50])
+            ->addColumn('detail_nilai', 'text', ['null' => true])
+            ->save();
+
+        $this->execute("ALTER TABLE tb_soal MODIFY COLUMN bobot_soal_id int NOT NULL");
+
 
     }
 
@@ -85,6 +100,20 @@ class AddVariableSetting3 extends AbstractMigration
 
         $this->table('h_ujian')
             ->dropColumn('started_by')
+            ->dropColumn('detail_nilai')
+            ->dropColumn('fixed_detail_nilai')
             ->save();
+
+        $this->table('h_ujian_history')
+            ->dropColumn('started_by')
+            ->dropColumn('detail_nilai')
+            ->save();
+
+        $this->table('h_ujian_deleted')
+            ->dropColumn('started_by')
+            ->dropColumn('detail_nilai')
+            ->save();
+        
+        $this->execute("ALTER TABLE tb_soal MODIFY COLUMN bobot_soal_id int NULL");
     }
 }

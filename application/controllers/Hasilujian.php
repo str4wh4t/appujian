@@ -270,6 +270,8 @@ class HasilUjian extends MY_Controller {
 		}
 
 		$ujian = $m_ujian;
+		// dd($m_ujian->topik);
+
 		$nilai = $this->ujian->bandingNilai($id);
 		$hasil = $this->ujian->HslUjianById($id)->result();
 
@@ -280,23 +282,33 @@ class HasilUjian extends MY_Controller {
 			'materi_ujian_list'	=> [],
 		];
 
-		$tpk = Topik_orm::pluck('nama_topik','id')->toArray();
+		// $tpk = Topik_orm::pluck('nama_topik','id')->toArray();
 		
 		$new_hasil = [];
 		foreach ($data['hasil'] as $hasil){
 			$hasil_ujian_per_topik = json_decode($hasil->detail_bobot_benar);
-			$return = [];
+			$detail_bobot_benar_array = [];
             if(!empty($hasil_ujian_per_topik)) {
 	            foreach ($hasil_ujian_per_topik as $t => $v) {
-					$return[$t] = $v;
+					$detail_bobot_benar_array[$t] = $v;
 	            }
             }
+
+			$hasil_ujian_per_topik_nilai = json_decode($hasil->detail_nilai);
+			$detail_nilai_array = [];
+            if(!empty($hasil_ujian_per_topik_nilai)) {
+	            foreach ($hasil_ujian_per_topik_nilai as $t => $v) {
+					$detail_nilai_array[$t] = $v;
+	            }
+            }
+
             $new_hasil[] = [
 				'nim' => $hasil->nim,
 				'nama' => $hasil->nama,
 				'nilai' => $hasil->nilai,
 				'nilai_bobot_benar' => $hasil->nilai_bobot_benar,
-				'detail_bobot_benar' => $return,
+				'detail_bobot_benar' => $detail_bobot_benar_array,
+				'detail_nilai' => $detail_nilai_array,
 				'absensi' => empty($hasil->absen_by_username) ? 'BELUM' : 'SUDAH',
 				'absensi_oleh' => empty($hasil->absen_by_username) ? '-' : "'". $hasil->absen_by_username,
 				'is_terlihat_pada_layar' => empty($hasil->is_terlihat_pada_layar) ? '-' : ($hasil->is_terlihat_pada_layar ? 'YA' : '-'),

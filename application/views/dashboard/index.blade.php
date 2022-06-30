@@ -110,7 +110,7 @@ $(document).on('click','img.featherlight-image',function(){
 {!! $i == 3 ? '</div>' : '' !!}
 <?php
     $i++;
-    if($i > 3){
+    if ($i > 3) {
         $i = 1;
     }
 ?>
@@ -274,10 +274,10 @@ $(document).on('click','img.featherlight-image',function(){
                     Computer Assisted Test (CAT) {{ APP_NAME }} yang dikelola oleh Lembaga Pengembangan dan Penjaminan Mutu Pendidikan memberikan kemudahan dalam pelayanan test baik secara online maupun offline.</p>
                 <p>Test yang diadakan meliputi : Tes Potensi Akademik (TPA), Tes Substansi Bidang, Tes Prediksi dan lain-lain. Sistem ujian menggunakan CAT akan diperoleh hasil seleksi yang kredible, akurat dan cepat. </p>
                 <p>Informasi layanan CAT dapat menghubungi layanan ujian Undip di : </p>
-                <p><i class="fa fa-phone-square"></i> +62-24 7460041</p>
-                <p><i class="fa fa-whatsapp"></i> 0812-2561-1333</p>
-                <p><i class="ft-mail"></i> lp2mp@live.undip.ac.id</p>
-                <p><i class="icon-globe"></i> www.lp2mp.undip.ac.id</p>
+                <p><i class="fa fa-phone-square"></i> +62-24 7460041 (hari kerja)</p>
+                <p><i class="fa fa-whatsapp"></i> 0811-2883-688</p>
+                <p><i class="ft-mail"></i> um@live.undip.ac.id</p>
+                <p><i class="icon-globe"></i> pmb.undip.ac.id</p>
             </div>
         </div>
     </div>
@@ -333,7 +333,7 @@ $(document).on('click','img.featherlight-image',function(){
                 <div class="card">
                     <div class="card-body ">
                         <?php 
-                            $foto = empty($mahasiswa->foto)? asset('assets/imgs/no_profile.jpg') : $mahasiswa->foto ;
+                            $foto = empty($mahasiswa->foto) ? asset('assets/imgs/no_profile.jpg') : $mahasiswa->foto;
                         ?>
                 <img id="img_profile"  style="height: 150px; width: 120px;" src="{{ $foto }}" />
                     </div>
@@ -368,7 +368,7 @@ $(document).on('click','img.featherlight-image',function(){
                 </dl>
                 <dl class="row">
                     <dt class="col-md-4">Jenkel</dt>
-                    <dd class="col-md-8">: <?=$mahasiswa->jenis_kelamin === 'L' ? "Laki-laki" : "Perempuan" ;?></dd>
+                    <dd class="col-md-8">: <?=$mahasiswa->jenis_kelamin === 'L' ? 'Laki-laki' : 'Perempuan'; ?></dd>
                 </dl>
                 <dl class="row">
                     <dt class="col-md-4">Email</dt>

@@ -329,7 +329,7 @@ class Ujian_model extends CI_Model
 
     public function HslUjianById($id, $dt = false)
     {
-        $this->db->select('d.id, a.nim, a.nama, d.detail_bobot_benar, d.detail_nilai, d.nilai, d.nilai_bobot_benar, b.masa_berlaku_sert, b.tampilkan_jawaban, TIMESTAMPDIFF(SECOND, d.tgl_mulai, d.tgl_selesai) AS lama_pengerjaan, d.mahasiswa_ujian_id, c.absen_by, c.absen_by_username, c.is_terlihat_pada_layar, c.is_perjokian, c.is_sering_buka_page_lain, c.catatan_pengawas, CONCAT(IF(d.started_by = "cron", "CRON", "SELF"), "/", IF(d.ended_by = "cron", "CRON", "SELF"))  AS start_end_by', false);
+        $this->db->select('d.id, a.nim, a.nama, d.detail_bobot_benar, d.detail_nilai, d.nilai, d.nilai_bobot_benar, b.masa_berlaku_sert, b.tampilkan_jawaban, TIMESTAMPDIFF(SECOND, d.tgl_mulai, d.tgl_selesai) AS lama_pengerjaan, d.mahasiswa_ujian_id, c.absen_by, c.absen_by_username, c.is_terlihat_pada_layar, c.is_perjokian, c.is_sering_buka_page_lain, c.catatan_pengawas, CONCAT(IF(d.started_by = "cron", "CRON", "SELF"), "/", IF(d.ended_by = "cron", "CRON", IF(d.ended_by = a.nim, "SELF", "PENGAWAS") ))  AS start_end_by');
         $this->db->from('h_ujian d');
         $this->db->join('mahasiswa a', 'a.id_mahasiswa = d.mahasiswa_id');
         $this->db->join('m_ujian b', 'd.ujian_id = b.id_ujian');

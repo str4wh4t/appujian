@@ -8,11 +8,10 @@ use Orm\Dosen_orm;
 use Orm\Topik_orm;
 use Orm\Hujian_orm;
 
-class Ujian_model extends CI_Model {
-    
+class Ujian_model extends CI_Model
+{
     public function getDataUjian($id = null, $username = null, $role = null, $status_ujian = 'active', $paket_id = null)
     {
-
 //        $this->datatables->select('a.id_ujian, a.token, a.nama_ujian, b.nama_matkul, a.jumlah_soal, CONCAT(a.tgl_mulai, " <br/> (", a.waktu, " Menit)") as waktu, a.jenis');
 //        $this->datatables->from('m_ujian a');
 //        $this->datatables->join('matkul b', 'a.matkul_id = b.id_matkul');
@@ -21,113 +20,113 @@ class Ujian_model extends CI_Model {
 //        }
 //        return $this->datatables->generate();
 
-	    $config = [
-        	'host'     => $this->db->hostname,
-            'port'     => $this->db->port,
+        $config = [
+            'host' => $this->db->hostname,
+            'port' => $this->db->port,
             'username' => $this->db->username,
             'password' => $this->db->password,
             'database' => $this->db->database,
         ];
-    	
-	    $dt = new Datatables( new MySQL($config) );
-	    
-	    $this->db->select('a.id_ujian, status_ujian, a.token, a.nama_ujian, a.jumlah_soal, a.tgl_mulai, 
+
+        $dt = new Datatables( new MySQL($config) );
+
+        $this->db->select('a.id_ujian, status_ujian, a.token, a.nama_ujian, a.jumlah_soal, a.tgl_mulai, 
         a.terlambat, CONCAT(a.waktu, " Mnt") AS waktu, CONCAT(a.jenis , "/" , a.jenis_jawaban) AS jenis, 
         GROUP_CONCAT(c.name SEPARATOR "---") as paket, GROUP_CONCAT(CONCAT("[", c.id, "]")) as paket_ids, 
         created_by as oleh, a.pakai_token, a.repeatable');
         $this->db->from('m_ujian a');
-        
-        if($status_ujian == 'active'){
-        	$this->db->where('a.status_ujian', 1);
+
+        if ($status_ujian == 'active') {
+            $this->db->where('a.status_ujian', 1);
             $this->db->group_start();
-        	$this->db->where('a.terlambat >', date('Y-m-d H:i:s'));
+            $this->db->where('a.terlambat >', date('Y-m-d H:i:s'));
             $this->db->or_where('a.terlambat is NULL', null, false);
             $this->db->group_end();
         }
-        
-        if($status_ujian == 'expired'){
+
+        if ($status_ujian == 'expired') {
             $this->db->where('a.terlambat is NOT NULL', null, false);
-        	$this->db->where('a.terlambat <', date('Y-m-d H:i:s'));
+            $this->db->where('a.terlambat <', date('Y-m-d H:i:s'));
         }
-        
-        if($status_ujian == 'close'){
-        	$this->db->where('a.status_ujian', 0);
+
+        if ($status_ujian == 'close') {
+            $this->db->where('a.status_ujian', 0);
         }
-        
-        if($status_ujian == 'semua'){
-			// JIKA SEMUA
+
+        if ($status_ujian == 'semua') {
+            // JIKA SEMUA
         }
-        
+
         if ($id !== null) {
-                $this->db->where('a.matkul_id', $id);
+            $this->db->where('a.matkul_id', $id);
         }
-        
+
         if ($username !== null) {
             $dosen = Dosen_orm::where('nip',$username)->first();
             $matkul_id = [null];
-            foreach($dosen->matkul as $matkul){
+            foreach ($dosen->matkul as $matkul) {
                 $matkul_id[] = $matkul->id_matkul;
             }
             $this->db->where_in('a.matkul_id', $matkul_id);
 //        	 $this->db->where('a.created_by', $username);
         }
-        
+
         $this->db->join('paket_ujian b', 'b.ujian_id = a.id_ujian', 'left');
         $this->db->join('paket c', 'c.id = b.paket_id', 'left');
         $this->db->group_by('a.id_ujian');
 
-        if(!empty($paket_id)){
+        if (!empty($paket_id)) {
             $this->db->having('paket_ids LIKE', '%[' . $paket_id . ']%');
         }
 
-	    $query = $this->db->get_compiled_select() ; // GET QUERY PRODUCED BY ACTIVE RECORD WITHOUT RUNNING I
+        $query = $this->db->get_compiled_select(); // GET QUERY PRODUCED BY ACTIVE RECORD WITHOUT RUNNING I
 
         $dt->query($query);
-        
-        $dt->edit('nama_ujian', function ($data) use ($role){
-        	$return = '';
-        	if(($role->name == 'admin') || ($role->name == 'dosen')) {
-        		$return = '<a href="'. site_url('ujian/edit/' . $data['id_ujian']) .'" >'. $data['nama_ujian'] .'</a >';
-	        }else if(($role->name == 'pengawas') || ($role->name == 'koord_pengawas')) {
-		        $return = '<a href="'. site_url('ujian/monitor/' . $data['id_ujian']) .'" >'. $data['nama_ujian'] .'</a >';
-        	}
-            return $return ;
-        });
-        
-        $dt->edit('status_ujian', function ($data) {
 
-            $return = $data['status_ujian'] ? "active" : "close" ;
+        $dt->edit('nama_ujian', function ($data) use ($role) {
+            $return = '';
+            if (($role->name == 'admin') || ($role->name == 'dosen')) {
+                $return = '<a href="' . site_url('ujian/edit/' . $data['id_ujian']) . '" >' . $data['nama_ujian'] . '</a >';
+            } else {
+                if (($role->name == 'pengawas') || ($role->name == 'koord_pengawas')) {
+                    $return = '<a href="' . site_url('ujian/monitor/' . $data['id_ujian']) . '" >' . $data['nama_ujian'] . '</a >';
+                }
+            }
+            return $return;
+        });
+
+        $dt->edit('status_ujian', function ($data) {
+            $return = $data['status_ujian'] ? 'active' : 'close';
 
             $today = date('Y-m-d H:i:s');
-			$data_start = date('Y-m-d H:i:s', strtotime($data['tgl_mulai']));
-            if(!empty($data['terlambat'])){
+            $data_start = date('Y-m-d H:i:s', strtotime($data['tgl_mulai']));
+            if (!empty($data['terlambat'])) {
                 $date_end = date('Y-m-d H:i:s', strtotime($data['terlambat']));
-                
-                $return = $data['status_ujian'] ? "active" : "close" ;
+
+                $return = $data['status_ujian'] ? 'active' : 'close';
                 // if (($today >= $data_start) && ($today <= $date_end)) {
                 // JIKA MASIH DALAM RANGE TANGGAL
                 if ($today < $date_end) {
                     // $return = "expired";
-                }else{
-                    $return = "expired";
+                } else {
+                    $return = 'expired';
                 }
             }
-			
-			return $return;
+
+            return $return;
         });
-        
+
         $user_orm = new Users_orm;
-        $dt->edit('oleh', function ($data) use ($user_orm){
+        $dt->edit('oleh', function ($data) use ($user_orm) {
             $user = $user_orm->where('username',$data['oleh'])->first();
             return $user != null ? $user->full_name : '';
         });
-        
-        $dt->add('aksi', function($data) use ($role){
-        // return a link in a new column
-	        $return = '';
-	        if(($role->name == 'admin') || ($role->name == 'dosen')) {
-		
-		        $return = '<div class="btn-group btn-group-sm" role="group" aria-label="">
+
+        $dt->add('aksi', function($data) use ($role) {
+            // return a link in a new column
+            $return = '';
+            if (($role->name == 'admin') || ($role->name == 'dosen')) {
+                $return = '<div class="btn-group btn-group-sm" role="group" aria-label="">
 								<a href="' . site_url('ujian/edit/' . $data['id_ujian']) . '" class="btn btn-sm btn-warning">
 											<i class="fa fa-edit"></i> Edit
 										</a>
@@ -135,20 +134,20 @@ class Ujian_model extends CI_Model {
 											<i class="fa fa-desktop"></i> Monitor
 										</a>
 									</div>';
-	        }else if(($role->name == 'pengawas') || ($role->name == 'koord_pengawas')) {
-		
-		        $return = '<a href="' . site_url('ujian/monitor/' . $data['id_ujian']) . '" class="btn btn-sm btn-info">
+            } else {
+                if (($role->name == 'pengawas') || ($role->name == 'koord_pengawas')) {
+                    $return = '<a href="' . site_url('ujian/monitor/' . $data['id_ujian']) . '" class="btn btn-sm btn-info">
 											<i class="fa fa-desktop"></i> Monitor
 										</a>';
-	        }
-	        
-	        return $return;
-	        
-	    });
-        
+                }
+            }
+
+            return $return;
+        });
+
         return $dt->generate();
     }
-    
+
     public function getListUjian($mhs_orm)
     {
 //    	$q = $this->db->select('a.matkul_id')->where('a.mahasiswa_id',$id)->where('a.status','N')->get('h_ujian AS a');
@@ -156,10 +155,10 @@ class Ujian_model extends CI_Model {
 //    	if(!empty($q->num_rows())){
 //    		foreach($q->result() as $r){
 //    			$array_ujian_id[] = $r->ujian_id;
-//		    }
-//	    }
-////        $this->datatables->select("a.id_ujian, e.nama_dosen, d.nama_kelas, a.nama_ujian, b.nama_matkul, a.jumlah_soal, CONCAT(a.tgl_mulai, ' <br/> (', a.waktu, ' Menit)') as waktu,  (SELECT COUNT(id) FROM h_ujian h WHERE h.mahasiswa_id = {$id} AND h.ujian_id = a.id_ujian) AS ada");
-//		$this->db->select('a.id_ujian, e.nama_dosen, d.nama_kelas, a.nama_ujian, b.nama_matkul, a.jumlah_soal, a.tgl_mulai, a.terlambat, CONCAT(a.waktu, " Mnt") AS waktu, a.jenis');
+        //		    }
+        //	    }
+        ////        $this->datatables->select("a.id_ujian, e.nama_dosen, d.nama_kelas, a.nama_ujian, b.nama_matkul, a.jumlah_soal, CONCAT(a.tgl_mulai, ' <br/> (', a.waktu, ' Menit)') as waktu,  (SELECT COUNT(id) FROM h_ujian h WHERE h.mahasiswa_id = {$id} AND h.ujian_id = a.id_ujian) AS ada");
+        //		$this->db->select('a.id_ujian, e.nama_dosen, d.nama_kelas, a.nama_ujian, b.nama_matkul, a.jumlah_soal, a.tgl_mulai, a.terlambat, CONCAT(a.waktu, " Mnt") AS waktu, a.jenis');
 //        $this->datatables->from('m_ujian a');
 //        $this->datatables->join('matkul b', 'a.matkul_id = b.id_matkul');
 //        $this->datatables->join('kelas_dosen c', "a.dosen_id = c.dosen_id");
@@ -168,63 +167,64 @@ class Ujian_model extends CI_Model {
 //        $this->datatables->where('d.id_kelas', $kelas);
 //        $this->datatables->where_not_in('a.id_ujian', $array_ujian_id);
 //        return $this->datatables->generate();
-		
+
         $config = [
-        	'host'     => $this->db->hostname,
-            'port'     => $this->db->port,
+            'host' => $this->db->hostname,
+            'port' => $this->db->port,
             'username' => $this->db->username,
             'password' => $this->db->password,
             'database' => $this->db->database,
         ];
-        
+
 //        $matkul = $mhs_orm->matkul;
 //        $avail_matkul_id = [null];
 //        foreach($matkul as $m){
 //        	$avail_matkul_id[] = $m->id_matkul ;
 //        }
-     
-	    $dt = new Datatables( new MySQL($config) );
-	    
-//	    $this->db->select('a.id_ujian, a.nama_ujian, b.nama_matkul, a.jumlah_soal, a.tgl_mulai, a.terlambat, CONCAT(a.waktu, " Mnt") AS waktu, a.status_ujian, a.tampilkan_hasil, f.ujian_selesai');
+
+        $dt = new Datatables( new MySQL($config) );
+
+        //	    $this->db->select('a.id_ujian, a.nama_ujian, b.nama_matkul, a.jumlah_soal, a.tgl_mulai, a.terlambat, CONCAT(a.waktu, " Mnt") AS waktu, a.status_ujian, a.tampilkan_hasil, f.ujian_selesai');
 //        $this->db->from('m_ujian a');
 //        $this->db->join('matkul b', 'a.matkul_id = b.id_matkul');
 //        $this->db->join('h_ujian f', 'a.id_ujian = f.ujian_id AND f.mahasiswa_id = "'. $mhs_orm->id_mahasiswa .'"', 'left');
 //        $this->db->where_in('a.matkul_id', $avail_matkul_id);
 //        $this->db->group_by('a.id_ujian');
-	    
-	    $this->db->select('a.id_ujian, a.nama_ujian, a.jumlah_soal, a.tgl_mulai, a.terlambat, CONCAT(a.waktu, " Mnt") AS waktu, a.status_ujian, a.tampilkan_hasil, e.id, "UJIAN_SELESAI" AS ujian_selesai');
+
+        $this->db->select('a.id_ujian, a.nama_ujian, a.jumlah_soal, a.tgl_mulai, a.terlambat, CONCAT(a.waktu, " Mnt") AS waktu, a.status_ujian, a.tampilkan_hasil, e.id, "UJIAN_SELESAI" AS ujian_selesai');
         $this->db->from('mahasiswa_ujian AS e');
         $this->db->join('m_ujian AS a', 'a.id_ujian = e.ujian_id');
         $this->db->where('g.mahasiswa_id', $mhs_orm->id_mahasiswa);
         $this->db->group_by('e.ujian_id');
 
-	    $query = $this->db->get_compiled_select() ; // GET QUERY PRODUCED BY ACTIVE RECORD WITHOUT RUNNING I
-	    
+        $query = $this->db->get_compiled_select(); // GET QUERY PRODUCED BY ACTIVE RECORD WITHOUT RUNNING I
+
         $dt->query($query);
         $dt->edit('id_ujian', function ($data) {
-            return  uuid_create_from_integer($data['id_ujian']) ;
+            return  uuid_create_from_integer($data['id_ujian']);
         });
-        
+
         $dt->edit('status_ujian', function ($data) {
             $today = date('Y-m-d H:i:s');
-			//echo $paymentDate; // echos today!
-			$data_start = date('Y-m-d H:i:s', strtotime($data['tgl_mulai']));
-			$date_end = date('Y-m-d H:i:s', strtotime($data['terlambat']));
-			
-			if (($today >= $data_start) && ($today <= $date_end)){
-			    return $data['status_ujian'] ? "active" : "close";
-			}else{
-				if($today < $data_start)
-					return 'upcoming';
-				else
-			        return "expired";
-			}
+            //echo $paymentDate; // echos today!
+            $data_start = date('Y-m-d H:i:s', strtotime($data['tgl_mulai']));
+            $date_end = date('Y-m-d H:i:s', strtotime($data['terlambat']));
+
+            if (($today >= $data_start) && ($today <= $date_end)) {
+                return $data['status_ujian'] ? 'active' : 'close';
+            } else {
+                if ($today < $data_start) {
+                    return 'upcoming';
+                } else {
+                    return 'expired';
+                }
+            }
         });
         $h_ujian = new Hujian_orm();
-        $dt->edit('ujian_selesai', function ($data) use($h_ujian){
-        	$hasil_ujian = $h_ujian->where('mahasiswa_ujian_id', $data['id'])->first();
-        	$ujian_selesai = empty($hasil_ujian) ? 'N' : $hasil_ujian->ujian_selesai ;
-            return $ujian_selesai ;
+        $dt->edit('ujian_selesai', function ($data) use ($h_ujian) {
+            $hasil_ujian = $h_ujian->where('mahasiswa_ujian_id', $data['id'])->first();
+            $ujian_selesai = empty($hasil_ujian) ? 'N' : $hasil_ujian->ujian_selesai;
+            return $ujian_selesai;
         });
 
         return $dt->generate();
@@ -276,7 +276,7 @@ class Ujian_model extends CI_Model {
     public function getSoal($id)
     {
         $ujian = $this->getUjianById($id);
-        $order = $ujian->jenis==="acak" ? 'rand()' : 'id_soal';
+        $order = $ujian->jenis === 'acak' ? 'rand()' : 'id_soal';
 
         $this->db->select('id_soal, soal, file, tipe_file, opsi_a, opsi_b, opsi_c, opsi_d, opsi_e, jawaban');
         $this->db->from('tb_soal');
@@ -312,108 +312,104 @@ class Ujian_model extends CI_Model {
         $this->datatables->join('m_ujian b', 'a.ujian_id = b.id_ujian');
         // $this->datatables->join('matkul c', 'b.matkul_id = c.id_matkul');
         $this->datatables->group_by('b.id_ujian');
-        if($nip !== null){
+        if ($nip !== null) {
             $dosen = Dosen_orm::where('nip',$nip)->firstOrFail();
-			if(null !=  $dosen){
-				// $ids_matkul = [null];
-				// foreach ($dosen->matkul as $matkul){
-				// 	$ids_matkul[] = $matkul->id_matkul;
-				// }
+            if (null != $dosen) {
+                // $ids_matkul = [null];
+                // foreach ($dosen->matkul as $matkul){
+                // 	$ids_matkul[] = $matkul->id_matkul;
+                // }
                 // $this->datatables->where_in('b.matkul_id', $ids_matkul);
                 $this->datatables->where_in('b.created_by', $dosen->nip);
-			}
+            }
         }
 //        $this->datatables->where('a.ujian_selesai', 'Y');
         return $this->datatables->generate();
     }
 
-    public function HslUjianById($id, $dt=false)
+    public function HslUjianById($id, $dt = false)
     {
-    	
-    	$this->db->select('d.id, a.nim, a.nama, d.detail_bobot_benar, d.detail_nilai, d.nilai, d.nilai_bobot_benar, b.masa_berlaku_sert, b.tampilkan_jawaban, TIMESTAMPDIFF(SECOND, d.tgl_mulai, d.tgl_selesai) AS lama_pengerjaan, d.mahasiswa_ujian_id, c.absen_by, c.absen_by_username, c.is_terlihat_pada_layar, c.is_perjokian, c.is_sering_buka_page_lain, c.catatan_pengawas');
+        $this->db->select('d.id, a.nim, a.nama, d.detail_bobot_benar, d.detail_nilai, d.nilai, d.nilai_bobot_benar, b.masa_berlaku_sert, b.tampilkan_jawaban, TIMESTAMPDIFF(SECOND, d.tgl_mulai, d.tgl_selesai) AS lama_pengerjaan, d.mahasiswa_ujian_id, c.absen_by, c.absen_by_username, c.is_terlihat_pada_layar, c.is_perjokian, c.is_sering_buka_page_lain, c.catatan_pengawas, CONCAT(IF(d.started_by = "cron", "CRON", "SELF"), "/", IF(d.ended_by = "cron", "CRON", "SELF"))  AS start_end_by', false);
         $this->db->from('h_ujian d');
-		$this->db->join('mahasiswa a', 'a.id_mahasiswa = d.mahasiswa_id');
-		$this->db->join('m_ujian b', 'd.ujian_id = b.id_ujian');
+        $this->db->join('mahasiswa a', 'a.id_mahasiswa = d.mahasiswa_id');
+        $this->db->join('m_ujian b', 'd.ujian_id = b.id_ujian');
         $this->db->join('daftar_hadir c', 'c.mahasiswa_ujian_id = d.mahasiswa_ujian_id', 'left');
-        $this->db->where([ 'd.ujian_id' => $id, 'd.ujian_selesai' => 'Y']);
+        $this->db->where(['d.ujian_id' => $id, 'd.ujian_selesai' => 'Y']);
         $this->db->group_by('a.id_mahasiswa');
         // $this->db->order_by('d.nilai_bobot_benar','desc');
         $this->db->order_by('d.nilai','desc');
         $this->db->order_by('lama_pengerjaan','asc');
-        
-        if($dt === false) {
-        	
-	        return $this->db->get();
-	        
-        }else{
-	        $config = [
-	            'host'     => $this->db->hostname,
-	            'port'     => $this->db->port,
-	            'username' => $this->db->username,
-	            'password' => $this->db->password,
-	            'database' => $this->db->database,
-	        ];
-	        
-	        $dt = new Datatables( new MySQL($config) );
-	
-		    $query = $this->db->get_compiled_select() ; // GET QUERY PRODUCED BY ACTIVE RECORD WITHOUT RUNNING I
-	
-	        $dt->query($query);
-	        
-			// $topik = new Topik_orm();
+
+        if ($dt === false) {
+            return $this->db->get();
+        } else {
+            $config = [
+                'host' => $this->db->hostname,
+                'port' => $this->db->port,
+                'username' => $this->db->username,
+                'password' => $this->db->password,
+                'database' => $this->db->database,
+            ];
+
+            $dt = new Datatables( new MySQL($config) );
+
+            $query = $this->db->get_compiled_select(); // GET QUERY PRODUCED BY ACTIVE RECORD WITHOUT RUNNING I
+
+            $dt->query($query);
+
+            // $topik = new Topik_orm();
             $tpk = Topik_orm::pluck('nama_topik','id')->toArray();
 
-	        // $dt->edit('detail_bobot_benar', function ($data) use ($topik){
-            $dt->edit('detail_bobot_benar', function ($data) use ($tpk){
-	        	// $hasil_ujian_per_topik = json_decode($data['detail_bobot_benar']); // <== UNCOMENT UNTUK MENAMPILKAN DETAIL BOBOT
+            // $dt->edit('detail_bobot_benar', function ($data) use ($topik){
+            $dt->edit('detail_bobot_benar', function ($data) use ($tpk) {
+                // $hasil_ujian_per_topik = json_decode($data['detail_bobot_benar']); // <== UNCOMENT UNTUK MENAMPILKAN DETAIL BOBOT
                 $hasil_ujian_per_topik = json_decode($data['detail_nilai']); // UNCOMENT UNTUK MENAMPILKAN DETAIL NILAI
 	        	$return = '<dl class="row">';
-	        	if(!empty($hasil_ujian_per_topik)) {
-			        foreach ($hasil_ujian_per_topik as $t => $v) {
-				        // $tpk    = $topik->findOrFail($t);
-				        $return .= '<dt class="col-md-8">' . $tpk[$t] . '</dt>';
-				        if(is_show_detail_hasil()) 
+                if (!empty($hasil_ujian_per_topik)) {
+                    foreach ($hasil_ujian_per_topik as $t => $v) {
+                        // $tpk    = $topik->findOrFail($t);
+                        $return .= '<dt class="col-md-8">' . $tpk[$t] . '</dt>';
+                        if (is_show_detail_hasil()) {
                             $return .= '<dd class="col-md-4">' . $v . '</dd>';
-			        }
-		        }
-	        	$return .= '</dl>';
-	            return $return;
-	        });
-	        
-	        $dt->edit('nilai_bobot_benar', function ($data){
-//	             return number_format($data['nilai_bobot_benar'] / 3 ,2,'.', '') ;
-		        return number_format($data['nilai_bobot_benar'],2,'.', '') ;
-	        });
-	        
-	        $dt->edit('nilai', function ($data){
-	        
-	            return number_format($data['nilai'] ,2,'.', '') ;
-	        });
-	        
-	        $dt->add('aksi', function ($data) use($id){
-	        	if(is_admin()){
-	        	    $return = '<div class="btn-group">';
-	        	    $return .= '<button class="btn btn-sm btn-danger btn_reset_hasil" type="button" title="Reset ujian" data-id="'. $data['id'] .'"><i class="fa fa-times-circle"></i></button>';
-                    if($data['masa_berlaku_sert'] > 0)
-                        $return .= '<a class="btn btn-sm btn-info btn_cetak_hasil" target="_blank" href="'. url('pub/cetak_sertifikat/' . uuid_create_from_integer($data['nim']) . '/' . uuid_create_from_integer($id)) .'" title="Cetak hasil"><i class="fa fa-print"></i></a>';
-                    $mahasiswa_ujian_id = $data['mahasiswa_ujian_id'];
-                    if(in_group('mahasiswa'))
-                        $mahasiswa_ujian_id = uuid_create_from_integer($data['mahasiswa_ujian_id']);
+                        }
+                    }
+                }
+                $return .= '</dl>';
+                return $return;
+            });
 
-                    $return .= '<a target="_blank" href="'. url('hasilujian/history/' . $mahasiswa_ujian_id ) .'" class="btn btn-success btn-sm"><i class="fa fa-eye"></i></a>';
-		            $return .= '</div>';
-		        }else{
+            $dt->edit('nilai_bobot_benar', function ($data) {
+                //	             return number_format($data['nilai_bobot_benar'] / 3 ,2,'.', '') ;
+                return number_format($data['nilai_bobot_benar'],2,'.', '');
+            });
+
+            $dt->edit('nilai', function ($data) {
+                return number_format($data['nilai'] ,2,'.', '');
+            });
+
+            $dt->add('aksi', function ($data) use ($id) {
+                if (is_admin()) {
+                    $return = '<div class="btn-group">';
+                    $return .= '<button class="btn btn-sm btn-danger btn_reset_hasil" type="button" title="Reset ujian" data-id="' . $data['id'] . '"><i class="fa fa-times-circle"></i></button>';
+                    if ($data['masa_berlaku_sert'] > 0) {
+                        $return .= '<a class="btn btn-sm btn-info btn_cetak_hasil" target="_blank" href="' . url('pub/cetak_sertifikat/' . uuid_create_from_integer($data['nim']) . '/' . uuid_create_from_integer($id)) . '" title="Cetak hasil"><i class="fa fa-print"></i></a>';
+                    }
+                    $mahasiswa_ujian_id = $data['mahasiswa_ujian_id'];
+                    if (in_group('mahasiswa')) {
+                        $mahasiswa_ujian_id = uuid_create_from_integer($data['mahasiswa_ujian_id']);
+                    }
+
+                    $return .= '<a target="_blank" href="' . url('hasilujian/history/' . $mahasiswa_ujian_id ) . '" class="btn btn-success btn-sm"><i class="fa fa-eye"></i></a>';
+                    $return .= '</div>';
+                } else {
                     $return = '-';
-		        }
-	        	
-	            return $return;
-	        });
-	        
-	        return $dt->generate();
-        
+                }
+
+                return $return;
+            });
+
+            return $dt->generate();
         }
-        
-        
     }
 
     public function bandingNilai($id)
@@ -422,16 +418,15 @@ class Ujian_model extends CI_Model {
 //        $this->db->select_max('nilai', 'max_nilai');
 //        $this->db->select_avg('FORMAT(FLOOR(nilai),0)', 'avg_nilai');
 
-//	    $this->db->select_min('nilai_bobot_benar', 'min_nilai');
+        //	    $this->db->select_min('nilai_bobot_benar', 'min_nilai');
 //        $this->db->select_max('nilai_bobot_benar', 'max_nilai');
 //        $this->db->select_avg('nilai_bobot_benar', 'avg_nilai');
-        
+
         $this->db->select_min('nilai', 'min_nilai');
         $this->db->select_max('nilai', 'max_nilai');
         $this->db->select_avg('nilai', 'avg_nilai');
-        
+
         $this->db->where('ujian_id', $id)->where('ujian_selesai', 'Y');
         return $this->db->get('h_ujian')->row();
     }
-
 }

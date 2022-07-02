@@ -258,10 +258,11 @@ $(document).on('click','#btn_ulangi_ujian',function(){
                 $today = date('Y-m-d H:i:s');
                 //echo $paymentDate; // echos today!
                 $date_start = date('Y-m-d H:i:s', strtotime($ujian->tgl_mulai));
-                if(!empty($ujian->terlambat))
+                if (!empty($ujian->terlambat)) {
                     $date_end = date('Y-m-d H:i:s', strtotime($ujian->terlambat));
-                else 
+                } else {
                     $date_end = date('Y-m-d H:i:s', strtotime('+1 days'));
+                }
                 ?>
 
                 @if(($today >= $date_start) && ($today < $date_end)) 
@@ -295,6 +296,7 @@ $(document).on('click','#btn_ulangi_ujian',function(){
 {{--                    <th>Jml Salah</th>--}}
                     <th>Bobot</th>
                     <th>Nilai</th>
+                    <th>Start/End By</th>
                     <th>Aksi</th>
                 </tr>
             </thead>

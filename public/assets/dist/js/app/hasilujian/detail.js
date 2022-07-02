@@ -45,6 +45,7 @@ $(document).ready(function () {
             // { "data": 'nilai' },
             { data: "nilai_bobot_benar" },
             { data: "nilai" },
+            { data: "start_end_by" },
             {
                 data: "aksi",
                 orderable: false,

@@ -59,6 +59,8 @@ $rata_rata_ujian = number_format($nilai->avg_nilai,2,'.', '');
             <td rowspan="2"><b><?= $topik->nama_topik ?></b></td>
         <?php endforeach; ?>
         <?php endif; ?>
+        <td colspan="2" ><b>Waktu Mengerjakan</b></td>
+        <td rowspan="2" ><b>Lama Pengerjaan<br>(Menit)</b></td>
         <td rowspan="2" ><b>Bobot</b></td>
         <td rowspan="2" ><b>Nilai</b></td>
     </tr>
@@ -67,6 +69,8 @@ $rata_rata_ujian = number_format($nilai->avg_nilai,2,'.', '');
         <td ><b>Perjokian</b></td>
         <td ><b>Sering Buka Laman Lain</b></td>
         <td ><b>Catatan</b></td>
+        <td ><b>Mulai</b></td>
+        <td ><b>Selesai</b></td>
     </tr>
     <?php
     $no = 1;
@@ -93,6 +97,9 @@ $rata_rata_ujian = number_format($nilai->avg_nilai,2,'.', '');
                     echo $row['detail_nilai'][$topik->id]; ?></td>
         <?php endforeach; ?>
         <?php endif; ?>
+        <td ><?= $row['waktu_mulai']?></td>
+        <td ><?= $row['waktu_selesai'] ?></td>
+        <td ><?= $row['lama_pengerjaan'] ?></td>
         <td ><?= $nilai_bobot_benar ?></td>
         <td ><?= $hasil ?></td>
     </tr>

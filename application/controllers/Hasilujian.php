@@ -303,6 +303,8 @@ class HasilUjian extends MY_Controller
                 }
             }
 
+            $lama_pengerjaan = floor($hasil->lama_pengerjaan / 60);
+
             $new_hasil[] = [
                 'nim' => $hasil->nim,
                 'nama' => $hasil->nama,
@@ -317,6 +319,9 @@ class HasilUjian extends MY_Controller
                 'is_perjokian' => empty($hasil->is_perjokian) ? '-' : ($hasil->is_perjokian ? 'YA' : '-'),
                 'is_sering_buka_page_lain' => empty($hasil->is_sering_buka_page_lain) ? '-' : ($hasil->is_sering_buka_page_lain ? 'YA' : '-'),
                 'catatan_pengawas' => $hasil->catatan_pengawas,
+                'waktu_mulai' => strftime('%H:%M:%S', strtotime($hasil->tgl_mulai)),
+                'waktu_selesai' => strftime('%H:%M:%S', strtotime($hasil->tgl_selesai)),
+                'lama_pengerjaan' => $lama_pengerjaan,
             ];
         }
 

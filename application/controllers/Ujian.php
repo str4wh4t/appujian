@@ -747,7 +747,7 @@ class Ujian extends MY_Controller
         );
     }
 
-    public function save()
+    protected function _save()
     {
         $this->_akses_admin_dan_dosen();
 

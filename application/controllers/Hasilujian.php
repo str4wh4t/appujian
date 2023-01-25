@@ -1,16 +1,17 @@
 <?php
-defined('BASEPATH') OR exit('No direct script access allowed');
 
-use Orm\Hujian_orm;
-use Orm\Hujian_history_orm;
-use Orm\Mujian_orm;
-use Orm\Topik_orm;
+defined('BASEPATH') or exit('No direct script access allowed');
+
+use Illuminate\Database\Capsule\Manager as DB;
 use Orm\Hujian_deleted_orm;
+use Orm\Hujian_history_orm;
+use Orm\Hujian_orm;
 use Orm\Jawaban_ujian_deleted_orm;
 use Orm\Jawaban_ujian_orm;
 use Orm\Mhs_orm;
 use Orm\Mhs_ujian_orm;
-use Illuminate\Database\Capsule\Manager as DB;
+use Orm\Mujian_orm;
+use Orm\Topik_orm;
 
 class HasilUjian extends MY_Controller
 {
@@ -19,7 +20,7 @@ class HasilUjian extends MY_Controller
     public function __construct()
     {
         parent::__construct();
-        if (!$this->ion_auth->logged_in()) {
+        if (! $this->ion_auth->logged_in()) {
             redirect('auth');
         }
 
@@ -34,7 +35,7 @@ class HasilUjian extends MY_Controller
     {
         $nip = null;
 
-        if ( $this->ion_auth->in_group('dosen') ) {
+        if ($this->ion_auth->in_group('dosen')) {
             $nip = $this->user->username;
         }
 
@@ -57,7 +58,7 @@ class HasilUjian extends MY_Controller
         $m_ujian = Mujian_orm::findOrFail($id);
 
         if (in_group('mahasiswa')) {
-            if (!$m_ujian->tampilkan_hasil) {
+            if (! $m_ujian->tampilkan_hasil) {
                 show_404();
             }
         }
@@ -127,7 +128,7 @@ class HasilUjian extends MY_Controller
             'judul' => 'Hasil Ujian',
             'subjudul' => 'List Hasil Ujian',
         ];
-        view('hasilujian/index',$data);
+        view('hasilujian/index', $data);
     }
 
     public function detail($id)
@@ -144,7 +145,7 @@ class HasilUjian extends MY_Controller
         $ujian = Mujian_orm::findOrFail($id);
 
         if (in_group('mahasiswa')) {
-            if (!$ujian->tampilkan_hasil) {
+            if (! $ujian->tampilkan_hasil) {
                 show_404();
             }
         }
@@ -160,7 +161,7 @@ class HasilUjian extends MY_Controller
             'mhs' => $mhs, //  ADA NILAI NYA JIKA YG LOGIN MHS
         ];
 
-        view('hasilujian/detail',$data);
+        view('hasilujian/detail', $data);
     }
 
     protected function _get_stat_nilai()
@@ -174,16 +175,16 @@ class HasilUjian extends MY_Controller
         $m_ujian = Mujian_orm::findOrFail($id);
 
         if (in_group('mahasiswa')) {
-            if (!$m_ujian->tampilkan_hasil) {
+            if (! $m_ujian->tampilkan_hasil) {
                 show_404();
             }
         }
 
         $nilai = $this->ujian->bandingNilai($m_ujian->id_ujian);
 
-        $data['nilai_terendah'] = number_format($nilai->min_nilai,2,'.', '');
-        $data['nilai_tertinggi'] = number_format($nilai->max_nilai,2,'.', '');
-        $data['nilai_rata_rata'] = number_format($nilai->avg_nilai,2,'.', '');
+        $data['nilai_terendah'] = number_format($nilai->min_nilai, 2, '.', '');
+        $data['nilai_tertinggi'] = number_format($nilai->max_nilai, 2, '.', '');
+        $data['nilai_rata_rata'] = number_format($nilai->avg_nilai, 2, '.', '');
 
         $this->_json($data);
     }
@@ -198,7 +199,7 @@ class HasilUjian extends MY_Controller
         $m_ujian = Mujian_orm::findOrFail($id);
 
         if (in_group('mahasiswa')) {
-            if (!$m_ujian->tampilkan_hasil) {
+            if (! $m_ujian->tampilkan_hasil) {
                 show_404();
             }
         }
@@ -210,16 +211,16 @@ class HasilUjian extends MY_Controller
         $data = [
             'ujian' => $ujian,
             'nilai' => $nilai,
-            'hasil' => $hasil
+            'hasil' => $hasil,
         ];
 
-        $tpk = Topik_orm::pluck('nama_topik','id')->toArray();
+        $tpk = Topik_orm::pluck('nama_topik', 'id')->toArray();
 
         $new_hasil = [];
         foreach ($data['hasil'] as $hasil) {
             $hasil_ujian_per_topik = json_decode($hasil->detail_bobot_benar);
             $return = '<table>';
-            if (!empty($hasil_ujian_per_topik)) {
+            if (! empty($hasil_ujian_per_topik)) {
                 foreach ($hasil_ujian_per_topik as $t => $v) {
                     $return .= '<tr>';
                     // $tpk    = Topik_orm::findOrFail($t);
@@ -259,7 +260,7 @@ class HasilUjian extends MY_Controller
         $m_ujian = Mujian_orm::findOrFail($id);
 
         if (in_group('mahasiswa')) {
-            if (!$m_ujian->tampilkan_hasil) {
+            if (! $m_ujian->tampilkan_hasil) {
                 show_404();
             }
         }
@@ -283,7 +284,7 @@ class HasilUjian extends MY_Controller
         foreach ($data['hasil'] as $hasil) {
             $hasil_ujian_per_topik = json_decode($hasil->detail_bobot_benar);
             $detail_bobot_benar_array = [];
-            if (!empty($hasil_ujian_per_topik)) {
+            if (! empty($hasil_ujian_per_topik)) {
                 foreach ($hasil_ujian_per_topik as $t => $v) {
                     $detail_bobot_benar_array[$t] = $v;
                 }
@@ -291,7 +292,7 @@ class HasilUjian extends MY_Controller
 
             $hasil_ujian_per_topik_nilai = json_decode($hasil->detail_nilai);
             $detail_nilai_array = [];
-            if (!empty($hasil_ujian_per_topik_nilai)) {
+            if (! empty($hasil_ujian_per_topik_nilai)) {
                 foreach ($hasil_ujian_per_topik_nilai as $t => $v) {
                     $detail_nilai_array[$t] = $v;
                 }
@@ -348,10 +349,10 @@ class HasilUjian extends MY_Controller
         } else {
             $mhs = $h_ujian->mhs;
             $h_ujian_all = Hujian_orm::select('*', DB::raw('TIMESTAMPDIFF(SECOND, tgl_mulai, tgl_selesai) AS lama_pengerjaan'))
-							->where(['ujian_id' => $h_ujian->ujian_id])
-							->orderBy('nilai_bobot_benar', 'desc')
-							->orderBy('lama_pengerjaan', 'asc')
-							->get();
+                            ->where(['ujian_id' => $h_ujian->ujian_id])
+                            ->orderBy('nilai_bobot_benar', 'desc')
+                            ->orderBy('lama_pengerjaan', 'asc')
+                            ->get();
             $jml_peserta = $h_ujian_all->count();
 
             $peringkat = 1;
@@ -364,14 +365,14 @@ class HasilUjian extends MY_Controller
         }
 
         if (in_group('mahasiswa')) {
-            if (!$h_ujian->m_ujian->tampilkan_jawaban) {
+            if (! $h_ujian->m_ujian->tampilkan_jawaban) {
                 show_404();
             }
         }
 
         $data = [
             'judul' => 'Hasil Ujian',
-            'subjudul' => 'Jawaban'
+            'subjudul' => 'Jawaban',
         ];
 
         $data['is_data_history'] = $is_data_history;
@@ -390,10 +391,10 @@ class HasilUjian extends MY_Controller
         $data['jml_peserta'] = $jml_peserta;
 
         $topik_ujian_list = [];
-        if (!empty($h_ujian->m_ujian->urutan_topik)) {
+        if (! empty($h_ujian->m_ujian->urutan_topik)) {
             $urutan_topik = $h_ujian->m_ujian->urutan_topik;
             $urutan_topik = json_decode($urutan_topik, true);
-            uasort($urutan_topik, function($a, $b) {
+            uasort($urutan_topik, function ($a, $b) {
                 return $a['urutan'] <=> $b['urutan'];
             });
 
@@ -456,13 +457,13 @@ class HasilUjian extends MY_Controller
 
     public function history($mahasiswa_ujian_id)
     {
-        if (!is_admin() && !in_group('mahasiswa')) {
+        if (! is_admin() && ! in_group('mahasiswa')) {
             show_404();
         }
 
         $data = [
             'judul' => 'Ujian',
-            'subjudul' => 'History Ujian'
+            'subjudul' => 'History Ujian',
         ];
 
         if (in_group('mahasiswa')) {
@@ -478,17 +479,17 @@ class HasilUjian extends MY_Controller
         // }
 
         if (in_group('mahasiswa')) {
-            if (!$mhs_ujian->m_ujian->tampilkan_hasil) { // CHECK JIKA BOLEH MENAMPILKAN HASIL
+            if (! $mhs_ujian->m_ujian->tampilkan_hasil) { // CHECK JIKA BOLEH MENAMPILKAN HASIL
                 show_404();
             }
         }
 
         $h_ujian = $mhs_ujian->h_ujian()->where('ujian_selesai', 'Y')->first(); // RELASI 1 - 1
-		$h_ujian_history = $mhs_ujian->h_ujian_history; // RELASI 1 - N
+        $h_ujian_history = $mhs_ujian->h_ujian_history; // RELASI 1 - N
 
-		if (empty($h_ujian) && $h_ujian_history->isEmpty()) { // CHECK JIKA MEMANG SUDAH MEMILIKI HASIL UJIAN
-		    show_404();
-		}
+        if (empty($h_ujian) && $h_ujian_history->isEmpty()) { // CHECK JIKA MEMANG SUDAH MEMILIKI HASIL UJIAN
+            show_404();
+        }
 
         $data['mhs'] = $mhs_ujian->mhs;
         $data['m_ujian'] = $mhs_ujian->m_ujian;
@@ -502,7 +503,7 @@ class HasilUjian extends MY_Controller
             $label_and_data = $h_ujian_history->pluck('nilai_bobot_benar', 'ujian_ke');
         }
 
-        if (!empty($h_ujian)) {
+        if (! empty($h_ujian)) {
             $label_and_data->put($label_and_data->count() + 1, $h_ujian->nilai_bobot_benar);
         }
 
@@ -557,13 +558,13 @@ class HasilUjian extends MY_Controller
             $topik_ujian_nilai_bobot = [];
 
             foreach ($h_ujian->jawaban_ujian as $jwb) {
-                if (!isset($topik_ujian_nilai_bobot[$jwb->soal->topik_id])) {
+                if (! isset($topik_ujian_nilai_bobot[$jwb->soal->topik_id])) {
                     $topik_ujian_nilai_bobot[$jwb->soal->topik_id] = 0;
                 }
 
                 if ($jwb->soal->tipe_soal == TIPE_SOAL_MCSA) {
                     // INI HANYA UNTUK JENIS MCSA
-                    if (!$jwb->soal->is_bobot_per_jawaban) {
+                    if (! $jwb->soal->is_bobot_per_jawaban) {
                         $total_bobot = $total_bobot + ($jwb->soal->bobot_soal->nilai * $jwb->soal->topik->poin_topik);
                         if ($jwb->jawaban == $jwb->soal->jawaban) {
                             $jumlah_benar++;
@@ -574,7 +575,7 @@ class HasilUjian extends MY_Controller
                             $jumlah_salah++;
                         }
                     } else {
-                        if (!empty($jwb->jawaban)) {
+                        if (! empty($jwb->jawaban)) {
                             $jumlah_benar++;
 
                             $abj = strtolower($jwb->jawaban);
@@ -592,11 +593,11 @@ class HasilUjian extends MY_Controller
                     // INI HANYA UNTUK JENIS MCMA
                     // $total_bobot = $total_bobot + ($jwb->soal->bobot_soal->nilai * $jwb->soal->topik->poin_topik);
                     $jawaban_mcma = [];
-                    if (!empty($jwb->jawaban_mcma)) {
+                    if (! empty($jwb->jawaban_mcma)) {
                         $jawaban_mcma = json_decode($jwb->jawaban_mcma);
                     }
 
-                    if (!$jwb->soal->is_bobot_per_jawaban) {
+                    if (! $jwb->soal->is_bobot_per_jawaban) {
                         $total_bobot = $total_bobot + ($jwb->soal->bobot_soal->nilai * $jwb->soal->topik->poin_topik);
                         $jawaban_mcma_kunci = json_decode($jwb->soal->jawaban);
                         if (empty(array_diff($jawaban_mcma, $jawaban_mcma_kunci)) && empty(array_diff($jawaban_mcma_kunci, $jawaban_mcma))) {
@@ -608,7 +609,7 @@ class HasilUjian extends MY_Controller
                             $jumlah_salah++;
                         }
                     } else {
-                        if (!empty($jawaban_mcma)) {
+                        if (! empty($jawaban_mcma)) {
                             $jumlah_benar++;
                             foreach ($jawaban_mcma as $ABJ) {
                                 $abj = strtolower($ABJ);
@@ -624,7 +625,7 @@ class HasilUjian extends MY_Controller
                         }
                     }
                 } elseif ($jwb->soal->tipe_soal == TIPE_SOAL_ESSAY) {
-                    if (!empty($jwb->jawaban_essay)) {
+                    if (! empty($jwb->jawaban_essay)) {
                         $jumlah_benar++;
                         $bobot_poin = ($jwb->nilai_essay * ($jwb->soal->bobot_soal->nilai * $jwb->soal->topik->poin_topik)); // BELUM TAHU BAIKNYA DI KALI KAN DENGAN BOBOT SOAL dan TOPIK ATAU TIDAK
                         // $bobot_poin = $jwb->nilai_essay ;
@@ -666,8 +667,8 @@ class HasilUjian extends MY_Controller
         try {
             begin_db_trx();
 
-            // if ($token != date('ymdHi')) {
-            if ($token != 'ya') {
+            if ($token != date('ymdHi')) {
+                // if ($token != 'ya') {
                 throw new Exception('Token salah');
             }
 

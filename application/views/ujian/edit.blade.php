@@ -107,7 +107,7 @@ function init_page_level(){
 
     @foreach($jumlah_soal as $topik_id => $t)
         @foreach($t as $bobot_soal_id => $jml_soal)
-        <?php $bobot_soal_id = empty($bobot_soal_id) ? 0 : $bobot_soal_id ;  ?>
+        <?php $bobot_soal_id = empty($bobot_soal_id) ? 0 : $bobot_soal_id; ?>
         topik_jumlah_soal[{{ $topik_id }}] = topik_jumlah_soal[{{ $topik_id }}] ? topik_jumlah_soal[{{ $topik_id }}] : [] ;
         topik_jumlah_soal[{{ $topik_id }}][{{ $bobot_soal_id }}] = {{ $jml_soal }};
         topik_jumlah_soal_asli[{{ $topik_id }}] = topik_jumlah_soal[{{ $topik_id }}] ? topik_jumlah_soal[{{ $topik_id }}] : [] ;
@@ -169,6 +169,61 @@ function init_page_level(){
         }
     });
 
+        $('#formujian input, #formujian select').on('change', function () {
+        $(this).closest('.form-group').eq(0).removeClass('has-error');
+        $(this).nextAll('.help-block').eq(0).text('');
+    });
+
+    $('#formujian').on('submit', function (e) {
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        ajx_overlay(true);
+        $.ajax({
+            url: $(this).attr('action'),
+            data: $(this).serialize(),
+            type: 'POST',
+            success: function (data) {
+                // console.log(data);
+                if (data.status) {
+                    Swal.fire({
+                        title: "Berhasil",
+                        icon:"success",
+                        text: "Data berhasil disimpan"
+                    }).then(result => {
+                        // window.location.href = base_url+"ujian/master";
+                        window.location.reload();
+                    });
+                } else {
+                    Swal.fire({
+                        title: "Perhatian",
+                        icon: "warning",
+                        text: "Terdapat kesalahan pada data"
+                    });
+                    if (data.errors) {
+                        $.each(data.errors, function (key, val) {
+                            $('[name="' + key + '"]').closest('.form-group').eq(0).addClass('has-error');
+                            $('[name="' + key + '"]').nextAll('.help-block').eq(0).text(val);
+                            if (val === '') {
+                                $('[name="' + key + '"]').closest('.form-group').eq(0).removeClass('has-error');
+                                $('[name="' + key + '"]').nextAll('.help-block').eq(0).text('');
+                            }
+                        });
+                    }
+                }
+            },
+            error: function () {
+                Swal.fire({
+                    title: "Error",
+                    icon: "warning",
+                    text: "Terdapat kesalahan pada data"
+                });
+            },
+            complete: function () {
+                ajx_overlay(false);
+            }
+        });
+    });
+
     @if($ujian->is_sekuen_topik)
     // $('#is_sekuen_topik').bootstrapSwitch('toggleState');
     @endif
@@ -181,6 +236,8 @@ function init_page_level(){
     @else
     //  $('#btn_refine_peserta').trigger('click');
     @endif
+
+
 }
 
 const init_cascade_select2 = () => {
@@ -806,7 +863,6 @@ $(document).on('click','#btn_refine_peserta', function(){
 });
 
 </script>
-<script src="{{ asset('assets/dist/js/app/ujian/edit.js') }}"></script>
 <!-- END PAGE LEVEL JS-->
 @endpush
 
@@ -836,7 +892,7 @@ $(document).on('click','#btn_refine_peserta', function(){
     <div class="box-body">
         <div class="row">
             <div class="col-md-12">
-                <?=form_open('ujian/save', array('id'=>'formujian'), array('method'=>'edit', 'id_ujian'=>$ujian->id_ujian))?>
+                <?=form_open('ujian/ajax/save', ['id'=>'formujian'], ['method'=>'edit', 'id_ujian'=>$ujian->id_ujian])?>
                 <div class="form-group">
                     <label for="nama_ujian">Nama Ujian</label>
                     <input value="<?=$ujian->nama_ujian?>" placeholder="Nama Ujian" type="text" class="form-control" name="nama_ujian">

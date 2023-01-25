@@ -148,6 +148,59 @@ function init_page_level(){
     //     ajx_overlay(false);
     // });
 
+    $('#formujian input, #formujian select').on('change', function () {
+        $(this).closest('.form-group').eq(0).removeClass('has-error');
+        $(this).nextAll('.help-block').eq(0).text('');
+    });
+
+    $('#formujian').on('submit', function (e) {
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        ajx_overlay(true);
+        $.ajax({
+            url: $(this).attr('action'),
+            data: $(this).serialize(),
+            type: 'POST',
+            success: function (data) {
+                if (data.status) {
+                    Swal.fire({
+                        title: "Berhasil",
+                        icon:"success",
+                        text: "Data berhasil disimpan"
+                    }).then(result => {
+                        window.location = "master";
+                    });
+                } else {
+                    Swal.fire({
+                        title: "Perhatian",
+                        icon: "warning",
+                        text: "Terdapat kesalahan pada data"
+                    });
+                    if (data.errors) {
+                        $.each(data.errors, function (key, val) {
+                            $('[name="' + key + '"]').closest('.form-group').eq(0).addClass('has-error');
+                            $('[name="' + key + '"]').nextAll('.help-block').eq(0).text(val);
+                            if (val === '') {
+                                $('[name="' + key + '"]').closest('.form-group').eq(0).removeClass('has-error');
+                                $('[name="' + key + '"]').nextAll('.help-block').eq(0).text('');
+                            }
+                        });
+                    }
+                }
+            },
+            error: function () {
+                Swal.fire({
+                    title: "Error",
+                    icon: "warning",
+                    text: "Terdapat kesalahan pada data"
+                });
+            },
+            complete: function () {
+                ajx_overlay(false);
+            }
+        });
+    });
+
 }
 
 const init_cascade_select2 = () => {
@@ -892,7 +945,6 @@ $('#is_sekuen_matkul').on('switchChange.bootstrapSwitch', function(event, state)
 });
 
 </script>
-<script src="{{ asset('assets/dist/js/app/ujian/add.js') }}"></script>
 <!-- END PAGE LEVEL JS-->
 @endpush
 
@@ -934,7 +986,7 @@ $('#is_sekuen_matkul').on('switchChange.bootstrapSwitch', function(event, state)
 {{--                </div>--}}
 {{--            </div>--}}
             <div class="col-md-12">
-                <?=form_open('ujian/save', array('id'=>'formujian'), array('method'=>'add'))?>
+                <?=form_open('ujian/ajax/save', ['id'=>'formujian'], ['method'=>'add'])?>
                 <div class="form-group">
                     <label for="nama_ujian">Nama Ujian</label>
                     <input placeholder="Nama Ujian" type="text" class="form-control" name="nama_ujian">
@@ -952,7 +1004,7 @@ $('#is_sekuen_matkul').on('switchChange.bootstrapSwitch', function(event, state)
                     <div class="form-group">
                         <label>Materi Ujian</label>
                         <select name="matkul_id" id="matkul_id" class="form-control" style="width:100% !important">
-                            <option value="" disabled selected>Pilih materi ujian</option>
+                            <option value="" disabled seected>Pilih materi ujian</option>
                             @foreach($matkul as $d)
                                 <option value="{{ $d->id_matkul }}">{{ $d->nama_matkul }}</option>
                             @endforeach

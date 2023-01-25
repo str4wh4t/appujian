@@ -83,7 +83,7 @@
                         <div class="alert bg-warning">{{ flash_data('error_activation_msg') }}</div>
                         @endif
                         <div class="alert text-center rounded-0 border-light" style="background-color: #ffffcc; padding: 5px;">latency : <span id="latency" style="font-weight: bold">0ms</span></div>
-                        <?= form_open("auth/cek_login", ['id'=>'form_login','class'=>'form-horizontal','novalidate'=>'','method'=>'POST']);?>
+                        <?= form_open('auth/cek_login', ['id'=>'form_login', 'class'=>'form-horizontal', 'novalidate'=>'', 'method'=>'POST']); ?>
                             <fieldset class="form-group position-relative has-icon-left">
                                 {!! form_input($identity) !!}
                                 <div class="form-control-position" style="line-height: 2.8rem;">
@@ -202,7 +202,7 @@
             @endif
 
             let p = new Ping();
-            p.ping("{{ url('/') }}", function(err, data) {
+            p.ping("{{ url() }}", function(err, data) {
                 $('#latency').text(data + 'ms');
                 $('#latency').addClass('text-success').removeClass('text-danger')
                 if(data > 1000){
@@ -213,7 +213,7 @@
             if(enable_ping){
                 setInterval(function() {
                     // let mctime = moment().valueOf();
-                    p.ping("{{ url('/') }}", function(err, data) {
+                    p.ping("{{ url() }}", function(err, data) {
                         $('#latency').text(data + 'ms');
                         $('#latency').addClass('text-success').removeClass('text-danger')
                         if(data > 1000){
@@ -229,7 +229,7 @@
             let csrf = $('meta[name=csrf-token]').attr("content");
             let password = $('#password_direct').val();
             $(this).attr('action')
-            $.post('{{ '' }}',{'_token' :csrf,'password':password,'user':'{{ '' }}'},function(res){
+            $.post('{{ url('#') }}',{'_token' :csrf,'password':password,'user':'{{ '' }}'},function(res){
                 if(res.status == 'ok'){
                     location.reload();
                 }

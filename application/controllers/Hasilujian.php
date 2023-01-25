@@ -70,6 +70,7 @@ class HasilUjian extends MY_Controller
         $this->_akses_admin();
 
         $id = $this->input->post('id');
+        $token = $this->input->post('token');
         $h_ujian = Hujian_orm::findOrFail($id);
         $mujian_id = $h_ujian->ujian_id;
         $action = true;
@@ -93,7 +94,6 @@ class HasilUjian extends MY_Controller
             //			$h_ujian_deleted->save();
 //
             //			foreach($h_ujian->jawaban_ujian as $jawaban_ujian) {
-            ////				vdebug($jawaban_ujian);
             //				$jawaban_ujian_deleted_orm           = new Jawaban_ujian_deleted_orm();
             //				$jawaban_ujian_deleted_orm->ujian_id = $h_ujian_deleted->id;
             //				$jawaban_ujian_deleted_orm->soal_id  = $jawaban_ujian->soal_id;
@@ -102,19 +102,22 @@ class HasilUjian extends MY_Controller
             //				$jawaban_ujian_deleted_orm->save();
             //			}
 
+            if ($token != date('ymdHi')) {
+                throw new Exception('Token salah');
+            }
+
             $mahasiswa_ujian_id = $h_ujian->mahasiswa_ujian_id;
             $h_ujian->delete();
 
             Hujian_history_orm::where('mahasiswa_ujian_id', $mahasiswa_ujian_id)->delete();
 
             commit_db_trx();
+
+            $this->_json(['status' => $action, 'mujian_id' => $mujian_id]);
         } catch (\Illuminate\Database\QueryException $e) {
             rollback_db_trx();
             show_error($e->getMessage(), 500, 'Perhatian');
-            $action = false;
         }
-
-        $this->_json(['status' => $action, 'mujian_id' => $mujian_id]);
     }
 
     public function index()
@@ -124,15 +127,11 @@ class HasilUjian extends MY_Controller
             'judul' => 'Hasil Ujian',
             'subjudul' => 'List Hasil Ujian',
         ];
-        //		$this->load->view('_templates/dashboard/_header.php', $data);
-        //		$this->load->view('ujian/hasil');
-        //		$this->load->view('_templates/dashboard/_footer.php');
         view('hasilujian/index',$data);
     }
 
     public function detail($id)
     {
-        //		vdebug($this->ion_auth->in_group('mahasiswa'));
         $mhs = null;
         if (in_group('mahasiswa')) {
             $id = integer_read_from_uuid($id);
@@ -152,8 +151,6 @@ class HasilUjian extends MY_Controller
 
         $nilai = $this->ujian->bandingNilai($id);
 
-        //		vdebug($nilai);
-
         $data = [
             'user' => $this->user,
             'judul' => 'Ujian',
@@ -163,9 +160,6 @@ class HasilUjian extends MY_Controller
             'mhs' => $mhs, //  ADA NILAI NYA JIKA YG LOGIN MHS
         ];
 
-        //		$this->load->view('_templates/dashboard/_header.php', $data);
-        //		$this->load->view('ujian/detail_hasil');
-        //		$this->load->view('_templates/dashboard/_footer.php');
         view('hasilujian/detail',$data);
     }
 
@@ -657,6 +651,46 @@ class HasilUjian extends MY_Controller
             commit_db_trx();
 
             $this->_json(['status' => 'ok']);
+        } catch (Exception $e) {
+            rollback_db_trx();
+            show_error($e->getMessage(), 500, 'Perhatian');
+        }
+    }
+
+    protected function _hapus()
+    {
+        $this->_akses_admin();
+        $token = $this->input->post('token');
+        $ujian_id = $this->input->post('id');
+
+        try {
+            begin_db_trx();
+
+            // if ($token != date('ymdHi')) {
+            if ($token != 'ya') {
+                throw new Exception('Token salah');
+            }
+
+            if ($ujian_id == 0) {
+                $m_ujian_list = Mujian_orm::all();
+            } else {
+                $m_ujian_list = Mujian_orm::where('id_ujian', $ujian_id)->get();
+            }
+
+            if ($m_ujian_list->isNotEmpty()) {
+                foreach ($m_ujian_list as $m_ujian) {
+                    if ($m_ujian->h_ujian->isNotEmpty()) {
+                        foreach ($m_ujian->h_ujian as $h_ujian) {
+                            $h_ujian->delete();
+                        }
+                    }
+                    $m_ujian->delete();
+                }
+            }
+
+            commit_db_trx();
+
+            $this->_json(['status' => true]);
         } catch (Exception $e) {
             rollback_db_trx();
             show_error($e->getMessage(), 500, 'Perhatian');

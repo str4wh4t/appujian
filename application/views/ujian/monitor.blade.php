@@ -627,6 +627,20 @@ body {
     }
 
     $(document).on('click','.btn_kick',function(){
+
+        let mahasiswa_ujian_id = $(this).data('id');
+        let nim = $(this).data('nim');
+        let status_ujian = $('#badge_status_' + nim).text();
+
+        if((status_ujian == 'BELUM UJIAN') || (status_ujian == 'SUDAH UJIAN')){
+            Swal.fire({
+                title: "Perhatian",
+                text: "Peserta belum / selesai ujian",
+                icon: "info"
+            });
+            return;
+        }
+
         Swal.fire({
             title: "Anda yakin",
             text: "Sesi ujian peserta tsb akan diakhiri",
@@ -637,9 +651,6 @@ body {
             confirmButtonText: "Akhiri"
         }).then(result => {
             if (result.value) {
-                let mahasiswa_ujian_id = $(this).data('id');
-                let nim = $(this).data('nim');
-
                 ajaxcsrf();
                 ajx_overlay(true);
                 $.ajax({
@@ -935,7 +946,7 @@ $(document).on('click','.div_catatan',function(){
                 <th rowspan="2">Absensi</th>
                 <th style="text-align: center" colspan="4">Bapu</th>
                 <th rowspan="2">Online</th>
-                <th rowspan="2">Latency</th>
+                <th rowspan="2">Ltcy</th>
                 <th rowspan="2">Status</th>
                 <th rowspan="2">Aksi</th>
                 <th rowspan="2">No Peserta</th>
@@ -957,7 +968,7 @@ $(document).on('click','.div_catatan',function(){
                 <th style="text-align: center">B</th>
                 <th style="text-align: center">C</th>
                 <th>Online</th>
-                <th>Latency</th>
+                <th>Lat</th>
                 <th>Status</th>
                 <th>Aksi</th>
                 <th>No Peserta</th>

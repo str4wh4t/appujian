@@ -33,49 +33,91 @@ $(document).on('click','.btn_reset_hasil',function(){
 
      Swal.fire({
         title: "Perhatian",
-        text: "Ujian yang sudah reset tidak dapat dikembalikan.",
-        icon: "warning",
+        html: "Ujian yang sudah reset tidak dapat dikembalikan.<br>- Masukan token -",
+        input: "password",
+        inputAttributes: {
+            autocapitalize: "off",
+        },
         showCancelButton: true,
-        confirmButtonColor: "#37bc9b",
-        cancelButtonColor: "#f6bb42",
-        confirmButtonText: "Reset"
-    }).then(result => {
-        if (result.value) {
-            ajx_overlay(true);
-            $.ajax({
-                url: '{{ url('hasilujian/ajax/reset_hasil_ujian') }}',
-                type: 'post',
-                data: {'id' : id},
-                dataType: 'json',
-                success: function (data) {
-                    if (!data.status) {
-                        Swal.fire({
-                            title: "Perhatian",
-                            text: "Terjadi kesalahan.",
-                            icon: "warning"
-                        });
-                    }else{
-                        table.ajax.reload();
-                        $.post('{{ url('hasilujian/ajax/get_stat_nilai') }}', {'id' : data.mujian_id}, function(data){
-                            // console.log(data.nilai_terendah);
-                            $('#nilai_terendah').text(data.nilai_terendah);
-                            $('#nilai_tertinggi').text(data.nilai_tertinggi);
-                            $('#nilai_rata_rata').text(data.nilai_rata_rata);
-                        });
+        confirmButtonText: "Hapus",
+        showLoaderOnConfirm: true,
+        preConfirm: (token) => {
+            let csrfname = Object.keys(csrf)[0];
+            let formData = new URLSearchParams();
+            formData.append('token', token);
+            formData.append("id", id);
+            formData.append(Object.keys(csrf)[0], csrf[csrfname]);
+
+            return fetch("{{ url('hasilujian/ajax/reset_hasil_ujian') }}", {
+                method: "POST", // or 'PUT'
+                headers: {
+                    "X-Requested-With": "XMLHttpRequest",
+                },
+                body: formData,
+            })
+                .then((response) => {
+                    if (!response.ok) {
+                        throw new Error(response.statusText);
                     }
-                },
-                error: function (data){
+                    return response.json();
+                })
+                .catch((error) => {
+                    console.log(error);
+                    Swal.showValidationMessage(`Request failed: ${error}`);
+                });
+        },
+        allowOutsideClick: () => !Swal.isLoading(),
+    }).then(result => {
+        if (result.isConfirmed) {
+            if (result.value.status) {
+                $.post("{{ url('hasilujian/ajax/get_stat_nilai') }}", {'id' : result.value.mujian_id}, function(data){
+                    $('#nilai_terendah').text(data.nilai_terendah);
+                    $('#nilai_tertinggi').text(data.nilai_tertinggi);
+                    $('#nilai_rata_rata').text(data.nilai_rata_rata);
+                    reload_ajax();
                     Swal.fire({
-                        title: "Perhatian",
-                        text: "Terjadi kesalahan.",
-                        icon: "warning"
+                        icon: "success",
+                        title: "Data berhasil dihapus",
+                        showConfirmButton: false,
                     });
-                },
-                complete: function(){
-                    ajx_overlay(false);
-                }
-            });
+                });
+            }
         }
+        // if (result.value) {
+        //     ajx_overlay(true);
+        //     $.ajax({
+        //         url: "{{ url('hasilujian/ajax/reset_hasil_ujian') }}",
+        //         type: 'post',
+        //         data: {'id' : id},
+        //         dataType: 'json',
+        //         success: function (data) {
+        //             if (!data.status) {
+        //                 Swal.fire({
+        //                     title: "Perhatian",
+        //                     text: "Terjadi kesalahan.",
+        //                     icon: "warning"
+        //                 });
+        //             }else{
+        //                 table.ajax.reload();
+        //                 $.post('{{ url('hasilujian/ajax/get_stat_nilai') }}', {'id' : data.mujian_id}, function(data){
+        //                     $('#nilai_terendah').text(data.nilai_terendah);
+        //                     $('#nilai_tertinggi').text(data.nilai_tertinggi);
+        //                     $('#nilai_rata_rata').text(data.nilai_rata_rata);
+        //                 });
+        //             }
+        //         },
+        //         error: function (data){
+        //             Swal.fire({
+        //                 title: "Perhatian",
+        //                 text: "Terjadi kesalahan.",
+        //                 icon: "warning"
+        //             });
+        //         },
+        //         complete: function(){
+        //             ajx_overlay(false);
+        //         }
+        //     });
+        // }
     });
 });
 

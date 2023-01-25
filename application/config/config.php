@@ -58,7 +58,7 @@ $config['index_page'] = '';
 |
 | WARNING: If you set this to 'PATH_INFO', URIs will always be URL-decoded!
 */
-$config['uri_protocol']	= 'REQUEST_URI';
+$config['uri_protocol'] = 'REQUEST_URI';
 
 /*
 |--------------------------------------------------------------------------
@@ -82,7 +82,7 @@ $config['url_suffix'] = '';
 | than english.
 |
 */
-$config['language']	= 'english';
+$config['language'] = 'english';
 
 /*
 |--------------------------------------------------------------------------
@@ -394,7 +394,6 @@ $config['sess_match_ip'] = FALSE;
 $config['sess_time_to_update'] = 300;
 $config['sess_regenerate_destroy'] = FALSE;
 
-
 /*
 |--------------------------------------------------------------------------
 | Cookie Related Variables
@@ -410,11 +409,11 @@ $config['sess_regenerate_destroy'] = FALSE;
 |       'cookie_httponly') will also affect sessions.
 |
 */
-$config['cookie_prefix']	= '';
-$config['cookie_domain']	= '';
-$config['cookie_path']		= '/';
-$config['cookie_secure']	= FALSE;
-$config['cookie_httponly'] 	= FALSE;
+$config['cookie_prefix'] = '';
+$config['cookie_domain'] = '';
+$config['cookie_path'] = '/';
+$config['cookie_secure'] = FALSE;
+$config['cookie_httponly'] = FALSE;
 
 /*
 |--------------------------------------------------------------------------
@@ -536,10 +535,10 @@ $config['proxy_ips'] = '';
  * CONFIG TAMBAHAN
  */
 
-$config['jml_opsi']	= 5; // opsi jawaban 1 - 5
+$config['jml_opsi'] = 5; // opsi jawaban 1 - 5
 
 // $config['ws_url']	= 'ws://localhost:8080' ; // ws
 
-foreach(APP_CONFIG as $config_name => $config_value){
-    $config[$config_name] = $config_value ; 
+foreach (APP_CONFIG as $config_name => $config_value) {
+    $config[$config_name] = $config_value;
 }

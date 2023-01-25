@@ -23,16 +23,20 @@
 
 <script type="text/javascript">
 
-let base_url = '{{ site_url('/') }}';
 let conn ;
-let enable_ping = {{ get_ping_interval() > 0 ? 'true' : 'false' }};
-let stop_ping = false ;
-let socket_enable = {{ is_enable_socket() ? 'true' : 'false' }};
-let is_show_banner_ads = {{ is_show_banner_ads() ? (in_group(MHS_GROUP_ID) ? 'true' : 'false') : 'false' }};
-let locked_user_id = {{ LOCKED_USER_ID }};
+const base_url = '{{ site_url() }}';
+const enable_ping = {{ get_ping_interval() > 0 ? 'true' : 'false' }};
+const stop_ping = false ;
+const socket_enable = {{ is_enable_socket() ? 'true' : 'false' }};
+const is_show_banner_ads = {{ is_show_banner_ads() ? (in_group(MHS_GROUP_ID) ? 'true' : 'false') : 'false' }};
+const locked_user_id = {{ LOCKED_USER_ID }};
+
+const csrf = {
+    '{{ csrf_name() }}' : '{{ csrf_token() }}',
+};
 
 function print_page(data) {
-    let mywindow = window.open('', 'new div', 'height=600,width=600');
+    const mywindow = window.open('', 'new div', 'height=600,width=600');
     mywindow.document.write('<html><head><title></title>');
     mywindow.document.write('<link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/css/vendors.css') }}">');
     mywindow.document.write('<link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/css/app.css') }}">');
@@ -51,10 +55,6 @@ function print_page(data) {
 }
 
 function ajaxcsrf() {
-    let csrfname = '{{ csrf_name() }}';
-    let csrfhash = '{{ csrf_token() }}';
-    let csrf = {};
-    csrf[csrfname] = csrfhash;
     $.ajaxSetup({
         "data": csrf,
     });
@@ -215,7 +215,7 @@ $(document).ready(function(){
     /* [START] PINGER */
     @if(in_group('mahasiswa'))
     /* JIKA USER MHS */
-    p.ping("{{ url('/') }}", function(err, data) {
+    p.ping("{{ url('') }}", function(err, data) {
         sendmsg(JSON.stringify({
             'nim':'{{ get_logged_user()->username }}',
             'as':'{{ get_selected_role()->name }}',
@@ -232,7 +232,7 @@ $(document).ready(function(){
         setInterval(function() {
             // let mctime = moment().valueOf();
             if(!stop_ping){
-                p.ping("{{ url('/') }}", function(err, data) {
+                p.ping("{{ url('') }}", function(err, data) {
                     // console.log('ping', data);
                     sendmsg(JSON.stringify({
                         'nim':'{{ get_logged_user()->username }}',
@@ -264,7 +264,7 @@ $(document).ready(function(){
     
     @else
     /* JIKA USER SELAIN MHS */
-    p.ping("{{ url('/') }}", function(err, data) {
+    p.ping("{{ url() }}", function(err, data) {
         latency = data;
         toastr.info('', 'latency : ' + latency + 'ms', {positionClass: 'toast-bottom-right', containerId: 'toast-bottom-right', timeOut: 0});
     });
@@ -272,7 +272,7 @@ $(document).ready(function(){
     if(enable_ping){
         setInterval(function() {
             if(!stop_ping){
-                p.ping("{{ url('/') }}", function(err, data) {
+                p.ping("{{ url() }}", function(err, data) {
                     latency = data;
                     toastr.remove();
                     toastr.info('', 'latency : ' + latency + 'ms', {positionClass: 'toast-bottom-right', containerId: 'toast-bottom-right', timeOut: 0});

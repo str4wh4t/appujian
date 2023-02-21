@@ -44,12 +44,14 @@
 							Peserta Ujian
 						</a>
 					</li>
+					@if($_ENV['IS_ENABLE_DOSEN'])
 					<li class="{{ $page=='dosen'?"active":"" }}">
 						<a class="menu-item" href="{{ url('dosen') }}">
 							<i class="fa {{ $page == 'dosen' ? "fa-play-circle-o" : "fa-circle-o" }}"></i>
 							Dosen
 						</a>
 					</li>
+					@endif
 
 {{--					<li>--}}
 {{--						<a class="menu-item" href="#" data-i18n="nav.components.components_buttons.main">Group</a>--}}

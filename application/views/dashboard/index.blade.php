@@ -59,7 +59,7 @@ $(document).on('click','img.featherlight-image',function(){
     <div class="col-md-4">
         <div class="row mb-1 pt-1">
             <div class="col-md-4">
-                <img src="{{ asset('uploads/img_app/') . APP_LOGO }}" style="width: 85px" alt="avatar">
+                <img src="{{ asset('uploads/img_app/') . $_ENV['LOGO_100_100'] }}" alt="avatar">
             </div>
             <div class="col-md-8">
                 <span style="font-size: 18px;">Computer Assisted Test</span>
@@ -71,7 +71,7 @@ $(document).on('click','img.featherlight-image',function(){
         <div class="row">
             <div class="col-md-12">
                 <div class="card" style="margin-bottom: 0px">
-                    <div class="card-body" style="padding: 1rem">
+                    <div class="card-body" style="padding: 0">
                         <blockquote class="blockquote pl-1 border-left-red border-left-3 mt-1">
                             <h4>Mengenal Aplikasi CAT</h4>
                             <span style="font-size: 15px">
@@ -110,9 +110,9 @@ $(document).on('click','img.featherlight-image',function(){
 {!! $i == 3 ? '</div>' : '' !!}
 <?php
     $i++;
-    if ($i > 3) {
-        $i = 1;
-    }
+if ($i > 3) {
+    $i = 1;
+}
 ?>
 @endforeach
     </div>
@@ -332,9 +332,9 @@ $(document).on('click','img.featherlight-image',function(){
             <div class="col-md-4">
                 <div class="card">
                     <div class="card-body ">
-                        <?php 
+                        <?php
                             $foto = empty($mahasiswa->foto) ? asset('assets/imgs/no_profile.jpg') : $mahasiswa->foto;
-                        ?>
+?>
                 <img id="img_profile"  style="height: 150px; width: 120px;" src="{{ $foto }}" />
                     </div>
                 </div>

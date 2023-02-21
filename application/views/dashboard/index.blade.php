@@ -289,13 +289,12 @@ if ($i > 3) {
         <div class="card">
             <div class="card-body">
         <div class="row">
-            <div class="col-md-4">
+            <div class="col-md-4 text-center">
                         <img src="{{ asset('uploads/img_app/') . APP_LOGO }}" style="width: 85px" alt="avatar">
             </div>
-            <div class="col-md-8">
-                <span style="font-size: 18px;">Computer Assisted Test</span>
-                <hr>
-                <span style="font-size: 18px;">{{ APP_NAME }}</span>
+            <div class="col-md-8 pt-2" style="font-size: 1.2rem">
+                <span style="display:block">Computer Assisted Test (CAT)</span>
+                <span style="font-size: 19px">{{ APP_NAME }}</span>
             </div>
             <hr>
         </div>
@@ -309,9 +308,9 @@ if ($i > 3) {
         <div class="row">
             <div class="col-md-12">
                 <blockquote class="blockquote pl-1 border-left-red border-left-3">
-                    <h4>Mengenal Apilkasi CAT</h4>
+                    <h4>Mengenal Apilkasi</h4>
                     <span style="font-size: 15px">
-                    CAT (Computer Assisted Test) merupakan salah metode ujian yang menggunakan media komputer sehingga setiap aksi peserta pada setiap soal termonitor dalam sistem yang memudahkan dalam audit jika terjadi hal tak terduga selama ujian berlangsung.
+                    CAT merupakan salah metode ujian yang menggunakan media komputer sehingga setiap aksi peserta pada setiap soal termonitor dalam sistem yang memudahkan dalam audit jika terjadi hal tak terduga selama ujian berlangsung.
                     </span>
                 </blockquote>
             </div>

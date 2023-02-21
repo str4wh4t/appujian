@@ -58,12 +58,11 @@ $(document).on('click','img.featherlight-image',function(){
 <div class="row">
     <div class="col-md-4">
         <div class="row mb-1 pt-1">
-            <div class="col-md-4">
+            <div class="col-md-4 text-center">
                 <img src="{{ asset('uploads/img_app/') . $_ENV['LOGO_100_100'] }}" alt="avatar">
             </div>
-            <div class="col-md-8">
-                <span style="font-size: 18px;">Computer Assisted Test</span>
-                <hr>
+            <div class="col-md-8 pt-2" style="font-size: 1.2rem">
+                <span style="display:block">Computer Assisted Test (CAT)</span>
                 <span style="font-size: 18px;">{{ APP_NAME }}</span>
             </div>
             <hr>
@@ -73,9 +72,9 @@ $(document).on('click','img.featherlight-image',function(){
                 <div class="card" style="margin-bottom: 0px">
                     <div class="card-body" style="padding: 0">
                         <blockquote class="blockquote pl-1 border-left-red border-left-3 mt-1">
-                            <h4>Mengenal Aplikasi CAT</h4>
+                            <h4>Mengenal Aplikasi</h4>
                             <span style="font-size: 15px">
-                            CAT (Computer Assisted Test) merupakan salah metode ujian yang menggunakan media komputer sehingga setiap aksi peserta pada setiap soal termonitor dalam sistem yang memudahkan dalam audit jika terjadi hal tak terduga selama ujian berlangsung.
+                            CAT merupakan salah metode ujian yang menggunakan media komputer sehingga setiap aksi peserta pada setiap soal termonitor dalam sistem yang memudahkan dalam audit jika terjadi hal tak terduga selama ujian berlangsung.
                             </span>
                         </blockquote>
                     </div>
@@ -300,7 +299,6 @@ if ($i > 3) {
         </div>
             </div>
         </div>
-{{--        <hr>--}}
     </div>
     <div class="col-md-6">
         <div class="card">

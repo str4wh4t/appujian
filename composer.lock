@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "eee76974485bdc9f2ae1f86c2c602b69",
+    "content-hash": "82434ff317dab39d2e156dc008ac82c1",
     "packages": [
         {
             "name": "brick/math",
@@ -108,55 +108,6 @@
                 "websocket"
             ],
             "time": "2020-07-07T15:50:14+00:00"
-        },
-        {
-            "name": "codeitnowin/barcode",
-            "version": "3.0.5",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/codeitnowin/barcode-generator.git",
-                "reference": "bd140d279fc813e00f72eaa4f033186bf78b8786"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/codeitnowin/barcode-generator/zipball/bd140d279fc813e00f72eaa4f033186bf78b8786",
-                "reference": "bd140d279fc813e00f72eaa4f033186bf78b8786",
-                "shasum": ""
-            },
-            "require": {
-                "ext-gd": "*",
-                "php": ">=5.3.2"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "CodeItNow\\": "CodeItNow/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Akhtar Khan",
-                    "email": "er.akhtarkhan@gmail.com"
-                }
-            ],
-            "description": "Barcode & Qr Code generator library by http://www.codeitnow.in. You can use it with Custom PHP application or any PHP Framework such as Laravel, Cakephp, Yii, Codeigneter etc.",
-            "homepage": "http://www.codeitnow.in",
-            "keywords": [
-                "Symfony2",
-                "barcode",
-                "cakephp",
-                "code",
-                "generator",
-                "laravel",
-                "qr",
-                "qrcode",
-                "symfony"
-            ],
-            "time": "2021-02-19T15:33:44+00:00"
         },
         {
             "name": "doctrine/inflector",

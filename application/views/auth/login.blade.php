@@ -59,7 +59,7 @@
             <div class="card border-grey border-lighten-3">
                 <div class="card-header border-0 mt-1">
                     <div class="card-title text-center">
-                        <img src="{{ asset('uploads/img_app/' . APP_LOGO) }}" alt="logo {{ APP_NAME }}" style="width: 100px">
+                        <img src="{{ asset('uploads/img_app/' . APP_LOGO) }}" alt="logo {{ APP_NAME }}" style="width: {{ $_ENV['LOGO_WIDTH'] }}px">
                     </div>
                     <h6 class="card-subtitle text-muted text-center font-small-5 pt-3 font-large-1"><span>{{ APP_NAME }}</span></h6>
                 </div>

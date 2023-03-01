@@ -228,7 +228,7 @@ function init_page_level(){
     // $('#is_sekuen_topik').bootstrapSwitch('toggleState');
     @endif
 
-    @if(APP_TYPE == 'tryout')
+    @if($_ENV['APP_TYPE'] == 'tryout')
         // ajx_overlay(true);
         // init_peserta_table_value(bundle_id_list).then(function(){
         //     ajx_overlay(false);
@@ -588,7 +588,7 @@ const init_peserta_table = (response_mhs, response_mhs_ujian) => {
                 mhs_ujian_eligible.push(item.id_mahasiswa);
             }
 
-            @if(APP_TYPE == 'tryout')
+            @if($_ENV['APP_TYPE'] == 'tryout')
                 chkbox.prop('disabled', true);
             @endif
 
@@ -615,7 +615,7 @@ const init_peserta_table = (response_mhs, response_mhs_ujian) => {
     $('.search_pes').val('');
     $('#span_total_peserta').text(mhs_ujian_eligible.length);
 
-    @if(APP_TYPE == 'tryout')
+    @if($_ENV['APP_TYPE'] == 'tryout')
     mhs_ujian_eligible = []; // EMPTYING THE ARRAY 
     @endif
     
@@ -1137,7 +1137,7 @@ $(document).on('click','#btn_refine_peserta', function(){
                 <input type="hidden" id="all_participants" name="all_participants" value="0">
                 <input type="hidden" id="filter" name="filter" value="null">
                 <input type="hidden" id="filter_table" name="filter_table" value="null">
-                @if(APP_TYPE == 'ujian')
+                @if($_ENV['APP_TYPE'] == 'ujian')
                 <fieldset class="form-group" style="padding: 10px; border: 1px solid #ccc;">
                     <legend class="col-form-label col-sm-2" style="border: 1px solid #ccc; background-color: #fffcd4;">Cluster Peserta</legend>
                     <div class="form-group">
@@ -1251,7 +1251,7 @@ $(document).on('click','#btn_refine_peserta', function(){
                         <thead>
                             <tr>
                                 <th style="text-align: center">
-                                    @if(APP_TYPE == 'tryout')
+                                    @if($_ENV['APP_TYPE'] == 'tryout')
                                     &nbsp;
                                     @else
                                     <input type="checkbox" id="chkbox_pilih_semua_peserta">

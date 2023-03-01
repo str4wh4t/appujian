@@ -689,7 +689,7 @@ $(window).focus(function() {
         'nim':'{{ get_logged_user()->username }}',
         'as':'{{ get_selected_role()->name }}',
         'cmd':'MHS_GET_FOCUS',
-        'app_id': '{{ APP_ID }}',
+        'app_id': '{{ $_ENV['APP_ID'] }}',
     }));
 }).blur(function() {
     @if(is_show_warning_saat_ujian())
@@ -703,7 +703,7 @@ $(window).focus(function() {
         'nim':'{{ get_logged_user()->username }}',
         'as':'{{ get_selected_role()->name }}',
         'cmd':'MHS_LOST_FOCUS',
-        'app_id': '{{ APP_ID }}',
+        'app_id': '{{ $_ENV['APP_ID'] }}',
     }));
 });
 
@@ -714,7 +714,7 @@ function update_status_ujian(){
             'nim':'{{ get_logged_user()->username }}',
             'as':'{{ get_selected_role()->name }}',
             'cmd':'MHS_START_UJIAN',
-            'app_id': '{{ APP_ID }}',
+            'app_id': '{{ $_ENV['APP_ID'] }}',
         }));
     }, 1000);
 }
@@ -740,7 +740,7 @@ function selesai(ended_by = '') {
                     'nim':'{{ get_logged_user()->username }}',
                     'as':'{{ get_selected_role()->name }}',
                     'cmd':'MHS_STOP_UJIAN',
-                    'app_id': '{{ APP_ID }}',
+                    'app_id': '{{ $_ENV['APP_ID'] }}',
                 }));
                 Swal.fire({
                     title: "Perhatian",
@@ -829,7 +829,7 @@ $('#lembar_ujian').on('scroll', function() {
                                     </th>
                                 </tr>
                                 <tr>
-                                    <th colspan="2" style="text-align: center"><img src="{{ APP_TYPE == 'tryout' ? asset('assets/imgs/no_profile_120_150.jpg') : (empty($h_ujian->mhs->foto) ? asset('assets/imgs/no_profile_120_150.jpg') : $h_ujian->mhs->foto ) }}" style="height: 150px; width: 120px;" /></th>
+                                    <th colspan="2" style="text-align: center"><img src="{{ $_ENV['APP_TYPE'] == 'tryout' ? asset('assets/imgs/no_profile_120_150.jpg') : (empty($h_ujian->mhs->foto) ? asset('assets/imgs/no_profile_120_150.jpg') : $h_ujian->mhs->foto ) }}" style="height: 150px; width: 120px;" /></th>
                                 </tr>
                             </table>
                             <div class="row">

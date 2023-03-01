@@ -170,7 +170,7 @@
                             </div>
                             <div class="col-md-4">
                                 <div class="pull-right">
-                                    @if (APP_ID == 'ujian.undip.ac.id')
+                                    @if ($_ENV['APP_ID'] == 'ujian.undip.ac.id')
                                         {{-- <button class="btn btn-sm btn-flat btn-danger" id="btn_sync_pendaftaran" type="button"><i class="fa fa-refresh"></i> Syncron Data</button> --}}
                                     @endif
                                     <button onclick="bulk_delete()" class="btn btn-sm btn-flat btn-danger" type="button"><i

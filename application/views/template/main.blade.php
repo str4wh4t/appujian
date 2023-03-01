@@ -7,8 +7,8 @@
 	
 	<meta name="{{ csrf_name() }}" content="{{ csrf_token() }}">
 	
-	<title>@yield('title', APP_NAME)</title>
-	<meta name="description" content="{{ APP_DESC }}">
+	<title>@yield('title', $_ENV['APP_NAME'])</title>
+	<meta name="description" content="{{ $_ENV['APP_DESC'] }}">
 	<meta name="author" content="{{ get_app_author() }}">
 	
 	<meta name="keywords" content="ujian online,online exam,latihan soal,tryout ujian">

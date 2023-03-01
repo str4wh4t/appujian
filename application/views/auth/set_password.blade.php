@@ -7,8 +7,8 @@
     
     <meta name="{{ csrf_name() }}" content="{{ csrf_token() }}">
     
-    <title>{{ APP_NAME }} | SET PASSWORD</title>
-    <meta name="description" content="{{ APP_DESC }}">
+    <title>{{ $_ENV['APP_NAME'] }} | SET PASSWORD</title>
+    <meta name="description" content="{{ $_ENV['APP_DESC'] }}">
     <meta name="author" content="{{ get_app_author() }}">
 
     <meta name="keywords" content="ujian online,online exam,latihan soal,tryout ujian">
@@ -65,7 +65,7 @@
                         @if(flash_data('error_set_password_msg'))
                         <div class="alert bg-warning">{{ flash_data('error_set_password_msg') }}</div>
                         @endif
-                        <?= form_open("auth/set_password/" . $code, ['id'=>'form','class'=>'form-horizontal','novalidate'=>'','method'=>'POST'], ['user_id' => $user->id]);?>
+                        <?= form_open('auth/set_password/' . $code, ['id'=>'form', 'class'=>'form-horizontal', 'novalidate'=>'', 'method'=>'POST'], ['user_id' => $user->id]); ?>
                             <fieldset class="form-group position-relative has-icon-left">
                                 <div class="form-control-position" style="line-height: 2.8rem;">
                                     <i class="ft-lock"></i>

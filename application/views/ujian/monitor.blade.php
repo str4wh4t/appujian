@@ -261,7 +261,7 @@ body {
                 'm_ujian_id':'{{ $m_ujian->id_ujian }}',
                 'as':'{{ get_selected_role()->name }}',
                 'cmd':'OPEN',
-                'app_id': '{{ APP_ID }}',
+                'app_id': '{{ $_ENV['APP_ID'] }}',
             }));
         };
 
@@ -269,7 +269,7 @@ body {
             // console.log('conn.onmessage', e.data);
             let data = jQuery.parseJSON(e.data);
 
-            if(data.app_id == '{{ APP_ID }}') {
+            if(data.app_id == '{{ $_ENV['APP_ID'] }}') {
 
                 if (data.cmd == 'OPEN') {
 
@@ -426,7 +426,7 @@ body {
             'as':'{{ get_selected_role()->name }}',
             'cmd':'PING',
             'ip': '-',
-            'app_id': '{{ APP_ID }}',
+            'app_id': '{{ $_ENV['APP_ID'] }}',
             'latency': '-' ,
         }));
 
@@ -438,7 +438,7 @@ body {
                         'as':'{{ get_selected_role()->name }}',
                         'cmd':'PING',
                         'ip': '-',
-                        'app_id': '{{ APP_ID }}',
+                        'app_id': '{{ $_ENV['APP_ID'] }}',
                         'latency': '-' ,
                     }));
                 }
@@ -467,7 +467,7 @@ body {
                     'as': '{{ get_selected_role()->name }}',
                     'nim': nim,
                     'cmd': 'DO_ABSENSI',
-                    'app_id': '{{ APP_ID }}',
+                    'app_id': '{{ $_ENV['APP_ID'] }}',
                 }));
             }else{
                 Swal.fire({
@@ -517,7 +517,7 @@ body {
                             'as': '{{ get_selected_role()->name }}',
                             'nim': nim,
                             'cmd': 'DO_ABSENSI_BATAL',
-                            'app_id': '{{ APP_ID }}',
+                            'app_id': '{{ $_ENV['APP_ID'] }}',
                         }));
                     }else{
                         Swal.fire({
@@ -669,7 +669,7 @@ body {
                                 'as':'{{ get_selected_role()->name }}',
                                 'nim': nim,
                                 'cmd':'DO_KICK',
-                                'app_id': '{{ APP_ID }}',
+                                'app_id': '{{ $_ENV['APP_ID'] }}',
                             }));
                             $('#badge_status_' + nim).text('SUDAH UJIAN').removeClass('bg-secondary').removeClass('bg-danger').addClass('bg-success');
                             $('#badge_focus_' + nim).hide();
@@ -791,7 +791,7 @@ $(document).on('ifChanged','.checkbox_bapu',function(){
                     'nim': nim,
                     'cmd': 'DO_BAPU',
                     'bapu': bapu,
-                    'app_id': '{{ APP_ID }}',
+                    'app_id': '{{ $_ENV['APP_ID'] }}',
                 }));
             }else{
                 Swal.fire({
@@ -839,7 +839,7 @@ $(document).on('click','#btn_submit_catatan',function(){
                     'nim': nim,
                     'cmd': 'DO_BAPU',
                     'bapu': bapu,
-                    'app_id': '{{ APP_ID }}',
+                    'app_id': '{{ $_ENV['APP_ID'] }}',
                 }));
 
                 Swal.fire({

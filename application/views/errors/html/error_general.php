@@ -6,10 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui">
     <meta name="description" content="Terjadi kesalahan">
     <meta name="keywords" content="">
-    <meta name="author" content="<?= APP_NAME ?>">
-    <title>ERROR :: <?= APP_NAME ?></title>
-    <link rel="apple-touch-icon" href="<?= asset('uploads/img_app/'. APP_FAVICON_APPLE) ?>">
-	  <link rel="shortcut icon" type="image/x-icon" href="<?= asset('uploads/img_app/'. APP_FAVICON) ?>">
+    <meta name="author" content="<?= $_ENV['APP_NAME'] ?>">
+    <title>ERROR :: <?= $_ENV['APP_NAME'] ?></title>
+    <link rel="apple-touch-icon" href="<?= asset('uploads/img_app/' . APP_FAVICON_APPLE) ?>">
+	  <link rel="shortcut icon" type="image/x-icon" href="<?= asset('uploads/img_app/' . APP_FAVICON) ?>">
     <link href="<?= base_url('assets/yarn/node_modules/typeface-muli/index.css') ?>" rel="stylesheet">
   	<link href="<?= base_url('assets/yarn/node_modules/typeface-open-sans/index.css') ?>" rel="stylesheet">
     <!-- BEGIN VENDOR CSS-->

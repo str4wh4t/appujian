@@ -7,8 +7,8 @@
     
     <meta name="{{ csrf_name() }}" content="{{ csrf_token() }}">
     
-    <title>{{ APP_NAME }} | REGISTRASI</title>
-    <meta name="description" content="{{ APP_DESC }}">
+    <title>{{ $_ENV['APP_NAME'] }} | REGISTRASI</title>
+    <meta name="description" content="{{ $_ENV['APP_DESC'] }}">
     <meta name="author" content="{{ get_app_author() }}">
 
     <meta name="keywords" content="ujian online,online exam,latihan soal,tryout ujian">
@@ -90,7 +90,7 @@
                         <div class="alert alert-warning">{{ $error_register_user }}</div>
                         @endif
 
-                        <?= form_open("auth/registrasi", ['id'=>'form','class'=>'form-horizontal','novalidate'=>'','method'=>'POST'], ['token' => '', 'action' => '']);?>
+                        <?= form_open('auth/registrasi', ['id'=>'form', 'class'=>'form-horizontal', 'novalidate'=>'', 'method'=>'POST'], ['token' => '', 'action' => '']); ?>
                         <div class="row">
                             <div class="col-md-6 col-sm-12">
                                 <fieldset class="form-group position-relative has-icon-left">

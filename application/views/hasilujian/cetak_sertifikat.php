@@ -1,13 +1,15 @@
 <?php
+
 // Extend the TCPDF class to create custom Header and Footer
-class MYPDF extends TCPDF {
-	
-	private $_masa_berlaku_sert ;
-    
-    public function Header() {
+class MYPDF extends TCPDF
+{
+    private $_masa_berlaku_sert;
+
+    public function Header()
+    {
 //        $image_file = K_PATH_IMAGES.'logo_example.jpg';
-//	    $this->Image($image_file, 10, 10, 15, '', 'JPG', '', 'T', false, 300, '', false, false, 0, false, false, false);
-	    $image_file = FCPATH . 'uploads/img_app/' . get_app_logo_cert();
+        //	    $this->Image($image_file, 10, 10, 15, '', 'JPG', '', 'T', false, 300, '', false, false, 0, false, false, false);
+        $image_file = FCPATH . 'uploads/img_app/' . get_app_logo_cert();
         $this->Image($image_file, 30, 10, 22, '', 'PNG', '', 'T', false, 300, '', false, false, 0, false, false, false);
         $this->SetFont('helvetica', 'B', 18);
         $this->SetY(18);
@@ -19,14 +21,16 @@ class MYPDF extends TCPDF {
         $this->Cell(0, 10, strtoupper(get_app_author_desc()), 0, false, 'T', 0, '', 0, false, 'M', 'M');
     }
 
-    public function Footer() {
+    public function Footer()
+    {
         $this->SetY(-15);
         $this->SetFont('helvetica', 'I', 8);
-        $this->Cell(0, 10, 'Sertifikat berlaku selama '. $this->_masa_berlaku_sert .' tahun sejak saat tes dilakukan', 0, false, 'R', 0, '', 0, false, 'T', 'M');
+        $this->Cell(0, 10, 'Sertifikat berlaku selama ' . $this->_masa_berlaku_sert . ' tahun sejak saat tes dilakukan', 0, false, 'R', 0, '', 0, false, 'T', 'M');
     }
-    
-    public function set_masa_berlaku_sert($masa_berlaku_sert){
-    	$this->_masa_berlaku_sert = $masa_berlaku_sert;
+
+    public function set_masa_berlaku_sert($masa_berlaku_sert)
+    {
+        $this->_masa_berlaku_sert = $masa_berlaku_sert;
     }
 }
 
@@ -42,8 +46,8 @@ $pdf->SetTitle('Hasil Ujian');
 $pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE, PDF_HEADER_STRING);
 
 // set header and footer fonts
-$pdf->setHeaderFont(Array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
-$pdf->setFooterFont(Array(PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA));
+$pdf->setHeaderFont([PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN]);
+$pdf->setFooterFont([PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA]);
 
 // set default monospaced font
 $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
@@ -54,14 +58,14 @@ $pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
 $pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
 
 // set auto page breaks
-$pdf->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
+$pdf->SetAutoPageBreak(true, PDF_MARGIN_BOTTOM);
 
 // set image scale factor
 $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
 
 // set some language-dependent strings (optional)
-if (@file_exists(dirname(__FILE__).'/lang/eng.php')) {
-    require_once(dirname(__FILE__).'/lang/eng.php');
+if (@file_exists(dirname(__FILE__) . '/lang/eng.php')) {
+    require_once dirname(__FILE__) . '/lang/eng.php';
     $pdf->setLanguageArray($l);
 }
 
@@ -75,22 +79,22 @@ $pdf->AddPage('L', 'A4');
 
 $pdf->set_masa_berlaku_sert($ujian->masa_berlaku_sert);
 
-$tmp_lahir =  strtoupper($mhs->tmp_lahir);
+$tmp_lahir = strtoupper($mhs->tmp_lahir);
 
 $d = $mhs->tgl_lahir;
 $dt = DateTime::createFromFormat('Y-m-d', $d);
 //$tgl_lahir_format = $dt->format('d F Y');
-$tgl_lahir_format = strftime("%d %B %Y", $dt->getTimestamp());
+$tgl_lahir_format = strftime('%d %B %Y', $dt->getTimestamp());
 $tgl_lahir_format = indo_date($tgl_lahir_format);
 
 $d = $hasil->tgl_mulai;
 $dt = DateTime::createFromFormat('Y-m-d H:i:s', $d);
 // $tgl_ujian_format = $dt->format('l, d F Y');
-$tgl_ujian_format = strftime("%A, %d %B %Y", $dt->getTimestamp());
+$tgl_ujian_format = strftime('%A, %d %B %Y', $dt->getTimestamp());
 $tgl_ujian_format = indo_date($tgl_ujian_format);
 
 // $hasil_akhir = number_format($hasil['nilai_bobot_benar'],2,'.', '') ;  // <== UNCOMENT UNTUK MENAMPILKAN DETAIL BOBOT
-$hasil_akhir = number_format($hasil['nilai'],2,'.', '') ; // UNCOMENT UNTUK MENAMPILKAN DETAIL NILAI
+$hasil_akhir = number_format($hasil['nilai'], 2, '.', ''); // UNCOMENT UNTUK MENAMPILKAN DETAIL NILAI
 
 $nama_ujian = strtoupper($ujian->nama_ujian);
 
@@ -126,12 +130,12 @@ EOD;
 
 $txt_topik = '';
 $txt_nilai = '';
-foreach ($detail_ujian as $nama_topik => $nilai){
-	$txt_topik .= '<th style="text-align: center; border:1px solid #000000;">' . $nama_topik . '</th>';
-	$txt_nilai .= '<td style="text-align: center; border:1px solid #000000;">' . $nilai . '</td>';
+foreach ($detail_ujian as $nama_topik => $nilai) {
+    $txt_topik .= '<th style="text-align: center; border:1px solid #000000;">' . $nama_topik . '</th>';
+    $txt_nilai .= '<td style="text-align: center; border:1px solid #000000;">' . $nilai . '</td>';
 }
 
-$link = url('c/' . uuid_create_from_integer($mhs->nim) . '/' . uuid_create_from_integer($hasil->ujian_id) );
+$link = url('c/' . uuid_create_from_integer($mhs->nim) . '/' . uuid_create_from_integer($hasil->ujian_id));
 
 $base_url = $_SERVER['HTTP_HOST'];
 
@@ -152,30 +156,29 @@ EOD;
 // output the HTML content
 $pdf->writeHTML($html, true, 0, true, 0);
 
-$style = array(
+$style = [
     'border' => 1,
     'vpadding' => 2,
     'hpadding' => 2,
-    'fgcolor' => array(0,0,0),
+    'fgcolor' => [0, 0, 0],
     'bgcolor' => false, //array(255,255,255)
     'module_width' => 1, // width of a single module in points
-    'module_height' => 1 // height of a single module in points
-);
+    'module_height' => 1, // height of a single module in points
+];
 
-// $foto = 'assets/imgs/no_profile_120_150.jpg'; 
-if(!empty($mhs->foto)){
-    $foto = str_replace(url("/"), "", $mhs->foto); // MENGHILANGKAN PATH APLIKASI JIKA ADA
+// $foto = 'assets/imgs/no_profile_120_150.jpg';
+if (! empty($mhs->foto)) {
+    $foto = str_replace(url('/'), '', $mhs->foto); // MENGHILANGKAN PATH APLIKASI JIKA ADA
     $image_foto = FCPATH . $foto;
     $pdf->Image($image_foto, 80, 120, 40, '', 'JPG', '', 'T', false, 300, '', false, false, 0, false, false, false);
     $pdf->write2DBarcode($link, 'QRCODE,Q', 175, 127, 40, 40, $style, 'N');
-}else{
+} else {
     $pdf->write2DBarcode($link, 'QRCODE,Q', 130, 127, 40, 40, $style, 'N');
 }
-
 
 // reset pointer to the last page
 $pdf->lastPage();
 // ---------------------------------------------------------
 
 //Close and output PDF document
-$pdf->Output($ujian->nama_ujian.'_'.$mhs->nim.'.pdf', 'I');
+$pdf->Output($ujian->nama_ujian . '_' . $mhs->nim . '.pdf', 'I');

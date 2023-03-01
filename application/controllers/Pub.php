@@ -442,12 +442,12 @@ class Pub extends MY_Controller
                     echo date('Y-m-d H:i:s') . ' => ';
                     echo $h_ujian->id . ' => ';
                     echo $h_ujian->mhs->nama . ' => ';
-                    if ($this->submit_ujian($h_ujian)) {
+                    if ($this->_submit_ujian($h_ujian)) {
                         //						$ws = new Chat();
                         //						$ws->send_msg_stop_ujian($h_ujian->mhs->nim, $app_id . '.undip.ac.id');
                         //						$cmd = 'wscat -c '. ws_url() .' -x  {\"cmd\":\"MHS_STOP_UJIAN\",\"nim\":\"'. $h_ujian->mhs->nim .'\",\"app_id\":\"'. $app_id . '.undip.ac.id' .'\"}';
                         //						exec($cmd);
-                        $cmd = '{"cmd":"MHS_STOP_UJIAN","nim":"' . $h_ujian->mhs->nim . '","app_id":"' . APP_ID . '"}';
+                        $cmd = '{"cmd":"MHS_STOP_UJIAN","nim":"' . $h_ujian->mhs->nim . '","app_id":"' . $_ENV['APP_ID'] . '"}';
                         $this->socket->notif_ws($cmd);
                         echo 'DONE' . "\n";
                     } else {
@@ -456,10 +456,9 @@ class Pub extends MY_Controller
                 }
             }
         }
-
     }
 
-    public function submit_ujian($h_ujian)
+    private function _submit_ujian($h_ujian)
     {
         if (! is_cli()) {
             show_404();
@@ -1203,7 +1202,7 @@ class Pub extends MY_Controller
             show_404();
         }
 
-        die; // FITUR DISABLED
+        // die; // FITUR DISABLED // FIX DETAIL NILAI DINYALAKAN KARENA UNTUK MENGENERATE DATA DETAIL_NILAI
 
         $h_ujian_list = new Hujian_orm();
 
@@ -1534,7 +1533,7 @@ class Pub extends MY_Controller
 
     public function check_socket_conn()
     {
-        $cmd = '{"cmd":"TEST","app_id":"' . APP_ID . '"}';
+        $cmd = '{"cmd":"TEST","app_id":"' . $_ENV['APP_ID'] . '"}';
         $this->socket->notif_ws($cmd);
     }
 }

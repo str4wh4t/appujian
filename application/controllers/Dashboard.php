@@ -83,7 +83,7 @@ class Dashboard extends CI_Controller
             $data['mahasiswa'] = Orm\Mhs_orm::where('nim', $user->username)->firstOrFail(); // $this->dashboard->get_where('mahasiswa a', 'nim', $user->username, $join)->row();
         }
 
-        if (APP_TYPE == 'tryout') {
+        if ($_ENV['APP_TYPE'] == 'tryout') {
             if (in_group(MHS_GROUP_ID)) {
                 view('dashboard/tryout/mhs/index', $data);
             } else {

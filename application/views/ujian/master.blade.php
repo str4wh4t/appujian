@@ -381,7 +381,7 @@ $(document).on('click', '#btn_close_alert_paket', function(){
     <div class="col-12">
         <div class="card">
             <div class="card-header">
-            	<h4 class="card-title"><?=$subjudul?></h4>
+            	<h4 class="card-title">{{ $subjudul }}</h4>
             	<a class="heading-elements-toggle"><i class="ft-ellipsis-h font-medium-3"></i></a>
             </div>
             <div class="card-content">
@@ -397,7 +397,7 @@ $(document).on('click', '#btn_close_alert_paket', function(){
             @if(is_admin())
                 <a href="{{ url('ujian/add') }}" class="btn btn-outline-primary btn-sm btn-flat"><i class="fa fa-file-text-o"></i> Ujian Baru</a>
             @endif
-            @if( APP_TYPE == 'tryout' )
+            @if( $_ENV['APP_TYPE'] == 'tryout' )
                 @if(is_admin())
                 <button class="btn btn-sm btn-flat btn-success" id="btn_create_paket"><i class="ft-link"></i> Jadikan Paket</button>
                 @endif
@@ -438,7 +438,7 @@ $(document).on('click', '#btn_close_alert_paket', function(){
 
 <div class="row">
     <div class="col-md-12">
-	<?=form_open('ujian/delete', array('id'=>'bulk'))?>
+	{{ form_open('ujian/delete', ['id'=>'bulk']) }}
     <div class="table-responsive pb-2">
         <table id="ujian" class="table table-striped table-bordered table-hover w-100">
         <thead>
@@ -462,7 +462,7 @@ $(document).on('click', '#btn_close_alert_paket', function(){
 
         </table>
     </div>
-	<?=form_close();?>
+	{{ form_close();  }}
         </div>
 </div>
 <!---- --->

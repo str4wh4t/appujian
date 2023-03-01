@@ -7,8 +7,8 @@
     
     <meta name="{{ csrf_name() }}" content="{{ csrf_token() }}">
     
-    <title>{{ APP_NAME }} | RESEND PASSWORD</title>
-    <meta name="description" content="{{ APP_DESC }}">
+    <title>{{ $_ENV['APP_NAME'] }} | RESEND PASSWORD</title>
+    <meta name="description" content="{{ $_ENV['APP_DESC'] }}">
     <meta name="author" content="{{ get_app_author() }}">
 
     <meta name="keywords" content="ujian online,online exam,latihan soal,tryout ujian">
@@ -69,7 +69,7 @@
                         @if(flash_data('success_resend_password_msg'))
                         <div class="alert bg-success"><i class="fa fa-check-circle"></i> {{ flash_data('success_resend_password_msg') }}</div>
                         @endif
-                        <?= form_open("auth/resend_password", ['id'=>'form','class'=>'form-horizontal','novalidate'=>'','method'=>'POST']);?>
+                        <?= form_open('auth/resend_password', ['id'=>'form', 'class'=>'form-horizontal', 'novalidate'=>'', 'method'=>'POST']); ?>
                             <fieldset class="form-group position-relative has-icon-left">
                                 <div class="form-control-position" style="line-height: 2.8rem;">
                                     <i class="fa fa-envelope-o"></i>

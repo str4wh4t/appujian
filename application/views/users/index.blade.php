@@ -306,7 +306,9 @@ function init_page_level(){
     <div class="col-12">
         <div class="mb-3">
             <button type="button" onclick="reload_ajax()" class="btn btn-sm btn-flat btn-outline-secondary"><i class="fa fa-refresh"></i> Reload</button>
+            @if($_ENV['IS_ENABLE_ADD_PENGAWAS'])
             <button type="button" class="btn btn-sm btn-flat btn-primary" id="btn_tambah_pengawas"><i class="fa fa-plus-circle"></i> Tambah Pengawas</button>
+            @endif
             @if(is_admin())
             <button type="button" class="btn btn-sm btn-flat btn-info" id="btn_tambah_penyusun_soal"><i class="fa fa-plus-circle"></i> Tambah Penyusun Soal</button>
             <div class="pull-right">

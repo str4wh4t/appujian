@@ -41,9 +41,9 @@ class Init extends AbstractMigration
         $this->table('daftar_hadir', 'id')
             ->setCharset('utf8mb4')
             ->setCollation('utf8mb4_general_ci')
-            ->addColumn('id', 'integer', ['autoincrement' => true,'signed' => false])
-            ->addColumn('mahasiswa_ujian_id', 'integer',['signed' => false])
-            ->addColumn('absen_by', 'integer', ['signed' => false,'comment' => 'pengawas_id dari users_groups'])
+            ->addColumn('id', 'integer', ['autoincrement' => true, 'signed' => false])
+            ->addColumn('mahasiswa_ujian_id', 'integer', ['signed' => false])
+            ->addColumn('absen_by', 'integer', ['signed' => false, 'comment' => 'pengawas_id dari users_groups'])
             ->addColumn('created_at', 'datetime')
             ->addColumn('updated_at', 'datetime')
             ->addIndex('mahasiswa_ujian_id', 'unique', 'btree', 'mahasiswa_ujian_id_unik')
@@ -54,10 +54,10 @@ class Init extends AbstractMigration
         $this->table('data_daerah', 'id')
             ->setCharset('utf8mb4')
             ->setCollation('utf8mb4_general_ci')
-            ->addColumn('id', 'integer', ['signed' => false,'autoincrement' => true])
-            ->addColumn('provinsi_id', 'integer',['signed' => false])
+            ->addColumn('id', 'integer', ['signed' => false, 'autoincrement' => true])
+            ->addColumn('provinsi_id', 'integer', ['signed' => false])
             ->addColumn('provinsi', 'string', ['length' => 200])
-            ->addColumn('kota_kab_id', 'integer',['signed' => false])
+            ->addColumn('kota_kab_id', 'integer', ['signed' => false])
             ->addColumn('kota_kab', 'string', ['length' => 200])
             ->addColumn('created_at', 'datetime', ['null' => true])
             ->addColumn('updated_at', 'datetime', ['null' => true])
@@ -82,7 +82,7 @@ class Init extends AbstractMigration
         $this->table('dosen_matkul', 'id')
             ->setCharset('latin1')
             ->setCollation('latin1_swedish_ci')
-            ->addColumn('id', 'integer', ['signed' => false,'autoincrement' => true])
+            ->addColumn('id', 'integer', ['signed' => false, 'autoincrement' => true])
             ->addColumn('dosen_id', 'integer')
             ->addColumn('matkul_id', 'integer')
             ->addColumn('created_at', 'datetime')
@@ -94,7 +94,7 @@ class Init extends AbstractMigration
         $this->table('groups', 'id')
             ->setCharset('utf8')
             ->setCollation('utf8_general_ci')
-            ->addColumn('id', 'mediuminteger', ['signed' => false,'autoincrement' => true])
+            ->addColumn('id', 'mediuminteger', ['signed' => false, 'autoincrement' => true])
             ->addColumn('name', 'string', ['length' => 20])
             ->addColumn('description', 'string', ['length' => 100])
             ->create();
@@ -104,8 +104,8 @@ class Init extends AbstractMigration
             ->setCollation('utf8_general_ci')
             ->addColumn('id', 'integer', ['autoincrement' => true])
             ->addColumn('ujian_id', 'integer')
-            ->addColumn('mahasiswa_id', 'integer',['signed' => false])
-            ->addColumn('mahasiswa_ujian_id', 'integer',['signed' => false])
+            ->addColumn('mahasiswa_id', 'integer', ['signed' => false])
+            ->addColumn('mahasiswa_ujian_id', 'integer', ['signed' => false])
             ->addColumn('list_soal', 'longtext', ['null' => true])
             ->addColumn('list_jawaban', 'longtext', ['null' => true, 'comment' => 'Y : ragu , N : tidak ragu'])
             ->addColumn('jml_soal', 'integer')
@@ -135,7 +135,7 @@ class Init extends AbstractMigration
             ->setCollation('utf8_general_ci')
             ->addColumn('id', 'integer', ['autoincrement' => true])
             ->addColumn('ujian_id', 'integer')
-            ->addColumn('mahasiswa_id', 'integer',['signed' => false])
+            ->addColumn('mahasiswa_id', 'integer', ['signed' => false])
             ->addColumn('mahasiswa_ujian_id', 'integer', ['signed' => false])
             ->addColumn('list_soal', 'longtext', ['null' => true])
             ->addColumn('list_jawaban', 'longtext', ['null' => true, 'comment' => 'Y : ragu , N : tidak ragu'])
@@ -162,7 +162,7 @@ class Init extends AbstractMigration
             ->setCollation('utf8_general_ci')
             ->addColumn('id', 'integer', ['autoincrement' => true])
             ->addColumn('ujian_id', 'integer')
-            ->addColumn('mahasiswa_id', 'integer',['signed' => false])
+            ->addColumn('mahasiswa_id', 'integer', ['signed' => false])
             ->addColumn('mahasiswa_ujian_id', 'integer', ['signed' => false])
             ->addColumn('list_soal', 'longtext', ['null' => true])
             ->addColumn('list_jawaban', 'longtext', ['null' => true, 'comment' => 'Y : ragu , N : tidak ragu'])
@@ -194,7 +194,7 @@ class Init extends AbstractMigration
         $this->table('jawaban_ujian', 'id')
             ->setCharset('latin1')
             ->setCollation('latin1_swedish_ci')
-            ->addColumn('id', 'integer', ['signed' => false,'autoincrement' => true])
+            ->addColumn('id', 'integer', ['signed' => false, 'autoincrement' => true])
             ->addColumn('ujian_id', 'integer')
             ->addColumn('soal_id', 'integer')
             ->addColumn('jawaban', 'enum', ['null' => true, 'length' => 0, 'decimals' => 0, 'values' => ['A', 'B', 'C', 'D', 'E']])
@@ -211,7 +211,7 @@ class Init extends AbstractMigration
         $this->table('jawaban_ujian_deleted', 'id')
             ->setCharset('latin1')
             ->setCollation('latin1_swedish_ci')
-            ->addColumn('id', 'integer', ['signed' => false,'autoincrement' => true])
+            ->addColumn('id', 'integer', ['signed' => false, 'autoincrement' => true])
             ->addColumn('ujian_id', 'integer')
             ->addColumn('soal_id', 'integer')
             ->addColumn('jawaban', 'char', ['null' => true, 'length' => 1])
@@ -225,7 +225,7 @@ class Init extends AbstractMigration
         $this->table('jawaban_ujian_history', 'id')
             ->setCharset('latin1')
             ->setCollation('latin1_swedish_ci')
-            ->addColumn('id', 'integer', ['signed' => false,'autoincrement' => true])
+            ->addColumn('id', 'integer', ['signed' => false, 'autoincrement' => true])
             ->addColumn('ujian_id', 'integer')
             ->addColumn('soal_id', 'integer')
             ->addColumn('jawaban', 'enum', ['null' => true, 'length' => 0, 'decimals' => 0, 'values' => ['A', 'B', 'C', 'D', 'E']])
@@ -278,16 +278,16 @@ class Init extends AbstractMigration
         $this->table('login_attempts', 'id')
             ->setCharset('utf8')
             ->setCollation('utf8_general_ci')
-            ->addColumn('id', 'integer', ['signed' => false,'autoincrement' => true])
+            ->addColumn('id', 'integer', ['signed' => false, 'autoincrement' => true])
             ->addColumn('ip_address', 'string', ['length' => 45])
             ->addColumn('login', 'string', ['length' => 100])
-            ->addColumn('time', 'integer', ['signed' => false,'null' => true])
+            ->addColumn('time', 'integer', ['signed' => false, 'null' => true])
             ->create();
 
         $this->table('login_log', 'id')
             ->setCharset('utf8mb4')
             ->setCollation('utf8mb4_general_ci')
-            ->addColumn('id', 'integer', ['signed' => false,'autoincrement' => true])
+            ->addColumn('id', 'integer', ['signed' => false, 'autoincrement' => true])
             ->addColumn('users_id', 'integer')
             ->addColumn('status_login', 'tinyinteger', ['comment' => '1 : online , 0 : offline'])
             ->addColumn('created_at', 'datetime')
@@ -335,7 +335,7 @@ class Init extends AbstractMigration
         $this->table('mahasiswa', 'id_mahasiswa')
             ->setCharset('latin1')
             ->setCollation('latin1_swedish_ci')
-            ->addColumn('id_mahasiswa', 'integer',['signed' => false])
+            ->addColumn('id_mahasiswa', 'integer', ['signed' => false])
             ->addColumn('nama', 'string', ['length' => 250])
             ->addColumn('nik', 'string', ['null' => true, 'length' => 50])
             ->addColumn('nim', 'string', ['length' => 50])
@@ -364,8 +364,8 @@ class Init extends AbstractMigration
         $this->table('mahasiswa_matkul', 'id')
             ->setCharset('latin1')
             ->setCollation('latin1_swedish_ci')
-            ->addColumn('id', 'integer', ['signed' => false,'autoincrement' => true])
-            ->addColumn('mahasiswa_id', 'integer',['signed' => false])
+            ->addColumn('id', 'integer', ['signed' => false, 'autoincrement' => true])
+            ->addColumn('mahasiswa_id', 'integer', ['signed' => false])
             ->addColumn('matkul_id', 'integer')
             ->addColumn('sisa_kuota_latihan_soal', 'integer', ['default' => 0])
             ->addColumn('created_at', 'datetime')
@@ -378,9 +378,9 @@ class Init extends AbstractMigration
         $this->table('mahasiswa_ujian', 'id')
             ->setCharset('utf8mb4')
             ->setCollation('utf8mb4_general_ci')
-            ->addColumn('id', 'integer', ['signed' => false,'autoincrement' => true])
-            ->addColumn('mahasiswa_matkul_id', 'integer', ['signed' => false,'null' => true])
-            ->addColumn('mahasiswa_id', 'integer',['signed' => false])
+            ->addColumn('id', 'integer', ['signed' => false, 'autoincrement' => true])
+            ->addColumn('mahasiswa_matkul_id', 'integer', ['signed' => false, 'null' => true])
+            ->addColumn('mahasiswa_id', 'integer', ['signed' => false])
             ->addColumn('ujian_id', 'integer')
             ->addColumn('created_at', 'datetime')
             ->addColumn('updated_at', 'datetime', ['null' => true])
@@ -418,8 +418,8 @@ class Init extends AbstractMigration
         $this->table('membership_history', 'id')
             ->setCharset('utf8mb4')
             ->setCollation('utf8mb4_general_ci')
-            ->addColumn('id', 'biginteger', ['signed' => false,'autoincrement' => true])
-            ->addColumn('mahasiswa_id', 'integer',['signed' => false])
+            ->addColumn('id', 'biginteger', ['signed' => false, 'autoincrement' => true])
+            ->addColumn('mahasiswa_id', 'integer', ['signed' => false])
             ->addColumn('membership_id', 'integer')
             ->addColumn('upgrade_ke', 'integer')
             ->addColumn('expired_at', 'datetime')
@@ -451,8 +451,8 @@ class Init extends AbstractMigration
         $this->table('paket_history', 'id')
             ->setCharset('utf8mb4')
             ->setCollation('utf8mb4_general_ci')
-            ->addColumn('id', 'biginteger', ['signed' => false,'autoincrement' => true])
-            ->addColumn('mahasiswa_id', 'integer',['signed' => false])
+            ->addColumn('id', 'biginteger', ['signed' => false, 'autoincrement' => true])
+            ->addColumn('mahasiswa_id', 'integer', ['signed' => false])
             ->addColumn('upgrade_ke', 'integer')
             ->addColumn('paket_id', 'integer')
             ->addColumn('keterangan', 'string', ['null' => true, 'length' => 250])
@@ -467,7 +467,7 @@ class Init extends AbstractMigration
         $this->table('paket_matkul', 'id')
             ->setCharset('utf8mb4')
             ->setCollation('utf8mb4_general_ci')
-            ->addColumn('id', 'integer', ['signed' => false,'autoincrement' => true])
+            ->addColumn('id', 'integer', ['signed' => false, 'autoincrement' => true])
             ->addColumn('paket_id', 'integer')
             ->addColumn('matkul_id', 'integer')
             ->addColumn('created_at', 'datetime')
@@ -540,7 +540,7 @@ class Init extends AbstractMigration
         $this->table('topik_ujian', 'id')
             ->setCharset('latin1')
             ->setCollation('latin1_swedish_ci')
-            ->addColumn('id', 'integer', ['signed' => false,'autoincrement' => true])
+            ->addColumn('id', 'integer', ['signed' => false, 'autoincrement' => true])
             ->addColumn('topik_id', 'integer')
             ->addColumn('ujian_id', 'integer')
             ->addColumn('bobot_soal_id', 'integer')
@@ -556,7 +556,7 @@ class Init extends AbstractMigration
         $this->table('trx_midtrans', 'id')
             ->setCharset('utf8mb4')
             ->setCollation('utf8mb4_general_ci')
-            ->addColumn('id', 'biginteger', ['signed' => false,'autoincrement' => true])
+            ->addColumn('id', 'biginteger', ['signed' => false, 'autoincrement' => true])
             ->addColumn('transaction_id', 'string', ['null' => true, 'length' => 100])
             ->addColumn('transaction_status', 'string', ['length' => 100])
             ->addColumn('transaction_time', 'datetime', ['null' => true])
@@ -578,12 +578,12 @@ class Init extends AbstractMigration
         $this->table('trx_payment', 'id')
             ->setCharset('utf8mb4')
             ->setCollation('utf8mb4_general_ci')
-            ->addColumn('id', 'biginteger', ['signed' => false,'autoincrement' => true])
-            ->addColumn('mahasiswa_id', 'integer',['signed' => false])
+            ->addColumn('id', 'biginteger', ['signed' => false, 'autoincrement' => true])
+            ->addColumn('mahasiswa_id', 'integer', ['signed' => false])
             ->addColumn('order_number', 'string', ['length' => 100])
             ->addColumn('stts', 'tinyinteger', ['default' => 0])
-            ->addColumn('membership_history_id', 'biginteger', ['signed' => false,'null' => true, 'comment' => 'jika trx untuk pembelian membership'])
-            ->addColumn('paket_history_id', 'biginteger', ['signed' => false,'null' => true])
+            ->addColumn('membership_history_id', 'biginteger', ['signed' => false, 'null' => true, 'comment' => 'jika trx untuk pembelian membership'])
+            ->addColumn('paket_history_id', 'biginteger', ['signed' => false, 'null' => true])
             ->addColumn('keterangan', 'string', ['null' => true, 'length' => 250])
             ->addColumn('tgl_order', 'datetime', ['null' => true])
             ->addColumn('tgl_bayar', 'datetime', ['null' => true])
@@ -598,9 +598,9 @@ class Init extends AbstractMigration
         $this->table('ujian_bundle', 'id')
             ->setCharset('utf8mb4')
             ->setCollation('utf8mb4_general_ci')
-            ->addColumn('id', 'integer', ['signed' => false,'autoincrement' => true])
+            ->addColumn('id', 'integer', ['signed' => false, 'autoincrement' => true])
             ->addColumn('ujian_id', 'integer')
-            ->addColumn('bundle_id', 'integer',['signed' => false])
+            ->addColumn('bundle_id', 'integer', ['signed' => false])
             ->addColumn('created_at', 'datetime', ['null' => true])
             ->addColumn('updated_at', 'datetime', ['null' => true])
             ->addIndex('bundle_id', '', 'btree', 'ujian_bundle_FK')
@@ -610,7 +610,7 @@ class Init extends AbstractMigration
         $this->table('ujian_matkul_enable', 'id')
             ->setCharset('utf8mb4')
             ->setCollation('utf8mb4_general_ci')
-            ->addColumn('id', 'integer', ['signed' => false,'autoincrement' => true])
+            ->addColumn('id', 'integer', ['signed' => false, 'autoincrement' => true])
             ->addColumn('ujian_id', 'integer')
             ->addColumn('matkul_id', 'integer')
             ->addColumn('created_at', 'datetime')
@@ -622,7 +622,7 @@ class Init extends AbstractMigration
         $this->table('users', 'id')
             ->setCharset('utf8')
             ->setCollation('utf8_general_ci')
-            ->addColumn('id', 'integer', ['signed' => false,'autoincrement' => true])
+            ->addColumn('id', 'integer', ['signed' => false, 'autoincrement' => true])
             ->addColumn('ip_address', 'string', ['length' => 45])
             ->addColumn('username', 'string', ['length' => 100])
             ->addColumn('password', 'string')
@@ -633,12 +633,12 @@ class Init extends AbstractMigration
             ->addColumn('activation_code', 'string', ['null' => true])
             ->addColumn('forgotten_password_selector', 'string', ['null' => true])
             ->addColumn('forgotten_password_code', 'string', ['null' => true])
-            ->addColumn('forgotten_password_time', 'integer', ['signed' => false,'null' => true])
+            ->addColumn('forgotten_password_time', 'integer', ['signed' => false, 'null' => true])
             ->addColumn('remember_selector', 'string', ['null' => true])
             ->addColumn('remember_code', 'string', ['null' => true])
-            ->addColumn('created_on', 'integer',['signed' => false])
-            ->addColumn('last_login', 'integer', ['signed' => false,'null' => true])
-            ->addColumn('active', 'tinyinteger', ['signed' => false,'null' => true])
+            ->addColumn('created_on', 'integer', ['signed' => false])
+            ->addColumn('last_login', 'integer', ['signed' => false, 'null' => true])
+            ->addColumn('active', 'tinyinteger', ['signed' => false, 'null' => true])
             ->addColumn('first_name', 'string', ['null' => true, 'length' => 250])
             ->addColumn('last_name', 'string', ['null' => true, 'length' => 250])
             ->addColumn('full_name', 'string', ['null' => true, 'length' => 250])
@@ -656,9 +656,9 @@ class Init extends AbstractMigration
         $this->table('users_groups', 'id')
             ->setCharset('utf8')
             ->setCollation('utf8_general_ci')
-            ->addColumn('id', 'integer', ['signed' => false,'autoincrement' => true])
-            ->addColumn('user_id', 'integer',['signed' => false])
-            ->addColumn('group_id', 'mediuminteger',['signed' => false])
+            ->addColumn('id', 'integer', ['signed' => false, 'autoincrement' => true])
+            ->addColumn('user_id', 'integer', ['signed' => false])
+            ->addColumn('group_id', 'mediuminteger', ['signed' => false])
             ->addColumn('created_at', 'datetime', ['null' => true])
             ->addColumn('updated_at', 'datetime', ['null' => true])
             ->addIndex(['user_id', 'group_id'], 'unique', 'btree', 'uc_users_groups')
@@ -669,7 +669,7 @@ class Init extends AbstractMigration
         $this->table('users_temp', 'id')
             ->setCharset('utf8mb4')
             ->setCollation('utf8mb4_general_ci')
-            ->addColumn('id', 'integer', ['signed' => false,'autoincrement' => true])
+            ->addColumn('id', 'integer', ['signed' => false, 'autoincrement' => true])
             ->addColumn('full_name', 'string', ['null' => true, 'length' => 250, 'charset' => 'utf8', 'collation' => 'utf8_general_ci'])
             ->addColumn('nik', 'string', ['null' => true, 'length' => 16, 'charset' => 'utf8', 'collation' => 'utf8_general_ci'])
             ->addColumn('email', 'string', ['charset' => 'utf8', 'collation' => 'utf8_general_ci'])
@@ -689,8 +689,8 @@ class Init extends AbstractMigration
                 'id' => '1',
                 'bobot' => 'Mudah',
                 'nilai' => '1.00',
-                'created_at' => date("Y-m-d H:i:s"),
-                'updated_at' => date("Y-m-d H:i:s"),
+                'created_at' => date('Y-m-d H:i:s'),
+                'updated_at' => date('Y-m-d H:i:s'),
             ],
         ]);
 
@@ -726,9 +726,9 @@ class Init extends AbstractMigration
             [
                 // 'id' => '1',
                 'variabel' => 'tahun_aktif',
-                'nilai' => date("Y"),
+                'nilai' => date('Y'),
                 'flag' => '1',
-                'created_at' => date("Y-m-d H:i:s"),
+                'created_at' => date('Y-m-d H:i:s'),
             ],
         ]);
 
@@ -737,7 +737,7 @@ class Init extends AbstractMigration
                 'id' => '1',
                 'ip_address' => '127.0.0.1',
                 'username' => 'admin',
-                'password' => '$2y$12$5RvCbsM.8/tX.E3bAv1F7OuRM4zl7pCGmM0Ue9hkcoIPtskloWdxq',
+                'password' => '$2y$12$5RvCbsM.8/tX.E3bAv1F7OuRM4zl7pCGmM0Ue9hkcoIPtskloWdxq', // q1w2e3r4
                 'email' => 'admin@admin.com',
                 'tgl_lahir' => '01010101',
                 'created_on' => '1268889823',
@@ -770,7 +770,7 @@ class Init extends AbstractMigration
                 'show' => '0',
                 'text_color' => 'primary',
                 'durasi' => '0',
-                'created_at' => date("Y-m-d H:i:s"),
+                'created_at' => date('Y-m-d H:i:s'),
             ],
             [
                 'id' => '1',
@@ -781,7 +781,7 @@ class Init extends AbstractMigration
                 'show' => '1',
                 'text_color' => 'info',
                 'durasi' => '0',
-                'created_at' => date("Y-m-d H:i:s"),
+                'created_at' => date('Y-m-d H:i:s'),
             ],
         ]);
 

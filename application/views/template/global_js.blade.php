@@ -157,13 +157,13 @@ $(document).ready(function(){
                 'identifier': '{{ $identifier }}',
                 'ip': ip,
                 'cmd':'MHS_ONLINE',
-                'app_id': '{{ APP_ID }}',
+                'app_id': '{{ $_ENV['APP_ID'] }}',
             }));
         };
 
         conn.onmessage = function(e) {
             let data = jQuery.parseJSON(e.data);
-            if(data.app_id == '{{ APP_ID }}') {
+            if(data.app_id == '{{ $_ENV['APP_ID'] }}') {
                 if (data.cmd == 'MHS_ONLINE') {
                     if (data.nim == '{{ get_logged_user()->username }}') {
                         if (data.identifier != '{{ $identifier }}') {
@@ -194,7 +194,7 @@ $(document).ready(function(){
                 'nim':'{{ get_logged_user()->username }}',
                 'as':'{{ get_selected_role()->name }}',
                 'cmd':'MHS_OFFLINE',
-                'app_id': '{{ APP_ID }}',
+                'app_id': '{{ $_ENV['APP_ID'] }}',
             }));
         };
     }
@@ -221,7 +221,7 @@ $(document).ready(function(){
             'as':'{{ get_selected_role()->name }}',
             'cmd':'PING',
             'ip': ip,
-            'app_id': '{{ APP_ID }}',
+            'app_id': '{{ $_ENV['APP_ID'] }}',
             'latency': data ,
         }));
         latency = data;
@@ -239,7 +239,7 @@ $(document).ready(function(){
                         'as':'{{ get_selected_role()->name }}',
                         'cmd':'PING',
                         'ip': ip,
-                        'app_id': '{{ APP_ID }}',
+                        'app_id': '{{ $_ENV['APP_ID'] }}',
                         'latency': data ,
                     }));
                     latency = data;
@@ -257,7 +257,7 @@ $(document).ready(function(){
     {{--      'nim':'{{ get_logged_user()->username }}',--}}
     {{--      'as':'{{ get_selected_role()->name }}',--}}
     {{--      'cmd':'PING',--}}
-    {{--      'app_id': '{{ APP_ID }}',--}}
+    {{--      'app_id': '{{ $_ENV['APP_ID'] }}',--}}
     {{--      'mctime': mctime ,--}}
     {{--  }));--}}
 

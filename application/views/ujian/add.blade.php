@@ -1288,7 +1288,7 @@ $('#is_sekuen_matkul').on('switchChange.bootstrapSwitch', function(event, state)
                 <input type="hidden" id="all_participants" name="all_participants" value="0">
                 <input type="hidden" id="filter" name="filter" value="null">
                 <input type="hidden" id="filter_table" name="filter_table" value="null">
-                @if(APP_TYPE == 'ujian')
+                @if($_ENV['APP_TYPE'] == 'ujian')
                 <fieldset class="form-group" style="padding: 10px; border: 1px solid #ccc;">
                     <legend class="col-form-label col-sm-2" style="border: 1px solid #ccc; background-color: #fffcd4;">Cluster Peserta</legend>
                     <div class="form-group">

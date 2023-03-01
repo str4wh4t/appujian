@@ -63,7 +63,7 @@ $(document).on('click','img.featherlight-image',function(){
             </div>
             <div class="col-md-8 pt-2" style="font-size: 1.2rem">
                 <span style="display:block">Computer Assisted Test (CAT)</span>
-                <span style="font-size: 18px;">{{ APP_NAME }}</span>
+                <span style="font-size: 18px;">{{ $_ENV['APP_NAME'] }}</span>
             </div>
             <hr>
         </div>
@@ -160,13 +160,12 @@ if ($i > 3) {
         <h3 class="box-title">Pengumuman</h3>
         <hr>
                 <p>
-                    Computer Assisted Test (CAT) {{ APP_NAME }} yang dikelola oleh Lembaga Pengembangan dan Penjaminan Mutu Pendidikan memberikan kemudahan dalam pelayanan test baik secara online maupun offline.</p>
-                <p>Test yang diadakan meliputi : Tes Potensi Akademik (TPA), Tes Substansi Bidang, Tes Prediksi dan lain-lain. Sistem ujian menggunakan CAT akan diperoleh hasil seleksi yang kredible, akurat dan cepat. </p>
-                <p>Informasi layanan CAT dapat menghubungi layanan ujian Undip di : </p>
-                <p><i class="fa fa-phone-square"></i> +62-24 7460041 (hari kerja)</p>
-                <p><i class="fa fa-whatsapp"></i> 0811-2883-688</p>
-                <p><i class="ft-mail"></i> um@live.undip.ac.id</p>
-                <p><i class="icon-globe"></i> pmb.undip.ac.id</p>
+                    Computer Assisted Test (CAT) {{ $_ENV['APP_NAME'] }} merupakan bentuk sistem ujian yang menggunakan teknologi komputer untuk diperoleh hasil seleksi yang kredible, akurat dan cepat. </p>
+                <p>Informasi layanan CAT dapat menghubungi layanan ujian di : </p>
+                <p><i class="fa fa-phone-square"></i> {{ $_ENV['KONTAK_TELP'] }} (hari kerja)</p>
+                <p><i class="fa fa-whatsapp"></i> {{ $_ENV['KONTAK_WA'] }}</p>
+                <p><i class="ft-mail"></i> {{ $_ENV['KONTAK_EMAIL'] }}</p>
+                <p><i class="icon-globe"></i> {{ $_ENV['KONTAK_WEB'] }}</p>
             </div>
         </div>
     </div>
@@ -215,13 +214,12 @@ if ($i > 3) {
         <h3 class="box-title">Pengumuman</h3>
         <hr>
                 <p>
-                    Computer Assisted Test (CAT) {{ APP_NAME }} yang dikelola oleh Lembaga Pengembangan dan Penjaminan Mutu Pendidikan memberikan kemudahan dalam pelayanan test baik secara online maupun offline.</p>
-                <p>Test yang diadakan meliputi : Tes Potensi Akademik (TPA), Tes Substansi Bidang, Tes Prediksi dan lain-lain. Sistem ujian menggunakan CAT akan diperoleh hasil seleksi yang kredible, akurat dan cepat. </p>
-                <p>Informasi layanan CAT dapat menghubungi layanan ujian Undip di : </p>
-                <p><i class="fa fa-phone-square"></i> +62-24 7460041 (hari kerja)</p>
-                <p><i class="fa fa-whatsapp"></i> 0811-2883-688</p>
-                <p><i class="ft-mail"></i> um@live.undip.ac.id</p>
-                <p><i class="icon-globe"></i> pmb.undip.ac.id</p>
+                    Computer Assisted Test (CAT) {{ $_ENV['APP_NAME'] }} merupakan bentuk sistem ujian yang menggunakan teknologi komputer untuk diperoleh hasil seleksi yang kredible, akurat dan cepat. </p>
+                <p>Informasi layanan CAT dapat menghubungi layanan ujian di : </p>
+                <p><i class="fa fa-phone-square"></i> {{ $_ENV['KONTAK_TELP'] }} (hari kerja)</p>
+                <p><i class="fa fa-whatsapp"></i> {{ $_ENV['KONTAK_WA'] }}</p>
+                <p><i class="ft-mail"></i> {{ $_ENV['KONTAK_EMAIL'] }}</p>
+                <p><i class="icon-globe"></i> {{ $_ENV['KONTAK_WEB'] }}</p>
             </div>
         </div>
     </div>
@@ -270,13 +268,12 @@ if ($i > 3) {
         <h3 class="box-title">Pengumuman</h3>
         <hr>
                 <p>
-                    Computer Assisted Test (CAT) {{ APP_NAME }} yang dikelola oleh Lembaga Pengembangan dan Penjaminan Mutu Pendidikan memberikan kemudahan dalam pelayanan test baik secara online maupun offline.</p>
-                <p>Test yang diadakan meliputi : Tes Potensi Akademik (TPA), Tes Substansi Bidang, Tes Prediksi dan lain-lain. Sistem ujian menggunakan CAT akan diperoleh hasil seleksi yang kredible, akurat dan cepat. </p>
-                <p>Informasi layanan CAT dapat menghubungi layanan ujian Undip di : </p>
-                <p><i class="fa fa-phone-square"></i> +62-24 7460041 (hari kerja)</p>
-                <p><i class="fa fa-whatsapp"></i> 0811-2883-688</p>
-                <p><i class="ft-mail"></i> um@live.undip.ac.id</p>
-                <p><i class="icon-globe"></i> pmb.undip.ac.id</p>
+                    Computer Assisted Test (CAT) {{ $_ENV['APP_NAME'] }} merupakan bentuk sistem ujian yang menggunakan teknologi komputer untuk diperoleh hasil seleksi yang kredible, akurat dan cepat. </p>
+                <p>Informasi layanan CAT dapat menghubungi layanan ujian di : </p>
+                <p><i class="fa fa-phone-square"></i> {{ $_ENV['KONTAK_TELP'] }} (hari kerja)</p>
+                <p><i class="fa fa-whatsapp"></i> {{ $_ENV['KONTAK_WA'] }}</p>
+                <p><i class="ft-mail"></i> {{ $_ENV['KONTAK_EMAIL'] }}</p>
+                <p><i class="icon-globe"></i> {{ $_ENV['KONTAK_WEB'] }}</p>
             </div>
         </div>
     </div>
@@ -293,7 +290,7 @@ if ($i > 3) {
             </div>
             <div class="col-md-8 pt-2" style="font-size: 1.2rem">
                 <span style="display:block">Computer Assisted Test (CAT)</span>
-                <span style="font-size: 19px">{{ APP_NAME }}</span>
+                <span style="font-size: 19px">{{ $_ENV['APP_NAME'] }}</span>
             </div>
             <hr>
         </div>
@@ -405,13 +402,12 @@ if ($i > 3) {
         <h3 class="box-title">Pengumuman</h3>
         <hr>
                 <p>
-                    Computer Assisted Test (CAT) {{ APP_NAME }} yang dikelola oleh Lembaga Pengembangan dan Penjaminan Mutu Pendidikan memberikan kemudahan dalam pelayanan test baik secara online maupun offline.</p>
-                <p>Test yang diadakan meliputi : Tes Potensi Akademik (TPA), Tes Substansi Bidang, Tes Prediksi dan lain-lain. Sistem ujian menggunakan CAT akan diperoleh hasil seleksi yang kredible, akurat dan cepat. </p>
-                <p>Informasi layanan CAT dapat menghubungi layanan ujian Undip di : </p>
-                <p><i class="fa fa-phone-square"></i> +62-24 7460041 (hari kerja)</p>
-                <p><i class="fa fa-whatsapp"></i> 0811-2883-688</p>
-                <p><i class="ft-mail"></i> um@live.undip.ac.id</p>
-                <p><i class="icon-globe"></i> pmb.undip.ac.id</p>
+                    Computer Assisted Test (CAT) {{ $_ENV['APP_NAME'] }} merupakan bentuk sistem ujian yang menggunakan teknologi komputer untuk diperoleh hasil seleksi yang kredible, akurat dan cepat. </p>
+                <p>Informasi layanan CAT dapat menghubungi layanan ujian di : </p>
+                <p><i class="fa fa-phone-square"></i> {{ $_ENV['KONTAK_TELP'] }} (hari kerja)</p>
+                <p><i class="fa fa-whatsapp"></i> {{ $_ENV['KONTAK_WA'] }}</p>
+                <p><i class="ft-mail"></i> {{ $_ENV['KONTAK_EMAIL'] }}</p>
+                <p><i class="icon-globe"></i> {{ $_ENV['KONTAK_WEB'] }}</p>
             </div>
         </div>
     </div>

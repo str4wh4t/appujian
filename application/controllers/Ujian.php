@@ -1159,7 +1159,7 @@ class Ujian extends MY_Controller
                         // 	}
                         // }
 
-                        if (APP_TYPE == 'ujian') {
+                        if ($_ENV['APP_TYPE'] == 'ujian') {
                             // SETTING PESERTA HANYA BERLAKU JIKA TIPE APLIKASI UJIAN
                             $peserta_ujian_before = Mhs_ujian_orm::where(['ujian_id' => $m_ujian_orm->id_ujian])
                                                                 ->whereDoesntHave('h_ujian')
@@ -1218,7 +1218,7 @@ class Ujian extends MY_Controller
                                     $h_ujian->tgl_selesai = $waktu_selesai->toDateTimeString();
                                     $h_ujian->save();
 
-                                    $cmd = '{"as":"' . $role_name . '","cmd":"UPDATE_TIME","nim":"' . $nim . '","app_id":"' . APP_ID . '"}';
+                                    $cmd = '{"as":"' . $role_name . '","cmd":"UPDATE_TIME","nim":"' . $nim . '","app_id":"' . $_ENV['APP_ID'] . '"}';
                                     $this->socket->notif_ws($cmd);
                                 }
                             }
@@ -1364,7 +1364,7 @@ class Ujian extends MY_Controller
     {
         $this->_akses_mahasiswa();
 
-        if (APP_TYPE == 'tryout') {
+        if ($_ENV['APP_TYPE'] == 'tryout') {
             redirect('ujian/latihan_soal');
         }
 
@@ -1432,7 +1432,7 @@ class Ujian extends MY_Controller
     {
         $this->_akses_mahasiswa();
 
-        if (APP_TYPE == 'ujian') {
+        if ($_ENV['APP_TYPE'] == 'ujian') {
             redirect('ujian/list');
         }
 
@@ -1498,7 +1498,7 @@ class Ujian extends MY_Controller
 
     public function tryout()
     {
-        if (APP_TYPE == 'ujian') {
+        if ($_ENV['APP_TYPE'] == 'ujian') {
             redirect('ujian/list');
         }
 
@@ -1581,7 +1581,7 @@ class Ujian extends MY_Controller
 
         $matkul_bundle_ids_list = [];
 
-        if (APP_TYPE == 'tryout') {
+        if ($_ENV['APP_TYPE'] == 'tryout') {
             $mhs_aktif_membership = get_mhs_aktif_membership($mhs_orm);
             if ($m_ujian->repeatable) {
                 // JIKA PADA LATIHAN SOAL
@@ -2078,7 +2078,7 @@ class Ujian extends MY_Controller
                 }
 
                 // CEK UNTUK TRYOUT
-                if (APP_TYPE == 'tryout') {
+                if ($_ENV['APP_TYPE'] == 'tryout') {
                     if ($ujian->repeatable) {
                         if (is_mhs_limit_by_kuota()) {
                             $mhs_ujian = Mhs_ujian_orm::where(['mahasiswa_id' => $mhs->id_mahasiswa, 'ujian_id' => $ujian->id_ujian])->firstOrFail();
@@ -3296,7 +3296,7 @@ class Ujian extends MY_Controller
             show_404();
         }
 
-        if (APP_TYPE == 'tryout') {
+        if ($_ENV['APP_TYPE'] == 'tryout') {
             $user = get_logged_user();
             $mhs = Mhs_orm::where('nim', $user->username)->firstOrFail();
             // $mhs_aktif_membership = get_mhs_aktif_membership($h_ujian->mhs);

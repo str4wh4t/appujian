@@ -321,7 +321,7 @@ class HasilUjian extends MY_Controller
         }
 
         $data['hasil'] = $new_hasil;
-        $data['nama_file'] = 'download_hasil_' . str_replace('.', '_', APP_ID) . '_' . url_title($m_ujian->nama_ujian, '_', true) . '_' . date('Ymd');
+        $data['nama_file'] = 'download_hasil_' . str_replace('.', '_', $_ENV['APP_ID']) . '_' . url_title($m_ujian->nama_ujian, '_', true) . '_' . date('Ymd');
 
         $this->load->view('hasilujian/cetak_detail_xls', $data);
     }

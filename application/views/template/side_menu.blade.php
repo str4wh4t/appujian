@@ -120,7 +120,7 @@
 
 			@if( is_admin() || in_group(DOSEN_GROUP_ID) || in_group(PENGAWAS_GROUP_ID) || in_group(KOORD_PENGAWAS_GROUP_ID) )
 			
-			@if( APP_TYPE == 'tryout' )
+			@if( $_ENV['APP_TYPE'] == 'tryout' )
 			<li class="{{ ($page == 'ujian') || ($page == 'paket') ? "active" : "" }} nav-item">
 			<a href="{{ url('ujian/master') }}">
 				<i class="fa fa-folder"></i><span class="menu-title" data-i18n="nav.templates.main">Ujian Manaj.</span>
@@ -155,7 +155,7 @@
 			@endif
 
 			@if( in_group(MHS_GROUP_ID) )
-				@if( APP_TYPE == 'tryout' )
+				@if( $_ENV['APP_TYPE'] == 'tryout' )
 					@if(is_show_membership())
 					<li class="{{ $page == 'membership' ? "active" : "" }} nav-item">
 						<a href="{{ url('membership/list') }}">
@@ -213,7 +213,7 @@
           	</li> --}}
 			
 			@if(is_admin())
-				@if( APP_TYPE == 'tryout' )
+				@if( $_ENV['APP_TYPE'] == 'tryout' )
 				<li class="{{ $page == 'payment' ? "active" : "" }} nav-item">
 					<a href="{{ url('payment/order_list') }}">
 						<i class="fa fa-shopping-bag"></i><span class="menu-title" data-i18n="nav.dash.main">Payment</span>

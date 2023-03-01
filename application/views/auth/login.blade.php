@@ -7,8 +7,8 @@
     
     <meta name="{{ csrf_name() }}" content="{{ csrf_token() }}">
     
-    <title>{{ APP_NAME }} | LOGIN</title>
-    <meta name="description" content="{{ APP_DESC }}">
+    <title>{{ $_ENV['APP_NAME'] }} | LOGIN</title>
+    <meta name="description" content="{{ $_ENV['APP_DESC'] }}">
     <meta name="author" content="{{ get_app_author() }}">
 
     <meta name="keywords" content="ujian online,online exam,latihan soal,tryout ujian">
@@ -59,9 +59,8 @@
             <div class="card border-grey border-lighten-3">
                 <div class="card-header border-0 mt-1">
                     <div class="card-title text-center">
-                        <img src="{{ asset('uploads/img_app/' . $_ENV['LOGO_500_70']) }}" alt="logo {{ APP_NAME }}">
+                        <img src="{{ asset('uploads/img_app/' . $_ENV['LOGO_500_70']) }}" alt="logo {{ $_ENV['APP_NAME'] }}">
                     </div>
-                    <h6 class="card-subtitle text-muted text-center font-small-5 pt-3 font-large-1"><span>{{ APP_NAME }}</span></h6>
                 </div>
                 <div class="card-content">
                     <div class="card-body">

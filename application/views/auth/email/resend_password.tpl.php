@@ -123,7 +123,7 @@
                     <tr>
                         <td bgcolor="#ffffff" align="center" valign="top" style="padding: 40px 20px 20px 20px; border-radius: 4px 4px 0px 0px; color: #111111; font-family: 'Lato', Helvetica, Arial, sans-serif; font-size: 48px; font-weight: 400; letter-spacing: 4px; line-height: 48px;">
                             <h1 style="font-size: 48px; font-weight: 400; margin: 2;">Reset Password</h1>
-                            <img src="<?= asset('uploads/img_app/'. LOGO_EMAIL_MSG) ?>" width="125" height="125" style="display: block; border: 0px;" />
+                            <img src="<?= asset('uploads/img_app/' . LOGO_EMAIL_MSG) ?>" width="125" height="125" style="display: block; border: 0px;" />
                         </td>
                     </tr>
                 </table>
@@ -147,7 +147,7 @@
                                         <table border="0" cellspacing="0" cellpadding="0">
                                             <tr>
                                                 <td align="center" style="border-radius: 3px;" bgcolor="#FFA73B">
-                                                <a href="<?= url('auth/set_password/'. $forgotten_password_code) ?>" target="_blank" style="font-size: 20px; font-family: Helvetica, Arial, sans-serif; color: #ffffff; text-decoration: none; color: #ffffff; text-decoration: none; padding: 15px 25px; border-radius: 2px; border: 1px solid #FFA73B; display: inline-block;">Reset Password</a>
+                                                <a href="<?= url('auth/set_password/' . $forgotten_password_code) ?>" target="_blank" style="font-size: 20px; font-family: Helvetica, Arial, sans-serif; color: #ffffff; text-decoration: none; color: #ffffff; text-decoration: none; padding: 15px 25px; border-radius: 2px; border: 1px solid #FFA73B; display: inline-block;">Reset Password</a>
                                                 </td>
                                             </tr>
                                         </table>
@@ -166,8 +166,8 @@
                     <tr>
                         <td bgcolor="#ffffff" align="left" style="padding: 20px 30px 20px 30px; color: #666666; font-family: 'Lato', Helvetica, Arial, sans-serif; font-size: 18px; font-weight: 400; line-height: 25px;">
                             <p style="margin: 0;">
-                                <a href="<?= url('auth/set_password/'. $forgotten_password_code) ?>" target="_blank" style="color: #FFA73B;">
-                                    <?= url('auth/set_password/'. $forgotten_password_code) ?>
+                                <a href="<?= url('auth/set_password/' . $forgotten_password_code) ?>" target="_blank" style="color: #FFA73B;">
+                                    <?= url('auth/set_password/' . $forgotten_password_code) ?>
                                 </a>
                             </p>
                         </td>
@@ -193,7 +193,7 @@
                     <tr>
                         <td bgcolor="#FFECD1" align="center" style="padding: 30px 30px 30px 30px; border-radius: 4px 4px 4px 4px; color: #666666; font-family: 'Lato', Helvetica, Arial, sans-serif; font-size: 18px; font-weight: 400; line-height: 25px;">
                             <h2 style="font-size: 20px; font-weight: 400; color: #666666; margin: 0;">
-                            <?= strtoupper(APP_NAME) ?>
+                            <?= strtoupper($_ENV['APP_NAME']) ?>
                             </h2>
                         </td>
                     </tr>

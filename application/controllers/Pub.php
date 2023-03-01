@@ -1206,6 +1206,8 @@ class Pub extends MY_Controller
 
         $h_ujian_list = new Hujian_orm();
 
+        $cron_end = Carbon::now()->addMinutes(1);
+
         $h_ujian_list = $h_ujian_list->where('ujian_selesai', 'Y')->where('fixed_detail_nilai', '0')->orderBy('id')->get();
 
         if ($h_ujian_list->isNotEmpty()) {
@@ -1213,6 +1215,12 @@ class Pub extends MY_Controller
                 //				if( $h_ujian->id != '47'){
                 //					continue;
                 //				}
+
+                $now = Carbon::now();
+
+                if ($now->greaterThan($cron_end)) {
+                    die('Waktu cron habis');
+                }
 
                 echo $h_ujian->id;
                 // echo $h_ujian->mhs->nama . "\n";

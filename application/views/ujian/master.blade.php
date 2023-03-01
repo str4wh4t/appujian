@@ -438,7 +438,7 @@ $(document).on('click', '#btn_close_alert_paket', function(){
 
 <div class="row">
     <div class="col-md-12">
-	{{ form_open('ujian/delete', ['id'=>'bulk']) }}
+	{!! form_open('ujian/delete', ['id'=>'bulk']) !!}
     <div class="table-responsive pb-2">
         <table id="ujian" class="table table-striped table-bordered table-hover w-100">
         <thead>
@@ -462,7 +462,7 @@ $(document).on('click', '#btn_close_alert_paket', function(){
 
         </table>
     </div>
-	{{ form_close();  }}
+	{!! form_close()  !!}
         </div>
 </div>
 <!---- --->

@@ -59,7 +59,7 @@
             <div class="card border-grey border-lighten-3">
                 <div class="card-header border-0 mt-1">
                     <div class="card-title text-center">
-                        <img src="{{ asset('uploads/img_app/' . $_ENV['LOGO_500_70']) }}" alt="logo {{ $_ENV['APP_NAME'] }}">
+                        <img src="{{ asset('uploads/img_app/' . $_ENV['LOGO_400_70']) }}" alt="logo {{ $_ENV['APP_NAME'] }}">
                     </div>
                 </div>
                 <div class="card-content">

@@ -181,7 +181,7 @@ function next() {
 
     $("html, body").animate(
         { scrollTop: $("#isi_pertanyaan").offset().top },
-        5000
+        2500
     );
 
     nomer_soal_before = berikutnya;
@@ -267,7 +267,7 @@ function back() {
 
     $("html, body").animate(
         { scrollTop: $("#isi_pertanyaan").offset().top },
-        5000
+        2500
     );
 
     nomer_soal_before = back;

@@ -501,8 +501,12 @@ $(document).on('click','#btn_akhiri_ujian',function() {
 
 function init_page_level(){
     update_time();
-    setup_hint();
     
+    // check is mobile version in javascript
+    if (! mobileCheck()) {
+        setup_hint();
+    }
+
     document.addEventListener('contextmenu', event => event.preventDefault());
 
     buka(1);
@@ -515,7 +519,7 @@ function init_page_level(){
     // let width = $(window).width();
 
     // let height = $(window).height();
-    
+
     // $('#q_n_a').css('max-height', (height - (87.85 + 68.5)));
     // $('#q_n_a').css('min-height', (height - (87.85 + 68.5)));
     // $('#panel_user').css('max-height', (height - (87.85)));
@@ -809,7 +813,7 @@ $('#lembar_ujian').on('scroll', function() {
         <div class="col-12">
             <div class="card" id="ujian_card_header">
                 <div class="card-header" style="padding: 1rem">
-                    <h4 class="card-title" style="width: 500px; margin: 0 auto;text-align: center;">
+                    <h4 class="card-title" style="margin: 0 auto;text-align: center;">
                         <span id="sisa_waktu" style="font-size: 2rem">0:0:0</span>
                     </h4>
                 </div>

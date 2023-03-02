@@ -805,7 +805,7 @@ $('#lembar_ujian').on('scroll', function() {
     <div class="col-12">
         <div class="card" id="ujian_card_header">
             <div class="card-header" style="padding: 1rem">
-                <h4 class="card-title" style="width: 500px; margin: 0 auto;text-align: center;">
+                <h4 class="card-title" style="margin: 0 auto;text-align: center;">
                     <span id="sisa_waktu" style="font-size: 2rem">0:0:0</span>
                 </h4>
             </div>

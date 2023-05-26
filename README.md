@@ -16,7 +16,7 @@ Aplikasi Ujian Online Menggunakan CodeIgniter (PHP)
 <li>composer install</li>
 <li>migrate db</li>
 <li>buat symlink dari node_module didalam dir writable/npm/node_modules ke public/assets/npm/node_modules</li>
-<li>ln -s "$(pwd)/writable/npm/node_modules" "$(pwd)/public/assets/npm"</li>
+
 <li>buat dir application/cache agar bisa diaccess (writable)</li>
 <li>buat dir upload/import agar bisa diaccess (writable)</li>
 <li>buat dir upload/img_soal agar bisa diaccess (writable)</li>
@@ -27,6 +27,13 @@ Aplikasi Ujian Online Menggunakan CodeIgniter (PHP)
 <li>membuat emailer (jika membutuhkan)</li>
 <li>jika time tryout silahkan buat akun recaptcha v3 untuk kebutuhan proteksi di registrasi peserta</li>
 </ul>
+
+<h3>Script bash yg dijalankan</h3>
+<ol>
+<li>php "$(pwd)/vendor/bin/phoenix" "migrate"</li>
+<li>ln -s "$(pwd)/writable/npm/node_modules" "$(pwd)/public/assets/npm"</li>
+<li>php "public/index.php" "pub/generate_data_daerah"</li>
+</ol>
 
 <h3>User</h3>
 <ul>

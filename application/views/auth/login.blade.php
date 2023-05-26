@@ -37,7 +37,7 @@
 
     <style type="text/css">
         html body.bg-full-screen-image {
-            background: url({{ asset('uploads/img_app/'. $_ENV['APP_BG_LOGIN']) }}) no-repeat center center fixed;
+            background: url({{ asset('uploads/img_app/'. $_ENV['IMG_COVER_LOGIN']) }}) no-repeat center center fixed;
             webkit-background-size: cover; /** */
             background-size: cover;
             /** **/

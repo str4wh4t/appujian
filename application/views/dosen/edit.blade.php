@@ -7,7 +7,7 @@
 {{--<link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/vendors/css/tables/extensions/rowReorder.dataTables.min.css') }}">--}}
 {{--<link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/vendors/css/tables/extensions/responsive.dataTables.min.css') }}">--}}
 <link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/vendors/css/forms/selects/select2.min.css') }}">
-<link rel="stylesheet" type="text/css" href="{{ asset('assets/yarn/node_modules/bootstrap4-datetimepicker/build/css/bootstrap-datetimepicker.css') }}">
+<link rel="stylesheet" type="text/css" href="{{ asset('assets/npm/node_modules/bootstrap4-datetimepicker/build/css/bootstrap-datetimepicker.css') }}">
 <!-- END PAGE LEVEL JS-->
 @endpush
 
@@ -20,8 +20,8 @@
 {{--<script src="{{ asset('assets/template/robust/app-assets/vendors/js/tables/datatable/dataTables.responsive.min.js') }}"></script>--}}
 {{--<script src="{{ asset('assets/template/robust/app-assets/vendors/js/tables/datatable/dataTables.rowReorder.min.js') }}"></script>--}}
 <script src="{{ asset('assets/template/robust/app-assets/vendors/js/forms/select/select2.full.min.js') }}"></script>
-<script src="{{ asset('assets/yarn/node_modules/moment/min/moment.min.js') }}"></script>
-<script src="{{ asset('assets/yarn/node_modules/bootstrap4-datetimepicker/build/js/bootstrap-datetimepicker.min.js') }}"></script>
+<script src="{{ asset('assets/npm/node_modules/moment/min/moment.min.js') }}"></script>
+<script src="{{ asset('assets/npm/node_modules/bootstrap4-datetimepicker/build/js/bootstrap-datetimepicker.min.js') }}"></script>
 <!-- END PAGE VENDOR -->
 @endpush
 
@@ -74,7 +74,7 @@ function init_page_level(){
 <!---- --->
 <div class="row">
     <div class="col-md-6">
-    <?=form_open('dosen/ajax/save', array('id'=>'formdosen'), array('method'=>'edit', 'id_dosen'=>$data->id_dosen));?>
+    <?=form_open('dosen/ajax/save', ['id'=>'formdosen'], ['method'=>'edit', 'id_dosen'=>$data->id_dosen]); ?>
         <div class="form-body">
             <h4 class="form-section"><i class="ft-user"></i> Personal Info</h4>
             <div class="row">
@@ -119,7 +119,7 @@ function init_page_level(){
                 </div>
             </div>
         </div>
-    <?=form_close();?>
+    <?=form_close(); ?>
     </div>
 </div>
 <!---- --->

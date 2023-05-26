@@ -7,7 +7,7 @@
 {{--<link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/vendors/css/tables/extensions/rowReorder.dataTables.min.css') }}">--}}
 {{--<link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/vendors/css/tables/extensions/responsive.dataTables.min.css') }}">--}}
 <link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/vendors/css/forms/selects/select2.min.css') }}">
-<link rel="stylesheet" type="text/css" href="{{ asset('assets/yarn/node_modules/bootstrap4-datetimepicker/build/css/bootstrap-datetimepicker.css') }}">
+<link rel="stylesheet" type="text/css" href="{{ asset('assets/npm/node_modules/bootstrap4-datetimepicker/build/css/bootstrap-datetimepicker.css') }}">
 <link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/vendors/css/forms/toggle/bootstrap-switch.min.css') }}">
 <!-- END PAGE LEVEL JS-->
 @endpush
@@ -22,8 +22,8 @@
 {{--<script src="{{ asset('assets/template/robust/app-assets/vendors/js/tables/datatable/dataTables.rowReorder.min.js') }}"></script>--}}
 <script src="{{ asset('assets/template/robust/app-assets/vendors/js/forms/select/select2.full.min.js') }}"></script>
 {{--<script src="{{ asset('assets/plugins/select2-cascade.js') }}"></script>--}}
-<script src="{{ asset('assets/yarn/node_modules/moment/min/moment.min.js') }}"></script>
-<script src="{{ asset('assets/yarn/node_modules/bootstrap4-datetimepicker/build/js/bootstrap-datetimepicker.min.js') }}"></script>
+<script src="{{ asset('assets/npm/node_modules/moment/min/moment.min.js') }}"></script>
+<script src="{{ asset('assets/npm/node_modules/bootstrap4-datetimepicker/build/js/bootstrap-datetimepicker.min.js') }}"></script>
 {{--<script src="{{ asset('assets/template/robust/app-assets/vendors/js/forms/toggle/bootstrap-switch.min.js') }}"></script>--}}
 <!-- END PAGE VENDOR -->
 @endpush
@@ -318,7 +318,7 @@ $(document).on('change','#tahun_mhs', function(){
                 @if(isset($msg_ok))
                     <div class="alert bg-info">Perhatian : {{ $msg_ok }}</div>
                 @endif
-                <?=form_open('matkul/peserta/' . $matkul->id_matkul, ['id' => 'formpeserta', 'name' => 'formpeserta'], array('method'=>'post'))?>
+                <?=form_open('matkul/peserta/' . $matkul->id_matkul, ['id' => 'formpeserta', 'name' => 'formpeserta'], ['method'=>'post'])?>
                 <div class="form-group">
                     <label for="nama_matkul">Nama Materi Ujian</label>
                     <input value="{{ $matkul->nama_matkul }}" disabled="disabled" type="text" class="form-control" name="nama_matkul">

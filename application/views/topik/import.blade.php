@@ -13,7 +13,7 @@
 @push('page_vendor_level_js')
 <!-- BEGIN PAGE VENDOR JS-->
 <script src="{{ asset('assets/template/robust/app-assets/vendors/js/tables/datatable/datatables.min.js') }}"></script>
-<script src="{{ asset('assets/yarn/node_modules/datatables.net-plugins/api/fnPagingInfo.js') }}"></script>
+<script src="{{ asset('assets/npm/node_modules/datatables.net-plugins/api/fnPagingInfo.js') }}"></script>
 {{--<script src="{{ asset('assets/template/robust/app-assets/vendors/js/tables/jquery.dataTables.min.js') }}"></script>--}}
 {{--<script src="{{ asset('assets/template/robust/app-assets/vendors/js/tables/datatable/dataTables.bootstrap4.min.js') }}"></script>--}}
 {{--<script src="{{ asset('assets/template/robust/app-assets/vendors/js/tables/datatable/dataTables.responsive.min.js') }}"></script>--}}
@@ -94,31 +94,31 @@ function init_page_level(){
                         <tbody>
                             <?php
                                 $status = true;
-                                if (empty($import)) {
-                                    echo '<tr><td colspan="2" class="text-center">Data kosong! pastikan anda menggunakan format yang telah disediakan.</td></tr>';
-                                } else {
-                                    $no = 1;
-                                    foreach ($import as $data) :
-                                        ?>
+                    if (empty($import)) {
+                        echo '<tr><td colspan="2" class="text-center">Data kosong! pastikan anda menggunakan format yang telah disediakan.</td></tr>';
+                    } else {
+                        $no = 1;
+                        foreach ($import as $data) :
+                            ?>
                                     <tr>
                                         <td><?= $no++; ?></td>
                                         <td class="<?= $data['kelas'] == null ? 'bg-danger' : ''; ?>">
                                             <?= $data['kelas'] == null ? 'BELUM DIISI' : $data['kelas']; ?>
                                         </td>
                                         <td class="<?= $data['jurusan'] == null ? 'bg-danger' : ''; ?>">
-                                            <?= $data['jurusan'] == null ? 'BELUM DIISI' : $data['jurusan'];; ?>
+                                            <?= $data['jurusan'] == null ? 'BELUM DIISI' : $data['jurusan']; ?>
                                         </td>
                                     </tr>
                             <?php
-                                        if ($data['kelas'] == null || $data['jurusan'] == null) {
-                                            $status = false;
-                                        }
-                                    endforeach;
-                                }
-                                ?>
+                            if ($data['kelas'] == null || $data['jurusan'] == null) {
+                                $status = false;
+                            }
+                        endforeach;
+                    }
+            	?>
                         </tbody>
                     </table>
-                    <?php if (!empty($import)) : ?>
+                    <?php if (! empty($import)) : ?>
 
                         <?= form_open('kelas/do_import', null, ['data' => json_encode($import)]); ?>
                         <button type='submit' class='btn btn-block btn-flat btn-primary'><i class="fa fa-arrow-circle-o-down"></i> Import</button>

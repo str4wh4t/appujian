@@ -6,7 +6,7 @@
 {{--<link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/vendors/css/tables/datatable/dataTables.bootstrap4.min.css') }}">--}}
 {{--<link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/vendors/css/tables/extensions/rowReorder.dataTables.min.css') }}">--}}
 {{--<link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/vendors/css/tables/extensions/responsive.dataTables.min.css') }}">--}}
-<link rel="stylesheet" type="text/css" href="{{ asset('assets/yarn/node_modules/enjoyhint.js/dist/enjoyhint.css') }}">
+<link rel="stylesheet" type="text/css" href="{{ asset('assets/npm/node_modules/enjoyhint.js/dist/enjoyhint.css') }}">
 <!-- END PAGE LEVEL JS-->
 @endpush
 
@@ -189,11 +189,11 @@
 
 @push('page_vendor_level_js')
 <!-- BEGIN PAGE VENDOR JS-->
-<script src="{{ asset('assets/yarn/node_modules/moment/min/moment.min.js') }}"></script>
-<script src="{{ asset('assets/yarn/node_modules/moment/min/moment-with-locales.min.js') }}"></script>
-<script src="{{ asset('assets/yarn/node_modules/kinetic/kinetic.min.js') }}"></script>
-<script src="{{ asset('assets/yarn/node_modules/jquery.scrollto/jquery.scrollTo.min.js') }}"></script>
-<script src="{{ asset('assets/yarn/node_modules/enjoyhint.js/dist/enjoyhint.min.js') }}"></script>
+<script src="{{ asset('assets/npm/node_modules/moment/min/moment.min.js') }}"></script>
+<script src="{{ asset('assets/npm/node_modules/moment/min/moment-with-locales.min.js') }}"></script>
+<script src="{{ asset('assets/npm/node_modules/kinetic/kinetic.min.js') }}"></script>
+<script src="{{ asset('assets/npm/node_modules/jquery.scrollto/jquery.scrollTo.min.js') }}"></script>
+<script src="{{ asset('assets/npm/node_modules/enjoyhint.js/dist/enjoyhint.min.js') }}"></script>
 <!-- END PAGE VENDOR JS -->
 @endpush
 

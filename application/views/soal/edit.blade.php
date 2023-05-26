@@ -19,7 +19,7 @@
 <!-- Include TUI Froala Editor CSS. -->
 {{--<link rel="stylesheet" href="{{ asset('assets/bower_components/froala_editor/css/third_party/image_tui.min.css') }}">--}}
 
-<link href="{{ asset('assets/yarn/node_modules/summernote/dist/summernote-bs4.min.css') }}" rel="stylesheet">
+<link href="{{ asset('assets/npm/node_modules/summernote/dist/summernote-bs4.min.css') }}" rel="stylesheet">
 <link href="{{ asset('assets/plugins/summernote_plugins/summernote-audio.css') }}" rel="stylesheet">
 
 <!-- END PAGE LEVEL JS-->
@@ -46,15 +46,15 @@
 <!-- Include TUI plugin. -->
 {{--<script src="{{ asset('assets/bower_components/froala_editor/js/third_party/image_tui.min.js') }}"></script>--}}
 
-<script src="{{ asset('assets/yarn/node_modules/summernote/dist/summernote-bs4.min.js') }}"></script>
+<script src="{{ asset('assets/npm/node_modules/summernote/dist/summernote-bs4.min.js') }}"></script>
 
 <script src="{{ asset('assets/plugins/select2-cascade.js') }}"></script>
 <script src="{{ asset('assets/plugins/summernote_plugins/summernote-cleaner.js') }}"></script>
 <script src="{{ asset('assets/plugins/summernote_plugins/summernote-audio.js') }}"></script>
 {{--<script src="https://rawgit.com/RobinHerbots/Inputmask/5.x/dist/jquery.inputmask.js"></script>--}}
-<script src="{{ asset('assets/yarn/node_modules/jquery-validation/dist/jquery.validate.js') }}"></script>
+<script src="{{ asset('assets/npm/node_modules/jquery-validation/dist/jquery.validate.js') }}"></script>
 <script src="{{ asset('assets/template/robust/app-assets/vendors/js/forms/toggle/bootstrap-switch.min.js') }}"></script>
-<script src="{{ asset('assets/yarn/node_modules/inputmask/dist/jquery.inputmask.min.js') }}"></script>
+<script src="{{ asset('assets/npm/node_modules/inputmask/dist/jquery.inputmask.min.js') }}"></script>
 <!-- END PAGE VENDOR -->
 @endpush
 
@@ -474,7 +474,7 @@ $('#is_bobot_per_jawaban').on('switchChange.bootstrapSwitch', function (event, s
 
 <div class="row">
         <div class="col-lg-12">
-        <?=form_open_multipart('soal/save', array('id'=>'formsoal'), array('method' => 'post', 'aksi' => 'edit' , 'id_soal' => $soal->id_soal));?>
+        <?=form_open_multipart('soal/save', ['id'=>'formsoal'], ['method' => 'post', 'aksi' => 'edit', 'id_soal' => $soal->id_soal]); ?>
 
         <div class="form-group">
             <label for="tipe_soal" class="control-label">
@@ -591,9 +591,9 @@ $('#is_bobot_per_jawaban').on('switchChange.bootstrapSwitch', function (event, s
 {{--                                    <div class="form-group col-sm-3">--}}
 {{--                                        <input type="file" name="file_soal" class="form-control">--}}
 {{--                                        <small class="help-block" style="color: #dc3545"><?=form_error('file_soal')?></small>--}}
-{{--                                        <?php if(!empty($soal->file)) : ?>--}}
-{{--                                            <?=tampil_media('uploads/bank_soal/'.$soal->file);?>--}}
-{{--                                        <?php endif;?>--}}
+{{--                                        <?php if(! empty($soal->file)) : ?>--}}
+{{--                                            <?=tampil_media('uploads/bank_soal/' . $soal->file); ?>--}}
+{{--                                        <?php endif; ?>--}}
 {{--                                    </div>--}}
         <div class="row">
             <div class="col-lg-10">
@@ -728,7 +728,7 @@ $('#is_bobot_per_jawaban').on('switchChange.bootstrapSwitch', function (event, s
             <button type="submit" id="submit" class="btn btn-flat btn-outline-primary"><i class="fa fa-save"></i> Simpan</button>
         </div>
 
-        <?=form_close();?>
+        <?=form_close(); ?>
     </div>
 </div>
 

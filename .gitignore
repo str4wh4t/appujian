@@ -13,11 +13,12 @@ composer.phar
 !/public/uploads/files/index.html
 /public/uploads/img_soal/*
 !/public/uploads/img_soal/index.html
+/public/uploads/img_soal_/*
 /public/uploads/img_app/*
 !/public/uploads/img_app/index.html
-/public/assets/yarn/*
-!/public/assets/yarn/index.html
-/writeable/yarn/node_modules
+/public/assets/npm/*
+!/public/assets/npm/index.html
+/writable/npm/node_modules
 /files/template/*
 !/files/template/index.html
 .env

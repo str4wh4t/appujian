@@ -13,7 +13,7 @@
 @push('page_vendor_level_js')
 <!-- BEGIN PAGE VENDOR JS-->
 <script src="{{ asset('assets/template/robust/app-assets/vendors/js/tables/datatable/datatables.min.js') }}"></script>
-<script src="{{ asset('assets/yarn/node_modules/datatables.net-plugins/api/fnPagingInfo.js') }}"></script>
+<script src="{{ asset('assets/npm/node_modules/datatables.net-plugins/api/fnPagingInfo.js') }}"></script>
 {{--<script src="{{ asset('assets/template/robust/app-assets/vendors/js/tables/jquery.dataTables.min.js') }}"></script>--}}
 {{--<script src="{{ asset('assets/template/robust/app-assets/vendors/js/tables/datatable/dataTables.bootstrap4.min.js') }}"></script>--}}
 {{--<script src="{{ asset('assets/template/robust/app-assets/vendors/js/tables/datatable/dataTables.responsive.min.js') }}"></script>--}}
@@ -106,34 +106,34 @@ function init_page_level(){
                         <tbody>
                             <?php
                                 $status = true;
-                                if (empty($import)) {
-                                    echo '<tr><td colspan="2" class="text-center">Data kosong! pastikan anda menggunakan format yang telah disediakan.</td></tr>';
-                                } else {
-                                    $no = 1;
-                                    foreach ($import as $data) :
-                                        ?>
+                    if (empty($import)) {
+                        echo '<tr><td colspan="2" class="text-center">Data kosong! pastikan anda menggunakan format yang telah disediakan.</td></tr>';
+                    } else {
+                        $no = 1;
+                        foreach ($import as $data) :
+                            ?>
                                     <tr>
                                         <td><?= $no++; ?></td>
                                         <td class="<?= $data['nip'] == null ? 'bg-danger' : ''; ?>">
                                             <?= $data['nip'] == null ? 'BELUM DIISI' : $data['nip']; ?>
                                         </td>
                                         <td class="<?= $data['nama_dosen'] == null ? 'bg-danger' : ''; ?>">
-                                            <?= $data['nama_dosen'] == null ? 'BELUM DIISI' : $data['nama_dosen'];; ?>
+                                            <?= $data['nama_dosen'] == null ? 'BELUM DIISI' : $data['nama_dosen']; ?>
                                         </td>
                                         <td class="<?= $data['email'] == null ? 'bg-danger' : ''; ?>">
-                                            <?= $data['email'] == null ? 'BELUM DIISI' : $data['email'];; ?>
+                                            <?= $data['email'] == null ? 'BELUM DIISI' : $data['email']; ?>
                                         </td>
                                         <td class="<?= $data['matkul_id'] == null ? 'bg-danger' : ''; ?>">
-                                            <?= $data['matkul_id'] == null ? 'BELUM DIISI' : $data['matkul_id'];; ?>
+                                            <?= $data['matkul_id'] == null ? 'BELUM DIISI' : $data['matkul_id']; ?>
                                         </td>
                                     </tr>
                             <?php
-                                        if ($data['nip'] == null || $data['nama_dosen'] == null || $data['email'] == null || $data['matkul_id'] == null) {
-                                            $status = false;
-                                        }
-                                    endforeach;
-                                }
-                                ?>
+                            if ($data['nip'] == null || $data['nama_dosen'] == null || $data['email'] == null || $data['matkul_id'] == null) {
+                                $status = false;
+                            }
+                        endforeach;
+                    }
+            	?>
                         </tbody>
                     </table>
                     <?php if ($status) : ?>

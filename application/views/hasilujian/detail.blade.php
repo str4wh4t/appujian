@@ -6,15 +6,15 @@
 {{--<link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/vendors/css/tables/datatable/dataTables.bootstrap4.min.css') }}">--}}
 {{--<link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/vendors/css/tables/extensions/rowReorder.dataTables.min.css') }}">--}}
 {{--<link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/vendors/css/tables/extensions/responsive.dataTables.min.css') }}">--}}
-<link rel="stylesheet" type="text/css" href="{{ asset('assets/yarn/node_modules/featherlight/release/featherlight.min.css') }}" />
+<link rel="stylesheet" type="text/css" href="{{ asset('assets/npm/node_modules/featherlight/release/featherlight.min.css') }}" />
 <!-- END PAGE LEVEL CSS-->
 @endpush
 
 @push('page_vendor_level_js')
 <!-- BEGIN PAGE VENDOR JS-->
 <script src="{{ asset('assets/template/robust/app-assets/vendors/js/tables/datatable/datatables.min.js') }}"></script>
-<script src="{{ asset('assets/yarn/node_modules/datatables.net-plugins/api/fnPagingInfo.js') }}"></script>
-<script src="{{ asset('assets/yarn/node_modules/featherlight/release/featherlight.min.js') }}"></script>
+<script src="{{ asset('assets/npm/node_modules/datatables.net-plugins/api/fnPagingInfo.js') }}"></script>
+<script src="{{ asset('assets/npm/node_modules/featherlight/release/featherlight.min.js') }}"></script>
 {{--<script src="{{ asset('assets/template/robust/app-assets/vendors/js/tables/jquery.dataTables.min.js') }}"></script>--}}
 {{--<script src="{{ asset('assets/template/robust/app-assets/vendors/js/tables/datatable/dataTables.bootstrap4.min.js') }}"></script>--}}
 {{--<script src="{{ asset('assets/template/robust/app-assets/vendors/js/tables/datatable/dataTables.responsive.min.js') }}"></script>--}}
@@ -138,7 +138,7 @@ $(document).on('click','img.featherlight-image',function(){
 
 @if(in_group('mahasiswa'))
 
-<?php 
+<?php
 $h_ujian = $ujian->h_ujian()->where(['mahasiswa_id' => $mhs->id_mahasiswa, 'ujian_selesai' => 'Y'])->first();
 ?>
 
@@ -261,15 +261,15 @@ $(document).on('click','#btn_ulangi_ujian',function(){
             </tr>
             <tr>
                 <th>Nilai Terendah</th>
-                <td id="nilai_terendah"><?=number_format($nilai->min_nilai,2,'.', '')?></td>
+                <td id="nilai_terendah"><?=number_format($nilai->min_nilai, 2, '.', '')?></td>
             </tr>
             <tr>
                 <th>Nilai Tertinggi</th>
-                <td id="nilai_tertinggi"><?=number_format($nilai->max_nilai,2,'.', '')?></td>
+                <td id="nilai_tertinggi"><?=number_format($nilai->max_nilai, 2, '.', '')?></td>
             </tr>
             <tr>
                 <th>Rata-rata Nilai</th>
-                <td id="nilai_rata_rata"><?=number_format($nilai->avg_nilai,2,'.', '')?></td>
+                <td id="nilai_rata_rata"><?=number_format($nilai->avg_nilai, 2, '.', '')?></td>
             </tr>
         </table>
     </div>
@@ -283,29 +283,29 @@ $(document).on('click','#btn_ulangi_ujian',function(){
 {{--    </div>--}}
 
         <div class="col-md-12 mt-2" style="text-align: center">
-            <?php 
+            <?php
             $h_ujian_history = $ujian->h_ujian_history()->where('mahasiswa_id', $mhs->id_mahasiswa)->first();
-            ?>
+?>
             @if(!empty($h_ujian) || !empty($h_ujian_history))
-                <?php 
-                $mhs_ujian = $mhs->mhs_ujian()->where(['mahasiswa_id' => $mhs->id_mahasiswa, 'ujian_id' => $ujian->id_ujian])->first();
-                ?>
+                <?php
+    $mhs_ujian = $mhs->mhs_ujian()->where(['mahasiswa_id' => $mhs->id_mahasiswa, 'ujian_id' => $ujian->id_ujian])->first();
+?>
                 <a class="btn btn-danger btn-lg" href="{{ url('hasilujian/history/' . uuid_create_from_integer($mhs_ujian->id)) }}" title="Lihat Jawaban">
                     <i class="ft-eye"></i> {{ $ujian->tampilkan_jawaban ? 'Jawaban Ujian' : 'History Ujian'}}
                 </a>
             @endif
 
             @if($ujian->repeatable)
-                <?php 
-                $today = date('Y-m-d H:i:s');
-                //echo $paymentDate; // echos today!
-                $date_start = date('Y-m-d H:i:s', strtotime($ujian->tgl_mulai));
-                if (!empty($ujian->terlambat)) {
-                    $date_end = date('Y-m-d H:i:s', strtotime($ujian->terlambat));
-                } else {
-                    $date_end = date('Y-m-d H:i:s', strtotime('+1 days'));
-                }
-                ?>
+                <?php
+$today = date('Y-m-d H:i:s');
+//echo $paymentDate; // echos today!
+$date_start = date('Y-m-d H:i:s', strtotime($ujian->tgl_mulai));
+if (! empty($ujian->terlambat)) {
+    $date_end = date('Y-m-d H:i:s', strtotime($ujian->terlambat));
+} else {
+    $date_end = date('Y-m-d H:i:s', strtotime('+1 days'));
+}
+?>
 
                 @if(($today >= $date_start) && ($today < $date_end)) 
                     @if (!empty($h_ujian))

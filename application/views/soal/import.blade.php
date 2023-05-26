@@ -14,7 +14,7 @@
 @push('page_vendor_level_js')
 <!-- BEGIN PAGE VENDOR JS-->
 <script src="{{ asset('assets/template/robust/app-assets/vendors/js/tables/datatable/datatables.min.js') }}"></script>
-<script src="{{ asset('assets/yarn/node_modules/datatables.net-plugins/api/fnPagingInfo.js') }}"></script>
+<script src="{{ asset('assets/npm/node_modules/datatables.net-plugins/api/fnPagingInfo.js') }}"></script>
 {{--<script src="{{ asset('assets/template/robust/app-assets/vendors/js/tables/jquery.dataTables.min.js') }}"></script>
 --}}
 {{--<script src="{{ asset('assets/template/robust/app-assets/vendors/js/tables/datatable/dataTables.bootstrap4.min.js') }}">
@@ -141,12 +141,12 @@
                                             <tbody>
                                                 <?php
                                 $status = true;
-                                if (empty($import)) {
-                                    echo '<tr><td colspan="13" class="text-center">Data kosong! pastikan anda menggunakan format yang telah disediakan.</td></tr>';
-                                } else {
-                                    $no = 1;
-                                    foreach ($import as $data) :
-                                        ?>
+                                        if (empty($import)) {
+                                            echo '<tr><td colspan="13" class="text-center">Data kosong! pastikan anda menggunakan format yang telah disediakan.</td></tr>';
+                                        } else {
+                                            $no = 1;
+                                            foreach ($import as $data) :
+                                                ?>
                                                 <tr>
                                                     <td><?= $no++; ?></td>
                                                     <td
@@ -199,17 +199,17 @@
                                                     </td>
                                                 </tr>
                                                 <?php
-                                        if ($data['topik_id'] == null || $data['soal'] == null || $data['opsi_a'] == null || $data['opsi_b'] == null || $data['opsi_c'] == null || $data['opsi_d'] == null || $data['opsi_e'] == null || $data['jawaban'] == null || $data['bobot_soal_id'] == null || $data['gel'] == null || $data['smt'] == null || $data['tahun'] == null) {
-                                            $status = false;
-                                        }
+                                                if ($data['topik_id'] == null || $data['soal'] == null || $data['opsi_a'] == null || $data['opsi_b'] == null || $data['opsi_c'] == null || $data['opsi_d'] == null || $data['opsi_e'] == null || $data['jawaban'] == null || $data['bobot_soal_id'] == null || $data['gel'] == null || $data['smt'] == null || $data['tahun'] == null) {
+                                                    $status = false;
+                                                }
 
-                                        if ($data['topik_id'] == '!! ERROR !!' || $data['soal'] == '!! ERROR !!' || $data['opsi_a'] == '!! ERROR !!' || $data['opsi_b'] == '!! ERROR !!' || $data['opsi_c'] == '!! ERROR !!' || $data['opsi_d'] == '!! ERROR !!' || $data['opsi_e'] == '!! ERROR !!' || $data['jawaban'] == '!! ERROR !!' || $data['bobot_soal_id'] == '!! ERROR !!' || $data['gel'] == '!! ERROR !!' || $data['smt'] == '!! ERROR !!' || $data['tahun'] == '!! ERROR !!') {
-                                            $status = false;
-                                        }
+                                                if ($data['topik_id'] == '!! ERROR !!' || $data['soal'] == '!! ERROR !!' || $data['opsi_a'] == '!! ERROR !!' || $data['opsi_b'] == '!! ERROR !!' || $data['opsi_c'] == '!! ERROR !!' || $data['opsi_d'] == '!! ERROR !!' || $data['opsi_e'] == '!! ERROR !!' || $data['jawaban'] == '!! ERROR !!' || $data['bobot_soal_id'] == '!! ERROR !!' || $data['gel'] == '!! ERROR !!' || $data['smt'] == '!! ERROR !!' || $data['tahun'] == '!! ERROR !!') {
+                                                    $status = false;
+                                                }
 
-                                    endforeach;
-                                }
-                                ?>
+                                            endforeach;
+                                        }
+                ?>
                                             </tbody>
                                         </table>
                                     </div>

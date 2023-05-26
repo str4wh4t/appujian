@@ -12,7 +12,7 @@
 @push('page_vendor_level_js')
 <!-- BEGIN PAGE VENDOR JS-->
 <script src="{{ asset('assets/template/robust/app-assets/vendors/js/tables/datatable/datatables.min.js') }}"></script>
-<script src="{{ asset('assets/yarn/node_modules/datatables.net-plugins/api/fnPagingInfo.js') }}"></script>
+<script src="{{ asset('assets/npm/node_modules/datatables.net-plugins/api/fnPagingInfo.js') }}"></script>
 {{--<script src="{{ asset('assets/template/robust/app-assets/vendors/js/tables/jquery.dataTables.min.js') }}"></script>--}}
 {{--<script src="{{ asset('assets/template/robust/app-assets/vendors/js/tables/datatable/dataTables.bootstrap4.min.js') }}"></script>--}}
 {{--<script src="{{ asset('assets/template/robust/app-assets/vendors/js/tables/datatable/dataTables.responsive.min.js') }}"></script>--}}
@@ -57,7 +57,7 @@
 </div>
 <div class="row">
     <div class="col-md-12">
-        <?= form_open('', array('id' => 'bulk')) ?>
+        <?= form_open('', ['id' => 'bulk']) ?>
 		<div class="table-responsive pb-2">
 		<table id="matkul" class="table table-striped table-bordered table-hover w-100">
 			<thead>
@@ -85,7 +85,7 @@
 				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
 					<span aria-hidden="true">×</span></button>
 			</div>
-			<?= form_open('matkul/add', array('id', 'tambah')); ?>
+			<?= form_open('matkul/add', ['id', 'tambah']); ?>
 			<div class="modal-body">
 
 				<div class="form-group">

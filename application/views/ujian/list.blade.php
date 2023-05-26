@@ -16,7 +16,7 @@
 {{--<script src="{{ asset('assets/template/robust/app-assets/vendors/js/tables/datatable/dataTables.bootstrap4.min.js') }}"></script>--}}
 {{--<script src="{{ asset('assets/template/robust/app-assets/vendors/js/tables/datatable/dataTables.responsive.min.js') }}"></script>--}}
 {{--<script src="{{ asset('assets/template/robust/app-assets/vendors/js/tables/datatable/dataTables.rowReorder.min.js') }}"></script>--}}
-<script src="{{ asset('assets/yarn/node_modules/moment/min/moment.min.js') }}"></script>
+<script src="{{ asset('assets/npm/node_modules/moment/min/moment.min.js') }}"></script>
 <!-- END PAGE VENDOR -->
 @endpush
 

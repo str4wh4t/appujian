@@ -19,7 +19,7 @@
 {{--<script src="{{ asset('assets/template/robust/app-assets/vendors/js/tables/datatable/dataTables.responsive.min.js') }}"></script>--}}
 {{--<script src="{{ asset('assets/template/robust/app-assets/vendors/js/tables/datatable/dataTables.rowReorder.min.js') }}"></script>--}}
 <script src="{{ asset('assets/template/robust/app-assets/vendors/js/forms/select/select2.full.min.js') }}"></script>
-<script src="{{ asset('assets/yarn/node_modules/inputmask/dist/jquery.inputmask.min.js') }}"></script>
+<script src="{{ asset('assets/npm/node_modules/inputmask/dist/jquery.inputmask.min.js') }}"></script>
 <!-- END PAGE VENDOR -->
 @endpush
 
@@ -68,7 +68,7 @@ let banyak = '{{ $banyak }}';
         <div class="alert alert-info mb-2" role="alert">
             <strong>Jumlah data :</strong> {{ $banyak }}
         </div>
-        <?=form_open('topik/ajax/save', array('id'=>'topik'), array('mode'=>'add'))?>
+        <?=form_open('topik/ajax/save', ['id'=>'topik'], ['mode'=>'add'])?>
         <table id="form-table" class="table text-center table-condensed">
             <thead>
                 <tr>
@@ -79,7 +79,7 @@ let banyak = '{{ $banyak }}';
                 </tr>
             </thead>
             <tbody>
-                <?php for ($i=1; $i <= $banyak; $i++) : ?>
+                <?php for ($i = 1; $i <= $banyak; $i++) : ?>
                     <tr>
                         <td><?=$i?></td>
                         <td width="200">

@@ -19,7 +19,7 @@
 {{--<script src="{{ asset('assets/template/robust/app-assets/vendors/js/tables/datatable/dataTables.responsive.min.js') }}"></script>--}}
 {{--<script src="{{ asset('assets/template/robust/app-assets/vendors/js/tables/datatable/dataTables.rowReorder.min.js') }}"></script>--}}
 <script src="{{ asset('assets/template/robust/app-assets/vendors/js/forms/select/select2.full.min.js') }}"></script>
-<script src="{{ asset('assets/yarn/node_modules/inputmask/dist/jquery.inputmask.min.js') }}"></script>
+<script src="{{ asset('assets/npm/node_modules/inputmask/dist/jquery.inputmask.min.js') }}"></script>
 <!-- END PAGE VENDOR -->
 @endpush
 
@@ -65,7 +65,7 @@ function init_page_level(){
         <div class="alert alert-info mb-2" role="alert">
             <strong>Jumlah data :</strong> {{ count($topik) }}
         </div>
-        <?=form_open('topik/ajax/save', array('id'=>'topik'), array('mode'=>'edit'))?>
+        <?=form_open('topik/ajax/save', ['id'=>'topik'], ['mode'=>'edit'])?>
             <table id="form-table" class="table text-center table-condensed">
                 <thead>
                     <tr>
@@ -78,7 +78,7 @@ function init_page_level(){
                 <tbody>
                     <?php
                     $i = 1;
-                    foreach($topik as $row) : ?>
+            	foreach($topik as $row) : ?>
                         <tr>
                             <td><?=$i?></td>
                             <td width="200">
@@ -86,7 +86,7 @@ function init_page_level(){
                                     <select required="required" name="matkul_id[<?=$i?>]" class="input-sm form-control select2" style="width: 100%!important">
                                         <option value="" disabled>-- Pilih --</option>
                                         <?php foreach ($matkul as $j) : ?>
-                                            <option <?= $row->matkul_id == $j->id_matkul ? "selected='selected'" : "" ?> value="<?=$j->id_matkul?>"><?=$j->nama_matkul?></option>
+                                            <option <?= $row->matkul_id == $j->id_matkul ? "selected='selected'" : '' ?> value="<?=$j->id_matkul?>"><?=$j->nama_matkul?></option>
                                         <?php endforeach; ?>
                                     </select>
                                     <small class="help-block text-right"></small>
@@ -94,7 +94,7 @@ function init_page_level(){
                             </td>
                             <td>
                                 <div class="form-group">
-                                    <?=form_hidden('id['.$i.']', $row->id);?>
+                                    <?=form_hidden('id[' . $i . ']', $row->id); ?>
                                     <input required="required" autofocus="autofocus" onfocus="this.select()" value="<?=$row->nama_topik?>" type="text" name="nama_topik[<?=$i?>]" class="form-control">
                                     <span class="d-none">DON'T DELETE THIS</span>
                                     <small class="help-block text-right"></small>
@@ -108,7 +108,7 @@ function init_page_level(){
                             </div>
                         </td>
                         </tr>
-                    <?php $i++;endforeach; ?>
+                    <?php $i++; endforeach; ?>
                 </tbody>
             </table>
             <button type="submit" class="btn btn-block btn-flat btn-outline-primary">

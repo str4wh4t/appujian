@@ -19,7 +19,7 @@
 {{--<script src="{{ asset('assets/template/robust/app-assets/vendors/js/tables/datatable/dataTables.responsive.min.js') }}"></script>--}}
 {{--<script src="{{ asset('assets/template/robust/app-assets/vendors/js/tables/datatable/dataTables.rowReorder.min.js') }}"></script>--}}
 <script src="{{ asset('assets/template/robust/app-assets/vendors/js/forms/select/select2.full.min.js') }}"></script>
-<script src="{{ asset('assets/yarn/node_modules/inputmask/dist/jquery.inputmask.min.js') }}"></script>
+<script src="{{ asset('assets/npm/node_modules/inputmask/dist/jquery.inputmask.min.js') }}"></script>
 <!-- END PAGE VENDOR -->
 @endpush
 
@@ -63,7 +63,7 @@ function init_page_level(){
 <!---- --->
 <div class="row">
     <div class="col-md-6">
-    <?=form_open('soal/ajax/save_bobot_soal', array('id'=>'bobot_soal'), array('method' => 'post', 'aksi' => 'edit','id' => $bobot_soal->id));?>
+    <?=form_open('soal/ajax/save_bobot_soal', ['id'=>'bobot_soal'], ['method' => 'post', 'aksi' => 'edit', 'id' => $bobot_soal->id]); ?>
         <div class="form-body">
             <div class="row">
                 <div class="col-md-12">
@@ -88,7 +88,7 @@ function init_page_level(){
                 </div>
             </div>
         </div>
-    <?=form_close();?>
+    <?=form_close(); ?>
     </div>
 </div>
 <!---- --->

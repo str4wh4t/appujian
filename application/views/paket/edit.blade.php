@@ -7,7 +7,7 @@
 {{--<link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/vendors/css/tables/extensions/rowReorder.dataTables.min.css') }}">--}}
 {{--<link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/vendors/css/tables/extensions/responsive.dataTables.min.css') }}">--}}
 <link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/vendors/css/forms/selects/select2.min.css') }}">
-<link rel="stylesheet" type="text/css" href="{{ asset('assets/yarn/node_modules/summernote/dist/summernote-bs4.min.css') }}">
+<link rel="stylesheet" type="text/css" href="{{ asset('assets/npm/node_modules/summernote/dist/summernote-bs4.min.css') }}">
 <!-- END PAGE LEVEL JS-->
 @endpush
 
@@ -20,8 +20,8 @@
 {{--<script src="{{ asset('assets/template/robust/app-assets/vendors/js/tables/datatable/dataTables.responsive.min.js') }}"></script>--}}
 {{--<script src="{{ asset('assets/template/robust/app-assets/vendors/js/tables/datatable/dataTables.rowReorder.min.js') }}"></script>--}}
 <script src="{{ asset('assets/template/robust/app-assets/vendors/js/forms/select/select2.full.min.js') }}"></script>
-<script src="{{ asset('assets/yarn/node_modules/inputmask/dist/jquery.inputmask.min.js') }}"></script>
-<script src="{{ asset('assets/yarn/node_modules/summernote/dist/summernote-bs4.min.js') }}"></script>
+<script src="{{ asset('assets/npm/node_modules/inputmask/dist/jquery.inputmask.min.js') }}"></script>
+<script src="{{ asset('assets/npm/node_modules/summernote/dist/summernote-bs4.min.js') }}"></script>
 <script src="{{ asset('assets/plugins/summernote_plugins/summernote-cleaner.js') }}"></script>
 <!-- END PAGE VENDOR -->
 @endpush
@@ -131,7 +131,7 @@ $(document).on('change', '#paket_ujian input, #paket_ujian select', function () 
 <!---- --->
 <div class="row">
     <div class="col-md-6">
-    <?=form_open('paket/ajax/save_paket', array('id'=>'paket_ujian'), array('method' => 'post', 'aksi' => 'edit', 'id' => $paket->id));?>
+    <?=form_open('paket/ajax/save_paket', ['id'=>'paket_ujian'], ['method' => 'post', 'aksi' => 'edit', 'id' => $paket->id]); ?>
         <div class="form-body">
             <div class="row">
                 <div class="col-md-12">
@@ -194,7 +194,7 @@ $(document).on('change', '#paket_ujian input, #paket_ujian select', function () 
                 </div>
             </div>
         </div>
-    <?=form_close();?>
+    <?=form_close(); ?>
     </div>
 </div>
 <!---- --->

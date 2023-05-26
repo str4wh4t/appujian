@@ -15,8 +15,8 @@
 	
 	<link rel="apple-touch-icon" href="{{ asset('uploads/img_app/'. APP_FAVICON_APPLE) }}">
 	<link rel="shortcut icon" type="image/x-icon" href="{{ asset('uploads/img_app/'. APP_FAVICON) }}">
-	<link href="{{ asset('assets/yarn/node_modules/typeface-muli/index.css') }}" rel="stylesheet">
-	<link href="{{ asset('assets/yarn/node_modules/typeface-open-sans/index.css') }}" rel="stylesheet">
+	<link href="{{ asset('assets/npm/node_modules/typeface-muli/index.css') }}" rel="stylesheet">
+	<link href="{{ asset('assets/npm/node_modules/typeface-open-sans/index.css') }}" rel="stylesheet">
 
 	@include('template.global_css')
 

@@ -13,7 +13,7 @@
 @push('page_vendor_level_js')
 <!-- BEGIN PAGE VENDOR JS-->
 <script src="{{ asset('assets/template/robust/app-assets/vendors/js/tables/datatable/datatables.min.js') }}"></script>
-<script src="{{ asset('assets/yarn/node_modules/datatables.net-plugins/api/fnPagingInfo.js') }}"></script>
+<script src="{{ asset('assets/npm/node_modules/datatables.net-plugins/api/fnPagingInfo.js') }}"></script>
 {{--<script src="{{ asset('assets/template/robust/app-assets/vendors/js/tables/jquery.dataTables.min.js') }}"></script>--}}
 {{--<script src="{{ asset('assets/template/robust/app-assets/vendors/js/tables/datatable/dataTables.bootstrap4.min.js') }}"></script>--}}
 {{--<script src="{{ asset('assets/template/robust/app-assets/vendors/js/tables/datatable/dataTables.responsive.min.js') }}"></script>--}}
@@ -123,12 +123,12 @@ function init_page_level(){
                         <tbody>
                             <?php
                                 $status = true;
-                                if (empty($import)) {
-                                    echo '<tr><td colspan="2" class="text-center">Data kosong! pastikan anda menggunakan format yang telah disediakan.</td></tr>';
-                                } else {
-                                    $no = 1;
-                                    foreach ($import as $data) :
-                                        ?>
+                    if (empty($import)) {
+                        echo '<tr><td colspan="2" class="text-center">Data kosong! pastikan anda menggunakan format yang telah disediakan.</td></tr>';
+                    } else {
+                        $no = 1;
+                        foreach ($import as $data) :
+                            ?>
                                     <tr>
                                         <td><?= $no++; ?></td>
                                         <td class="<?= ($data['nim'] == null || $data['nim'] == '!! ERROR !!') ? 'bg-danger text-white' : ''; ?>">
@@ -182,17 +182,17 @@ function init_page_level(){
                                         </td>
                                     </tr>
                             <?php
-                                        if ($data['nim'] == null || $data['nama'] == null || $data['email'] == null || $data['no_billkey'] == null || $data['jenis_kelamin'] == null || $data['kodeps'] == null || $data['prodi'] == null || $data['jalur'] == null || $data['gel'] == null || $data['tahun'] == null || $data['matkul'] == null) {
-                                            $status = false;
-                                        }
+                            if ($data['nim'] == null || $data['nama'] == null || $data['email'] == null || $data['no_billkey'] == null || $data['jenis_kelamin'] == null || $data['kodeps'] == null || $data['prodi'] == null || $data['jalur'] == null || $data['gel'] == null || $data['tahun'] == null || $data['matkul'] == null) {
+                                $status = false;
+                            }
 
-                                        if ($data['nim'] == '!! ERROR !!' || $data['nama'] == '!! ERROR !!' || $data['email'] == '!! ERROR !!' || $data['no_billkey'] == '!! ERROR !!' || $data['jenis_kelamin'] == '!! ERROR !!' || $data['kodeps'] == '!! ERROR !!' || $data['prodi'] == '!! ERROR !!' || $data['jalur'] == '!! ERROR !!' || $data['gel'] == '!! ERROR !!' || $data['tahun'] == '!! ERROR !!' || $data['matkul'] == '!! ERROR !!') {
-                                            $status = false;
-                                        }
+                            if ($data['nim'] == '!! ERROR !!' || $data['nama'] == '!! ERROR !!' || $data['email'] == '!! ERROR !!' || $data['no_billkey'] == '!! ERROR !!' || $data['jenis_kelamin'] == '!! ERROR !!' || $data['kodeps'] == '!! ERROR !!' || $data['prodi'] == '!! ERROR !!' || $data['jalur'] == '!! ERROR !!' || $data['gel'] == '!! ERROR !!' || $data['tahun'] == '!! ERROR !!' || $data['matkul'] == '!! ERROR !!') {
+                                $status = false;
+                            }
 
-                                    endforeach;
-                                }
-                                ?>
+                        endforeach;
+                    }
+            	?>
                         </tbody>
                     </table>
                     </div>

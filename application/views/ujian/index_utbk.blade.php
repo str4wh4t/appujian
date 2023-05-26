@@ -6,7 +6,7 @@
 {{--<link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/vendors/css/tables/datatable/dataTables.bootstrap4.min.css') }}">--}}
 {{--<link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/vendors/css/tables/extensions/rowReorder.dataTables.min.css') }}">--}}
 {{--<link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/vendors/css/tables/extensions/responsive.dataTables.min.css') }}">--}}
-<link href="{{ asset('assets/yarn/node_modules/summernote/dist/summernote-bs4.min.css') }}" rel="stylesheet">
+<link href="{{ asset('assets/npm/node_modules/summernote/dist/summernote-bs4.min.css') }}" rel="stylesheet">
 <link href="{{ asset('assets/plugins/summernote_plugins/summernote-audio.css') }}" rel="stylesheet">
 <!-- END PAGE LEVEL CSS-->
 @endpush
@@ -248,15 +248,15 @@ user-select: initial;
 {{-- <script src="{{ asset('assets/template/robust/app-assets/vendors/js/tables/datatable/dataTables.bootstrap4.min.js') }}"></script>--}}
 {{-- <script src="{{ asset('assets/template/robust/app-assets/vendors/js/tables/datatable/dataTables.responsive.min.js') }}"></script>--}}
 {{-- <script src="{{ asset('assets/template/robust/app-assets/vendors/js/tables/datatable/dataTables.rowReorder.min.js') }}"></script>--}}
-<script src="{{ asset('assets/yarn/node_modules/moment/min/moment.min.js') }}"></script>
+<script src="{{ asset('assets/npm/node_modules/moment/min/moment.min.js') }}"></script>
 {{-- <script src="https://momentjs.com/downloads/moment-with-locales.js"></script>--}}
-<script src="{{ asset('assets/yarn/node_modules/moment/min/moment-with-locales.min.js') }}"></script>
+<script src="{{ asset('assets/npm/node_modules/moment/min/moment-with-locales.min.js') }}"></script>
 {{-- <script src="https://cdnjs.cloudflare.com/ajax/libs/screenfull.js/5.0.2/screenfull.min.js"></script>--}}
 {{-- <script src="https://cdnjs.cloudflare.com/ajax/libs/kineticjs/5.2.0/kinetic.js"></script>--}}
-{{-- <script src="{{ asset('assets/yarn/node_modules/kinetic/kinetic.min.js') }}"></script> --}}
+{{-- <script src="{{ asset('assets/npm/node_modules/kinetic/kinetic.min.js') }}"></script> --}}
 {{-- <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-scrollTo/2.1.2/jquery.scrollTo.min.js"></script>--}}
-{{-- <script src="{{ asset('assets/yarn/node_modules/jquery.scrollto/jquery.scrollTo.min.js') }}"></script> --}}
-<script src="{{ asset('assets/yarn/node_modules/summernote/dist/summernote-bs4.min.js') }}"></script>
+{{-- <script src="{{ asset('assets/npm/node_modules/jquery.scrollto/jquery.scrollTo.min.js') }}"></script> --}}
+<script src="{{ asset('assets/npm/node_modules/summernote/dist/summernote-bs4.min.js') }}"></script>
 <script src="{{ asset('assets/plugins/summernote_plugins/summernote-cleaner.js') }}"></script>
 <!-- END PAGE VENDOR JS -->
 @endpush

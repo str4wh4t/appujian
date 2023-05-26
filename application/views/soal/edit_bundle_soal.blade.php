@@ -19,7 +19,7 @@
 {{--<script src="{{ asset('assets/template/robust/app-assets/vendors/js/tables/datatable/dataTables.responsive.min.js') }}"></script>--}}
 {{--<script src="{{ asset('assets/template/robust/app-assets/vendors/js/tables/datatable/dataTables.rowReorder.min.js') }}"></script>--}}
 <script src="{{ asset('assets/template/robust/app-assets/vendors/js/forms/select/select2.full.min.js') }}"></script>
-<script src="{{ asset('assets/yarn/node_modules/inputmask/dist/jquery.inputmask.min.js') }}"></script>
+<script src="{{ asset('assets/npm/node_modules/inputmask/dist/jquery.inputmask.min.js') }}"></script>
 <!-- END PAGE VENDOR -->
 @endpush
 
@@ -86,7 +86,7 @@ $(document).on('change', '#bundle_soal input, #bundle_soal select', function () 
 <!---- --->
 <div class="row">
     <div class="col-md-6">
-    <?=form_open('soal/ajax/save_bundle_soal', array('id'=>'bundle_soal'), array('method' => 'post', 'aksi' => 'edit', 'id' => $bundle->id));?>
+    <?=form_open('soal/ajax/save_bundle_soal', ['id'=>'bundle_soal'], ['method' => 'post', 'aksi' => 'edit', 'id' => $bundle->id]); ?>
         <div class="form-body">
             <div class="row">
                 <div class="col-md-12">
@@ -106,7 +106,7 @@ $(document).on('change', '#bundle_soal input, #bundle_soal select', function () 
                 </div>
             </div>
         </div>
-    <?=form_close();?>
+    <?=form_close(); ?>
     </div>
 </div>
 <!---- --->

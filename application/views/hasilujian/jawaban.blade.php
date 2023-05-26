@@ -6,18 +6,18 @@ use Illuminate\Database\Eloquent\Builder;
 @push('page_level_css')
 <!-- BEGIN PAGE LEVEL JS-->
 <link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/vendors/css/charts/morris.css') }}">
-<link rel="stylesheet" type="text/css" href="{{ asset('assets/yarn/node_modules/featherlight/release/featherlight.min.css') }}" />
+<link rel="stylesheet" type="text/css" href="{{ asset('assets/npm/node_modules/featherlight/release/featherlight.min.css') }}" />
 <!-- END PAGE LEVEL JS-->
 @endpush
 
 @push('page_vendor_level_js')
 <!-- BEGIN PAGE VENDOR JS-->
-<script src="{{ asset('assets/yarn/node_modules/moment/min/moment.min.js') }}"></script>
-<script src="{{ asset('assets/yarn/node_modules/moment/min/moment-with-locales.min.js') }}"></script>
+<script src="{{ asset('assets/npm/node_modules/moment/min/moment.min.js') }}"></script>
+<script src="{{ asset('assets/npm/node_modules/moment/min/moment-with-locales.min.js') }}"></script>
 <script src="{{ asset('assets/template/robust/app-assets/vendors/js/charts/raphael-min.js') }}"></script>
 <script src="{{ asset('assets/template/robust/app-assets/vendors/js/charts/morris.min.js') }}"></script>
-<script src="{{ asset('assets/yarn/node_modules/featherlight/release/featherlight.min.js') }}"></script>
-<script src="{{ asset('assets/yarn/node_modules/inputmask/dist/jquery.inputmask.min.js') }}"></script>
+<script src="{{ asset('assets/npm/node_modules/featherlight/release/featherlight.min.js') }}"></script>
+<script src="{{ asset('assets/npm/node_modules/inputmask/dist/jquery.inputmask.min.js') }}"></script>
 <!-- END PAGE VENDOR JS-->
 @endpush
 
@@ -176,7 +176,7 @@ $(document).on('click','.btn_submit_nilai_essay',function(){
 					<!---- --->
 					<div class="row">
 						<div class="col-md-12 mb-4">
-							<?php $back_link = in_group('admin') ? site_url('hasilujian/detail/' . $h_ujian->m_ujian->id_ujian) : site_url('hasilujian/history/' . uuid_create_from_integer($h_ujian->mahasiswa_ujian_id)) ; ?>
+							<?php $back_link = in_group('admin') ? site_url('hasilujian/detail/' . $h_ujian->m_ujian->id_ujian) : site_url('hasilujian/history/' . uuid_create_from_integer($h_ujian->mahasiswa_ujian_id)); ?>
 							<a href="{{ $back_link }}" class="btn btn-sm btn-warning btn-flat"><i
 									class="fa fa-arrow-left"></i> Kembali</a>
 							{{-- <a target="_blank" href="{{ site_url('hasilujian/cetak_detail_jawaban/') }}"
@@ -267,17 +267,18 @@ $(document).on('click','.btn_submit_nilai_essay',function(){
 				@foreach ($topik_ujian_list as $topik)
 				
 					<?php
-					$jawaban_ujian_list = $h_ujian->jawaban_ujian()->whereHas('soal', 
-					function (Builder $query) use($topik) {
-						$query->where('topik_id', $topik->id);
-					})
-					->get()
-					->sortBy('id');
+                    $jawaban_ujian_list = $h_ujian->jawaban_ujian()->whereHas('soal',
+                        function (Builder $query) use ($topik) {
+                            $query->where('topik_id', $topik->id);
+                        })
+                    ->get()
+                    ->sortBy('id');
 
-					if($jawaban_ujian_list->isEmpty())
-						continue;
+							if ($jawaban_ujian_list->isEmpty()) {
+							    continue;
+							}
 
-					?>
+							?>
 
 					<div class="alert bg-info w-100">
 						<b>Topik : </b> {{ $topik->nama_topik }} ( Poin Topik : {{ $topik->poin_topik }} )
@@ -316,10 +317,10 @@ $(document).on('click','.btn_submit_nilai_essay',function(){
 
 													@if($jawaban_ujian->soal->tipe_soal == TIPE_SOAL_MCSA)
 														@if(!$jawaban_ujian->soal->is_bobot_per_jawaban)
-														<?php $text_color = ($ABJ == $jawaban_ujian->jawaban) ? (($ABJ == $jawaban_ujian->soal->jawaban) ? 'success' : 'danger') : (($ABJ == $jawaban_ujian->soal->jawaban) ? 'success' : 'grey');  ?>
+														<?php $text_color = ($ABJ == $jawaban_ujian->jawaban) ? (($ABJ == $jawaban_ujian->soal->jawaban) ? 'success' : 'danger') : (($ABJ == $jawaban_ujian->soal->jawaban) ? 'success' : 'grey'); ?>
 														<div class="alert alert-light text-{{ $text_color }} {{ ($ABJ == $jawaban_ujian->jawaban) ? (($ABJ == $jawaban_ujian->soal->jawaban) ? 'border-success border-3' : 'border-danger border-3') : (($ABJ == $jawaban_ujian->soal->jawaban) ? 'border-success border-3' : 'border-grey') }}">
 														@else
-														<?php $text_color = (($ABJ == $jawaban_ujian->jawaban) && !empty($jawaban_ujian->jawaban)) ? 'success' : 'grey' ;  ?>
+														<?php $text_color = (($ABJ == $jawaban_ujian->jawaban) && ! empty($jawaban_ujian->jawaban)) ? 'success' : 'grey'; ?>
 														<div class="alert alert-light text-{{ $text_color }} {{ (($ABJ == $jawaban_ujian->jawaban) && !empty($jawaban_ujian->jawaban)) ? 'border-success border-3' : 'border-grey' }}">
 														@endif
 													@else
@@ -327,10 +328,10 @@ $(document).on('click','.btn_submit_nilai_essay',function(){
 														@php($jawaban_mcma = empty($jawaban_ujian->jawaban_mcma) ? [] : json_decode($jawaban_ujian->jawaban_mcma))
 														@php($jawaban_mcma_kunci = json_decode($jawaban_ujian->soal->jawaban))
 														@if(!$jawaban_ujian->soal->is_bobot_per_jawaban)
-														<?php $text_color = (in_array($ABJ, $jawaban_mcma)) ? ((in_array($ABJ, $jawaban_mcma_kunci)) ? 'success' : 'danger') : ((in_array($ABJ, $jawaban_mcma_kunci)) ? 'success' : 'grey');  ?>
+														<?php $text_color = (in_array($ABJ, $jawaban_mcma)) ? ((in_array($ABJ, $jawaban_mcma_kunci)) ? 'success' : 'danger') : ((in_array($ABJ, $jawaban_mcma_kunci)) ? 'success' : 'grey'); ?>
 														<div class="alert alert-light text-{{ $text_color }} {{ (in_array($ABJ, $jawaban_mcma)) ? ((in_array($ABJ, $jawaban_mcma_kunci)) ? 'border-success border-3' : 'border-danger border-3') : ((in_array($ABJ, $jawaban_mcma_kunci)) ? 'border-success border-3' : 'border-grey') }}">
 														@else
-														<?php $text_color = ((in_array($ABJ, $jawaban_mcma)) && !empty($jawaban_mcma)) ? 'success' : 'grey' ;  ?>
+														<?php $text_color = ((in_array($ABJ, $jawaban_mcma)) && ! empty($jawaban_mcma)) ? 'success' : 'grey'; ?>
 														<div class="alert alert-light text-{{ $text_color }} {{ ((in_array($ABJ, $jawaban_mcma)) && !empty($jawaban_mcma)) ? 'border-success border-3' : 'border-grey' }}">
 														@endif
 													@endif
@@ -363,21 +364,21 @@ $(document).on('click','.btn_submit_nilai_essay',function(){
 											@if (!empty($jawaban_ujian->waktu_jawab_soal))
 											<h4 class="card-title">
 												<?php
-												$date1 = new DateTime($jawaban_ujian->waktu_buka_soal);
-												$date2 = new DateTime($jawaban_ujian->waktu_jawab_soal);
-												$interval = $date1->diff($date2);
+							                            $date1 = new DateTime($jawaban_ujian->waktu_buka_soal);
+							$date2 = new DateTime($jawaban_ujian->waktu_jawab_soal);
+							$interval = $date1->diff($date2);
 
-												$waktu_menjawab = $interval->i . ' mnt ' . $interval->s . ' dtk' ;
-												?>
+							$waktu_menjawab = $interval->i . ' mnt ' . $interval->s . ' dtk';
+							?>
 												Waktu Menjawab : {{ $waktu_menjawab }}
 											</h4>
 											@endif
 
-											<?php 
-											$badge_benar = '<div class="badge badge-success round">Benar</span></div>';    
-											$badge_salah = '<div class="badge badge-danger round">Salah</span></div>';    
-											$badge_ragu = '<div class="badge badge-warning round">Ragu</span></div>';    
-											?>
+											<?php
+                                            $badge_benar = '<div class="badge badge-success round">Benar</span></div>';
+							$badge_salah = '<div class="badge badge-danger round">Salah</span></div>';
+							$badge_ragu = '<div class="badge badge-warning round">Ragu</span></div>';
+							?>
 
 											@if($jawaban_ujian->soal->tipe_soal == TIPE_SOAL_MCSA)
 											
@@ -475,14 +476,14 @@ $(document).on('click','.btn_submit_nilai_essay',function(){
 														'<div class="badge badge-danger round">'. 0 .'</div>' !!} )
 													@else
 														<?php
-															$nilai_poin_total = 0;
-															if(!empty($jawaban_mcma)){
-																foreach($jawaban_mcma as $j_mcma){
-																	$opsi_bobot = 'opsi_'. strtolower($j_mcma) .'_bobot';
-																	$nilai_poin_total =  $nilai_poin_total + $jawaban_ujian->soal->$opsi_bobot * $topik->poin_topik;
-																}
-															}
-														?>
+							                $nilai_poin_total = 0;
+							if (! empty($jawaban_mcma)) {
+							    foreach ($jawaban_mcma as $j_mcma) {
+							        $opsi_bobot = 'opsi_' . strtolower($j_mcma) . '_bobot';
+							        $nilai_poin_total = $nilai_poin_total + $jawaban_ujian->soal->$opsi_bobot * $topik->poin_topik;
+							    }
+							}
+							?>
 														( Poin : 
 														<div class="badge badge-success round">
 															{{ number_format($nilai_poin_total,2,'.', '') }}

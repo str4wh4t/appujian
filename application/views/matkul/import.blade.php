@@ -13,7 +13,7 @@
 @push('page_vendor_level_js')
 <!-- BEGIN PAGE VENDOR JS-->
 <script src="{{ asset('assets/template/robust/app-assets/vendors/js/tables/datatable/datatables.min.js') }}"></script>
-<script src="{{ asset('assets/yarn/node_modules/datatables.net-plugins/api/fnPagingInfo.js') }}"></script>
+<script src="{{ asset('assets/npm/node_modules/datatables.net-plugins/api/fnPagingInfo.js') }}"></script>
 {{--<script src="{{ asset('assets/template/robust/app-assets/vendors/js/tables/jquery.dataTables.min.js') }}"></script>--}}
 {{--<script src="{{ asset('assets/template/robust/app-assets/vendors/js/tables/datatable/dataTables.bootstrap4.min.js') }}"></script>--}}
 {{--<script src="{{ asset('assets/template/robust/app-assets/vendors/js/tables/datatable/dataTables.responsive.min.js') }}"></script>--}}
@@ -92,10 +92,10 @@
                             <?php
                                     endforeach;
                                 }
-                                ?>
+            	?>
                         </tbody>
                     </table>
-                    <?php if (!empty($import)) : ?>
+                    <?php if (! empty($import)) : ?>
 
                         <?= form_open('matkul/do_import', null, ['matkul' => json_encode($import)]); ?>
                         <button type='submit' class='btn btn-block btn-flat btn-primary'><i class="fa fa-arrow-circle-o-down"></i> Import</button>

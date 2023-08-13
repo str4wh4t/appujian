@@ -8,6 +8,7 @@ composer.phar
 /application/config/constants_depend_app_3.php
 /application/config/constants_depend_app_4.php
 /vendor
+/public/qq
 /public/sessions
 /public/uploads/files/*
 !/public/uploads/files/index.html

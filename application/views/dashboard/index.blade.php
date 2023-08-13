@@ -286,7 +286,7 @@ if ($i > 3) {
             <div class="card-body">
         <div class="row">
             <div class="col-md-4 text-center">
-                        <img src="{{ asset('uploads/img_app/') . APP_LOGO }}" style="width: 85px" alt="avatar">
+                        <img src="{{ asset('uploads/img_app/') . $_ENV['LOGO_100_100'] }}" style="width: 85px" alt="avatar">
             </div>
             <div class="col-md-8 pt-2" style="font-size: 1.2rem">
                 <span style="display:block">Computer Assisted Test (CAT)</span>

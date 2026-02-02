@@ -18,3 +18,4 @@ composer.phar
 supervisord.log
 supervisord.pid
 .env
+/redis/*

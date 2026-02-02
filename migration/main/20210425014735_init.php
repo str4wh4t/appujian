@@ -812,7 +812,7 @@ class Init extends AbstractMigration
 
         $this->table('h_ujian_deleted')
             ->addForeignKey('mahasiswa_id', 'mahasiswa', 'id_mahasiswa', 'cascade', 'no action')
-            ->addForeignKey('mahasiswa_ujian_id', 'mahasiswa_ujian', 'mahasiswa_matkul_id', 'cascade', 'no action')
+            ->addForeignKey('mahasiswa_ujian_id', 'mahasiswa_ujian', 'id', 'cascade', 'no action')
             ->addForeignKey('ujian_id', 'm_ujian', 'id_ujian', 'cascade', 'no action')
             ->save();
 

@@ -19,7 +19,7 @@
 {{--<script src="{{ asset('assets/template/robust/app-assets/vendors/js/tables/datatable/dataTables.responsive.min.js') }}"></script>--}}
 {{--<script src="{{ asset('assets/template/robust/app-assets/vendors/js/tables/datatable/dataTables.rowReorder.min.js') }}"></script>--}}
 <script src="{{ asset('assets/template/robust/app-assets/vendors/js/forms/select/select2.full.min.js') }}"></script>
-<script src="{{ asset('assets/npm/node_modules/inputmask/dist/jquery.inputmask.min.js') }}"></script>
+<script src="{{ asset('assets/node_modules/inputmask/dist/jquery.inputmask.min.js') }}"></script>
 <!-- END PAGE VENDOR -->
 @endpush
 

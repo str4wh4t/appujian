@@ -23,7 +23,7 @@
 
 @push('page_vendor_level_js')
 <!-- BEGIN PAGE VENDOR JS-->
-<script src="{{ asset('assets/npm/node_modules/moment/min/moment.min.js') }}"></script>
+<script src="{{ asset('assets/node_modules/moment/min/moment.min.js') }}"></script>
 <script src="{{ asset('assets/template/robust/app-assets/vendors/js/tables/handsontable/handsontable.full.js') }}"></script>
 <script src="{{ asset('assets/template/robust/app-assets/vendors/js/tables/handsontable/jsgrid.min.js') }}"></script>
 <script src="{{ asset('assets/template/robust/app-assets/vendors/js/tables/handsontable/languages.min.js') }}"></script>

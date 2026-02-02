@@ -366,6 +366,17 @@
     */
     private function get_display_result()
     {
+      if (!empty($this->select) && !empty($this->columns)) {
+        $parts = array();
+        foreach ($this->columns as $col) {
+          if (isset($this->select[$col])) {
+            $parts[] = $this->select[$col];
+          }
+        }
+        if (!empty($parts)) {
+          $this->ci->db->select(implode(', ', $parts), FALSE);
+        }
+      }
       return $this->ci->db->get($this->table);
     }
 
@@ -463,6 +474,17 @@
       {
         $this->ci->db->distinct($this->distinct);
         $this->ci->db->select($this->columns);
+      }
+      elseif (!empty($this->select) && !empty($this->columns)) {
+        $parts = array();
+        foreach ($this->columns as $col) {
+          if (isset($this->select[$col])) {
+            $parts[] = $this->select[$col];
+          }
+        }
+        if (!empty($parts)) {
+          $this->ci->db->select(implode(', ', $parts), FALSE);
+        }
       }
 
       $query = $this->ci->db->get($this->table, NULL, NULL, FALSE);

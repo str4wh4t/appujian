@@ -6,7 +6,7 @@
 {{--<link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/vendors/css/tables/datatable/dataTables.bootstrap4.min.css') }}">--}}
 {{--<link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/vendors/css/tables/extensions/rowReorder.dataTables.min.css') }}">--}}
 {{--<link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/vendors/css/tables/extensions/responsive.dataTables.min.css') }}">--}}
-<link rel="stylesheet" type="text/css" href="{{ asset('assets/npm/node_modules/bootstrap4-datetimepicker/build/css/bootstrap-datetimepicker.css') }}">
+<link rel="stylesheet" type="text/css" href="{{ asset('assets/node_modules/bootstrap4-datetimepicker/build/css/bootstrap-datetimepicker.css') }}">
 <link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/vendors/css/forms/icheck/icheck.css') }}">
 <!-- END PAGE LEVEL JS-->
 @endpush
@@ -14,14 +14,14 @@
 @push('page_vendor_level_js')
 <!-- BEGIN PAGE VENDOR JS-->
 <script src="{{ asset('assets/template/robust/app-assets/vendors/js/tables/datatable/datatables.min.js') }}"></script>
-<script src="{{ asset('assets/npm/node_modules/datatables.net-plugins/api/fnPagingInfo.js') }}"></script>
+<script src="{{ asset('assets/node_modules/datatables.net-plugins/api/fnPagingInfo.js') }}"></script>
 {{--<script src="{{ asset('assets/template/robust/app-assets/vendors/js/tables/jquery.dataTables.min.js') }}"></script>--}}
 {{--<script src="{{ asset('assets/template/robust/app-assets/vendors/js/tables/datatable/dataTables.bootstrap4.min.js') }}"></script>--}}
 {{--<script src="{{ asset('assets/template/robust/app-assets/vendors/js/tables/datatable/dataTables.responsive.min.js') }}"></script>--}}
 {{--<script src="{{ asset('assets/template/robust/app-assets/vendors/js/tables/datatable/dataTables.rowReorder.min.js') }}"></script>--}}
-<script src="{{ asset('assets/npm/node_modules/moment/min/moment.min.js') }}"></script>
-<script src="{{ asset('assets/npm/node_modules/bootstrap4-datetimepicker/build/js/bootstrap-datetimepicker.min.js') }}"></script>
-<script src="{{ asset('assets/npm/node_modules/jquery-validation/dist/jquery.validate.min.js') }}"></script>
+<script src="{{ asset('assets/node_modules/moment/min/moment.min.js') }}"></script>
+<script src="{{ asset('assets/node_modules/bootstrap4-datetimepicker/build/js/bootstrap-datetimepicker.min.js') }}"></script>
+<script src="{{ asset('assets/node_modules/jquery-validation/dist/jquery.validate.min.js') }}"></script>
 <script src="{{ asset('assets/template/robust/app-assets/vendors/js/forms/icheck/icheck.min.js') }}"></script>
 <!-- END PAGE VENDOR -->
 @endpush

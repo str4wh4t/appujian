@@ -19,7 +19,7 @@
 <!-- Include TUI Froala Editor CSS. -->
 {{--<link rel="stylesheet" href="{{ asset('assets/bower_components/froala_editor/css/third_party/image_tui.min.css') }}">--}}
 
-<link href="{{ asset('assets/npm/node_modules/summernote/dist/summernote-bs4.min.css') }}" rel="stylesheet">
+<link href="{{ asset('assets/node_modules/summernote/dist/summernote-bs4.min.css') }}" rel="stylesheet">
 <link href="{{ asset('assets/plugins/summernote_plugins/summernote-audio.css') }}" rel="stylesheet">
 
 <!-- END PAGE LEVEL JS-->
@@ -46,15 +46,15 @@
 <!-- Include TUI plugin. -->
 {{--<script src="{{ asset('assets/bower_components/froala_editor/js/third_party/image_tui.min.js') }}"></script>--}}
 
-<script src="{{ asset('assets/npm/node_modules/summernote/dist/summernote-bs4.min.js') }}"></script>
+<script src="{{ asset('assets/node_modules/summernote/dist/summernote-bs4.min.js') }}"></script>
 
 <script src="{{ asset('assets/plugins/select2-cascade.js') }}"></script>
 <script src="{{ asset('assets/plugins/summernote_plugins/summernote-cleaner.js') }}"></script>
 <script src="{{ asset('assets/plugins/summernote_plugins/summernote-audio.js') }}"></script>
 {{--<script src="https://rawgit.com/RobinHerbots/Inputmask/5.x/dist/jquery.inputmask.js"></script>--}}
-<script src="{{ asset('assets/npm/node_modules/jquery-validation/dist/jquery.validate.js') }}"></script>
+<script src="{{ asset('assets/node_modules/jquery-validation/dist/jquery.validate.js') }}"></script>
 <script src="{{ asset('assets/template/robust/app-assets/vendors/js/forms/toggle/bootstrap-switch.min.js') }}"></script>
-<script src="{{ asset('assets/npm/node_modules/inputmask/dist/jquery.inputmask.min.js') }}"></script>
+<script src="{{ asset('assets/node_modules/inputmask/dist/jquery.inputmask.min.js') }}"></script>
 <!-- END PAGE VENDOR -->
 @endpush
 

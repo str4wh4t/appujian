@@ -1,0 +1,2 @@
+# Jalankan cronjob setiap menit (di dalam container path: /var/www/html)
+* * * * * root /var/www/html/cronjob.sh

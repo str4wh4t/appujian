@@ -6,18 +6,18 @@ use Illuminate\Database\Eloquent\Builder;
 @push('page_level_css')
 <!-- BEGIN PAGE LEVEL JS-->
 <link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/vendors/css/charts/morris.css') }}">
-<link rel="stylesheet" type="text/css" href="{{ asset('assets/npm/node_modules/featherlight/release/featherlight.min.css') }}" />
+<link rel="stylesheet" type="text/css" href="{{ asset('assets/node_modules/featherlight/release/featherlight.min.css') }}" />
 <!-- END PAGE LEVEL JS-->
 @endpush
 
 @push('page_vendor_level_js')
 <!-- BEGIN PAGE VENDOR JS-->
-<script src="{{ asset('assets/npm/node_modules/moment/min/moment.min.js') }}"></script>
-<script src="{{ asset('assets/npm/node_modules/moment/min/moment-with-locales.min.js') }}"></script>
+<script src="{{ asset('assets/node_modules/moment/min/moment.min.js') }}"></script>
+<script src="{{ asset('assets/node_modules/moment/min/moment-with-locales.min.js') }}"></script>
 <script src="{{ asset('assets/template/robust/app-assets/vendors/js/charts/raphael-min.js') }}"></script>
 <script src="{{ asset('assets/template/robust/app-assets/vendors/js/charts/morris.min.js') }}"></script>
-<script src="{{ asset('assets/npm/node_modules/featherlight/release/featherlight.min.js') }}"></script>
-<script src="{{ asset('assets/npm/node_modules/inputmask/dist/jquery.inputmask.min.js') }}"></script>
+<script src="{{ asset('assets/node_modules/featherlight/release/featherlight.min.js') }}"></script>
+<script src="{{ asset('assets/node_modules/inputmask/dist/jquery.inputmask.min.js') }}"></script>
 <!-- END PAGE VENDOR JS-->
 @endpush
 

@@ -6,5 +6,11 @@ cur_dir="$(pwd)"
 # php -r "unlink('composer-setup.php');"
 # php composer.phar install
 php "$(pwd)/vendor/bin/phoenix" "migrate"
-ln -s "$(pwd)/writeable/yarn/node_modules" "$(pwd)/public/assets/yarn"
-php "public/index.php" "pub/generate_data_daerah"
+
+# Symlink node_modules ke public/assets/npm
+NPM_LINK="$(pwd)/public/assets/node_modules"
+[ -e "$NPM_LINK" ] && rm -rf "$NPM_LINK"
+if [ -d "$(pwd)/node_modules" ]; then
+  ln -s "$(pwd)/node_modules" "$NPM_LINK"
+fi
+# php "public/index.php" "pub/generate_data_daerah"

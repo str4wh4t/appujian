@@ -1,0 +1,206 @@
+2026-02-02 03:41:42,864 INFO Set uid to user 0 succeeded
+2026-02-02 03:41:42,867 INFO supervisord started with pid 1
+2026-02-02 03:41:43,873 INFO spawned: 'cron' with pid 31
+2026-02-02 03:41:44,878 INFO success: cron entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2026-02-02 03:42:02,933 INFO reaped unknown pid 36 (exit status 0)
+2026-02-02 03:43:02,091 INFO reaped unknown pid 45 (exit status 0)
+2026-02-02 03:44:02,273 INFO reaped unknown pid 54 (exit status 0)
+2026-02-02 03:45:02,572 INFO reaped unknown pid 63 (exit status 0)
+2026-02-02 03:46:01,769 INFO reaped unknown pid 72 (exit status 0)
+2026-02-02 03:47:01,964 INFO reaped unknown pid 81 (exit status 0)
+2026-02-02 03:48:02,125 INFO reaped unknown pid 90 (exit status 0)
+2026-02-02 03:49:01,282 INFO reaped unknown pid 99 (exit status 0)
+2026-02-02 03:50:01,453 INFO reaped unknown pid 108 (exit status 0)
+2026-02-02 03:51:01,621 INFO reaped unknown pid 117 (exit status 0)
+2026-02-02 03:52:01,789 INFO reaped unknown pid 126 (exit status 0)
+2026-02-02 03:53:01,959 INFO reaped unknown pid 135 (exit status 0)
+2026-02-02 03:54:02,137 INFO reaped unknown pid 144 (exit status 0)
+2026-02-02 03:55:02,305 INFO reaped unknown pid 153 (exit status 0)
+2026-02-02 03:56:01,473 INFO reaped unknown pid 162 (exit status 0)
+2026-02-02 03:56:45,603 WARN received SIGQUIT indicating exit request
+2026-02-02 03:56:45,603 INFO waiting for cron to die
+2026-02-02 03:56:45,604 INFO stopped: cron (terminated by SIGTERM)
+2026-02-02 05:14:17,403 INFO Set uid to user 0 succeeded
+2026-02-02 05:14:17,405 INFO supervisord started with pid 1
+2026-02-02 05:14:18,409 INFO spawned: 'cron' with pid 28
+2026-02-02 05:14:18,411 INFO spawned: 'php-fpm' with pid 29
+2026-02-02 05:14:19,443 INFO success: cron entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2026-02-02 05:14:19,443 INFO success: php-fpm entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2026-02-02 05:15:01,553 INFO reaped unknown pid 36 (exit status 0)
+2026-02-02 05:16:01,720 INFO reaped unknown pid 45 (exit status 0)
+2026-02-02 05:17:01,876 INFO reaped unknown pid 57 (exit status 0)
+2026-02-02 05:18:02,035 INFO reaped unknown pid 66 (exit status 0)
+2026-02-02 05:19:02,195 INFO reaped unknown pid 75 (exit status 0)
+2026-02-02 05:20:02,361 INFO reaped unknown pid 84 (exit status 0)
+2026-02-02 05:20:42,469 WARN received SIGQUIT indicating exit request
+2026-02-02 05:20:42,469 INFO waiting for cron, php-fpm to die
+2026-02-02 05:20:43,479 INFO stopped: php-fpm (exit status 0)
+2026-02-02 05:20:44,484 INFO stopped: cron (terminated by SIGTERM)
+2026-02-02 05:20:48,935 INFO Set uid to user 0 succeeded
+2026-02-02 05:20:48,936 INFO supervisord started with pid 1
+2026-02-02 05:20:49,945 INFO spawned: 'cron' with pid 28
+2026-02-02 05:20:49,949 INFO spawned: 'php-fpm' with pid 29
+2026-02-02 05:20:50,982 INFO success: cron entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2026-02-02 05:20:50,983 INFO success: php-fpm entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2026-02-02 05:21:02,395 INFO reaped unknown pid 36 (exit status 0)
+2026-02-02 05:21:43,089 WARN received SIGQUIT indicating exit request
+2026-02-02 05:21:43,091 INFO waiting for cron, php-fpm to die
+2026-02-02 05:21:43,098 INFO stopped: php-fpm (exit status 0)
+2026-02-02 05:21:43,099 INFO stopped: cron (terminated by SIGTERM)
+2026-02-02 05:25:03,198 INFO Set uid to user 0 succeeded
+2026-02-02 05:25:03,199 INFO supervisord started with pid 1
+2026-02-02 05:25:04,205 INFO spawned: 'cron' with pid 34
+2026-02-02 05:25:04,207 INFO spawned: 'php-fpm' with pid 35
+2026-02-02 05:25:05,239 INFO success: cron entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2026-02-02 05:25:05,240 INFO success: php-fpm entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2026-02-02 05:26:01,626 INFO reaped unknown pid 42 (exit status 0)
+2026-02-02 05:27:01,790 INFO reaped unknown pid 51 (exit status 0)
+2026-02-02 05:28:01,573 INFO reaped unknown pid 60 (exit status 0)
+2026-02-02 05:29:01,734 INFO reaped unknown pid 81 (exit status 0)
+2026-02-02 05:30:01,898 INFO reaped unknown pid 93 (exit status 0)
+2026-02-02 05:31:02,067 INFO reaped unknown pid 102 (exit status 0)
+2026-02-02 05:31:18,111 WARN received SIGQUIT indicating exit request
+2026-02-02 05:31:18,113 INFO waiting for cron, php-fpm to die
+2026-02-02 05:31:19,136 INFO stopped: php-fpm (exit status 0)
+2026-02-02 05:31:20,143 INFO stopped: cron (terminated by SIGTERM)
+2026-02-02 05:31:27,094 INFO Set uid to user 0 succeeded
+2026-02-02 05:31:27,098 INFO supervisord started with pid 1
+2026-02-02 05:31:28,103 INFO spawned: 'cron' with pid 31
+2026-02-02 05:31:28,107 INFO spawned: 'php-fpm' with pid 32
+2026-02-02 05:31:29,143 INFO success: cron entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2026-02-02 05:31:29,144 INFO success: php-fpm entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2026-02-02 05:32:01,767 INFO reaped unknown pid 39 (exit status 0)
+2026-02-02 05:33:01,939 INFO reaped unknown pid 48 (exit status 0)
+2026-02-02 05:34:02,112 INFO reaped unknown pid 57 (exit status 0)
+2026-02-02 05:34:10,131 WARN received SIGQUIT indicating exit request
+2026-02-02 05:34:10,136 INFO waiting for cron, php-fpm to die
+2026-02-02 05:34:10,159 INFO stopped: php-fpm (exit status 0)
+2026-02-02 05:34:10,160 INFO stopped: cron (terminated by SIGTERM)
+2026-02-02 05:34:13,143 INFO Set uid to user 0 succeeded
+2026-02-02 05:34:13,145 INFO supervisord started with pid 1
+2026-02-02 05:34:14,148 INFO spawned: 'cron' with pid 37
+2026-02-02 05:34:14,149 INFO spawned: 'php-fpm' with pid 38
+2026-02-02 05:34:15,170 INFO success: cron entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2026-02-02 05:34:15,170 INFO success: php-fpm entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2026-02-02 05:35:01,717 INFO reaped unknown pid 53 (exit status 0)
+2026-02-02 05:36:01,884 INFO reaped unknown pid 62 (exit status 0)
+2026-02-02 05:36:41,999 WARN received SIGQUIT indicating exit request
+2026-02-02 05:36:42,000 INFO waiting for cron, php-fpm to die
+2026-02-02 05:36:42,015 INFO stopped: php-fpm (exit status 0)
+2026-02-02 05:36:42,016 INFO stopped: cron (terminated by SIGTERM)
+2026-02-02 05:36:47,853 INFO Set uid to user 0 succeeded
+2026-02-02 05:36:47,855 INFO supervisord started with pid 1
+2026-02-02 05:36:48,859 INFO spawned: 'cron' with pid 37
+2026-02-02 05:36:48,861 INFO spawned: 'php-fpm' with pid 38
+2026-02-02 05:36:49,885 INFO success: cron entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2026-02-02 05:36:49,885 INFO success: php-fpm entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2026-02-02 05:37:01,917 INFO reaped unknown pid 45 (exit status 0)
+2026-02-02 05:37:28,988 WARN received SIGQUIT indicating exit request
+2026-02-02 05:37:28,990 INFO waiting for cron, php-fpm to die
+2026-02-02 05:37:28,993 INFO stopped: php-fpm (exit status 0)
+2026-02-02 05:37:28,993 INFO stopped: cron (terminated by SIGTERM)
+2026-02-02 05:37:29,558 INFO Set uid to user 0 succeeded
+2026-02-02 05:37:29,559 INFO supervisord started with pid 1
+2026-02-02 05:37:30,568 INFO spawned: 'cron' with pid 37
+2026-02-02 05:37:30,572 INFO spawned: 'php-fpm' with pid 38
+2026-02-02 05:37:31,603 INFO success: cron entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2026-02-02 05:37:31,605 INFO success: php-fpm entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2026-02-02 05:37:59,684 WARN received SIGQUIT indicating exit request
+2026-02-02 05:37:59,685 INFO waiting for cron, php-fpm to die
+2026-02-02 05:37:59,692 INFO stopped: php-fpm (exit status 0)
+2026-02-02 05:37:59,693 INFO stopped: cron (terminated by SIGTERM)
+2026-02-02 05:39:12,414 INFO Set uid to user 0 succeeded
+2026-02-02 05:39:12,415 INFO supervisord started with pid 1
+2026-02-02 05:39:13,422 INFO spawned: 'cron' with pid 49
+2026-02-02 05:39:13,426 INFO spawned: 'php-fpm' with pid 50
+2026-02-02 05:39:14,451 INFO success: cron entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2026-02-02 05:39:14,453 INFO success: php-fpm entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2026-02-02 05:40:01,559 INFO reaped unknown pid 57 (exit status 0)
+2026-02-02 05:40:06,576 WARN received SIGQUIT indicating exit request
+2026-02-02 05:40:06,577 INFO waiting for cron, php-fpm to die
+2026-02-02 05:40:06,585 INFO stopped: php-fpm (exit status 0)
+2026-02-02 05:40:06,586 INFO stopped: cron (terminated by SIGTERM)
+2026-02-02 05:46:59,587 INFO Set uid to user 0 succeeded
+2026-02-02 05:46:59,588 INFO supervisord started with pid 1
+2026-02-02 05:47:00,594 INFO spawned: 'cron' with pid 44
+2026-02-02 05:47:00,597 INFO spawned: 'php-fpm' with pid 45
+2026-02-02 05:47:01,635 INFO success: cron entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2026-02-02 05:47:01,636 INFO success: php-fpm entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2026-02-02 05:48:02,467 INFO reaped unknown pid 52 (exit status 0)
+2026-02-02 05:49:02,645 INFO reaped unknown pid 61 (exit status 0)
+2026-02-02 05:50:02,520 INFO reaped unknown pid 70 (exit status 0)
+2026-02-02 05:51:02,692 INFO reaped unknown pid 79 (exit status 0)
+2026-02-02 05:52:01,858 INFO reaped unknown pid 88 (exit status 0)
+2026-02-02 05:52:05,868 WARN received SIGQUIT indicating exit request
+2026-02-02 05:52:05,868 INFO waiting for cron, php-fpm to die
+2026-02-02 05:52:06,884 INFO stopped: php-fpm (exit status 0)
+2026-02-02 05:52:06,886 INFO stopped: cron (terminated by SIGTERM)
+2026-02-02 05:52:16,456 INFO Set uid to user 0 succeeded
+2026-02-02 05:52:16,457 INFO supervisord started with pid 1
+2026-02-02 05:52:17,458 INFO spawned: 'cron' with pid 44
+2026-02-02 05:52:17,460 INFO spawned: 'php-fpm' with pid 45
+2026-02-02 05:52:18,479 INFO success: cron entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2026-02-02 05:52:18,479 INFO success: php-fpm entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2026-02-02 05:52:45,594 WARN received SIGQUIT indicating exit request
+2026-02-02 05:52:45,594 INFO waiting for cron, php-fpm to die
+2026-02-02 05:52:45,597 INFO stopped: php-fpm (exit status 0)
+2026-02-02 05:52:45,598 INFO stopped: cron (terminated by SIGTERM)
+2026-02-02 05:52:50,270 INFO Set uid to user 0 succeeded
+2026-02-02 05:52:50,271 INFO supervisord started with pid 1
+2026-02-02 05:52:51,277 INFO spawned: 'cron' with pid 50
+2026-02-02 05:52:51,280 INFO spawned: 'php-fpm' with pid 51
+2026-02-02 05:52:52,315 INFO success: cron entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2026-02-02 05:52:52,316 INFO success: php-fpm entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2026-02-02 05:53:01,817 INFO reaped unknown pid 58 (exit status 0)
+2026-02-02 05:54:01,969 INFO reaped unknown pid 67 (exit status 0)
+2026-02-02 05:55:02,139 INFO reaped unknown pid 89 (exit status 0)
+2026-02-02 05:55:39,241 WARN received SIGQUIT indicating exit request
+2026-02-02 05:55:39,242 INFO waiting for cron, php-fpm to die
+2026-02-02 05:55:40,259 INFO stopped: php-fpm (exit status 0)
+2026-02-02 05:55:40,261 INFO stopped: cron (terminated by SIGTERM)
+2026-02-02 05:57:11,646 INFO Set uid to user 0 succeeded
+2026-02-02 05:57:11,647 INFO supervisord started with pid 1
+2026-02-02 05:57:12,654 INFO spawned: 'cron' with pid 43
+2026-02-02 05:57:12,658 INFO spawned: 'php-fpm' with pid 44
+2026-02-02 05:57:13,701 INFO success: cron entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2026-02-02 05:57:13,701 INFO success: php-fpm entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2026-02-02 05:58:01,867 INFO reaped unknown pid 51 (exit status 0)
+2026-02-02 05:59:02,029 INFO reaped unknown pid 60 (exit status 0)
+2026-02-02 06:00:02,200 INFO reaped unknown pid 69 (exit status 0)
+2026-02-02 06:01:02,383 INFO reaped unknown pid 78 (exit status 0)
+2026-02-02 06:02:02,563 INFO reaped unknown pid 87 (exit status 0)
+2026-02-02 06:03:03,169 INFO reaped unknown pid 96 (exit status 0)
+2026-02-02 06:04:01,334 INFO reaped unknown pid 105 (exit status 0)
+2026-02-02 06:05:01,503 INFO reaped unknown pid 114 (exit status 0)
+2026-02-02 06:06:01,676 INFO reaped unknown pid 123 (exit status 0)
+2026-02-02 06:07:01,843 INFO reaped unknown pid 132 (exit status 0)
+2026-02-02 06:08:01,786 INFO reaped unknown pid 141 (exit status 0)
+2026-02-02 06:09:01,962 INFO reaped unknown pid 150 (exit status 0)
+2026-02-02 06:10:02,139 INFO reaped unknown pid 159 (exit status 0)
+2026-02-02 06:11:02,295 INFO reaped unknown pid 168 (exit status 0)
+2026-02-02 06:12:02,455 INFO reaped unknown pid 177 (exit status 0)
+2026-02-02 06:13:01,638 INFO reaped unknown pid 186 (exit status 0)
+2026-02-02 06:14:01,822 INFO reaped unknown pid 195 (exit status 0)
+2026-02-02 06:15:02,043 INFO reaped unknown pid 204 (exit status 0)
+2026-02-02 06:16:02,341 INFO reaped unknown pid 213 (exit status 0)
+2026-02-02 06:17:02,507 INFO reaped unknown pid 227 (exit status 0)
+2026-02-02 06:18:02,108 INFO reaped unknown pid 236 (exit status 0)
+2026-02-02 06:19:02,376 INFO reaped unknown pid 245 (exit status 0)
+2026-02-02 06:20:02,109 INFO reaped unknown pid 254 (exit status 0)
+2026-02-02 06:21:02,261 INFO reaped unknown pid 263 (exit status 0)
+2026-02-02 06:22:02,446 INFO reaped unknown pid 272 (exit status 0)
+2026-02-02 06:23:02,614 INFO reaped unknown pid 281 (exit status 0)
+2026-02-02 06:24:02,781 INFO reaped unknown pid 290 (exit status 0)
+2026-02-02 06:25:01,936 INFO reaped unknown pid 304 (exit status 0)
+2026-02-02 06:26:02,101 INFO reaped unknown pid 319 (exit status 0)
+2026-02-02 06:27:02,258 INFO reaped unknown pid 328 (exit status 0)
+2026-02-02 06:28:02,430 INFO reaped unknown pid 337 (exit status 0)
+2026-02-02 06:29:02,597 INFO reaped unknown pid 346 (exit status 0)
+2026-02-02 06:30:01,765 INFO reaped unknown pid 355 (exit status 0)
+2026-02-02 06:31:01,925 INFO reaped unknown pid 364 (exit status 0)
+2026-02-02 06:32:02,085 INFO reaped unknown pid 373 (exit status 0)
+2026-02-02 06:33:01,254 INFO reaped unknown pid 382 (exit status 0)
+2026-02-02 06:34:01,418 INFO reaped unknown pid 391 (exit status 0)
+2026-02-02 06:35:01,593 INFO reaped unknown pid 400 (exit status 0)
+2026-02-02 06:36:01,762 INFO reaped unknown pid 409 (exit status 0)
+2026-02-02 06:37:01,944 INFO reaped unknown pid 418 (exit status 0)

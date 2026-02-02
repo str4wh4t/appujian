@@ -8,7 +8,7 @@
 {{--<link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/vendors/css/tables/extensions/responsive.dataTables.min.css') }}">--}}
 <link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/vendors/css/forms/selects/select2.min.css') }}">
 {{--<link rel="stylesheet" type="text/css" href="{{ asset('assets/bower_components/bootstrap4-datetimepicker/build/css/bootstrap-datetimepicker.css') }}">--}}
-<link rel="stylesheet" type="text/css" href="{{ asset('assets/npm/node_modules/bootstrap4-datetimepicker/build/css/bootstrap-datetimepicker.css') }}">
+<link rel="stylesheet" type="text/css" href="{{ asset('assets/node_modules/bootstrap4-datetimepicker/build/css/bootstrap-datetimepicker.css') }}">
 <!-- END PAGE LEVEL JS-->
 @endpush
 
@@ -22,9 +22,9 @@
 {{--<script src="{{ asset('assets/template/robust/app-assets/vendors/js/tables/datatable/dataTables.rowReorder.min.js') }}"></script>--}}
 <script src="{{ asset('assets/template/robust/app-assets/vendors/js/forms/select/select2.full.min.js') }}"></script>
 {{--<script src="{{ asset('assets/bower_components/moment/min/moment.min.js') }}"></script>--}}
-<script src="{{ asset('assets/npm/node_modules/moment/min/moment.min.js') }}"></script>
+<script src="{{ asset('assets/node_modules/moment/min/moment.min.js') }}"></script>
 {{--<script src="{{ asset('assets/bower_components/bootstrap4-datetimepicker/build/js/bootstrap-datetimepicker.min.js') }}"></script>--}}
-<script src="{{ asset('assets/npm/node_modules/bootstrap4-datetimepicker/build/js/bootstrap-datetimepicker.min.js') }}"></script>
+<script src="{{ asset('assets/node_modules/bootstrap4-datetimepicker/build/js/bootstrap-datetimepicker.min.js') }}"></script>
 <!-- END PAGE VENDOR -->
 @endpush
 

@@ -5,9 +5,9 @@
 <!-- BEGIN PAGE VENDOR JS (GLOBAL)-->
 {{--<script src="{{ asset('assets/template/robust/app-assets/vendors/js/extensions/sweetalert.min.js') }}"></script>--}}
 {{--<script src="{{ asset('assets/bower_components/sweetalert2/sweetalert2.all.min.js') }}"></script>--}}
-<script src="{{ asset('assets/npm/node_modules/sweetalert2/dist/sweetalert2.all.min.js') }}"></script>
+<script src="{{ asset('assets/node_modules/sweetalert2/dist/sweetalert2.all.min.js') }}"></script>
 <script src="{{ asset('assets/template/robust/app-assets/vendors/js/extensions/toastr.min.js') }}"></script>
-<script src="{{ asset('assets/npm/node_modules/gasparesganga-jquery-loading-overlay/dist/loadingoverlay.min.js') }}"></script>
+<script src="{{ asset('assets/node_modules/gasparesganga-jquery-loading-overlay/dist/loadingoverlay.min.js') }}"></script>
 <script src="{{ asset('assets/plugins/ifvisible.js') }}"></script>
 <script src="{{ asset('assets/plugins/ping.min.js') }}"></script>
 <!-- END PAGE VENDOR JS (GLOBAL)-->

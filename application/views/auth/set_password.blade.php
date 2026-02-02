@@ -15,8 +15,8 @@
 
     <link rel="apple-touch-icon" href="{{ asset('uploads/img_app/'. APP_FAVICON_APPLE) }}">
 	<link rel="shortcut icon" type="image/x-icon" href="{{ asset('uploads/img_app/'. APP_FAVICON) }}">
-    <link href="{{ asset('assets/npm/node_modules/typeface-muli/index.css') }}" rel="stylesheet">
-	<link href="{{ asset('assets/npm/node_modules/typeface-open-sans/index.css') }}" rel="stylesheet"> 
+    <link href="{{ asset('assets/node_modules/typeface-muli/index.css') }}" rel="stylesheet">
+	<link href="{{ asset('assets/node_modules/typeface-open-sans/index.css') }}" rel="stylesheet"> 
     <!-- BEGIN VENDOR CSS-->
     <link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/css/vendors.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ asset('assets/template/robust/app-assets/vendors/css/ui/jquery-ui.min.css') }}">
@@ -111,9 +111,9 @@
     <!-- BEGIN PAGE LEVEL JS-->
     <script src="{{ asset('assets/template/robust/app-assets/js/scripts/forms/form-login-register.js') }}"></script>
 {{--    <script src="https://rawgit.com/RobinHerbots/Inputmask/5.x/dist/jquery.inputmask.js"></script>--}}
-    <script src="{{ asset('assets/npm/node_modules/inputmask/dist/jquery.inputmask.min.js') }}"></script>
+    <script src="{{ asset('assets/node_modules/inputmask/dist/jquery.inputmask.min.js') }}"></script>
 {{--    <script src="https://cdn.jsdelivr.net/jquery.validation/1.16.0/jquery.validate.min.js"></script>--}}
-    <script src="{{ asset('assets/npm/node_modules/jquery-validation/dist/jquery.validate.min.js') }}"></script>
+    <script src="{{ asset('assets/node_modules/jquery-validation/dist/jquery.validate.min.js') }}"></script>
     <!-- END PAGE LEVEL JS-->
     <script type="text/javascript">
 

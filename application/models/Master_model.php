@@ -1,16 +1,17 @@
 <?php
-defined('BASEPATH') OR exit('No direct script access allowed');
+defined('BASEPATH') or exit('No direct script access allowed');
 
 use Ozdemir\Datatables\Datatables;
 use Ozdemir\Datatables\DB\MySQL;
 
-class Master_model extends CI_Model {
+class Master_model extends CI_Model
+{
 
     public function create($table, $data, $batch = false)
     {
-        if($batch === false){
+        if ($batch === false) {
             $insert = $this->db->insert($table, $data);
-        }else{
+        } else {
             $insert = $this->db->insert_batch($table, $data);
         }
         return $insert;
@@ -18,9 +19,9 @@ class Master_model extends CI_Model {
 
     public function update($table, $data, $pk, $id = null, $batch = false)
     {
-        if($batch === false){
+        if ($batch === false) {
             $insert = $this->db->update($table, $data, array($pk => $id));
-        }else{
+        } else {
             $insert = $this->db->update_batch($table, $data, $pk);
         }
         return $insert;
@@ -78,17 +79,17 @@ class Master_model extends CI_Model {
      */
 
     public function getDataMahasiswa($tahun_dipilih = null)
-    {   
+    {
         $config = [
-        	'host'     => $this->db->hostname,
+            'host'     => $this->db->hostname,
             'port'     => $this->db->port,
             'username' => $this->db->username,
             'password' => $this->db->password,
             'database' => $this->db->database,
         ];
-        
-        $dt = new Datatables( new MySQL($config) );
-        
+
+        $dt = new Datatables(new MySQL($config));
+
         // $this->db->select('a.id_mahasiswa, a.nama, a.nim, a.email, a.prodi, GROUP_CONCAT(c.nama_matkul SEPARATOR "---") as nama_matkul, (SELECT COUNT(id) FROM users WHERE username = a.nim GROUP BY a.nim) AS ada');
         // $this->db->from('mahasiswa a');
         // $this->db->join('mahasiswa_matkul b', 'b.mahasiswa_id = a.id_mahasiswa', 'left');
@@ -99,23 +100,22 @@ class Master_model extends CI_Model {
 
         $this->db->group_by('a.id_mahasiswa');
 
-        if(!empty($tahun_dipilih)){
+        if (!empty($tahun_dipilih)) {
             $this->db->where('tahun', $tahun_dipilih);
         }
-        
-        $query = $this->db->get_compiled_select() ;
+
+        $query = $this->db->get_compiled_select();
         $dt->query($query);
-        
+
         return $dt->generate();
-        
     }
 
     public function getMahasiswaById($id)
     {
         $this->db->select('*');
         $this->db->from('mahasiswa');
-//        $this->db->join('kelas', 'kelas_id=id_kelas');
-//        $this->db->join('jurusan', 'jurusan_id=id_jurusan');
+        //        $this->db->join('kelas', 'kelas_id=id_kelas');
+        //        $this->db->join('jurusan', 'jurusan_id=id_jurusan');
         $this->db->where(['id_mahasiswa' => $id]);
         return $this->db->get()->row();
     }
@@ -133,10 +133,10 @@ class Master_model extends CI_Model {
 
     public function getAllJurusan($id = null)
     {
-        if($id === null){
+        if ($id === null) {
             $this->db->order_by('nama_jurusan', 'ASC');
             return $this->db->get('jurusan')->result();
-        }else{
+        } else {
             $this->db->select('jurusan_id');
             $this->db->from('jurusan_matkul');
             $this->db->where('matkul_id', $id);
@@ -145,10 +145,10 @@ class Master_model extends CI_Model {
             foreach ($jurusan as $j) {
                 $id_jurusan[] = $j->jurusan_id;
             }
-            if($id_jurusan === []){
+            if ($id_jurusan === []) {
                 $id_jurusan = null;
             }
-            
+
             $this->db->select('*');
             $this->db->from('jurusan');
             $this->db->where_not_in('id_jurusan', $id_jurusan);
@@ -159,7 +159,7 @@ class Master_model extends CI_Model {
 
     public function getKelasByJurusan($id)
     {
-        $query = $this->db->get_where('kelas', array('jurusan_id'=>$id));
+        $query = $this->db->get_where('kelas', array('jurusan_id' => $id));
         return $query->result();
     }
 
@@ -179,7 +179,7 @@ class Master_model extends CI_Model {
 
     public function getDosenById($id)
     {
-        $query = $this->db->get_where('dosen', array('id_dosen'=>$id));
+        $query = $this->db->get_where('dosen', array('id_dosen' => $id));
         return $query->row();
     }
 
@@ -194,7 +194,6 @@ class Master_model extends CI_Model {
         $this->datatables->join('mahasiswa_matkul AS b', 'b.matkul_id = a.id_matkul', 'left');
         $this->datatables->group_by('a.id_matkul');
         return $this->datatables->generate();
-        
     }
 
     public function getAllMatkul()
@@ -204,28 +203,28 @@ class Master_model extends CI_Model {
 
     public function getMatkulById($id, $single = false)
     {
-        if($single === false){
+        if ($single === false) {
             $this->db->where_in('id_matkul', $id);
             $this->db->order_by('nama_matkul');
             $query = $this->db->get('matkul')->result();
-        }else{
-            $query = $this->db->get_where('matkul', array('id_matkul'=>$id))->row();
+        } else {
+            $query = $this->db->get_where('matkul', array('id_matkul' => $id))->row();
         }
         return $query;
     }
-    
+
     /**
      * Data Topik
      */
-    
+
     public function getDataTopik()
     {
         $this->datatables->select('a.id, a.nama_topik, b.id_matkul, b.nama_matkul, a.poin_topik, CONCAT(COUNT(c.id_soal), " soal") AS jml_soal');
         $this->datatables->from('topik AS a');
         $this->datatables->join('matkul AS b', 'a.matkul_id = b.id_matkul');
-        $this->datatables->join('tb_soal AS c', 'c.topik_id = a.id','left');
+        $this->datatables->join('tb_soal AS c', 'c.topik_id = a.id', 'left');
         // $this->datatables->add_column('bulk_select', '<div class="text-center"><input type="checkbox" class="check" name="checked[]" value="$1"/></div>', 'id, nama_topik, id_matkul, nama_matkul');
-        $this->datatables->group_by('a.id');
+        $this->datatables->group_by('a.id, a.nama_topik, a.poin_topik, b.id_matkul, b.nama_matkul');
         return $this->datatables->generate();
     }
 
@@ -236,7 +235,7 @@ class Master_model extends CI_Model {
         $query = $this->db->get('topik')->result();
         return $query;
     }
-    
+
     public function getAllTopik()
     {
         $this->db->select('a.id, a.nama_topik, b.nama_matkul');
@@ -264,7 +263,7 @@ class Master_model extends CI_Model {
     {
         $this->db->select('dosen_id');
         $this->db->from('kelas_dosen');
-        if($id !== null){
+        if ($id !== null) {
             $this->db->where_not_in('dosen_id', [$id]);
         }
         $dosen = $this->db->get()->result();
@@ -272,7 +271,7 @@ class Master_model extends CI_Model {
         foreach ($dosen as $d) {
             $id_dosen[] = $d->dosen_id;
         }
-        if($id_dosen === []){
+        if ($id_dosen === []) {
             $id_dosen = null;
         }
 
@@ -282,7 +281,7 @@ class Master_model extends CI_Model {
         return $this->db->get()->result();
     }
 
-    
+
     public function getAllKelas()
     {
         $this->db->select('id_kelas, nama_kelas, nama_jurusan');
@@ -291,7 +290,7 @@ class Master_model extends CI_Model {
         $this->db->order_by('nama_kelas');
         return $this->db->get()->result();
     }
-    
+
     public function getKelasByDosen($id)
     {
         $this->db->select('kelas.id_kelas');
@@ -319,7 +318,7 @@ class Master_model extends CI_Model {
     {
         $this->db->select('matkul_id');
         $this->db->from('jurusan_matkul');
-        if($id !== null){
+        if ($id !== null) {
             $this->db->where_not_in('matkul_id', [$id]);
         }
         $matkul = $this->db->get()->result();
@@ -327,7 +326,7 @@ class Master_model extends CI_Model {
         foreach ($matkul as $d) {
             $id_matkul[] = $d->matkul_id;
         }
-        if($id_matkul === []){
+        if ($id_matkul === []) {
             $id_matkul = null;
         }
 

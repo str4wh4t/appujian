@@ -15,4 +15,6 @@ composer.phar
 !/public/assets/npm/index.html
 /files/template/*
 !/files/template/index.html
+supervisord.log
+supervisord.pid
 .env

@@ -1,7 +1,4 @@
 <?php
-header('Content-type: application/vnd-ms-excel');
-header('Content-Disposition: attachment; filename=' . $nama_file . '.xls');
-
 $mulai = indo_date(strftime('%A, %d %B %Y %H:%M:%S', strtotime($ujian->tgl_mulai)));
 $selesai = empty($ujian->terlambat) ? '-' : indo_date(strftime('%A, %d %B %Y %H:%M:%S', strtotime($ujian->terlambat)));
 
@@ -14,9 +11,9 @@ foreach ($ujian_topik as $topik) {
 }
 $str_topik = implode(',', $t);
 
-$min_nilai = number_format($nilai->min_nilai, 2, '.', '');
-$max_nilai = number_format($nilai->max_nilai, 2, '.', '');
-$rata_rata_ujian = number_format($nilai->avg_nilai, 2, '.', '');
+$min_nilai = number_format((float) ($nilai->min_nilai ?? 0), 2, '.', '');
+$max_nilai = number_format((float) ($nilai->max_nilai ?? 0), 2, '.', '');
+$rata_rata_ujian = number_format((float) ($nilai->avg_nilai ?? 0), 2, '.', '');
 ?>
 <table border="1">
     <tr>
@@ -93,8 +90,7 @@ foreach ($hasil as $row) {
         <?php if (is_show_detail_hasil()): ?>
         <?php foreach ($ujian_topik as $topik): ?>
             <td><?php
-                // echo $row['detail_bobot_benar'][$topik->id];
-                echo $row['detail_nilai'][$topik->id]; ?></td>
+                echo $row['detail_nilai'][$topik->id] ?? ''; ?></td>
         <?php endforeach; ?>
         <?php endif; ?>
         <td ><?= $row['waktu_mulai']?></td>

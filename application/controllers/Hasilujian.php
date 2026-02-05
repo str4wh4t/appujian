@@ -269,6 +269,9 @@ class HasilUjian extends MY_Controller
         // dd($m_ujian->topik);
 
         $nilai = $this->ujian->bandingNilai($id);
+        if ($nilai === null) {
+            $nilai = (object) ['min_nilai' => 0, 'max_nilai' => 0, 'avg_nilai' => 0];
+        }
         $hasil = $this->ujian->HslUjianById($id)->result();
 
         $data = [
@@ -321,8 +324,11 @@ class HasilUjian extends MY_Controller
         }
 
         $data['hasil'] = $new_hasil;
-        $data['nama_file'] = 'download_hasil_' . str_replace('.', '_', $_ENV['APP_ID']) . '_' . url_title($m_ujian->nama_ujian, '_', true) . '_' . date('Ymd');
+        $nama_file = 'download_hasil_' . str_replace('.', '_', $_ENV['APP_ID']) . '_' . url_title($m_ujian->nama_ujian, '_', true) . '_' . date('Ymd');
+        $data['nama_file'] = $nama_file;
 
+        $this->output->set_content_type('application/vnd.ms-excel');
+        $this->output->set_header('Content-Disposition: attachment; filename="' . $nama_file . '.xls"');
         $this->load->view('hasilujian/cetak_detail_xls', $data);
     }
 

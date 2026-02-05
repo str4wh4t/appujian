@@ -51,7 +51,7 @@ class Pub extends MY_Controller
         $detail_nilai = json_decode($hasil->detail_nilai);
         $detail_ujian = [];
 
-        $ujian_topik = $ujian->topik()->groupBy('id')->get();
+        $ujian_topik = $ujian->topik()->get()->unique('id')->values();
 
         foreach ($ujian_topik as $topik) {
             $topik_id = $topik->id;

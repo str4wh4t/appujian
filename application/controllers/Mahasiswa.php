@@ -65,7 +65,7 @@ class Mahasiswa extends MY_Controller
             'matkul'	=> [], // $this->master->getAllMatkul() // ** DIMATIKAN tgl : 23/08/2021
         ];
 
-        $data['kota_kab_list'] = Data_daerah_orm::all();
+        $data['kota_kab_list'] = Data_daerah_orm::orderBy('provinsi')->orderBy('kota_kab')->get();
         $data['prodi_list'] = Mhs_orm::distinct()->pluck('prodi')->toArray();
 
         //		$this->load->view('_templates/dashboard/_header.php', $data);
@@ -90,7 +90,7 @@ class Mahasiswa extends MY_Controller
             'user_is_exist'	=> isset(Users_orm::where('username', $mhs_orm->nim)->first()->username) ? true : false,
         ];
 
-        $data['kota_kab_list'] = Data_daerah_orm::all();
+        $data['kota_kab_list'] = Data_daerah_orm::orderBy('provinsi')->orderBy('kota_kab')->get();
         $data['prodi_list'] = Mhs_orm::distinct()->pluck('prodi')->toArray();
 
         //		$this->load->view('_templates/dashboard/_header.php', $data);

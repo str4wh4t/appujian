@@ -56,7 +56,8 @@ COPY ./builder/local/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 # Cron: jalankan cronjob.sh tiap menit di dalam container
 COPY ./builder/local/crontab /etc/cron.d/app-cron
-RUN chmod 0644 /etc/cron.d/app-cron && chmod +x /var/www/html/cronjob.sh
+RUN chmod 0644 /etc/cron.d/app-cron && chmod +x /var/www/html/cronjob.sh \
+    && chmod +x /var/www/html/seeder/seed_data_daerah.sh
 
 # Salin entrypoint
 COPY ./builder/local/entrypoint.sh /entrypoint.sh

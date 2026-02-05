@@ -12,6 +12,9 @@ yarn install
 echo "Running migrations..."
 php /var/www/html/vendor/bin/phoenix migrate
 
+echo "Seeding data daerah (provinsi & kota/kab)..."
+(cd /var/www/html/public && php index.php pub generate_data_daerah) || true
+
 echo "Symlink node_modules ke public/assets/node_modules..."
 NPM_LINK="/var/www/html/public/assets/node_modules"
 [ -e "$NPM_LINK" ] && rm -rf "$NPM_LINK"

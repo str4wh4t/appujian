@@ -297,7 +297,7 @@ class Pub extends MY_Controller
                     foreach ($m_ujian->topik_ujian as $topik_ujian) {
                         $jumlah_soal_diset = $topik_ujian->jumlah_soal;
                         $soal_avail = $soal_orm->where('topik_id', $topik_ujian->topik_id)
-                                                ->where('bobot_soal_id', $topik_ujian->bobot_soal_id);
+                            ->where('bobot_soal_id', $topik_ujian->bobot_soal_id);
 
                         $filter_data = [
                             'gel' => $m_ujian->soal_gel,
@@ -1290,39 +1290,94 @@ class Pub extends MY_Controller
 
     public function generate_data_daerah()
     {
-        $api_url_provinsi = 'https://dev.farizdotid.com/api/daerahindonesia/provinsi';
-        $api_url_kota_kab = 'https://dev.farizdotid.com/api/daerahindonesia/kota?id_provinsi=';
-
         $client = new Client();
-        $res = $client->request('GET', $api_url_provinsi);
 
-        $provinsi_list = $res->getBody()->getContents();
+        // Step 1: GET provinces and normalize to $arr_provinsi (array)
+        $res = $client->request('GET', 'https://wilayah.id/api/provinces.json');
+        $body = $res->getBody()->getContents();
+        $raw = json_decode($body);
+        if (is_array($raw)) {
+            $arr_provinsi = $raw;
+        } elseif (is_object($raw) && isset($raw->data) && is_array($raw->data)) {
+            $arr_provinsi = $raw->data;
+        } elseif (is_object($raw)) {
+            $arr_provinsi = array_values((array) $raw);
+        } else {
+            $arr_provinsi = [];
+        }
+        if (empty($arr_provinsi)) {
+            return;
+        }
 
-        $provinsi_list = json_decode($provinsi_list);
+        $saved = 0;
 
-        if (! empty($provinsi_list)) {
-            Data_daerah_orm::truncate(); // ===> EMPTYING THE TABLE, THIS TABLE HAS NO CONSTRAIT
-            foreach ($provinsi_list->provinsi as $provinsi) {
-                $res = $client->request('GET', $api_url_kota_kab . $provinsi->id);
+        // Step 2: Iterate provinsi and fetch regencies (kota/kab)
+        foreach ($arr_provinsi as $provinsi) {
+            $provinsi = is_array($provinsi) ? (object) $provinsi : $provinsi;
+            $code = $provinsi->code ?? $provinsi->id ?? null;
+            $code = $code !== null ? (string) $code : '';
+            $nama_prov = $provinsi->name ?? $provinsi->nama ?? '';
+            if ($code === '') {
+                continue;
+            }
 
-                $kota_kab_list = $res->getBody()->getContents();
+            try {
+                $url_regencies = sprintf('https://wilayah.id/api/regencies/%s.json', $code);
+                $res2 = $client->request('GET', $url_regencies);
+                $raw_regencies = json_decode($res2->getBody()->getContents());
+            } catch (\Exception $e) {
+                echo "Skip provinsi {$code} ({$nama_prov}): " . $e->getMessage() . "\n";
+                continue;
+            }
 
-                $kota_kab_list = json_decode($kota_kab_list);
+            // Step 3: Normalize regencies response to $arr_kota_kab (array)
+            if (is_array($raw_regencies)) {
+                $arr_kota_kab = $raw_regencies;
+            } elseif (is_object($raw_regencies) && isset($raw_regencies->data) && is_array($raw_regencies->data)) {
+                $arr_kota_kab = $raw_regencies->data;
+            } elseif (is_object($raw_regencies) && isset($raw_regencies->regencies) && is_array($raw_regencies->regencies)) {
+                $arr_kota_kab = $raw_regencies->regencies;
+            } elseif (is_object($raw_regencies)) {
+                $arr_kota_kab = array_values((array) $raw_regencies);
+            } else {
+                $arr_kota_kab = [];
+            }
+            if (empty($arr_kota_kab)) {
+                continue;
+            }
 
-                if (! empty($kota_kab_list)) {
-                    foreach ($kota_kab_list->kota_kabupaten as $kota_kab) {
-                        echo $kota_kab->nama . ' ====> ';
-                        $data_daerah = new Data_daerah_orm();
-                        $data_daerah->provinsi_id = $provinsi->id;
-                        $data_daerah->provinsi = $provinsi->nama;
-                        $data_daerah->kota_kab_id = $kota_kab->id;
-                        $data_daerah->kota_kab = $kota_kab->nama;
-                        $ret = $data_daerah->save();
-                        echo($ret ? 'SUCCESS' : 'FAIL') . "\n";
+            // Step 4: Upsert all kota/kab to data_daerah
+            foreach ($arr_kota_kab as $kota_kab) {
+                $kota_kab = is_array($kota_kab) ? (object) $kota_kab : $kota_kab;
+                $code_kab = $kota_kab->code ?? $kota_kab->id ?? null;
+                $nama_kab = $kota_kab->name ?? $kota_kab->nama ?? '';
+                if ($code_kab === null || $code_kab === '') {
+                    continue;
+                }
+                $prov_id = (int) $code;
+                // code kab dari API bisa "31.01", "31.73" dll → kota_kab_id = angka tanpa titik (3101, 3173)
+                $kab_id = (int) str_replace('.', '', (string) $code_kab);
+                $data_daerah = Data_daerah_orm::where('provinsi_id', $prov_id)->where('kota_kab_id', $kab_id)->first();
+                if ($data_daerah) {
+                    $data_daerah->provinsi = $nama_prov;
+                    $data_daerah->kota_kab = $nama_kab;
+                    if ($data_daerah->save()) {
+                        $saved++;
+                    }
+                } else {
+                    $data_daerah = new Data_daerah_orm();
+                    $data_daerah->provinsi_id = $prov_id;
+                    $data_daerah->provinsi = $nama_prov;
+                    $data_daerah->kota_kab_id = $kab_id;
+                    $data_daerah->kota_kab = $nama_kab;
+                    if ($data_daerah->save()) {
+                        $saved++;
                     }
                 }
             }
         }
+
+        echo "Total record tersimpan: {$saved}\n";
     }
 
     public function gen_no_urut_soal()

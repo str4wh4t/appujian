@@ -33,7 +33,7 @@ $(document).on('click','.btn_reset_hasil',function(){
 
      Swal.fire({
         title: "Perhatian",
-        html: "Ujian yang sudah reset tidak dapat dikembalikan.<br>- Masukan token -",
+        html: "Ujian yang sudah reset tidak dapat dikembalikan.<br>Ketik : <b>ok</b> untuk melanjutkan",
         input: "password",
         inputAttributes: {
             autocapitalize: "off",

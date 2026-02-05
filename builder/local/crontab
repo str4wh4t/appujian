@@ -1,2 +1,3 @@
 # Jalankan cronjob setiap menit (di dalam container path: /var/www/html)
-* * * * * root /var/www/html/cronjob.sh
+# Gunakan shell eksplisit agar tidak bergantung pada bit executable di cronjob.sh
+* * * * * root /bin/bash /var/www/html/cronjob.sh

@@ -2,7 +2,6 @@ FROM php:7.4-fpm
 
 # Install extensions and dependencies
 RUN apt-get update && apt-get install -y \
-    cron \
     supervisor \
     mariadb-client \
     libpng-dev \
@@ -51,13 +50,10 @@ COPY . .
 # Copy php.ini
 COPY ./builder/local/php.ini /usr/local/etc/php/conf.d/custom-php.ini
 
-# Copy supervisor config
+# Copy supervisor config (app-scheduler menjalankan cronjob.sh tiap 60 detik)
 COPY ./builder/local/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
-# Cron: jalankan cronjob.sh tiap menit di dalam container
-COPY ./builder/local/crontab /etc/cron.d/app-cron
-RUN chmod 0644 /etc/cron.d/app-cron && chmod +x /var/www/html/cronjob.sh \
-    && chmod +x /var/www/html/seeder/seed_data_daerah.sh
+RUN chmod +x /var/www/html/seeder/seed_data_daerah.sh 2>/dev/null || true
 
 # Salin entrypoint
 COPY ./builder/local/entrypoint.sh /entrypoint.sh

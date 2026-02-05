@@ -93,7 +93,7 @@ class HasilUjian extends MY_Controller
             //			$h_ujian_deleted->tgl_selesai = $h_ujian->tgl_selesai;
             //			$h_ujian_deleted->ujian_selesai = $h_ujian->ujian_selesai;
             //			$h_ujian_deleted->save();
-//
+            //
             //			foreach($h_ujian->jawaban_ujian as $jawaban_ujian) {
             //				$jawaban_ujian_deleted_orm           = new Jawaban_ujian_deleted_orm();
             //				$jawaban_ujian_deleted_orm->ujian_id = $h_ujian_deleted->id;
@@ -103,7 +103,11 @@ class HasilUjian extends MY_Controller
             //				$jawaban_ujian_deleted_orm->save();
             //			}
 
-            if ($token != date('ymdHi')) {
+            // if ($token != date('ymdHi')) {
+            //     throw new Exception('Token salah');
+            // }
+
+            if ($token != 'ok') {
                 throw new Exception('Token salah');
             }
 
@@ -355,10 +359,10 @@ class HasilUjian extends MY_Controller
         } else {
             $mhs = $h_ujian->mhs;
             $h_ujian_all = Hujian_orm::select('*', DB::raw('TIMESTAMPDIFF(SECOND, tgl_mulai, tgl_selesai) AS lama_pengerjaan'))
-                            ->where(['ujian_id' => $h_ujian->ujian_id])
-                            ->orderBy('nilai_bobot_benar', 'desc')
-                            ->orderBy('lama_pengerjaan', 'asc')
-                            ->get();
+                ->where(['ujian_id' => $h_ujian->ujian_id])
+                ->orderBy('nilai_bobot_benar', 'desc')
+                ->orderBy('lama_pengerjaan', 'asc')
+                ->get();
             $jml_peserta = $h_ujian_all->count();
 
             $peringkat = 1;

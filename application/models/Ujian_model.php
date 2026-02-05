@@ -436,4 +436,54 @@ class Ujian_model extends CI_Model
         $this->db->where('ujian_id', $id)->where('ujian_selesai', 'Y');
         return $this->db->get('h_ujian')->row();
     }
+
+    /**
+     * Hitung dan simpan detail_nilai (nilai per topik) untuk satu h_ujian.
+     * Dipanggil saat peserta mengakhiri ujian atau oleh cron fix_detail_nilai.
+     *
+     * @param \Orm\Hujian_orm $h_ujian
+     * @return bool true jika berhasil, false jika topik_ujian kosong
+     */
+    public function fixDetailNilaiForHujian($h_ujian)
+    {
+        $topik_ujian_list = $h_ujian->m_ujian->topik_ujian()->get();
+        if ($topik_ujian_list->isEmpty()) {
+            return false;
+        }
+
+        $topik_ujian_jml_soal = [];
+        $jml_topik_ujian_nilai_benar = [];
+
+        foreach ($topik_ujian_list as $topik_ujian) {
+            if (! isset($topik_ujian_jml_soal[$topik_ujian->topik_id])) {
+                $topik_ujian_jml_soal[$topik_ujian->topik_id] = 0;
+            }
+            $topik_ujian_jml_soal[$topik_ujian->topik_id] += $topik_ujian->jumlah_soal;
+            if (! isset($jml_topik_ujian_nilai_benar[$topik_ujian->topik_id])) {
+                $jml_topik_ujian_nilai_benar[$topik_ujian->topik_id] = 0;
+            }
+        }
+
+        foreach ($h_ujian->jawaban_ujian as $jwb) {
+            if ($jwb->jawaban == $jwb->soal->jawaban) {
+                $jml_topik_ujian_nilai_benar[$jwb->soal->topik_id] += 1;
+            }
+        }
+
+        $topik_ujian_nilai = [];
+        foreach ($topik_ujian_jml_soal as $topik_id => $jml_soal) {
+            if ($jml_soal != 0) {
+                $nilai = $jml_topik_ujian_nilai_benar[$topik_id] / $jml_soal * 100;
+                $topik_ujian_nilai[$topik_id] = round($nilai, 2);
+            } else {
+                $topik_ujian_nilai[$topik_id] = 0;
+            }
+        }
+
+        $h_ujian->detail_nilai = json_encode($topik_ujian_nilai);
+        $h_ujian->fixed_detail_nilai = 1;
+        $h_ujian->save();
+
+        return true;
+    }
 }

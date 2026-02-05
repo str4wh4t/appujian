@@ -2865,6 +2865,10 @@ class Ujian extends MY_Controller
         $h_ujian->ended_by = $ended_by;
         $action = $h_ujian->save();
 
+        if ($action) {
+            $this->ujian->fixDetailNilaiForHujian($h_ujian);
+        }
+
         return $action;
     }
 

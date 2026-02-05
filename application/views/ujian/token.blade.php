@@ -485,7 +485,7 @@ function go_ujian(token){
                 </p>
                 <div class="alert" id="div_setuju_tata_tertib" style="border: 1px solid #f00;background-color: #ffff9a;">
                     <fieldset>
-                    <input type="checkbox" class="inp" value="setuju" id="chk_setuju_tata_tertib"> <label for="chk_setuju_tata_tertib" style="display: inline">Saya menyetujui untuk mengikuti seleksi ini sesuai ketentuan yang berlaku di {{ strtoupper(get_app_author()) }}</label>
+                    <input type="checkbox" class="inp" value="setuju" id="chk_setuju_tata_tertib"> <label for="chk_setuju_tata_tertib" style="display: inline">Saya menyetujui untuk mengikuti seleksi ini sesuai ketentuan yang berlaku</label>
                     </fieldset>
                 </div>
             </div>

@@ -1223,64 +1223,12 @@ class Pub extends MY_Controller
                 }
 
                 echo $h_ujian->id;
-                // echo $h_ujian->mhs->nama . "\n";
 
                 $this->load->model('Ujian_model', 'ujian');
-                $this->load->model('Master_model', 'master');
 
-                // Jawaban
-                $pc_jawaban = $h_ujian->jawaban_ujian;
-
-                $topik_ujian_list = $h_ujian->m_ujian->topik_ujian()->get();
-
-                if ($topik_ujian_list->isEmpty()) {
+                if (! $this->ujian->fixDetailNilaiForHujian($h_ujian)) {
                     die('INVALID UJIAN');
                 }
-
-                $topik_ujian_jml_soal = [];
-                $jml_topik_ujian_nilai_benar = [];
-
-                foreach ($topik_ujian_list as $topik_ujian) {
-                    if (! isset($topik_ujian_jml_soal[$topik_ujian->topik_id])) {
-                        $topik_ujian_jml_soal[$topik_ujian->topik_id] = 0;
-                    }
-                    $topik_ujian_jml_soal[$topik_ujian->topik_id] += $topik_ujian->jumlah_soal;
-                    if (! isset($jml_topik_ujian_nilai_benar[$topik_ujian->topik_id])) {
-                        $jml_topik_ujian_nilai_benar[$topik_ujian->topik_id] = 0;
-                    }
-                }
-
-                // dd($topik_ujian_jml_soal);
-
-                // {
-                // 	"32":
-                // 		{"waktu": "3", "urutan": "2"},
-                // 	"35":
-                // 		{"waktu": "1", "urutan": "0"},
-                // 	"36": {"waktu": "2", "urutan": "1"}}
-
-                foreach ($pc_jawaban as $jwb) {
-                    if ($jwb->jawaban == $jwb->soal->jawaban) {
-                        $jml_topik_ujian_nilai_benar[$jwb->soal->topik_id] += 1;
-                    }
-                }
-
-                $topik_ujian_nilai = [];
-
-                foreach ($topik_ujian_jml_soal as $topik_id => $jml_soal) {
-                    if ($jml_soal != 0) {
-                        $nilai = $jml_topik_ujian_nilai_benar[$topik_id] / $jml_soal * 100;
-                        $topik_ujian_nilai[$topik_id] = round($nilai, 2);
-                    } else {
-                        $topik_ujian_nilai[$topik_id] = 0;
-                    }
-                }
-
-                // dd($topik_ujian_nilai);
-
-                $h_ujian->detail_nilai = json_encode($topik_ujian_nilai);
-                $h_ujian->fixed_detail_nilai = 1;
-                $h_ujian->save();
 
                 echo ' ===> done' . "\n";
                 // die;

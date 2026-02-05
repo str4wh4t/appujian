@@ -34,7 +34,7 @@ class Mahasiswa extends MY_Controller
     {
         $data = [
             'user' => $this->ion_auth->user()->row(),
-            'judul'	=> 'Peserta Ujian',
+            'judul'    => 'Peserta Ujian',
             'subjudul' => 'List Peserta Ujian',
         ];
         //		$this->load->view('_templates/dashboard/_header.php', $data);
@@ -60,9 +60,9 @@ class Mahasiswa extends MY_Controller
     {
         $data = [
             'user' => $this->ion_auth->user()->row(),
-            'judul'	=> 'Peserta Ujian',
+            'judul'    => 'Peserta Ujian',
             'subjudul' => 'Tambah Data Peserta Ujian',
-            'matkul'	=> [], // $this->master->getAllMatkul() // ** DIMATIKAN tgl : 23/08/2021
+            'matkul'    => [], // $this->master->getAllMatkul() // ** DIMATIKAN tgl : 23/08/2021
         ];
 
         $data['kota_kab_list'] = Data_daerah_orm::orderBy('provinsi')->orderBy('kota_kab')->get();
@@ -79,15 +79,15 @@ class Mahasiswa extends MY_Controller
         $mhs_orm = Mhs_orm::findOrFail($id);
         $mhs = $this->master->getMahasiswaById($id);
         $data = [
-            'user' 		=> $this->ion_auth->user()->row(),
-            'judul'		=> 'Peserta Ujian',
-            'subjudul'	=> 'Edit Data Peserta Ujian',
+            'user'         => $this->ion_auth->user()->row(),
+            'judul'        => 'Peserta Ujian',
+            'subjudul'    => 'Edit Data Peserta Ujian',
             //			'jurusan'	=> $this->master->getJurusan(),
             //			'kelas'		=> $this->master->getKelasByJurusan($mhs->jurusan_id),
             'mahasiswa' => $mhs,
-            'matkul'	=> [], // $this->master->getAllMatkul(), // ** DIMATIKAN tgl : 23/08/2021
-            'mhs'	=> $mhs_orm,
-            'user_is_exist'	=> isset(Users_orm::where('username', $mhs_orm->nim)->first()->username) ? true : false,
+            'matkul'    => [], // $this->master->getAllMatkul(), // ** DIMATIKAN tgl : 23/08/2021
+            'mhs'    => $mhs_orm,
+            'user_is_exist'    => isset(Users_orm::where('username', $mhs_orm->nim)->first()->username) ? true : false,
         ];
 
         $data['kota_kab_list'] = Data_daerah_orm::orderBy('provinsi')->orderBy('kota_kab')->get();
@@ -204,8 +204,8 @@ class Mahasiswa extends MY_Controller
 
         if ($this->form_validation->run() == false) {
             $data = [
-                'status'	=> false,
-                'errors'	=> [
+                'status'    => false,
+                'errors'    => [
                     'nim' => form_error('nim'),
                     'nama' => form_error('nama'),
                     'nik' => form_error('nik'),
@@ -225,19 +225,19 @@ class Mahasiswa extends MY_Controller
             $this->_json($data);
         } else {
             $input = [
-                'nim' 			=> $this->input->post('nim', true),
-                'email' 		=> $this->input->post('email', true),
-                'nama' 			=> $this->input->post('nama', true),
-                'nik' 			=> $this->input->post('nik', true),
-                'tmp_lahir' 	=> $this->input->post('tmp_lahir', true),
-                'tgl_lahir' 	=> $this->input->post('tgl_lahir', true),
-                'kota_asal' 	=> $this->input->post('kota_asal', true),
-                'nama' 			=> $this->input->post('nama', true),
-                'foto' 			=> $this->input->post('foto', true),
+                'nim'             => $this->input->post('nim', true),
+                'email'         => $this->input->post('email', true),
+                'nama'             => $this->input->post('nama', true),
+                'nik'             => $this->input->post('nik', true),
+                'tmp_lahir'     => $this->input->post('tmp_lahir', true),
+                'tgl_lahir'     => $this->input->post('tgl_lahir', true),
+                'kota_asal'     => $this->input->post('kota_asal', true),
+                'nama'             => $this->input->post('nama', true),
+                'foto'             => $this->input->post('foto', true),
                 'jenis_kelamin' => $this->input->post('jenis_kelamin', true),
                 'matkul'        => $this->input->post('matkul[]', true),
-                'no_billkey' 	=> $this->input->post('no_billkey', true),
-                'prodi' 		=> $this->input->post('prodi', true),
+                'no_billkey'     => $this->input->post('no_billkey', true),
+                'prodi'         => $this->input->post('prodi', true),
                 //				'kelas_id' 		=> $this->input->post('kelas', true),
             ];
             $msg = null;
@@ -467,8 +467,8 @@ class Mahasiswa extends MY_Controller
         $email = $data->email;
         //		$tgl_lahir = date("dmY", strtotime($data->tgl_lahir));
         $additional_data = [
-            'first_name'	=> $first_name,
-            'last_name'		=> $last_name,
+            'first_name'    => $first_name,
+            'last_name'        => $last_name,
             'full_name'     => $full_name,
             //			'tgl_lahir'  => $tgl_lahir,
             'no_billkey'  => $data->no_billkey,
@@ -480,7 +480,7 @@ class Mahasiswa extends MY_Controller
         if ($this->ion_auth->username_check($username)) {
             $data = [
                 'status' => false,
-                'msg'	 => 'Username tidak tersedia (sudah digunakan).',
+                'msg'     => 'Username tidak tersedia (sudah digunakan).',
             ];
         }
         //		else if ($this->ion_auth->email_check($email)) {
@@ -492,8 +492,8 @@ class Mahasiswa extends MY_Controller
         else {
             $this->ion_auth->register($username, $password, $email, $additional_data, $group);
             $data = [
-                'status'	=> true,
-                'msg'	 => 'User berhasil dibuat. No Peserta digunakan sebagai password pada saat login.',
+                'status'    => true,
+                'msg'     => 'User berhasil dibuat. No Peserta digunakan sebagai password pada saat login.',
             ];
         }
         $this->_json($data);
@@ -503,7 +503,7 @@ class Mahasiswa extends MY_Controller
     {
         $data = [
             'user' => $this->ion_auth->user()->row(),
-            'judul'	=> 'Peserta Ujian',
+            'judul'    => 'Peserta Ujian',
             'subjudul' => 'Import Peserta Ujian',
             'matkul_list' => Matkul_orm::all(),
         ];
@@ -964,7 +964,7 @@ class Mahasiswa extends MY_Controller
                 $this->session->set_flashdata('message_rootpage', $message_rootpage);
                 redirect('mahasiswa/import');
             }
-        } catch(Exception $e) {
+        } catch (Exception $e) {
             rollback_db_trx();
             show_error($e->getMessage(), 500, 'Perhatian');
         }
@@ -973,7 +973,7 @@ class Mahasiswa extends MY_Controller
     public function edit_on_table()
     {
         $data = [
-            'judul'	=> 'Peserta Ujian',
+            'judul'    => 'Peserta Ujian',
             'subjudul' => 'Impor Peserta Ujian',
         ];
         view('mahasiswa/edit_on_table', $data);
@@ -1260,7 +1260,7 @@ class Mahasiswa extends MY_Controller
                 commit_db_trx();
                 $this->_json(['status' => true]);
             }
-        } catch(Exception $e) {
+        } catch (Exception $e) {
             rollback_db_trx();
             $this->_json(['status' => false, 'msg' => $e->getMessage()]);
         }

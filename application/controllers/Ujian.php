@@ -355,15 +355,15 @@ class Ujian extends MY_Controller
 
                                 if ($bobot_soal_id != SOAL_NO_BOBOT_ID) {
                                     $soal = Soal_orm::where(['topik_id' => $topik_id, 'bobot_soal_id' => $bobot_soal_id, 'is_reported' => NON_REPORTED_SOAL])
-                                                    ->whereHas('bundle_soal', function (Builder $query) use ($bundle_ids) {
-                                                        $query->whereIn('bundle_id', $bundle_ids);
-                                                    });
+                                        ->whereHas('bundle_soal', function (Builder $query) use ($bundle_ids) {
+                                            $query->whereIn('bundle_id', $bundle_ids);
+                                        });
                                 } else {
                                     $soal = Soal_orm::where(['topik_id' => $topik_id, 'is_reported' => NON_REPORTED_SOAL])
-                                                ->whereNull('bobot_soal_id')
-                                                ->whereHas('bundle_soal', function (Builder $query) use ($bundle_ids) {
-                                                    $query->whereIn('bundle_id', $bundle_ids);
-                                                });
+                                        ->whereNull('bobot_soal_id')
+                                        ->whereHas('bundle_soal', function (Builder $query) use ($bundle_ids) {
+                                            $query->whereIn('bundle_id', $bundle_ids);
+                                        });
                                 }
 
                                 $jumlah_soal_max = $soal->count();
@@ -446,9 +446,9 @@ class Ujian extends MY_Controller
                     }
                 }
 
-            // if(empty($total_waktu)){
-            // 	$this->form_validation->set_rules('jumlah_waktu_matkul_total', 'Waktu Matkul Total', "required|is_natural|max_length[4]|greater_than[0]");
-            // }
+                // if(empty($total_waktu)){
+                // 	$this->form_validation->set_rules('jumlah_waktu_matkul_total', 'Waktu Matkul Total', "required|is_natural|max_length[4]|greater_than[0]");
+                // }
             } else {
                 $this->form_validation->set_rules('waktu', 'Waktu', 'required|is_natural|max_length[4]|greater_than[0]');
             }
@@ -1162,18 +1162,18 @@ class Ujian extends MY_Controller
                         if ($_ENV['APP_TYPE'] == 'ujian') {
                             // SETTING PESERTA HANYA BERLAKU JIKA TIPE APLIKASI UJIAN
                             $peserta_ujian_before = Mhs_ujian_orm::where(['ujian_id' => $m_ujian_orm->id_ujian])
-                                                                ->whereDoesntHave('h_ujian')
-                                                                ->whereDoesntHave('h_ujian_history')
-                                                                ->pluck('mahasiswa_id')
-                                                                ->toArray();
+                                ->whereDoesntHave('h_ujian')
+                                ->whereDoesntHave('h_ujian_history')
+                                ->pluck('mahasiswa_id')
+                                ->toArray();
 
                             $mhs_ids_insert = array_diff($peserta, $peserta_ujian_before);
                             $mhs_ids_delete = array_diff($peserta_ujian_before, $peserta);
 
                             if (! empty($mhs_ids_delete)) {
                                 Mhs_ujian_orm::where('ujian_id', $m_ujian_orm->id_ujian)
-                                            ->whereIn('mahasiswa_id', $mhs_ids_delete)
-                                            ->delete();
+                                    ->whereIn('mahasiswa_id', $mhs_ids_delete)
+                                    ->delete();
                             }
 
                             if (! empty($mhs_ids_insert)) {
@@ -1246,34 +1246,34 @@ class Ujian extends MY_Controller
 
                             if (! empty($ujian_bundle_ids_delete)) {
                                 Ujian_bundle_orm::where('ujian_id', $id_ujian)
-                                                ->whereIn('bundle_id', $ujian_bundle_ids_delete)
-                                                ->delete();
+                                    ->whereIn('bundle_id', $ujian_bundle_ids_delete)
+                                    ->delete();
                             }
-                        // [STOP] LOGIC ujian_bundle
+                            // [STOP] LOGIC ujian_bundle
 
-                        // [START] LOGIC ujian_matkul_enable
-                        // $ujian_matkul_enable_before = $m_ujian_orm->ujian_matkul_enable()->pluck('matkul_id')->toArray();
-                        // $ujian_matkul_enable_ids_insert = array_diff($input['mhs_matkul'], $ujian_matkul_enable_before);
-                        // $ujian_matkul_enable_ids_delete = array_diff($ujian_matkul_enable_before, $input['mhs_matkul']);
+                            // [START] LOGIC ujian_matkul_enable
+                            // $ujian_matkul_enable_before = $m_ujian_orm->ujian_matkul_enable()->pluck('matkul_id')->toArray();
+                            // $ujian_matkul_enable_ids_insert = array_diff($input['mhs_matkul'], $ujian_matkul_enable_before);
+                            // $ujian_matkul_enable_ids_delete = array_diff($ujian_matkul_enable_before, $input['mhs_matkul']);
 
-                        // if(!empty($ujian_matkul_enable_ids_insert)){
-                        // 	$insert = [];
-                        // 	foreach($ujian_matkul_enable_ids_insert as $matkul_id){
-                        // 		$insert[] = [
-                        // 			'ujian_id' => $id_ujian,
-                        // 			'matkul_id' => $matkul_id,
-                        // 			'created_at' => $now,
-                        // 		];
-                        // 	}
-                        // 	Ujian_matkul_enable_orm::insert($insert);
-                        // }
+                            // if(!empty($ujian_matkul_enable_ids_insert)){
+                            // 	$insert = [];
+                            // 	foreach($ujian_matkul_enable_ids_insert as $matkul_id){
+                            // 		$insert[] = [
+                            // 			'ujian_id' => $id_ujian,
+                            // 			'matkul_id' => $matkul_id,
+                            // 			'created_at' => $now,
+                            // 		];
+                            // 	}
+                            // 	Ujian_matkul_enable_orm::insert($insert);
+                            // }
 
-                        // if(!empty($ujian_matkul_enable_ids_delete)){
-                        // 	Ujian_matkul_enable_orm::where('ujian_id', $id_ujian)
-                        // 					->whereIn('matkul_id', $ujian_matkul_enable_ids_delete)
-                        // 					->delete();
-                        // }
-                        // [STOP] LOGIC ujian_matkul_enable
+                            // if(!empty($ujian_matkul_enable_ids_delete)){
+                            // 	Ujian_matkul_enable_orm::where('ujian_id', $id_ujian)
+                            // 					->whereIn('matkul_id', $ujian_matkul_enable_ids_delete)
+                            // 					->delete();
+                            // }
+                            // [STOP] LOGIC ujian_matkul_enable
                         } else {
                             // JIKA SEKARANG PILIH SUMBER UJIAN DARI MATERI MAKA UJIAN BUNDLE SEBELUMNYA AKAN DI HAPUS
                             Ujian_bundle_orm::where('ujian_id', $id_ujian)->delete();
@@ -1412,14 +1412,14 @@ class Ujian extends MY_Controller
         // $data['mhs_ujian_riwayat'] = $mhs_ujian_riwayat;
 
         $mhs_ujian_all = Mhs_ujian_orm::where('mahasiswa_id', $mhs_orm->id_mahasiswa)
-        ->whereHas(
-            'm_ujian',
-            function (Builder $query) {
-                $query->where('status_ujian', 1);
-            }
-        )->get()
-        // ->sortByDesc('m_ujian.tgl_mulai');
-        ->sortBy('m_ujian.tgl_mulai');
+            ->whereHas(
+                'm_ujian',
+                function (Builder $query) {
+                    $query->where('status_ujian', 1);
+                }
+            )->get()
+            // ->sortByDesc('m_ujian.tgl_mulai');
+            ->sortBy('m_ujian.tgl_mulai');
 
         $data['mhs_ujian_all'] = $mhs_ujian_all;
 
@@ -1479,15 +1479,15 @@ class Ujian extends MY_Controller
         // $data['mhs_ujian_riwayat'] = $mhs_ujian_riwayat;
 
         $mhs_ujian_all = Mhs_ujian_orm::where('mahasiswa_id', $mhs_orm->id_mahasiswa)
-        ->whereHas(
-            'm_ujian',
-            function (Builder $query) {
-                $query->where('status_ujian', 1);
-                $query->where('repeatable', 1); // LATIHAN SOAL JIKA UJIAN IS REPEATABLE
-            }
-        )->get()
-        // ->sortByDesc('m_ujian.tgl_mulai');
-        ->sortBy('m_ujian.tgl_mulai');
+            ->whereHas(
+                'm_ujian',
+                function (Builder $query) {
+                    $query->where('status_ujian', 1);
+                    $query->where('repeatable', 1); // LATIHAN SOAL JIKA UJIAN IS REPEATABLE
+                }
+            )->get()
+            // ->sortByDesc('m_ujian.tgl_mulai');
+            ->sortBy('m_ujian.tgl_mulai');
 
         $data['mhs_ujian_all'] = $mhs_ujian_all;
 
@@ -1547,15 +1547,15 @@ class Ujian extends MY_Controller
         // $data['mhs_ujian_riwayat'] = $mhs_ujian_riwayat;
 
         $mhs_ujian_all = Mhs_ujian_orm::where('mahasiswa_id', $mhs_orm->id_mahasiswa)
-        ->whereHas(
-            'm_ujian',
-            function (Builder $query) {
-                $query->where('status_ujian', 1);
-                $query->where('repeatable', 0); // TRYOUT SOAL JIKA UJIAN IS NOT REPEATABLE
-            }
-        )->get()
-        // ->sortByDesc('m_ujian.tgl_mulai');
-        ->sortByDesc('m_ujian.tgl_mulai');
+            ->whereHas(
+                'm_ujian',
+                function (Builder $query) {
+                    $query->where('status_ujian', 1);
+                    $query->where('repeatable', 0); // TRYOUT SOAL JIKA UJIAN IS NOT REPEATABLE
+                }
+            )->get()
+            // ->sortByDesc('m_ujian.tgl_mulai');
+            ->sortByDesc('m_ujian.tgl_mulai');
 
         $data['mhs_ujian_all'] = $mhs_ujian_all;
 
@@ -1914,19 +1914,20 @@ class Ujian extends MY_Controller
                 /** LUPA TIDAK TAU KENAPA DICEK EMPTY BOBOT SOAL ID NYA */
                 if (! empty($topik_ujian->bobot_soal_id)) {
                     $soal_avail = Soal_orm::where('topik_id', $topik_ujian->topik_id)
-                                        ->where('bobot_soal_id', $topik_ujian->bobot_soal_id)
-                                        ->where('is_reported', NON_REPORTED_SOAL);
+                        ->where('bobot_soal_id', $topik_ujian->bobot_soal_id)
+                        ->where('is_reported', NON_REPORTED_SOAL);
                 } else {
                     $soal_avail = Soal_orm::where('topik_id', $topik_ujian->topik_id)
-                                        ->whereNull('bobot_soal_id')
-                                        ->where('is_reported', NON_REPORTED_SOAL);
+                        ->whereNull('bobot_soal_id')
+                        ->where('is_reported', NON_REPORTED_SOAL);
                 }
 
                 if ($ujian->sumber_ujian == 'bundle') {
                     // JIKA UJIAN DARI BUNDLE MAKA SOAL_AVAIL AKAN DIOVERRIDE
                     $bundle_ids = $ujian->bundle()->pluck('bundle.id')->toArray();
                     $soal_avail = $soal_avail->whereHas(
-                        'bundle_soal', function (Builder $query) use ($bundle_ids) {
+                        'bundle_soal',
+                        function (Builder $query) use ($bundle_ids) {
                             $query->whereIn('bundle_id', $bundle_ids);
                         }
                     );
@@ -2145,11 +2146,11 @@ class Ujian extends MY_Controller
             $jawaban_ujian = collect();
             foreach ($urutan_topik as $topik_id => $v) {
                 $item_list = $h_ujian->jawaban_ujian()
-                                ->whereHas('soal', function (Builder $query) use ($topik_id) {
-                                    $query->where('topik_id', $topik_id);
-                                })
-                                ->get()
-                                ->sortBy('id');
+                    ->whereHas('soal', function (Builder $query) use ($topik_id) {
+                        $query->where('topik_id', $topik_id);
+                    })
+                    ->get()
+                    ->sortBy('id');
                 if ($item_list->isNotEmpty()) {
                     foreach ($item_list as $item) {
                         $jawaban_ujian->add($item);
@@ -2903,11 +2904,11 @@ class Ujian extends MY_Controller
             $user = get_logged_user();
 
             $jml_daftar_hadir_by_pengawas = Mhs_ujian_orm::where('ujian_id', $m_ujian->id_ujian)
-            ->whereHas('daftar_hadir', function (Builder $query) use ($user) {
-                $query->where('absen_by_username', $user->username);
-            })
-            ->get()
-            ->count();
+                ->whereHas('daftar_hadir', function (Builder $query) use ($user) {
+                    $query->where('absen_by_username', $user->username);
+                })
+                ->get()
+                ->count();
         }
 
         $jml_daftar_hadir = Mhs_ujian_orm::where('ujian_id', $m_ujian->id_ujian)
@@ -3418,10 +3419,10 @@ class Ujian extends MY_Controller
             $h_ujian_history->ujian_ke = empty($ujian_ke) ? 1 : ($ujian_ke + 1);
 
             $h_ujian_all = Hujian_orm::select('*', DB::raw('TIMESTAMPDIFF(SECOND, tgl_mulai, tgl_selesai) AS lama_pengerjaan'))
-                                                        ->where(['ujian_id' => $h_ujian->ujian_id])
-                                                        ->orderBy('nilai_bobot_benar', 'desc')
-                                                        ->orderBy('lama_pengerjaan', 'asc')
-                                                        ->get();
+                ->where(['ujian_id' => $h_ujian->ujian_id])
+                ->orderBy('nilai_bobot_benar', 'desc')
+                ->orderBy('lama_pengerjaan', 'asc')
+                ->get();
 
             $jml_peserta = $h_ujian_all->count();
 
@@ -3530,8 +3531,8 @@ class Ujian extends MY_Controller
             if (! empty($selected_paket)) {
                 if (! $is_ignore_paket) {
                     $paket_ids_before = Paket_ujian_orm::whereIn('ujian_id', $selected_ujian)
-                                            ->pluck('paket_id')
-                                            ->toArray();
+                        ->pluck('paket_id')
+                        ->toArray();
 
                     $paket_ids_delete = array_diff($paket_ids_before, $selected_paket);
                     if (! empty($paket_ids_delete)) {
@@ -3540,13 +3541,13 @@ class Ujian extends MY_Controller
 
                     // [START] LOGIC UN-ASIGN EXISTING MHS YG TELAH PUNYA PAKET DARI UJIAN YG DIHAPUS YG TERKAIT PAKET
                     $mhs_ids_existing_in_paket = Paket_history_orm::whereIn('paket_id', $selected_paket)
-                                            ->where('stts', 1)
-                                            ->pluck('mahasiswa_id')
-                                            ->toArray();
+                        ->where('stts', 1)
+                        ->pluck('mahasiswa_id')
+                        ->toArray();
 
                     $mhs_ids_existing_in_ujian = Mhs_ujian_orm::whereIn('ujian_id', $selected_ujian)
-                                            ->pluck('mahasiswa_id')
-                                            ->toArray();
+                        ->pluck('mahasiswa_id')
+                        ->toArray();
 
                     $mhs_ids_delete = array_diff($mhs_ids_existing_in_ujian, $mhs_ids_existing_in_paket);
 
@@ -3558,15 +3559,15 @@ class Ujian extends MY_Controller
                 // $bundle_ids_delete = array_diff($soal_ids_before, $selected_soal);
                 foreach ($selected_paket as $paket_id) {
                     $ujian_ids_before = Paket_ujian_orm::where('paket_id', $paket_id)
-                                            ->whereIn('ujian_id', $selected_ujian)
-                                            ->pluck('ujian_id')
-                                            ->toArray();
+                        ->whereIn('ujian_id', $selected_ujian)
+                        ->pluck('ujian_id')
+                        ->toArray();
                     $ujian_ids_insert = array_diff($selected_ujian, $ujian_ids_before);
                     // $soal_ids_delete = array_diff($soal_ids_before, $selected_soal);
 
                     $mhs_ids_existing_in_paket = Paket_history_orm::where(['paket_id' => $paket_id, 'stts' => 1])
-                                            ->pluck('mahasiswa_id')
-                                            ->toArray();
+                        ->pluck('mahasiswa_id')
+                        ->toArray();
 
                     $insert = [];
                     if (! empty($ujian_ids_insert)) {
@@ -3582,8 +3583,8 @@ class Ujian extends MY_Controller
                         // [START] LOGIC ASIGN EXISTING MHS YG TELAH PUNYA PAKET TO UJIAN BARU YG TERKAIT PAKET
                         foreach ($ujian_ids_insert as $ujian_id) {
                             $mhs_ids_existing_in_ujian = Mhs_ujian_orm::where('ujian_id', $ujian_id)
-                                            ->pluck('mahasiswa_id')
-                                            ->toArray();
+                                ->pluck('mahasiswa_id')
+                                ->toArray();
 
                             $mhs_ids_insert = array_diff($mhs_ids_existing_in_paket, $mhs_ids_existing_in_ujian);
                             $insert_mhs = [];

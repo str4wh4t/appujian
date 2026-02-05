@@ -1121,6 +1121,23 @@ class Mahasiswa extends MY_Controller
                     break;
                 }
 
+                $gel = isset($d[9]) ? trim(strval($d[9])) : '';
+                if ($gel !== '' && ! ctype_digit($gel)) {
+                    $allow = false;
+                    $msg = 'Row : ' . $i . ', Gel bermasalah, gel : ' . $gel;
+                    break;
+                }
+
+                $tahun = isset($d[10]) ? trim(strval($d[10])) : '';
+                if ($tahun !== '' && (strlen($tahun) != 4 || ! ctype_digit($tahun))) {
+                    $allow = false;
+                    $msg = 'Row : ' . $i . ', Tahun bermasalah, tahun : ' . $tahun;
+                    break;
+                }
+                if ($tahun === '') {
+                    $tahun = Tahun::get_tahun_aktif();
+                }
+
                 // $jalur = $d[11];
                 // if (strlen($jalur) > 250 || strlen($jalur) < 3) {
                 // 	$allow = false;
@@ -1220,10 +1237,9 @@ class Mahasiswa extends MY_Controller
                 // $mhs->kodeps         = $kodeps;
                 $mhs->prodi = $prodi;
                 // $mhs->jalur         = $jalur;
-                // $mhs->gel         = $gel;
+                $mhs->gel = $gel !== '' ? (int) $gel : null;
                 // $mhs->smt         = $smt;
-                // $mhs->tahun         = $tahun;
-                $mhs->tahun = Tahun::get_tahun_aktif();
+                $mhs->tahun = $tahun;
                 $mhs->save();
 
                 if (! empty($matkul_list)) {

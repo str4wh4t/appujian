@@ -34,7 +34,7 @@
     <!-- BEGIN PAGE LEVEL JS-->
     <script type="text/javascript">
         let data = [
-          ['','','','','','','','','','','','','','','',''],
+          ['','','','','','','','','','',''],
         ];
 
         function isEmail(email) {
@@ -206,7 +206,39 @@
           }, 100);
         };
 
-        
+        let isValidGel = function (value, callback){
+            value = value.trim();
+            setTimeout(function(){
+            if(value != '') {
+                if (!isNaN(value) && value !== '' && ctype_digit_js(value)) {
+                    callback(true);
+                } else {
+                    callback(false);
+                }
+            } else {
+                callback(true);
+            }
+          }, 100);
+        };
+
+        let isValidTahun = function (value, callback){
+            value = value.trim();
+            setTimeout(function(){
+            if(value != '') {
+                if (value.length === 4 && !isNaN(value) && ctype_digit_js(value)) {
+                    callback(true);
+                } else {
+                    callback(false);
+                }
+            } else {
+                callback(true);
+            }
+          }, 100);
+        };
+
+        function ctype_digit_js(str) {
+            return /^\d+$/.test(str);
+        }
 
         let container = document.getElementById('hot');
         let hot = new Handsontable(container, {
@@ -215,7 +247,7 @@
                 // colHeaders: true,
                 // colHeaders:  ['NO PESERTA','NAMA','NIK','TMP LAHIR','TGL LAHIR<br>(YYYY-MM-DD)','L/P','EMAIL','NO BILLKEY','FOTO','KODEPS','PRODI','JALUR','GEL','SMT','TAHUN','ID MATERI UJIAN'],
                 // colHeaders:  ['NO PESERTA','NAMA','NIK','TMP LAHIR','TGL LAHIR<br>(YYYY-MM-DD)','L/P','EMAIL','NO BILLKEY','FOTO','KODEPS','PRODI'],
-                colHeaders:  ['NO PESERTA','NAMA','NIK','TMP LAHIR','TGL LAHIR<br>(YYYY-MM-DD)','JENIS KELAMIN<br>({{ JK_AVAIL[0] }}/{{ JK_AVAIL[1] }})','EMAIL','NO BILLKEY','PRODI'],
+                colHeaders:  ['NO PESERTA','NAMA','NIK','TMP LAHIR','TGL LAHIR<br>(YYYY-MM-DD)','JENIS KELAMIN<br>({{ JK_AVAIL[0] }}/{{ JK_AVAIL[1] }})','EMAIL','NO BILLKEY','PRODI','GEL','TAHUN'],
                 filters: true,
                 dropdownMenu: true,
                 // minRows: 50,
@@ -223,7 +255,7 @@
                 width: 1000,
                 height: 500,
                 // colWidths: [150, 200, 150, 150, 150, 150, 150, 150, 150],
-                colWidths: [150, 200, 150, 150, 150, 150, 150, 150, 150],
+                colWidths: [150, 200, 150, 150, 150, 150, 150, 150, 150, 80, 80],
                 // rowHeights: [50, 40, 100],
                 manualColumnResize: false,
                 manualRowResize: true,
@@ -256,6 +288,8 @@
                     {validator: emailValidator, allowInvalid: false},
                     {validator: isValidNobillkey, allowInvalid: false},
                     {validator: isValidProdi, allowInvalid: false},
+                    {validator: isValidGel, allowInvalid: false},
+                    {validator: isValidTahun, allowInvalid: false},
                 ]
 
         });
@@ -309,7 +343,7 @@
                             icon: "success"
                         });
                         // hot.updateSettings({data: [['', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '']]});
-                        hot.updateSettings({data: [['', '', '', '', '', '', '', '', '']]});
+                        hot.updateSettings({data: [['', '', '', '', '', '', '', '', '', '', '']]});
                     }
                     ajx_overlay(false);
                 });

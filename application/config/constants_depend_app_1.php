@@ -31,7 +31,7 @@ defined('IS_DEBUG_SOCKET')      or define('IS_DEBUG_SOCKET', false);
 // defined('PING_INTERVAL')      OR define('PING_INTERVAL', 30000 ); // IN MS
 
 // MAILER
-defined('ADMIN_EMAIL')              or define('ADMIN_EMAIL', 'cat@undip.ac.id');
+defined('ADMIN_EMAIL')              or define('ADMIN_EMAIL', $_ENV['ADMIN_EMAIL']);
 defined('EMAIL_CONFIG')      or define('EMAIL_CONFIG', [
     // 'mailtype' => 'html',
     'protocol'    => 'smtp',

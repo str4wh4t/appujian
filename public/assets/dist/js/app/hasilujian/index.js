@@ -105,10 +105,10 @@ $(document).on("click", ".btn_hapus_hasil_ujian", function (e) {
 });
 
 function deleteHasilUjian(id = 0) {
-    let textConfirm = "Yakin akan menghapus ujian<br>- Masukan token -";
+    let textConfirm = 'Yakin akan menghapus ujian<br>- "ok" untuk melanjutkan -';
 
     if (id == 0) {
-        textConfirm = "Semua data akan dihapus- Masukan token -";
+        textConfirm = 'Semua data akan dihapus<br>- "ok" untuk melanjutkan -';
     }
     Swal.fire({
         title: "Perhatian",

@@ -16,6 +16,7 @@ use Orm\Topik_orm;
 class HasilUjian extends MY_Controller
 {
     private $user;
+    private $token = 'ok';
 
     public function __construct()
     {
@@ -107,7 +108,7 @@ class HasilUjian extends MY_Controller
             //     throw new Exception('Token salah');
             // }
 
-            if ($token != 'ok') {
+            if ($token != $this->token) {
                 throw new Exception('Token salah');
             }
 
@@ -677,8 +678,9 @@ class HasilUjian extends MY_Controller
         try {
             begin_db_trx();
 
-            if ($token != date('ymdHi')) {
-                // if ($token != 'ya') {
+            // if ($token != date('ymdHi')) {
+            // if ($token != 'ya') {
+            if ($token != $this->token) {
                 throw new Exception('Token salah');
             }
 

@@ -1827,19 +1827,9 @@ class Soal extends MY_Controller
 					break;
 				}
 
-				$no_urut = 0;
-				$soal_before = Soal_orm::where('topik_id', $topik_id)
-					->orderBy('created_at', 'desc')
-					->first();
-
-				if (empty($soal_before))
-					$no_urut = 1;
-				else {
-					if (empty($soal_before->no_urut))
-						$no_urut = 1;
-					else
-						$no_urut = ($soal_before->no_urut) + 1;
-				}
+				// Pakai MAX(no_urut) agar dalam satu batch import no_urut selalu naik (orderBy created_at tidak deterministik dalam 1 transaksi)
+				$max_no_urut = Soal_orm::where('topik_id', $topik_id)->max('no_urut');
+				$no_urut     = $max_no_urut ? ((int) $max_no_urut + 1) : 1;
 
 				$soal                = new Soal_orm();
 				$soal->topik_id      = $topik_id;
